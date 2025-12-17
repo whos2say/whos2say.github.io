@@ -1,11 +1,16 @@
 /* =========================================================
    WHO'S TO SAY ? FOUNDATION
-   Design System Tokens (v1)
+   Design System – Canonical Stylesheet (v1)
+   ========================================================= */
+
+/* =========================================================
+   Design Tokens
+   Structured for future JSON export
    ========================================================= */
 
 :root {
   /* ---------- Brand Colors ---------- */
-  --color-primary: #63f5ef;        /* Matt's pick */
+  --color-primary: #63f5ef; /* Matt's pick */
   --color-primary-600: #4fd9d4;
   --color-primary-800: #2fb5b0;
 
@@ -21,22 +26,21 @@
   --color-accent-blue: #4c7cff;
   --color-accent-gold: #ffd166;
 
-   /* =========================================================
-   Legacy Color Bridge (Programs.html)
-   Temporary – remove after full migration
-   ========================================================= */
-
-:root {
+  /* ---------- Legacy Color Aliases (TEMP) ---------- */
+  /* Required for programs.html inline styles */
   --yellow: var(--color-accent-gold);
   --blue: var(--color-accent-blue);
   --teal: var(--color-primary);
   --cyan: var(--color-primary);
-}
-
+  --orange: #ff7a00;
+  --purple: #7c3aed;
+  --magenta: #ff2f92;
+  --pink: #e6008e;
+  --red: #e53935;
 
   /* ---------- Typography ---------- */
-  --font-heading: 'Poppins', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-heading: "Poppins", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -46,7 +50,7 @@
   --text-2xl: 1.75rem;
   --text-3xl: 2.25rem;
 
-  /* ---------- Spacing Scale ---------- */
+  /* ---------- Spacing ---------- */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -66,32 +70,9 @@
 }
 
 /* =========================================================
-   WHO'S TO SAY ? FOUNDATION
-   Core Stylesheet
+   Base / Reset
    ========================================================= */
 
-/* ---------- CSS Variables (Brand System) ---------- */
-:root {
-  --primary: #63f5ef;
-  --primary-dark: #4ccfc9;
-  --dark: #050509;
-  --dark-elevated: #0f0f18;
-  --light: #ffffff;
-  --neutral: #f4f7fa;
-  --text-main: #ffffff;
-  --text-dark: #0f172a;
-  --text-muted: #b3b3c2;
-  --accent-blue: #4c7cff;
-  --accent-gold: #ffd166;
-
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-
-  --max-width: 1100px;
-}
-
-/* ---------- Reset / Base ---------- */
 *,
 *::before,
 *::after {
@@ -124,20 +105,15 @@ a:hover {
   text-decoration: underline;
 }
 
-/* ---------- Layout Utilities ---------- */
-.container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1.25rem;
-}
+/* =========================================================
+   Typography
+   ========================================================= */
 
-.section {
-  padding: 4rem 0;
-}
-
-/* ---------- Headings ---------- */
-h1, h2, h3, h4 {
-  font-family: 'Poppins', sans-serif;
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
   font-weight: 700;
   line-height: 1.25;
 }
@@ -148,63 +124,29 @@ h1 {
 
 h2 {
   font-size: clamp(1.6rem, 3vw, 2.2rem);
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 h3 {
-  font-size: 1.25rem;
-  margin-top: 2rem;
-}
-
-/* ---------- Page Hero ---------- */
-.page-hero {
-  background: linear-gradient(
-    180deg,
-    rgba(99,245,239,0.15),
-    rgba(5,5,9,1)
-  );
-  padding: 5rem 1.25rem 4rem;
-  text-align: center;
-}
-
-.page-hero-content {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.page-subtitle {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  color: var(--text-muted);
-}
-
-/* ---------- Page Content ---------- */
-.page-content {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 3rem 1.25rem 5rem;
-}
-
-.content-section {
-  margin-bottom: 3rem;
-}
-
-.content-section p {
-  max-width: 800px;
-}
-
-/* ---------- Lists ---------- */
-ul {
-  margin-top: 1rem;
-  padding-left: 1.2rem;
-}
-
-li {
-  margin-bottom: 0.5rem;
+  font-size: var(--text-lg);
 }
 
 /* =========================================================
-   Programs Section
+   Layout Utilities
+   ========================================================= */
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.section {
+  padding: var(--space-8) 0;
+}
+
+/* =========================================================
+   Programs Section (Centralized)
    ========================================================= */
 
 .programs-section {
@@ -228,13 +170,14 @@ li {
 
 .program-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
 .program-card-header {
   height: 180px;
   background-size: cover;
   background-position: center;
+  position: relative;
 }
 
 .program-card-body {
@@ -250,85 +193,95 @@ li {
   margin-bottom: var(--space-2);
 }
 
-.program-card h3 {
-  font-family: var(--font-heading);
-  font-size: var(--text-lg);
-  margin: 0 0 var(--space-3);
-}
-
 .program-card p {
-  color: var(--color-muted-500);
   font-size: var(--text-sm);
+  color: var(--color-muted-500);
 }
-/* ---------- Program grid ---------- */
-.program-grid
-.program-card
-.program-card-header
-.program-card-body
-.program-label
-.program-meta
-.program-cta
 
-/* Background tints for headers */
-.digital-header::after
-.sports-header::after
-.life-header::after
-.community-header::after
-.maker-header::after
-.ent-header::after
+.program-meta {
+  font-size: var(--text-xs);
+  color: var(--color-muted-500);
+}
 
+.program-cta {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-accent-gold);
+}
 
+/* Header tint overlays (legacy-compatible) */
+.digital-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, var(--purple), #ff7af2);
+  opacity: 0.65;
+}
 
-/* ---------- Media / Image Placeholders ---------- */
+.sports-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, var(--blue), #22d3ee);
+  opacity: 0.65;
+}
+
+/* =========================================================
+   Media Placeholders
+   ========================================================= */
+
 .media-placeholder {
-  margin: 3rem 0;
+  margin: var(--space-7) 0;
 }
 
 .image-placeholder {
-  border: 2px dashed var(--primary);
-  padding: 3rem 1rem;
+  border: 2px dashed var(--color-primary);
   border-radius: var(--radius-lg);
+  padding: var(--space-7) var(--space-4);
   background: rgba(99, 245, 239, 0.06);
   text-align: center;
 }
 
 .image-placeholder span {
-  display: block;
-  font-weight: 700;
-  color: var(--primary);
-  font-size: 1.1rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  color: var(--color-primary);
 }
 
 .image-placeholder p {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-muted-500);
 }
 
-/* ---------- Buttons ---------- */
+/* =========================================================
+   Buttons
+   ========================================================= */
+
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.75rem 1.5rem;
   border-radius: var(--radius-md);
   font-weight: 600;
-  text-align: center;
+  cursor: pointer;
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: var(--dark);
+  background: var(--color-primary);
+  color: var(--color-dark-900);
 }
 
-.btn-primary:hover {
-  background: var(--primary-dark);
-  text-decoration: none;
-}
+/* =========================================================
+   Footer (Base)
+   ========================================================= */
 
-/* ---------- Footer (Optional Base) ---------- */
 footer {
-  background: var(--dark-elevated);
-  padding: 3rem 1.25rem;
+  background: var(--color-dark-800);
+  padding: var(--space-7) var(--space-4);
   text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  color: var(--color-muted-500);
+  font-size: var(--text-sm);
 }
