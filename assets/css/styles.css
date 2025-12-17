@@ -260,6 +260,22 @@ li {
   color: var(--color-muted-500);
   font-size: var(--text-sm);
 }
+/* ---------- Program grid ---------- */
+.program-grid
+.program-card
+.program-card-header
+.program-card-body
+.program-label
+.program-meta
+.program-cta
+
+/* Background tints for headers */
+.digital-header::after
+.sports-header::after
+.life-header::after
+.community-header::after
+.maker-header::after
+.ent-header::after
 
 
 
