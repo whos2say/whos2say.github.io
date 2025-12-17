@@ -348,9 +348,34 @@ html[data-theme="light"] {
   transition: color 0.2s ease;
 }
 
-.program-card:hover h3 {
+/* ===============================
+   Dynamic Path Hover Colors
+================================ */
+
+.program-card[data-path="digital"]:hover h3 {
   color: var(--path-digital);
 }
+
+.program-card[data-path="sports"]:hover h3 {
+  color: var(--path-sports);
+}
+
+.program-card[data-path="life"]:hover h3 {
+  color: var(--path-life);
+}
+
+.program-card[data-path="community"]:hover h3 {
+  color: var(--path-community);
+}
+
+.program-card[data-path="maker"]:hover h3 {
+  color: var(--path-maker);
+}
+
+.program-card[data-path="entertainment"]:hover h3 {
+  color: var(--path-entertainment);
+}
+
 
 
 /* =========================================================
