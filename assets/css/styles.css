@@ -254,6 +254,104 @@ h3 {
   font-size: var(--text-sm);
   color: var(--color-muted-500);
 }
+/* ===============================
+   THEME TOKENS
+================================ */
+
+html[data-theme="dark"] {
+  --bg-main: #050509;
+  --bg-elevated: #0f0f18;
+  --text-main: #ffffff;
+  --text-muted: #b3b3c2;
+}
+
+html[data-theme="light"] {
+  --bg-main: #f7f9fb;
+  --bg-elevated: #ffffff;
+  --text-main: #111827;
+  --text-muted: #4b5563;
+}
+
+/* Path colors */
+:root {
+  --path-digital: #7c3aed;
+  --path-sports: #1e64f0;
+  --path-life: #22c55e;
+  --path-community: #f97316;
+  --path-maker: #f59e0b;
+  --path-entertainment: #d946ef;
+
+  --section-space: clamp(3rem, 6vw, 6rem);
+}
+
+/* ===============================
+   PROGRAMS PAGE
+================================ */
+
+.programs-hero {
+  padding: var(--section-space) 5vw;
+  background: radial-gradient(circle at top, #1b1b2a, var(--bg-main));
+}
+
+.programs-wrapper {
+  padding: var(--section-space) 5vw;
+}
+
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .program-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .program-grid { grid-template-columns: 1fr; }
+}
+
+.program-card {
+  background: var(--bg-elevated);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text-main);
+}
+
+.card-media {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.card-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.65;
+}
+
+.program-card[data-path="digital"] .card-media::after { background: var(--path-digital); }
+.program-card[data-path="sports"] .card-media::after { background: var(--path-sports); }
+.program-card[data-path="life"] .card-media::after { background: var(--path-life); }
+.program-card[data-path="community"] .card-media::after { background: var(--path-community); }
+.program-card[data-path="maker"] .card-media::after { background: var(--path-maker); }
+.program-card[data-path="entertainment"] .card-media::after { background: var(--path-entertainment); }
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.program-card h3 {
+  transition: color 0.2s ease;
+}
+
+.program-card:hover h3 {
+  color: var(--path-digital);
+}
+
 
 /* =========================================================
    Buttons
