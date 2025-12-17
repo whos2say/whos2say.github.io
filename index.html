@@ -1,336 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Who's to Say ? Foundation | Coming Soon</title>
+  <meta charset="UTF-8" />
+  <title>Who’s to Say ? Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Who's to Say ? Foundation is a 501(c)(3) nonprofit creating creative, community-centered programs and a future live/work residence for neurodiverse young adults. Full site coming soon." />
-  <meta name="robots" content="index,follow" />
+  <meta name="description"
+        content="Who’s to Say ? Foundation is building inclusive pathways for young adults with disabilities through creativity, independence, and community." />
 
- <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-46JBLZ3YPT');
-  </script>
-
-  <!-- Google Fonts -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #050509;
-      --bg-elevated: #0f0f18;
-      --text-main: #ffffff;
-      --text-muted: #b3b3c2;
-      --yellow: #ffd600;
-      --pink: #e6008e;
-      --cyan: #1fbad6;
-      --purple: #7c3aed;
-    }
-
-    * { box-sizing:border-box; margin:0; padding:0; }
-
-    body {
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top, #181829 0, var(--bg) 45%);
-      color: var(--text-main);
-      line-height: 1.6;
-      min-height: 100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    a { color: inherit; text-decoration:none; }
-    a:hover { text-decoration:underline; }
-
-    .wrap {
-      width:100%;
-      max-width: 960px;
-      padding: 3rem 5vw;
-    }
-
-    .card {
-      background: radial-gradient(circle at top left, #232341, var(--bg-elevated));
-      border-radius: 1.5rem;
-      padding: 2.4rem 2.2rem;
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 24px 70px rgba(0,0,0,0.7);
-      position:relative;
-      overflow:hidden;
-    }
-
-    .card::before {
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(124,58,237,0.25), transparent 55%),
-        radial-gradient(circle at 110% 20%, rgba(0,212,255,0.35), transparent 50%),
-        radial-gradient(circle at 10% 120%, rgba(230,0,142,0.25), transparent 55%);
-      opacity:0.7;
-      z-index:-1;
-    }
-
-    .logo-row {
-      display:flex;
-      align-items:center;
-      gap:0.65rem;
-      margin-bottom:0.75rem;
-    }
-
-    .logo-mark {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width:2.1rem;
-      height:2.1rem;
-      border-radius:999px;
-      background:var(--yellow);
-      color:#000;
-      font-family:"Poppins", system-ui, sans-serif;
-      font-weight:800;
-      font-size:1.2rem;
-    }
-
-    .logo-text {
-      font-family:"Poppins", system-ui, sans-serif;
-      font-weight:800;
-      letter-spacing:0.04em;
-      font-size:1.25rem;
-    }
-
-    h1 {
-      font-family:"Poppins", system-ui, sans-serif;
-      font-size: clamp(2rem, 3vw, 2.4rem);
-      margin-bottom:0.35rem;
-    }
-
-    .tagline {
-      font-size:0.9rem;
-      letter-spacing:0.16em;
-      text-transform:uppercase;
-      color:var(--text-muted);
-      margin-bottom:1.5rem;
-    }
-
-    .lead {
-      max-width: 40rem;
-      color:var(--text-muted);
-      margin-bottom:1.4rem;
-      font-size:0.98rem;
-    }
-
-    .pill {
-      display:inline-flex;
-      align-items:center;
-      gap:0.35rem;
-      padding:0.34rem 0.8rem;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.15);
-      background:rgba(15,15,24,0.9);
-      font-size:0.8rem;
-      color:var(--text-muted);
-      margin-bottom:0.4rem;
-    }
-
-    .pill span.label {
-      text-transform:uppercase;
-      letter-spacing:0.16em;
-      font-size:0.7rem;
-      color:#f5f5f5;
-    }
-
-    .grid {
-      display:grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-      gap:1.5rem;
-      margin-top:1.8rem;
-    }
-
-    .list {
-      padding-left:1.1rem;
-      font-size:0.95rem;
-      color:var(--text-muted);
-    }
-
-    .list li + li { margin-top:0.3rem; }
-
-    .box {
-      background: rgba(5,5,12,0.85);
-      border-radius:1rem;
-      border:1px solid rgba(255,255,255,0.12);
-      padding:1.1rem 1.2rem;
-      font-size:0.9rem;
-      color:var(--text-muted);
-    }
-
-    .box strong { color:#fff; }
-
-    .label-sm {
-      font-size:0.78rem;
-      text-transform:uppercase;
-      letter-spacing:0.16em;
-      color:var(--text-muted);
-      margin-bottom:0.35rem;
-      display:block;
-    }
-
-    .contact-links {
-      margin-top:0.9rem;
-      font-size:0.93rem;
-    }
-
-    .contact-links a {
-      color: var(--cyan);
-      font-weight:500;
-    }
-
-    .buttons {
-      display:flex;
-      flex-wrap:wrap;
-      gap:0.7rem;
-      margin-top:1.2rem;
-      font-size:0.88rem;
-    }
-
-    .btn {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:0.6rem 1.4rem;
-      border:none;
-      cursor:pointer;
-      text-decoration:none;
-      font-weight:600;
-      letter-spacing:0.08em;
-      text-transform:uppercase;
-      font-size:0.8rem;
-      transition:transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-      white-space:nowrap;
-    }
-
-    .btn-primary {
-      background:var(--yellow);
-      color:#000;
-      box-shadow:0 12px 30px rgba(0,0,0,0.5);
-    }
-
-    .btn-secondary {
-      background:transparent;
-      color:var(--text-muted);
-      border:1px solid rgba(255,255,255,0.18);
-    }
-
-    .btn:hover {
-      transform:translateY(-1px);
-      box-shadow:0 16px 40px rgba(0,0,0,0.6);
-      text-decoration:none;
-    }
-
-    .footnote {
-      margin-top:1.4rem;
-      font-size:0.78rem;
-      color:var(--text-muted);
-    }
-
-    .footnote strong { color:#fff; }
-
-    @media (max-width: 780px) {
-      .card {
-        padding: 2rem 1.75rem;
-      }
-      .grid {
-        grid-template-columns: minmax(0,1fr);
-      }
-    }
-
-    @media (max-width: 540px) {
-      .wrap {
-        padding: 2.4rem 1.4rem;
-      }
-      .card {
-        padding: 1.8rem 1.4rem;
-      }
-    }
-  </style>
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
+
 <body>
-  <main class="wrap">
-    <section class="card" aria-label="Who's to Say ? Foundation coming soon">
-      <div class="logo-row">
-        <div class="logo-mark">?</div>
-        <div class="logo-text">Who's to Say ? Foundation</div>
-      </div>
 
-      <h1>Creativity without comparison.</h1>
-      <p class="tagline">Official Site · Coming Soon</p>
+  <header class="page-hero">
+    <div class="page-hero-content">
+      <h1>Who’s to Say ? Foundation</h1>
+      <p class="page-subtitle">
+        Building creative and independent futures for young adults with disabilities.
+      </p>
+    </div>
+  </header>
 
-      <p class="lead">
-        We’re building a creative studio and future live/work community where neurodiverse
-        young adults can explore digital content creation and storytelling, fandom, and everyday independence
-        on their own terms, at their own pace.
+  <main class="page-content">
+
+    <section class="content-section">
+      <p>
+        Our programs are currently being finalized and tested.
+        We’re building something thoughtful, inclusive, and grounded in real opportunity.
       </p>
 
-      <div class="pill">
-        <span class="label">EIN</span>
-        <span>33-3826585</span>
-      </div>
-      <div class="pill">
-        <span class="label">Status</span>
-        <span>501(c)(3) Public Charity · United States</span>
-      </div>
+      <p>
+        <strong>Explore our programs:</strong>
+      </p>
 
-      <div class="grid">
-        <div>
-          <span class="label-sm">What we’re preparing</span>
-          <ul class="list">
-            <li>Launch of the <strong>Remix Studio</strong> for digital storytelling, content creation, podcasting, streaming and gaming.</li>
-            <li>Interest-driven programs for young adults with intellectual and developmental disabilities.</li>
-            <li>Partnerships with families, support coordinators, and community organizations.</li>
-            <li>Planning for a small-scale <strong>live/work independent living residence</strong>.</li>
-          </ul>
-
-          <div class="buttons">
-            <a class="btn btn-primary" href="https://givebutter.com/whostosayfoundation">
-             DONATE
-            </a>
-            <a class="btn btn-secondary" href="mailto:partnership@whostosay.org?subject=Who%27s%20to%20Say%20-%20Major%20Gift%20or%20Partnership">
-              Talk About Partnership
-            </a>
-          </div>
-        </div>
-
-        <aside class="box" aria-label="Contact and legal info">
-          <span class="label-sm">Contact</span>
-          <p>
-            <strong>Who's to Say ? Foundation</strong><br/>
-            Ocean County, New Jersey, USA<br/>
-            Email: <a href="mailto:info@whostosay.org">joe@whostosay.org</a><br/>
-            Phone: <a href="tel:+16464189538">+1 (646) 418-9538</a>
-          </p>
-
-          <div class="contact-links">
-            Prefer a quick note?  
-            <a href="mailto:joe@whostosay.org?subject=Who%27s%20to%20Say%20-%20Quick%20Question">
-              Email Joe
-            </a>
-          </div>
-
-          <div class="footnote">
-            <strong>Tax status:</strong> Who’s to Say ? Foundation is recognized by the IRS
-            as a tax-exempt 501(c)(3) public charity (EIN 33-3826585). Contributions may be
-            tax-deductible to the extent allowed by law. Please consult your tax advisor for
-            specific guidance.
-          </div>
-        </aside>
-      </div>
+      <a href="/programs.html" class="btn btn-primary">
+        View Programs
+      </a>
     </section>
+
   </main>
-<script src="tracking.js"></script>
+
 </body>
 </html>
+
