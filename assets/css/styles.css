@@ -21,6 +21,19 @@
   --color-accent-blue: #4c7cff;
   --color-accent-gold: #ffd166;
 
+   /* =========================================================
+   Legacy Color Bridge (Programs.html)
+   Temporary – remove after full migration
+   ========================================================= */
+
+:root {
+  --yellow: var(--color-accent-gold);
+  --blue: var(--color-accent-blue);
+  --teal: var(--color-primary);
+  --cyan: var(--color-primary);
+}
+
+
   /* ---------- Typography ---------- */
   --font-heading: 'Poppins', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
