@@ -8,6 +8,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
+<script>
+  const toggle = document.querySelector('.theme-toggle');
+  const root = document.documentElement;
+
+  // Load saved preference
+  const savedTheme = localStorage.getItem('wts-theme');
+  if (savedTheme) {
+    root.dataset.theme = savedTheme;
+    toggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+  }
+
+  toggle.addEventListener('click', () => {
+    const current = root.dataset.theme;
+    const next = current === 'dark' ? 'light' : 'dark';
+
+    root.dataset.theme = next;
+    localStorage.setItem('wts-theme', next);
+    toggle.textContent = next === 'dark' ? '🌙' : '☀️';
+  });
+</script>
 
 <body>
 
