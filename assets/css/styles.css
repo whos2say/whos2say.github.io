@@ -145,6 +145,30 @@ h3 {
   padding: var(--space-8) 0;
 }
 
+/* ===============================
+   Theme Toggle
+================================ */
+
+.theme-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text-main);
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+html[data-theme="light"] .theme-toggle {
+  border-color: rgba(0,0,0,0.2);
+}
+
 /* =========================================================
    Programs Section (Centralized)
    ========================================================= */
