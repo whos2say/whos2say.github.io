@@ -9,25 +9,31 @@
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <script>
-  const toggle = document.querySelector('.theme-toggle');
-  const root = document.documentElement;
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.querySelector(".theme-toggle");
+    const root = document.documentElement;
 
-  // Load saved preference
-  const savedTheme = localStorage.getItem('wts-theme');
-  if (savedTheme) {
-    root.dataset.theme = savedTheme;
-    toggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-  }
+    if (!toggle) {
+      console.warn("Theme toggle button not found");
+      return;
+    }
 
-  toggle.addEventListener('click', () => {
-    const current = root.dataset.theme;
-    const next = current === 'dark' ? 'light' : 'dark';
+    // Initialize theme
+    const savedTheme = localStorage.getItem("wts-theme");
+    const initialTheme = savedTheme || root.dataset.theme || "dark";
 
-    root.dataset.theme = next;
-    localStorage.setItem('wts-theme', next);
-    toggle.textContent = next === 'dark' ? '🌙' : '☀️';
+    root.dataset.theme = initialTheme;
+    toggle.textContent = initialTheme === "dark" ? "🌙" : "☀️";
+
+    toggle.addEventListener("click", () => {
+      const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = nextTheme;
+      localStorage.setItem("wts-theme", nextTheme);
+      toggle.textContent = nextTheme === "dark" ? "🌙" : "☀️";
+    });
   });
 </script>
+
 
 <body>
 
