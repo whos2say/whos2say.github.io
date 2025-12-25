@@ -420,6 +420,91 @@ html[data-theme="light"] {
   background: var(--color-primary);
   color: var(--color-dark-900);
 }
+/* ===============================
+   Header (Global)
+================================ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--bg-main) 78%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+}
+
+.header-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.9rem 5vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  min-width: 160px;
+}
+
+.brand-logo {
+  height: 44px;   /* Adjust up/down */
+  width: auto;
+  display: block;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+}
+
+.nav-link {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-main) 70%, transparent);
+  padding: 0.55rem 0.75rem;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: color-mix(in srgb, var(--text-main) 10%, transparent);
+  color: var(--text-main);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Make header responsive */
+@media (max-width: 900px) {
+  .site-nav {
+    display: none; /* keeps header clean */
+  }
+}
+
+/* Optional: if you want a tiny nav on mobile later, we can add a menu button */
 
 /* =========================================================
    Footer (Base)
