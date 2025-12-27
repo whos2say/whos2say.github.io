@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <title>Entertainment Pathways | Who’s to Say ? Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="On-camera confidence, performance basics, voice and audio skills, and creative portfolio building." />
+  <meta name="description" content="On-camera confidence, performance basics, and voice work in a supportive, affirming environment." />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme.js" defer></script>
 </head>
 
 <body>
@@ -28,20 +29,17 @@
 
 <main class="program-page" style="--program-accent: var(--path-entertainment);">
   <section class="program-hero">
-    <div class="program-hero-media" style="background-image:url('/assets/images/REPLACE-ENTERTAINMENT-HERO.jpg');"></div>
+    <div class="program-hero-media" style="background-image:url('/assets/images/Matt-Teleprompter.JPG');"></div>
     <div class="program-hero-body">
       <div class="breadcrumb">
         <a href="/programs.html">Programs</a><span>›</span><span>Entertainment Path</span>
       </div>
       <h1>Entertainment Pathways</h1>
-      <p class="program-subtitle">
-        For participants who light up in front of a microphone or camera — or want to.
-        On-camera confidence, performance basics, and entertainment-related skills in a supportive environment.
-      </p>
+      <p class="program-subtitle">On-camera confidence, acting basics, and voice work—turning performance into communication skills.</p>
       <div class="pills">
         <span class="pill">On-Camera</span>
-        <span class="pill">Voice & Audio</span>
-        <span class="pill">Media Literacy</span>
+        <span class="pill">Voice</span>
+        <span class="pill">Fandom</span>
         <span class="pill">Mini Reel</span>
       </div>
     </div>
@@ -49,25 +47,16 @@
 
   <section class="program-shell">
     <article class="program-content">
-
       <section class="program-section">
         <h2>Purpose</h2>
-        <p>
-          Entertainment Pathways is for participants who light up in front of a microphone or camera — or want to.
-          It focuses on on-camera confidence, performance basics, and entertainment-related skills in a supportive environment.
-        </p>
+        <p><strong>Entertainment Pathways</strong> is for participants who light up in front of a microphone or camera — or want to. It focuses on on-camera confidence, performance basics, and entertainment-related skills in a supportive environment.</p>
       </section>
-
       <section class="program-section">
         <h2>How It Works</h2>
-        <p>
-          Supports may be 1:1 or small group sessions funded via DDD Goods &amp; Services, and may include:
-        </p>
+        <p>Supports may be 1:1 or small group sessions funded via DDD Goods &amp; Services, and may include coaching, practice, and simple content creation.</p>
       </section>
-
       <section class="program-section">
         <h2>Core Components</h2>
-
         <h3>On-Camera Performance</h3>
         <ul>
           <li>Reading from a teleprompter</li>
@@ -96,7 +85,6 @@
           <li>Helping families understand how to store and share these safely</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Outcomes &amp; Skills</h2>
         <ul>
@@ -106,15 +94,9 @@
           <li>Materials that can be used for future opportunities (theater, advocacy, creative projects)</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Coordinator / DDD Summary</h2>
-        <p>
-          Entertainment Pathways offers Goods &amp; Services-funded sessions focused on communication and performance skills:
-          reading from a teleprompter, speaking on camera, basic acting and voice work, and media literacy.
-          Outcomes include improved self-expression, social confidence, and a small set of media clips or photos that reflect
-          the person’s interests.
-        </p>
+        <p>Entertainment Pathways offers Goods &amp; Services-funded sessions focused on communication and performance skills: reading from a teleprompter, speaking on camera, basic acting and voice work, and media literacy. Outcomes include improved self-expression, social confidence, and a small set of media clips or photos that reflect the person’s interests.</p>
       </section>
 
     </article>
@@ -122,7 +104,7 @@
     <aside class="program-sidebar">
       <div class="program-sidebar-card">
         <h3>Best For</h3>
-        <p>Anyone who loves performing, acting, being on camera, or wants to build confidence presenting.</p>
+        <p>Anyone who loves performing, acting, or being on camera—or wants to build confidence presenting.</p>
       </div>
 
       <div class="program-sidebar-card">
@@ -149,24 +131,10 @@
 <footer class="site-footer">© <span id="year"></span> Who’s to Say ? Foundation</footer>
 
 <script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.querySelector(".theme-toggle");
-    const root = document.documentElement;
-    if (!toggle) return;
-
-    const saved = localStorage.getItem("wts-theme");
-    const initial = saved || root.dataset.theme || "dark";
-    root.dataset.theme = initial;
-    toggle.textContent = initial === "dark" ? "🌙" : "☀️";
-
-    toggle.addEventListener("click", () => {
-      const next = root.dataset.theme === "dark" ? "light" : "dark";
-      root.dataset.theme = next;
-      localStorage.setItem("wts-theme", next);
-      toggle.textContent = next === "dark" ? "🌙" : "☀️";
-    });
-  });
+  (function() {
+    var el = document.getElementById("year");
+    if (el) el.textContent = new Date().getFullYear();
+  })();
 </script>
 </body>
 </html>

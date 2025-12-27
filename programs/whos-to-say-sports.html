@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <title>Who’s to Say Sports | Who’s to Say ? Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Who’s to Say Sports blends athletics, sports media, and community engagement for participants who love sports." />
+  <meta name="description" content="Challenger Sports, fitness, outings, and sports storytelling for participants who love sports." />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme.js" defer></script>
 </head>
 
 <body>
@@ -34,12 +35,9 @@
         <a href="/programs.html">Programs</a><span>›</span><span>Sports Path</span>
       </div>
       <h1>Who’s to Say Sports</h1>
-      <p class="program-subtitle">
-        Athletics + sports media + community. For participants who love sports—whether they want to play, talk about the game,
-        or help create coverage as part of a “media crew.”
-      </p>
+      <p class="program-subtitle">Challenger Sports, fitness, outings, and sports storytelling—built around each participant’s interests.</p>
       <div class="pills">
-        <span class="pill">Sports Participation</span>
+        <span class="pill">Participation</span>
         <span class="pill">Media Crew</span>
         <span class="pill">Outings</span>
         <span class="pill">Confidence</span>
@@ -49,16 +47,10 @@
 
   <section class="program-shell">
     <article class="program-content">
-
       <section class="program-section">
         <h2>Purpose</h2>
-        <p>
-          <strong>Who’s to Say Sports</strong> blends athletics, sports media, and community engagement.
-          It’s for participants who love sports—whether they want to play, talk about the game, or help create coverage
-          as part of a “media crew.”
-        </p>
+        <p><strong>Who’s to Say Sports</strong> blends athletics, sports media, and community engagement. It’s for participants who love sports—whether they want to play, talk about the game, or help create coverage as part of a “media crew.”</p>
       </section>
-
       <section class="program-section">
         <h2>How It Works</h2>
         <p>Using DDD Goods &amp; Services, families can fund:</p>
@@ -68,10 +60,8 @@
           <li>Sessions focused on filming, interviewing, and editing simple sports content</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Program Elements</h2>
-
         <h3>Sports Participation &amp; Wellness</h3>
         <ul>
           <li>Joining Challenger or rec teams (with support as needed)</li>
@@ -84,7 +74,7 @@
           <li>Recording short game recaps or “fan takes”</li>
           <li>Interviewing teammates, coaches, or friends</li>
           <li>Learning how to film highlights on a phone</li>
-          <li>Participating in simple “Who’s to Say Sports” podcast segments.</li>
+          <li>Participating in simple “Who’s to Say Sports” podcast segments</li>
         </ul>
 
         <h3>Community &amp; Events</h3>
@@ -94,7 +84,6 @@
           <li>Opportunities to meet teams or visit fields/arenas</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Outcomes &amp; Skills</h2>
         <ul>
@@ -104,15 +93,9 @@
           <li>Stronger sense of belonging and community pride</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Coordinator / DDD Summary</h2>
-        <p>
-          Supports funded via DDD Goods &amp; Services may include: assisting the person to participate in Challenger
-          or other inclusive sports, structured group fitness activities, and supervised outings to games.
-          Sessions can also focus on sports media skills—filming, commentary, and interviews—to build communication
-          and community engagement skills.
-        </p>
+        <p>Supports funded via DDD Goods &amp; Services may include: assisting the person to participate in Challenger or other inclusive sports, structured group fitness activities, and supervised outings to games. Sessions can also focus on sports media skills—filming, commentary, and interviews—to build communication and community engagement skills.</p>
       </section>
 
     </article>
@@ -147,24 +130,10 @@
 <footer class="site-footer">© <span id="year"></span> Who’s to Say ? Foundation</footer>
 
 <script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.querySelector(".theme-toggle");
-    const root = document.documentElement;
-    if (!toggle) return;
-
-    const saved = localStorage.getItem("wts-theme");
-    const initial = saved || root.dataset.theme || "dark";
-    root.dataset.theme = initial;
-    toggle.textContent = initial === "dark" ? "🌙" : "☀️";
-
-    toggle.addEventListener("click", () => {
-      const next = root.dataset.theme === "dark" ? "light" : "dark";
-      root.dataset.theme = next;
-      localStorage.setItem("wts-theme", next);
-      toggle.textContent = next === "dark" ? "🌙" : "☀️";
-    });
-  });
+  (function() {
+    var el = document.getElementById("year");
+    if (el) el.textContent = new Date().getFullYear();
+  })();
 </script>
 </body>
 </html>

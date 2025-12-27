@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <title>Maker Market & Events | Who’s to Say ? Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Design and make things, then practice presenting work at showcases—confidence first, pressure-free." />
+  <meta name="description" content="Design and make items, then practice presenting them at supportive showcases—confidence-first, pressure-free." />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme.js" defer></script>
 </head>
 
 <body>
@@ -28,40 +29,30 @@
 
 <main class="program-page" style="--program-accent: var(--path-maker);">
   <section class="program-hero">
-    <div class="program-hero-media" style="background-image:url('/assets/images/REPLACE-MAKER-HERO.jpg');"></div>
+    <div class="program-hero-media" style="background-image:url('/assets/images/Maker_space.png');"></div>
     <div class="program-hero-body">
       <div class="breadcrumb">
         <a href="/programs.html">Programs</a><span>›</span><span>Maker Path</span>
       </div>
       <h1>Maker Market &amp; Events</h1>
-      <p class="program-subtitle">
-        Creating and sharing—digital art, crafts, small 3D prints—plus practice presenting work at showcases.
-        Confidence and pride first.
-      </p>
+      <p class="program-subtitle">Create, share, and celebrate work in supportive settings—confidence and pride first.</p>
       <div class="pills">
         <span class="pill">Create</span>
         <span class="pill">Present</span>
         <span class="pill">Confidence</span>
-        <span class="pill">Micro-Enterprise Concepts</span>
+        <span class="pill">Value</span>
       </div>
     </div>
   </section>
 
   <section class="program-shell">
     <article class="program-content">
-
       <section class="program-section">
         <h2>Purpose</h2>
-        <p>
-          Maker Market &amp; Events is about creating and sharing. Participants design and make things—digital art, crafts, small 3D prints—
-          and practice presenting them at events or showcases. It’s less about “business pressure” and more about confidence, pride, and
-          safe exposure to micro-enterprise concepts.
-        </p>
+        <p><strong>Maker Market &amp; Events</strong> is about creating and sharing. Participants design and make things—digital art, crafts, small 3D prints—and practice presenting them at events or showcases. It’s less about “business pressure” and more about confidence, pride, and safe exposure to micro-enterprise concepts.</p>
       </section>
-
       <section class="program-section">
         <h2>How It Works</h2>
-
         <h3>Creation Sessions</h3>
         <ul>
           <li>Design sessions (digital or physical)</li>
@@ -80,12 +71,9 @@
         <ul>
           <li>Basic ideas of pricing and value (age-appropriate and person-centered)</li>
           <li>Understanding that their creativity has worth</li>
-          <li>
-            When appropriate, exploring simple ways items could be gifted, raffled, or sold under family/agency guidance
-          </li>
+          <li>When appropriate, exploring simple ways items could be gifted, raffled, or sold under family/agency guidance</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Outcomes &amp; Skills</h2>
         <ul>
@@ -95,14 +83,9 @@
           <li>Positive public experiences and recognition</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Coordinator / DDD Summary</h2>
-        <p>
-          Maker Market &amp; Events uses Goods &amp; Services-funded sessions to support the person in designing and creating items
-          (digital or physical) and, where appropriate, participating in small showcases or events. Emphasis is on skill development,
-          social interaction, and self-esteem rather than commercial sales.
-        </p>
+        <p>Maker Market &amp; Events uses Goods &amp; Services-funded sessions to support the person in designing and creating items (digital or physical) and, where appropriate, participating in small showcases or events. Emphasis is on skill development, social interaction, and self-esteem rather than commercial sales.</p>
       </section>
 
     </article>
@@ -124,7 +107,7 @@
 
       <div class="program-sidebar-card">
         <h3>Get Started</h3>
-        <p>Want to plan a first “set of items” or a showcase goal?</p>
+        <p>Want to plan a first set of items or showcase goal?</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="/#contact">Contact Us</a>
           <a class="btn btn-secondary" href="mailto:info@whostosay.org">Email</a>
@@ -137,24 +120,10 @@
 <footer class="site-footer">© <span id="year"></span> Who’s to Say ? Foundation</footer>
 
 <script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.querySelector(".theme-toggle");
-    const root = document.documentElement;
-    if (!toggle) return;
-
-    const saved = localStorage.getItem("wts-theme");
-    const initial = saved || root.dataset.theme || "dark";
-    root.dataset.theme = initial;
-    toggle.textContent = initial === "dark" ? "🌙" : "☀️";
-
-    toggle.addEventListener("click", () => {
-      const next = root.dataset.theme === "dark" ? "light" : "dark";
-      root.dataset.theme = next;
-      localStorage.setItem("wts-theme", next);
-      toggle.textContent = next === "dark" ? "🌙" : "☀️";
-    });
-  });
+  (function() {
+    var el = document.getElementById("year");
+    if (el) el.textContent = new Date().getFullYear();
+  })();
 </script>
 </body>
 </html>

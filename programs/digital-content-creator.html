@@ -7,6 +7,7 @@
   <meta name="description" content="Build confidence and real-world skills in digital media, design, photography, and studio production." />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/assets/js/theme.js" defer></script>
 </head>
 
 <body>
@@ -28,16 +29,13 @@
 
 <main class="program-page" style="--program-accent: var(--path-digital);">
   <section class="program-hero">
-    <div class="program-hero-media" style="background-image:url('/assets/images/REPLACE-DIGITAL-HERO.jpg');"></div>
+    <div class="program-hero-media" style="background-image:url('/assets/images/Modern_podcast_Studio_setup.png');"></div>
     <div class="program-hero-body">
       <div class="breadcrumb">
         <a href="/programs.html">Programs</a><span>›</span><span>Digital Path</span>
       </div>
       <h1>Digital Content Creator Pathways</h1>
-      <p class="program-subtitle">
-        Content Creator Pathways helps young adults with intellectual and developmental disabilities build confidence and
-        real-world skills in digital media, design, and technology—based on each person’s interests.
-      </p>
+      <p class="program-subtitle">Video, design, photography, and production skills—built one project at a time, at the participant’s pace.</p>
       <div class="pills">
         <span class="pill">Video</span>
         <span class="pill">Design</span>
@@ -49,27 +47,16 @@
 
   <section class="program-shell">
     <article class="program-content">
-
       <section class="program-section">
         <h2>Purpose</h2>
-        <p>
-          <strong>Digital Content Creator Pathways</strong> helps young adults with intellectual and developmental disabilities build confidence
-          and real-world skills in digital media, design, and technology. The focus is not on “one-size-fits-all job training,”
-          but on discovering each person’s interests and translating them into meaningful, practical skills.
-        </p>
+        <p><strong>Digital Content Creator Pathways</strong> helps young adults with intellectual and developmental disabilities build confidence and real-world skills in digital media, design, and technology. The focus is not on “one-size-fits-all job training,” but on discovering each person’s interests and translating them into meaningful, practical skills.</p>
       </section>
-
       <section class="program-section">
         <h2>How It Works</h2>
-        <p>
-          Supports are delivered as individualized or small-group coaching sessions. Participants work on projects that matter to them:
-          editing a gaming clip, designing a logo, recording a podcast, taking photos, or creating short-form videos to share.
-        </p>
+        <p>Supports are delivered as individualized or small-group coaching sessions. Participants work on projects that matter to them: editing a gaming clip, designing a logo, recording a podcast, taking photos, and building small content pieces they can be proud to share.</p>
       </section>
-
       <section class="program-section">
         <h2>Core Areas of Learning</h2>
-
         <h3>Video &amp; Content Creation</h3>
         <ul>
           <li>Recording, importing, and editing video (CapCut, iMovie, etc.)</li>
@@ -98,24 +85,18 @@
           <li>Working as part of a creative “crew”</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Outcomes &amp; Skills</h2>
         <ul>
           <li>Increased comfort with technology and media tools</li>
           <li>Improved communication and planning (following steps, finishing projects)</li>
           <li>A small digital portfolio that can be shared with families, coordinators, or potential employers</li>
-          <li>Experience working towards deadlines and goals</li>
+          <li>Experience working toward deadlines and goals</li>
         </ul>
       </section>
-
       <section class="program-section">
         <h2>Coordinator / DDD Summary</h2>
-        <p>
-          Goods &amp; Services-funded sessions may include coaching in accessible creative tools (video editing, digital design, photography,
-          and basic studio production). Supports are individualized and goal-driven, building communication, planning, and practical digital
-          skills based on the person’s interests.
-        </p>
+        <p>Goods &amp; Services-funded sessions may include coaching in accessible creative tools (video editing, digital design, photography, and basic studio production). Supports are individualized and goal-driven, building communication, planning, and practical digital skills based on the person’s interests.</p>
       </section>
 
     </article>
@@ -150,24 +131,10 @@
 <footer class="site-footer">© <span id="year"></span> Who’s to Say ? Foundation</footer>
 
 <script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.querySelector(".theme-toggle");
-    const root = document.documentElement;
-    if (!toggle) return;
-
-    const saved = localStorage.getItem("wts-theme");
-    const initial = saved || root.dataset.theme || "dark";
-    root.dataset.theme = initial;
-    toggle.textContent = initial === "dark" ? "🌙" : "☀️";
-
-    toggle.addEventListener("click", () => {
-      const next = root.dataset.theme === "dark" ? "light" : "dark";
-      root.dataset.theme = next;
-      localStorage.setItem("wts-theme", next);
-      toggle.textContent = next === "dark" ? "🌙" : "☀️";
-    });
-  });
+  (function() {
+    var el = document.getElementById("year");
+    if (el) el.textContent = new Date().getFullYear();
+  })();
 </script>
 </body>
 </html>
