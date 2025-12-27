@@ -637,3 +637,291 @@ footer,
   font-size: var(--text-sm);
   border-top: 1px solid var(--border);
 }
+
+/* =========================================================
+   WTS — Additions for Programs Dropdown + Pathways Ribbon (v4)
+   Append this to the end of assets/css/styles.css
+   ========================================================= */
+
+/* Bigger header logo (best-practice size) */
+.brand-logo { height: 56px; width: auto; display:block; }
+@media (max-width: 640px) { .brand-logo { height: 46px; } }
+
+/* Dropdown (Programs) — hover open + pinned open on click */
+.nav-dropdown { position: relative; }
+.nav-trigger { background: transparent; border: 0; cursor: pointer; display:inline-flex; align-items:center; gap:0.35rem; }
+.nav-trigger:focus-visible { outline: 2px solid color-mix(in srgb, var(--color-primary) 60%, transparent); outline-offset: 4px; border-radius: 999px; }
+
+.nav-submenu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 240px;
+  padding: 0.6rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-main) 12%, transparent);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  z-index: 100;
+}
+
+/* Hover opens on desktop */
+@media (hover:hover) and (pointer:fine) {
+  .nav-dropdown:hover .nav-submenu { display: grid; gap: 0.25rem; }
+}
+
+/* Pinned open state (click) */
+.nav-dropdown.is-open .nav-submenu { display: grid; gap: 0.25rem; }
+
+.nav-sublink {
+  display:block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  color: color-mix(in srgb, var(--text-main) 78%, transparent);
+  text-decoration:none;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.nav-sublink:hover { background: color-mix(in srgb, var(--text-main) 10%, transparent); text-decoration:none; }
+.nav-sublink:focus-visible { outline: 2px solid color-mix(in srgb, var(--text-main) 25%, transparent); outline-offset: 2px; }
+
+/* Pathways Ribbon — permanent visual menu */
+.pathways-ribbon {
+  position: sticky;
+  top: 72px; /* header height; adjust if needed */
+  z-index: 20;
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.75rem 5vw;
+  background: color-mix(in srgb, var(--bg-main) 85%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+  backdrop-filter: blur(14px);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pathway-chip {
+  flex: 0 0 auto;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  text-decoration: none;
+  color: color-mix(in srgb, var(--text-main) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-main) 12%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 85%, transparent);
+}
+.pathway-chip:hover { color: var(--text-main); text-decoration:none; }
+
+/* Color accents per path */
+.pathway-chip[data-path="digital"] { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--path-digital) 35%, transparent); }
+.pathway-chip[data-path="sports"] { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--path-sports) 35%, transparent); }
+.pathway-chip[data-path="life"] { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--path-life) 35%, transparent); }
+.pathway-chip[data-path="community"] { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--path-community) 35%, transparent); }
+.pathway-chip[data-path="maker"] { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--path-maker) 35%, transparent); }
+.pathway-chip[data-path="entertainment"] { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--path-entertainment) 35%, transparent); }
+
+.pathway-chip.is-active {
+  color: var(--text-main);
+  border-color: color-mix(in srgb, var(--program-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--program-accent) 14%, var(--bg-elevated));
+}
+
+/* Mobile polish */
+@media (max-width: 640px) {
+  .pathways-ribbon { top: 64px; padding: 0.65rem 1rem; }
+}
+
+/* =========================================================
+   Pathway Navigator Module
+   Drop-in section for every program page
+   ========================================================= */
+
+.pathway-nav {
+  padding: clamp(1.5rem, 3vw, 2.25rem) 5vw 0;
+}
+
+.pathway-nav-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.22);
+  overflow: hidden;
+}
+
+.pathway-nav-head {
+  padding: 1.1rem 1.25rem 0.75rem;
+}
+
+.pathway-nav-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+}
+
+.pathway-nav-kicker::before {
+  content: "✦";
+  color: var(--color-primary);
+  font-size: 1.05em;
+  transform: translateY(-1px);
+}
+
+.pathway-nav-sub {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  max-width: 78ch;
+  font-size: 0.95rem;
+}
+
+.pathway-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.85rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.pathway-tile {
+  position: relative;
+  display: grid;
+  grid-template: "dot title" auto
+        "dot desc" auto / auto 1fr;
+
+  column-gap: 0.65rem;
+  row-gap: 0.15rem;
+
+  padding: 0.9rem 0.9rem;
+  border-radius: 1rem;
+
+  text-decoration: none;
+  color: var(--text-main);
+
+  border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+  background: color-mix(in srgb, var(--bg-main) 70%, transparent);
+
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  will-change: transform;
+}
+
+.pathway-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  opacity: 0.12; /* solid wash, not gradient */
+  background: var(--color-primary);
+  pointer-events: none;
+}
+
+.pathway-dot {
+  grid-area: dot;
+  width: 2.1rem;
+  height: 2.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-main) 12%, transparent);
+  color: var(--text-main);
+}
+
+.pathway-title {
+  grid-area: title;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  transition: color 0.18s ease;
+}
+
+.pathway-desc {
+  grid-area: desc;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+/* Path color mapping (wash + dot) */
+.pathway-tile[data-path="digital"]::before { background: var(--path-digital); }
+.pathway-tile[data-path="sports"]::before { background: var(--path-sports); }
+.pathway-tile[data-path="life"]::before { background: var(--path-life); }
+.pathway-tile[data-path="community"]::before { background: var(--path-community); }
+.pathway-tile[data-path="maker"]::before { background: var(--path-maker); }
+.pathway-tile[data-path="entertainment"]::before { background: var(--path-entertainment); }
+
+.pathway-tile[data-path="digital"] .pathway-dot { border-color: color-mix(in srgb, var(--path-digital) 45%, transparent); }
+.pathway-tile[data-path="sports"] .pathway-dot { border-color: color-mix(in srgb, var(--path-sports) 45%, transparent); }
+.pathway-tile[data-path="life"] .pathway-dot { border-color: color-mix(in srgb, var(--path-life) 45%, transparent); }
+.pathway-tile[data-path="community"] .pathway-dot { border-color: color-mix(in srgb, var(--path-community) 45%, transparent); }
+.pathway-tile[data-path="maker"] .pathway-dot { border-color: color-mix(in srgb, var(--path-maker) 45%, transparent); }
+.pathway-tile[data-path="entertainment"] .pathway-dot { border-color: color-mix(in srgb, var(--path-entertainment) 45%, transparent); }
+
+/* Hover = lift + title tint only */
+.pathway-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.26);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+}
+
+.pathway-tile[data-path="digital"]:hover .pathway-title { color: var(--path-digital); }
+.pathway-tile[data-path="sports"]:hover .pathway-title { color: var(--path-sports); }
+.pathway-tile[data-path="life"]:hover .pathway-title { color: var(--path-life); }
+.pathway-tile[data-path="community"]:hover .pathway-title { color: var(--path-community); }
+.pathway-tile[data-path="maker"]:hover .pathway-title { color: var(--path-maker); }
+.pathway-tile[data-path="entertainment"]:hover .pathway-title { color: var(--path-entertainment); }
+
+/* Active state */
+.pathway-nav[data-active-path="digital"] .pathway-tile[data-path="digital"],
+.pathway-nav[data-active-path="sports"] .pathway-tile[data-path="sports"],
+.pathway-nav[data-active-path="life"] .pathway-tile[data-path="life"],
+.pathway-nav[data-active-path="community"] .pathway-tile[data-path="community"],
+.pathway-nav[data-active-path="maker"] .pathway-tile[data-path="maker"],
+.pathway-nav[data-active-path="entertainment"] .pathway-tile[data-path="entertainment"] {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 96%, transparent);
+}
+
+.pathway-nav[data-active-path="digital"] .pathway-tile[data-path="digital"] .pathway-title { color: var(--path-digital); }
+.pathway-nav[data-active-path="sports"] .pathway-tile[data-path="sports"] .pathway-title { color: var(--path-sports); }
+.pathway-nav[data-active-path="life"] .pathway-tile[data-path="life"] .pathway-title { color: var(--path-life); }
+.pathway-nav[data-active-path="community"] .pathway-tile[data-path="community"] .pathway-title { color: var(--path-community); }
+.pathway-nav[data-active-path="maker"] .pathway-tile[data-path="maker"] .pathway-title { color: var(--path-maker); }
+.pathway-nav[data-active-path="entertainment"] .pathway-tile[data-path="entertainment"] .pathway-title { color: var(--path-entertainment); }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .pathway-nav-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .pathway-nav { padding-top: 1.25rem; }
+  .pathway-nav-grid {
+    grid-template-columns: unset;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 78%);
+    overflow-x: auto;
+    padding-bottom: 1.25rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pathway-tile { scroll-snap-align: start; }
+  .pathway-nav-grid::-webkit-scrollbar { height: 10px; }
+  .pathway-nav-grid::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--text-main) 18%, transparent);
+    border-radius: 999px;
+  }
+}
