@@ -42,4 +42,566 @@
   --radius-lg: 20px;
 
   /* ---------- Brand ---------- */
-  --color-primary: #63f5ef; /* Matt’s pick*
+  --color-primary: #63f5ef; /* Matt’s pick */
+  --color-primary-600: #4fd9d4;
+  --color-primary-800: #2fb5b0;
+
+  /* ---------- Accents ---------- */
+  --color-accent-blue: #4c7cff;
+  --color-accent-gold: #ffd166;
+
+  /* ---------- Path Colors (semantic mapping) ---------- */
+  --path-digital: #7c3aed;
+  --path-sports: #1e64f0;
+  --path-life: #22c55e;
+  --path-community: #f97316;
+  --path-maker: #f59e0b;
+  --path-entertainment: #d946ef;
+
+  /* ---------- Legacy Aliases (keep existing pages working) ---------- */
+  --yellow: var(--color-accent-gold);
+  --blue: var(--color-accent-blue);
+  --teal: var(--color-primary);
+  --cyan: var(--color-primary);
+  --orange: #ff7a00;
+  --purple: var(--path-digital);
+  --magenta: #ff2f92;
+  --pink: #e6008e;
+  --red: #e53935;
+}
+
+/* =========================================================
+   2) Theme Tokens (semantic layer)
+   IMPORTANT: Body + components use these, not hard-coded colors.
+   ========================================================= */
+
+html[data-theme="dark"] {
+  --bg-main: #050509;
+  --bg-elevated: #0f0f18;
+  --bg-soft: #1b1b2a;
+
+  --text-main: #ffffff;
+  --text-muted: #b3b3c2;
+  --border: color-mix(in srgb, var(--text-main) 12%, transparent);
+}
+
+html[data-theme="light"] {
+  --bg-main: #f7f9fb;
+  --bg-elevated: #ffffff;
+  --bg-soft: #eef2f7;
+
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --border: color-mix(in srgb, var(--text-main) 14%, transparent);
+}
+
+/* Back-compat color names used in some older styles */
+:root {
+  --color-dark-900: var(--bg-main);
+  --color-dark-800: var(--bg-elevated);
+  --color-dark-700: var(--bg-soft);
+  --color-light-100: var(--text-main);
+  --color-light-200: var(--bg-soft);
+  --color-muted-500: var(--text-muted);
+}
+
+/* =========================================================
+   3) Base / Reset
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================
+   4) Typography
+   ========================================================= */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 var(--space-3);
+}
+
+h1 { font-size: clamp(2.2rem, 4vw, 3rem); }
+h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+h3 { font-size: var(--text-lg); }
+
+p {
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+li {
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   5) Layout Utilities
+   ========================================================= */
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.section {
+  padding: var(--section-space) 0;
+}
+
+/* =========================================================
+   6) Header (Global)
+   ========================================================= */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--bg-main) 82%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.9rem 5vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brand-logo {
+  height: 44px;
+  width: auto;
+  display: block;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+  border: 1px solid var(--border);
+}
+
+.nav-link {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-main) 72%, transparent);
+  padding: 0.55rem 0.75rem;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: color-mix(in srgb, var(--text-main) 10%, transparent);
+  color: var(--text-main);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+/* Mobile header keeps clean */
+@media (max-width: 900px) {
+  .site-nav { display: none; }
+}
+
+/* =========================================================
+   7) Theme Toggle (uses semantic tokens)
+   ========================================================= */
+
+.theme-toggle {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-main) 20%, transparent);
+  color: var(--text-main);
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: color-mix(in srgb, var(--text-main) 8%, transparent);
+}
+
+/* =========================================================
+   8) Buttons
+   ========================================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #000;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-main);
+  border-color: color-mix(in srgb, var(--text-main) 20%, transparent);
+}
+
+.btn-secondary:hover {
+  background: color-mix(in srgb, var(--text-main) 8%, transparent);
+}
+
+/* =========================================================
+   9) Programs Page (Cards + Grid)
+   Single definitive version (no duplicates)
+   ========================================================= */
+
+.programs-hero {
+  padding: var(--section-space) 5vw;
+  background: radial-gradient(circle at top, var(--bg-soft), var(--bg-main));
+}
+
+.programs-wrapper {
+  padding: var(--section-space) 5vw;
+}
+
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .program-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .program-grid { grid-template-columns: 1fr; }
+}
+
+.program-card {
+  background: var(--bg-elevated);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+
+.card-media {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.card-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.65;
+}
+
+/* Card overlays by data-path */
+.program-card[data-path="digital"] .card-media::after { background: var(--path-digital); }
+.program-card[data-path="sports"] .card-media::after { background: var(--path-sports); }
+.program-card[data-path="life"] .card-media::after { background: var(--path-life); }
+.program-card[data-path="community"] .card-media::after { background: var(--path-community); }
+.program-card[data-path="maker"] .card-media::after { background: var(--path-maker); }
+.program-card[data-path="entertainment"] .card-media::after { background: var(--path-entertainment); }
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.program-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--text-main) 10%, transparent);
+  color: color-mix(in srgb, var(--text-main) 85%, transparent);
+  margin-bottom: 0.6rem;
+}
+
+.program-card h3 {
+  margin: 0 0 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.program-card p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* Dynamic hover title color per path */
+.program-card[data-path="digital"]:hover h3 { color: var(--path-digital); }
+.program-card[data-path="sports"]:hover h3 { color: var(--path-sports); }
+.program-card[data-path="life"]:hover h3 { color: var(--path-life); }
+.program-card[data-path="community"]:hover h3 { color: var(--path-community); }
+.program-card[data-path="maker"]:hover h3 { color: var(--path-maker); }
+.program-card[data-path="entertainment"]:hover h3 { color: var(--path-entertainment); }
+
+/* =========================================================
+   10) Program Detail Pages – Unified Template
+   (Used for all 6 program pages)
+   ========================================================= */
+
+.program-page {
+  padding: var(--section-space) 5vw;
+}
+
+.program-hero {
+  max-width: var(--max-width);
+  margin: 0 auto 1.5rem;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.program-hero-media {
+  height: 260px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .program-hero-media { height: 200px; }
+}
+
+.program-hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.70;
+  background: var(--program-accent, var(--color-primary));
+  mix-blend-mode: multiply;
+}
+
+.program-hero-body {
+  padding: 1.5rem;
+}
+
+.breadcrumb {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.breadcrumb a {
+  color: var(--text-muted);
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.program-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.pill {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-main) 8%, transparent);
+  border: 1px solid var(--border);
+}
+
+/* Two-column layout */
+.program-shell {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.55fr 0.85fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .program-shell {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.program-content {
+  background: var(--bg-elevated);
+  border-radius: 1.25rem;
+  padding: 1.6rem;
+  border: 1px solid var(--border);
+}
+
+.program-section {
+  margin-top: 1.6rem;
+}
+
+.program-section:first-child {
+  margin-top: 0;
+}
+
+.program-section p,
+.program-section li {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.program-section ul {
+  margin: 0.75rem 0 0;
+}
+
+.program-sidebar {
+  display: grid;
+  gap: 1rem;
+}
+
+.program-sidebar-card {
+  background: var(--bg-elevated);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+/* =========================================================
+   11) Media Placeholders (optional)
+   ========================================================= */
+
+.media-placeholder {
+  margin: var(--space-7) 0;
+}
+
+.image-placeholder {
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-7) var(--space-4);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  text-align: center;
+}
+
+.image-placeholder span {
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  color: var(--color-primary);
+}
+
+.image-placeholder p {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   12) Footer
+   ========================================================= */
+
+footer,
+.site-footer {
+  background: var(--bg-elevated);
+  padding: var(--space-7) var(--space-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  border-top: 1px solid var(--border);
+}
