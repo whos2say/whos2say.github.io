@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 
-<html data-theme="dark" lang="en">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <title>Community Integration &amp; Advocacy | Who’s to Say ? Foundation</title>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="Supported community engagement plus creative advocacy and storytelling to help participants build voice and belonging." name="description"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script>
+  (function () {
+    try {
+      var key = "wts-theme";
+      var saved = localStorage.getItem(key);
+      var theme = (saved === "light" || saved === "dark") ? saved : null;
+      var system = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", theme || system || "dark");
+    } catch (e) {}
+  })();
+</script>
 <link href="/assets/css/styles.css" rel="stylesheet"/>
 <script defer="" src="/assets/js/theme.js"></script>
 </head>
