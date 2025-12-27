@@ -221,11 +221,9 @@ li {
   text-decoration: none;
 }
 
-.brand-logo {
-  height: 44px;
-  width: auto;
-  display: block;
-}
+.brand-logo { height: 56px; width: auto; }
+@media (max-width: 640px) { .brand-logo { height: 46px; } }
+
 
 .site-nav {
   display: flex;
@@ -261,6 +259,40 @@ li {
   background: color-mix(in srgb, var(--color-primary) 18%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
 }
+
+.nav-dropdown { position: relative; }
+.nav-dropdown > summary { list-style: none; }
+.nav-dropdown > summary::-webkit-details-marker { display: none; }
+
+.nav-submenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 220px;
+  padding: 0.6rem;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-main) 12%, transparent);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  display: grid;
+  gap: 0.25rem;
+  z-index: 100;
+}
+
+.nav-sublink {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  color: color-mix(in srgb, var(--text-main) 78%, transparent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.nav-sublink:hover {
+  background: color-mix(in srgb, var(--text-main) 10%, transparent);
+}
+
 
 /* Mobile header keeps clean */
 @media (max-width: 900px) {
