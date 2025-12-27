@@ -1,6 +1,9 @@
-// Who's to Say ? Foundation — Theme Toggle (Pro v2)
-// Adds:
-// - Logo swapping via data-logo-light / data-logo-dark on .brand-logo
+// Who's to Say ? Foundation — Theme + Nav (Pro v3)
+// Includes:
+// - Theme toggle with persistence and system fallback
+// - Theme-aware logo swapping via data-logo-light / data-logo-dark on .brand-logo
+// - Programs dropdown: hover-open on desktop, pin-open on click, close on outside click / Esc
+// - Pathways ribbon: auto-highlights active page
 
 (function () {
   const STORAGE_KEY = "wts-theme";
@@ -31,48 +34,35 @@
   }
 
   function updateToggleUI(theme) {
-    const btns = document.querySelectorAll(".theme-toggle");
-    if (!btns.length) return;
-    btns.forEach((btn) => {
+    document.querySelectorAll(".theme-toggle").forEach((btn) => {
       btn.textContent = theme === "dark" ? "🌙" : "☀️";
       btn.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
       btn.setAttribute("title", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
     });
   }
 
-  function apply(theme) {
+  function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
     updateToggleUI(theme);
     updateLogo(theme);
-
-    try {
-      root.dispatchEvent(new CustomEvent("wts-theme-change", { detail: { theme } }));
-    } catch (e) {}
+    try { root.dispatchEvent(new CustomEvent("wts-theme-change", { detail: { theme } })); } catch (e) {}
   }
 
   function setUserTheme(theme) {
     localStorage.setItem(STORAGE_KEY, theme);
-    apply(theme);
+    applyTheme(theme);
   }
 
-  function clearUserTheme() {
-    localStorage.removeItem(STORAGE_KEY);
-    apply(systemTheme());
-  }
-
-  function initEarly() {
+  function initThemeEarly() {
     const initial = savedTheme() || root.getAttribute("data-theme") || systemTheme();
-    apply(initial);
+    applyTheme(initial);
   }
 
-  function bindToggles() {
-    const btns = document.querySelectorAll(".theme-toggle");
-    if (!btns.length) return;
-    btns.forEach((btn) => {
+  function bindThemeToggle() {
+    document.querySelectorAll(".theme-toggle").forEach((btn) => {
       btn.addEventListener("click", () => {
         const current = root.getAttribute("data-theme") || "dark";
-        const next = current === "dark" ? "light" : "dark";
-        setUserTheme(next);
+        setUserTheme(current === "dark" ? "light" : "dark");
       });
     });
   }
@@ -80,20 +70,62 @@
   function bindSystemListener() {
     if (!window.matchMedia) return;
     const mq = window.matchMedia("(prefers-color-scheme: light)");
-    const handler = () => {
-      if (!savedTheme()) apply(systemTheme());
-    };
-    try { mq.addEventListener("change", handler); }
-    catch (e) { try { mq.addListener(handler); } catch (e2) {} }
+    const handler = () => { if (!savedTheme()) applyTheme(systemTheme()); };
+    try { mq.addEventListener("change", handler); } catch (e) { try { mq.addListener(handler); } catch (e2) {} }
   }
 
-  window.WTSTheme = { set: setUserTheme, reset: clearUserTheme, get: () => (root.getAttribute("data-theme") || "dark") };
+  // Programs dropdown behavior
+  function bindDropdowns() {
+    const dropdowns = document.querySelectorAll("[data-dropdown]");
+    if (!dropdowns.length) return;
 
-  initEarly();
+    function closeAll(except) {
+      dropdowns.forEach((dd) => {
+        if (dd === except) return;
+        dd.classList.remove("is-open");
+        const btn = dd.querySelector(".nav-trigger");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    dropdowns.forEach((dd) => {
+      const btn = dd.querySelector(".nav-trigger");
+      if (!btn) return;
+
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const willOpen = !dd.classList.contains("is-open");
+        closeAll(dd);
+        dd.classList.toggle("is-open", willOpen);
+        btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      });
+    });
+
+    document.addEventListener("click", () => closeAll(null));
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") closeAll(null);
+    });
+  }
+
+  // Pathways ribbon auto-active
+  function markActivePathwayChip() {
+    const here = window.location.pathname.replace(/\/+$/, "");
+    document.querySelectorAll(".pathways-ribbon .pathway-chip").forEach((a) => {
+      const href = (a.getAttribute("href") || "").replace(/\/+$/, "");
+      a.classList.toggle("is-active", href === here);
+    });
+  }
+
+  window.WTSTheme = { set: setUserTheme, get: () => (root.getAttribute("data-theme") || "dark") };
+
+  initThemeEarly();
 
   document.addEventListener("DOMContentLoaded", function () {
-    initEarly();
-    bindToggles();
+    initThemeEarly();
+    bindThemeToggle();
     bindSystemListener();
+    bindDropdowns();
+    markActivePathwayChip();
   });
 })();
