@@ -815,3 +815,95 @@ h1{
     max-width: 1240px;
   }
 }
+<!-- PROGRAM GRID -->
+<main class="programs-wrapper">
+  <header class="section-heading">
+    <h2>The Possibility Paths</h2>
+    <p>
+      Participants can explore one or multiple pathways depending on their interests,
+      strengths, and goals.
+    </p>
+  </header>
+
+  <div class="program-grid">
+
+    <!-- Digital -->
+    <a href="/programs/digital-content-creator.html"
+       class="program-card"
+       data-path="digital">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Modern_podcast_Studio_setup.png');"></div>
+      <div class="card-content">
+        <span class="program-label">Digital Path</span>
+        <h3>Digital Content Creator Pathways</h3>
+        <p>Video, design, photography, and production skills built one project at a time.</p>
+      </div>
+    </a>
+
+    <!-- Sports -->
+    <a href="/programs/whos-to-say-sports.html"
+       class="program-card"
+       data-path="sports">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Turkey-Bowl.jpg');"></div>
+      <div class="card-content">
+        <span class="program-label">Sports Path</span>
+        <h3>Who’s to Say Sports</h3>
+        <p>Challenger Sports, fitness, outings, and sports storytelling.</p>
+      </div>
+    </a>
+
+    <!-- Independence (was Life) -->
+    <a href="/programs/life-skills-independent-living.html"
+       class="program-card"
+       data-path="life">
+      <div class="card-media"
+           style="background-image:url('/assets/images/cooking1.png');"></div>
+      <div class="card-content">
+        <span class="program-label">Independence Path</span>
+        <h3>Life Skills & Independent Living</h3>
+        <p>Everyday skills for confidence, independence, and routine.</p>
+      </div>
+    </a>
+
+    <!-- Community -->
+    <a href="/programs/community-integration-advocacy.html"
+       class="program-card"
+       data-path="community">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Matt-Presentation.png');"></div>
+      <div class="card-content">
+        <span class="program-label">Community Path</span>
+        <h3>Community Integration & Advocacy</h3>
+        <p>Show up, speak up, and be seen through supported community engagement.</p>
+      </div>
+    </a>
+
+    <!-- Art (was Maker) -->
+    <a href="/programs/maker-market-events.html"
+       class="program-card"
+       data-path="maker">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Maker_space.png');"></div>
+      <div class="card-content">
+        <span class="program-label">Art Path</span>
+        <h3>Art Studio & Events</h3>
+        <p>Create, share, and celebrate work in supportive settings.</p>
+      </div>
+    </a>
+
+    <!-- Entertainment -->
+    <a href="/programs/entertainment-pathways.html"
+       class="program-card"
+       data-path="entertainment">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Matt-Teleprompter.JPG');"></div>
+      <div class="card-content">
+        <span class="program-label">Entertainment Path</span>
+        <h3>Entertainment Pathways</h3>
+        <p>On-camera confidence, acting basics, and voice work.</p>
+      </div>
+    </a>
+
+  </div>
+</main>
