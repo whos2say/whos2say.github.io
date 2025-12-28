@@ -4,13 +4,19 @@
   <meta charset="UTF-8" />
   <title>Programs | Who’s to Say ? Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Explore The Possibility Paths — interest-driven programs designed to build confidence, skills, and community." />
 
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/styles.css?v=20251227-1">
 
-  <!-- Load JS with defer so it runs after parse, but theme is also applied early inside the script -->
-  <script src="/assets/js/theme.js" defer></script>
+  <!-- Theme init (prevents flash + ensures correct logo/colors on first paint) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem("wts-theme");
+      const theme = saved || document.documentElement.dataset.theme || "dark";
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
 </head>
 
 <body>
@@ -19,15 +25,19 @@
   <div class="header-inner">
 
     <a href="/" class="brand" aria-label="Who’s to Say ? Foundation Home">
-      <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo" />
-      <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo" />
+      <!-- Dual logos (theme swap handled by CSS) -->
+      <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
+      <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
     </a>
 
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/" class="nav-link">Home</a>
 
+      <!-- Programs dropdown (hover + click stays open) -->
       <div class="nav-item has-submenu" data-submenu="programs">
-        <a href="/programs.html" class="nav-link" aria-haspopup="true" aria-expanded="false">Programs</a>
+        <a href="/programs.html" class="nav-link active" aria-haspopup="true" aria-expanded="false">
+          Programs
+        </a>
 
         <div class="nav-submenu" role="menu" aria-label="Programs submenu">
           <a class="submenu-link" role="menuitem" href="/programs/digital-content-creator.html">Digital Path</a>
@@ -50,6 +60,8 @@
   </div>
 </header>
 
+
+<!-- HERO -->
 <section class="programs-hero">
   <div class="hero-inner">
     <h1>Who’s to Say What’s Possible.</h1>
@@ -60,15 +72,25 @@
   </div>
 </section>
 
+
+<!-- PROGRAM GRID -->
 <main class="programs-wrapper">
   <header class="section-heading">
     <h2>The Possibility Paths</h2>
-    <p>Participants can explore one or multiple pathways depending on their interests, strengths, and goals.</p>
+    <p>
+      Participants can explore one or multiple pathways depending on their interests,
+      strengths, and goals.
+    </p>
   </header>
 
   <div class="program-grid">
-    <a href="/programs/digital-content-creator.html" class="program-card" data-path="digital">
-      <div class="card-media" style="background-image:url('/assets/images/Modern_podcast_Studio_setup.png');"></div>
+
+    <!-- Digital -->
+    <a href="/programs/digital-content-creator.html"
+       class="program-card"
+       data-path="digital">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Modern_podcast_Studio_setup.png');"></div>
       <div class="card-content">
         <span class="program-label">Digital Path</span>
         <h3>Digital Content Creator Pathways</h3>
@@ -76,8 +98,12 @@
       </div>
     </a>
 
-    <a href="/programs/whos-to-say-sports.html" class="program-card" data-path="sports">
-      <div class="card-media" style="background-image:url('/assets/images/Turkey-Bowl.jpg');"></div>
+    <!-- Sports -->
+    <a href="/programs/whos-to-say-sports.html"
+       class="program-card"
+       data-path="sports">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Turkey-Bowl.jpg');"></div>
       <div class="card-content">
         <span class="program-label">Sports Path</span>
         <h3>Who’s to Say Sports</h3>
@@ -85,43 +111,61 @@
       </div>
     </a>
 
-    <a href="/programs/life-skills-independent-living.html" class="program-card" data-path="life">
-      <div class="card-media" style="background-image:url('/assets/images/cooking1.png');"></div>
+    <!-- Independence (was Life) -->
+    <a href="/programs/life-skills-independent-living.html"
+       class="program-card"
+       data-path="life">
+      <div class="card-media"
+           style="background-image:url('/assets/images/cooking1.png');"></div>
       <div class="card-content">
         <span class="program-label">Independence Path</span>
-        <h3>Life Skills &amp; Independent Living</h3>
+        <h3>Life Skills & Independent Living</h3>
         <p>Everyday skills for confidence, independence, and routine.</p>
       </div>
     </a>
 
-    <a href="/programs/community-integration-advocacy.html" class="program-card" data-path="community">
-      <div class="card-media" style="background-image:url('/assets/images/Matt-Presentation.png');"></div>
+    <!-- Community -->
+    <a href="/programs/community-integration-advocacy.html"
+       class="program-card"
+       data-path="community">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Matt-Presentation.png');"></div>
       <div class="card-content">
         <span class="program-label">Community Path</span>
-        <h3>Community Integration &amp; Advocacy</h3>
+        <h3>Community Integration & Advocacy</h3>
         <p>Show up, speak up, and be seen through supported community engagement.</p>
       </div>
     </a>
 
-    <a href="/programs/maker-market-events.html" class="program-card" data-path="maker">
-      <div class="card-media" style="background-image:url('/assets/images/Maker_space.png');"></div>
+    <!-- Art (was Maker) -->
+    <a href="/programs/maker-market-events.html"
+       class="program-card"
+       data-path="maker">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Maker_space.png');"></div>
       <div class="card-content">
         <span class="program-label">Art Path</span>
-        <h3>Art Studio &amp; Events</h3>
+        <h3>Art Studio & Events</h3>
         <p>Create, share, and celebrate work in supportive settings.</p>
       </div>
     </a>
 
-    <a href="/programs/entertainment-pathways.html" class="program-card" data-path="entertainment">
-      <div class="card-media" style="background-image:url('/assets/images/Matt-Teleprompter.JPG');"></div>
+    <!-- Entertainment -->
+    <a href="/programs/entertainment-pathways.html"
+       class="program-card"
+       data-path="entertainment">
+      <div class="card-media"
+           style="background-image:url('/assets/images/Matt-Teleprompter.JPG');"></div>
       <div class="card-content">
         <span class="program-label">Entertainment Path</span>
         <h3>Entertainment Pathways</h3>
         <p>On-camera confidence, acting basics, and voice work.</p>
       </div>
     </a>
+
   </div>
 </main>
+
 
 <footer class="site-footer">
   © <span id="year"></span> Who’s to Say ? Foundation
@@ -130,6 +174,9 @@
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+
+<!-- Use the shared theme + submenu behavior -->
+<script src="/assets/js/theme.js"></script>
 
 </body>
 </html>
