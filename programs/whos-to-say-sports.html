@@ -23,38 +23,35 @@
 </head>
 <body>
 <header class="site-header">
-<div class="header-inner">
-<a aria-label="Who’s to Say ? Foundation Home" class="brand" href="/">
-<img alt="Who’s to Say ? Foundation logo" class="brand-logo" data-logo-dark="/assets/images/logo-white-dark.png" data-logo-light="/assets/images/logo-black-light.png" src="/assets/images/logo-white-dark.png"/>
-</a>
-<nav aria-label="Primary navigation" class="site-nav">
-<a class="nav-link" href="/">Home</a>
-<div class="nav-dropdown" data-dropdown="">
-<button aria-expanded="false" class="nav-link nav-trigger" type="button">
-          Programs <span aria-hidden="true" class="chev">▾</span>
-</button>
-<div aria-label="Programs menu" class="nav-submenu" role="menu">
-<a class="nav-sublink" href="/programs/digital-content-creator.html">Digital Path</a>
-<a class="nav-sublink" href="/programs/whos-to-say-sports.html">Sports Path</a>
-<a class="nav-sublink" href="/programs/life-skills-independent-living.html">Independence Path</a>
-<a class="nav-sublink" href="/programs/community-integration-advocacy.html">Community Path</a>
-<a class="nav-sublink" href="/programs/maker-market-events.html">Art Path</a>
-<a class="nav-sublink" href="/programs/entertainment-pathways.html">Entertainment Path</a>
-</div>
-</div>
-<a class="nav-link" href="/#contact">Contact</a>
-</nav>
-<button aria-label="Toggle light and dark mode" class="theme-toggle" type="button">🌙</button>
-</div>
+  <div class="header-inner">
+    <a href="/" class="brand" aria-label="Who’s to Say ? Foundation Home">
+      <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
+      <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
+    </a>
+
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/programs.html" class="nav-link active">Programs</a>
+      <a href="/donate.html" class="nav-link">Donate</a>
+      <a href="/#contact" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" aria-label="Toggle light and dark mode">🌙</button>
+    </div>
+  </div>
 </header>
 <nav aria-label="Pathways" class="pathways-ribbon pathways-ribbon--sticky">
 <span class="pathways-ribbon-label">Explore the Possibility Paths</span>
+<div class="pathways-chip-grid">
 <a class="pathway-chip" data-path="digital" href="/programs/digital-content-creator.html">Digital</a>
 <a class="pathway-chip" data-path="sports" href="/programs/whos-to-say-sports.html">Sports</a>
 <a class="pathway-chip" data-path="life" href="/programs/life-skills-independent-living.html">Independence</a>
 <a class="pathway-chip" data-path="community" href="/programs/community-integration-advocacy.html">Community</a>
 <a class="pathway-chip" data-path="maker" href="/programs/maker-market-events.html">Art</a>
 <a class="pathway-chip" data-path="entertainment" href="/programs/entertainment-pathways.html">Entertainment</a>
+
+</div>
 </nav>
 <main class="program-page" style="--program-accent: var(--path-sports);">
 <section class="program-hero">
