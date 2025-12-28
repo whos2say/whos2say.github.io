@@ -1,26 +1,16 @@
 // Who's to Say ? Foundation — Theme + Nav (Pro v4)
-// Includes:
-// - Theme toggle with persistence and system fallback
-// - Theme-aware logo handling (works with single logo + data attrs OR dual logos via CSS)
-// - Programs dropdown: hover-open on desktop, pin-open on click, close on outside click / Esc
-// - Pathways ribbon: auto-highlights active page
+// - Theme toggle with persistence + system fallback
+// - Dropdown: hover-open on desktop, pin-open on click, close on outside click / Esc
+// - Accordion helper for program pages
 
 (function () {
   const STORAGE_KEY = "wts-theme";
   const root = document.documentElement;
 
-  // -------------------------
-  // THEME
-  // -------------------------
   function systemTheme() {
     try {
-      return window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark";
-    } catch (e) {
-      return "dark";
-    }
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    } catch (e) { return "dark"; }
   }
 
   function savedTheme() {
@@ -28,43 +18,18 @@
     return v === "light" || v === "dark" ? v : null;
   }
 
-  // Works if you have ONE logo with data-logo-light/dark.
-  // If you're using dual logos (logo-dark/logo-light) via CSS, this does nothing (and that's fine).
-  function updateLogo(theme) {
-    const logos = document.querySelectorAll(".brand-logo");
-    if (!logos.length) return;
-
-    logos.forEach((logo) => {
-      const light = logo.getAttribute("data-logo-light");
-      const dark = logo.getAttribute("data-logo-dark");
-      if (!light || !dark) return; // dual-logo CSS approach -> no swap needed
-      logo.src = theme === "light" ? light : dark;
-    });
-  }
-
   function updateToggleUI(theme) {
     document.querySelectorAll(".theme-toggle").forEach((btn) => {
       btn.textContent = theme === "dark" ? "🌙" : "☀️";
-      btn.setAttribute(
-        "aria-label",
-        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-      );
-      btn.setAttribute(
-        "title",
-        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-      );
+      btn.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+      btn.setAttribute("title", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
     });
   }
 
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
     updateToggleUI(theme);
-    updateLogo(theme);
-    try {
-      root.dispatchEvent(
-        new CustomEvent("wts-theme-change", { detail: { theme } })
-      );
-    } catch (e) {}
+    try { root.dispatchEvent(new CustomEvent("wts-theme-change", { detail: { theme } })); } catch (e) {}
   }
 
   function setUserTheme(theme) {
@@ -72,9 +37,8 @@
     applyTheme(theme);
   }
 
-  function initThemeEarly() {
-    const initial =
-      savedTheme() || root.getAttribute("data-theme") || systemTheme();
+  function initTheme() {
+    const initial = savedTheme() || root.getAttribute("data-theme") || systemTheme();
     applyTheme(initial);
   }
 
@@ -90,178 +54,63 @@
   function bindSystemListener() {
     if (!window.matchMedia) return;
     const mq = window.matchMedia("(prefers-color-scheme: light)");
-    const handler = () => {
-      if (!savedTheme()) applyTheme(systemTheme());
-    };
-    try {
-      mq.addEventListener("change", handler);
-    } catch (e) {
-      try {
-        mq.addListener(handler);
-      } catch (e2) {}
-    }
+    const handler = () => { if (!savedTheme()) applyTheme(systemTheme()); };
+    try { mq.addEventListener("change", handler); } catch (e) { try { mq.addListener(handler); } catch (e2) {} }
   }
 
-  // -------------------------
-  // DROPDOWNS (Programs)
-  // Supports:
-  // 1) legacy: [data-dropdown] + .nav-trigger
-  // 2) current: .has-submenu + .nav-submenu (trigger = .nav-link inside)
-  // -------------------------
-  function isDesktopHover() {
-    // Only hover-open if the device supports hover and we're not in a narrow layout
-    try {
-      return (
-        window.matchMedia &&
-        window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
-        window.matchMedia("(min-width: 900px)").matches
-      );
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function getDropdowns() {
-    const legacy = Array.from(document.querySelectorAll("[data-dropdown]"));
-    const current = Array.from(document.querySelectorAll(".has-submenu"));
-    // de-dupe
-    const set = new Set([...legacy, ...current]);
-    return Array.from(set);
-  }
-
-  function getTrigger(dd) {
-    return (
-      dd.querySelector(".nav-trigger") ||
-      dd.querySelector(".nav-link") ||
-      dd.querySelector("a")
-    );
-  }
-
-  function getMenu(dd) {
-    return dd.querySelector(".nav-submenu") || dd.querySelector("[role='menu']");
-  }
-
-  function closeDropdown(dd) {
-    dd.classList.remove("is-open");
-    dd.classList.remove("is-pinned");
-    const btn = getTrigger(dd);
-    if (btn) btn.setAttribute("aria-expanded", "false");
-  }
-
-  function openDropdown(dd, pinned = false) {
-    dd.classList.add("is-open");
-    dd.classList.toggle("is-pinned", pinned);
-    const btn = getTrigger(dd);
-    if (btn) btn.setAttribute("aria-expanded", "true");
-  }
-
-  function closeAll(except) {
-    getDropdowns().forEach((dd) => {
-      if (dd === except) return;
-      closeDropdown(dd);
-    });
-  }
-
+  // Dropdowns: expects .nav-dropdown[data-dropdown] with a button.nav-trigger inside
   function bindDropdowns() {
-    const dropdowns = getDropdowns();
+    const dropdowns = document.querySelectorAll(".nav-dropdown[data-dropdown]");
     if (!dropdowns.length) return;
 
+    function closeAll(except) {
+      dropdowns.forEach((dd) => {
+        if (dd === except) return;
+        dd.classList.remove("is-open");
+        const btn = dd.querySelector(".nav-trigger");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+    }
+
     dropdowns.forEach((dd) => {
-      const trigger = getTrigger(dd);
-      const menu = getMenu(dd);
-      if (!trigger || !menu) return;
+      const btn = dd.querySelector(".nav-trigger");
+      if (!btn) return;
 
-      // a11y baseline
-      trigger.setAttribute("aria-haspopup", "true");
-      trigger.setAttribute(
-        "aria-expanded",
-        dd.classList.contains("is-open") ? "true" : "false"
-      );
-
-      // CLICK pins open
-      trigger.addEventListener("click", (e) => {
-        // If trigger is actually linking to /programs.html, we still want pin-open behavior.
-        // Prevent default only when we are toggling open/close.
-        e.preventDefault();
+      btn.addEventListener("click", (e) => {
         e.stopPropagation();
-
-        const isOpen = dd.classList.contains("is-open");
-        const isPinned = dd.classList.contains("is-pinned");
-
-        if (!isOpen) {
-          closeAll(dd);
-          openDropdown(dd, true);
-          return;
-        }
-
-        // open + pinned -> close
-        if (isPinned) {
-          closeDropdown(dd);
-          return;
-        }
-
-        // open but not pinned -> pin it
-        openDropdown(dd, true);
-      });
-
-      // HOVER opens on desktop (unless pinned)
-      dd.addEventListener("mouseenter", () => {
-        if (!isDesktopHover()) return;
-        if (dd.classList.contains("is-pinned")) return;
+        const willOpen = !dd.classList.contains("is-open");
         closeAll(dd);
-        openDropdown(dd, false);
-      });
-
-      dd.addEventListener("mouseleave", () => {
-        if (!isDesktopHover()) return;
-        if (dd.classList.contains("is-pinned")) return;
-        closeDropdown(dd);
+        dd.classList.toggle("is-open", willOpen);
+        btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+        // button trigger: always prevent page nav
+        e.preventDefault();
       });
     });
 
-    // Outside click closes (unless pinned? We DO close even pinned on outside click — expected UX)
     document.addEventListener("click", () => closeAll(null));
+    document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") closeAll(null); });
+  }
 
-    // Esc closes all
-    document.addEventListener("keydown", (ev) => {
-      if (ev.key === "Escape") closeAll(null);
-    });
-
-    // If layout changes (resize), unpin to avoid weird states
-    window.addEventListener("resize", () => {
-      if (!isDesktopHover()) {
-        // on mobile/tablet: keep state but remove hover-open assumptions
-        // no-op
-      }
+  // Accordions: .acc-item contains button.acc-btn and .acc-panel
+  function bindAccordions() {
+    document.querySelectorAll(".acc-item .acc-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = btn.closest(".acc-item");
+        if (!item) return;
+        item.classList.toggle("is-open");
+      });
     });
   }
 
-  // -------------------------
-  // Pathways ribbon auto-active
-  // -------------------------
-  function markActivePathwayChip() {
-    const here = window.location.pathname.replace(/\/+$/, "");
-    document.querySelectorAll(".pathways-ribbon .pathway-chip").forEach((a) => {
-      const href = (a.getAttribute("href") || "").replace(/\/+$/, "");
-      a.classList.toggle("is-active", href === here);
-    });
-  }
+  window.WTSTheme = { set: setUserTheme, get: () => (root.getAttribute("data-theme") || "dark") };
 
-  // expose a minimal API
-  window.WTSTheme = {
-    set: setUserTheme,
-    get: () => root.getAttribute("data-theme") || "dark",
-  };
-
-  // init before paint if possible
-  initThemeEarly();
+  initTheme();
 
   document.addEventListener("DOMContentLoaded", function () {
-    initThemeEarly();
+    initTheme();
     bindThemeToggle();
     bindSystemListener();
     bindDropdowns();
-    markActivePathwayChip();
+    bindAccordions();
   });
 })();
-
