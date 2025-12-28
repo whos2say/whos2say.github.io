@@ -5,47 +5,50 @@
   <title>Programs | Who’s to Say ? Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
+
+  <!-- Theme init (prevents flash + ensures correct logo/colors on first paint) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem("wts-theme");
+      const theme = saved || document.documentElement.dataset.theme || "dark";
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
 </head>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.querySelector(".theme-toggle");
-    const root = document.documentElement;
-
-    if (!toggle) {
-      console.warn("Theme toggle button not found");
-      return;
-    }
-
-    // Initialize theme
-    const savedTheme = localStorage.getItem("wts-theme");
-    const initialTheme = savedTheme || root.dataset.theme || "dark";
-
-    root.dataset.theme = initialTheme;
-    toggle.textContent = initialTheme === "dark" ? "🌙" : "☀️";
-
-    toggle.addEventListener("click", () => {
-      const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
-      root.dataset.theme = nextTheme;
-      localStorage.setItem("wts-theme", nextTheme);
-      toggle.textContent = nextTheme === "dark" ? "🌙" : "☀️";
-    });
-  });
-</script>
-
 
 <body>
 
 <header class="site-header">
   <div class="header-inner">
+
     <a href="/" class="brand" aria-label="Who’s to Say ? Foundation Home">
-      <img class="brand-logo" src="/assets/images/pathway-BW.png" alt="Who’s to Say ? Foundation logo" />
+      <!-- Dual logos (theme swap handled by CSS) -->
+      <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
+      <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
     </a>
 
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/" class="nav-link">Home</a>
-      <a href="/programs.html" class="nav-link active">Programs</a>
+
+      <!-- Programs dropdown (hover + click stays open) -->
+      <div class="nav-item has-submenu" data-submenu="programs">
+        <a href="/programs.html" class="nav-link active" aria-haspopup="true" aria-expanded="false">
+          Programs
+        </a>
+
+        <div class="nav-submenu" role="menu" aria-label="Programs submenu">
+          <a class="submenu-link" role="menuitem" href="/programs/digital-content-creator.html">Digital Path</a>
+          <a class="submenu-link" role="menuitem" href="/programs/whos-to-say-sports.html">Sports Path</a>
+          <a class="submenu-link" role="menuitem" href="/programs/life-skills-independent-living.html">Independence Path</a>
+          <a class="submenu-link" role="menuitem" href="/programs/community-integration-advocacy.html">Community Path</a>
+          <a class="submenu-link" role="menuitem" href="/programs/maker-market-events.html">Art Path</a>
+          <a class="submenu-link" role="menuitem" href="/programs/entertainment-pathways.html">Entertainment Path</a>
+        </div>
+      </div>
+
       <a href="/donate.html" class="nav-link">Donate</a>
       <a href="/#contact" class="nav-link">Contact</a>
     </nav>
@@ -53,6 +56,7 @@
     <div class="header-actions">
       <button class="theme-toggle" type="button" aria-label="Toggle light and dark mode">🌙</button>
     </div>
+
   </div>
 </header>
 
@@ -67,6 +71,7 @@
     </p>
   </div>
 </section>
+
 
 <!-- PROGRAM GRID -->
 <main class="programs-wrapper">
@@ -106,14 +111,14 @@
       </div>
     </a>
 
-    <!-- Life -->
+    <!-- Independence (was Life) -->
     <a href="/programs/life-skills-independent-living.html"
        class="program-card"
        data-path="life">
       <div class="card-media"
            style="background-image:url('/assets/images/cooking1.png');"></div>
       <div class="card-content">
-        <span class="program-label">Life Path</span>
+        <span class="program-label">Independence Path</span>
         <h3>Life Skills & Independent Living</h3>
         <p>Everyday skills for confidence, independence, and routine.</p>
       </div>
@@ -132,15 +137,15 @@
       </div>
     </a>
 
-    <!-- Maker -->
+    <!-- Art (was Maker) -->
     <a href="/programs/maker-market-events.html"
        class="program-card"
        data-path="maker">
       <div class="card-media"
            style="background-image:url('/assets/images/Maker_space.png');"></div>
       <div class="card-content">
-        <span class="program-label">Maker Path</span>
-        <h3>Maker Market & Events</h3>
+        <span class="program-label">Art Path</span>
+        <h3>Art Studio & Events</h3>
         <p>Create, share, and celebrate work in supportive settings.</p>
       </div>
     </a>
@@ -161,6 +166,7 @@
   </div>
 </main>
 
+
 <footer class="site-footer">
   © <span id="year"></span> Who’s to Say ? Foundation
 </footer>
@@ -168,6 +174,9 @@
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+
+<!-- Use the shared theme + submenu behavior -->
+<script src="/assets/js/theme.js"></script>
 
 </body>
 </html>
