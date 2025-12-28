@@ -5,27 +5,15 @@
   <title>Programs | Who’s to Say ? Foundation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/styles.css?v=20251227-1">
-
-  <!-- Theme init (prevents flash + ensures correct logo/colors on first paint) -->
-  <script>
-    (function () {
-      const saved = localStorage.getItem("wts-theme");
-      const theme = saved || document.documentElement.dataset.theme || "dark";
-      document.documentElement.dataset.theme = theme;
-    })();
-  </script>
+  <link rel="stylesheet" href="/assets/css/styles.css?v=7">
 </head>
 
 <body>
 
 <header class="site-header">
   <div class="header-inner">
-
     <a href="/" class="brand" aria-label="Who’s to Say ? Foundation Home">
-      <!-- Dual logos (theme swap handled by CSS) -->
       <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
       <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
     </a>
@@ -33,19 +21,18 @@
     <nav class="site-nav" aria-label="Primary navigation">
       <a href="/" class="nav-link">Home</a>
 
-      <!-- Programs dropdown (hover + click stays open) -->
-     <div class="nav-item has-submenu" data-submenu="programs" data-dropdown>
-  <a href="/programs.html" class="nav-link nav-trigger active" aria-haspopup="true" aria-expanded="false">
-    Programs
-  </a>
-
-        <div class="nav-submenu" role="menu" aria-label="Programs submenu">
-          <a class="submenu-link" role="menuitem" href="/programs/digital-content-creator.html">Digital Path</a>
-          <a class="submenu-link" role="menuitem" href="/programs/whos-to-say-sports.html">Sports Path</a>
-          <a class="submenu-link" role="menuitem" href="/programs/life-skills-independent-living.html">Independence Path</a>
-          <a class="submenu-link" role="menuitem" href="/programs/community-integration-advocacy.html">Community Path</a>
-          <a class="submenu-link" role="menuitem" href="/programs/maker-market-events.html">Art Path</a>
-          <a class="submenu-link" role="menuitem" href="/programs/entertainment-pathways.html">Entertainment Path</a>
+      <div class="nav-dropdown" data-dropdown>
+        <button class="nav-link nav-trigger active" type="button" aria-expanded="false">
+          Programs <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="nav-submenu" role="menu" aria-label="Programs menu">
+          <a class="nav-sublink" role="menuitem" href="/programs.html">All Programs</a>
+          <a class="nav-sublink" role="menuitem" href="/programs/digital-content-creator.html">Digital Path</a>
+          <a class="nav-sublink" role="menuitem" href="/programs/whos-to-say-sports.html">Sports Path</a>
+          <a class="nav-sublink" role="menuitem" href="/programs/life-skills-independent-living.html">Independence Path</a>
+          <a class="nav-sublink" role="menuitem" href="/programs/community-integration-advocacy.html">Community Path</a>
+          <a class="nav-sublink" role="menuitem" href="/programs/maker-market-events.html">Art Path</a>
+          <a class="nav-sublink" role="menuitem" href="/programs/entertainment-pathways.html">Entertainment Path</a>
         </div>
       </div>
 
@@ -56,12 +43,9 @@
     <div class="header-actions">
       <button class="theme-toggle" type="button" aria-label="Toggle light and dark mode">🌙</button>
     </div>
-
   </div>
 </header>
 
-
-<!-- HERO -->
 <section class="programs-hero">
   <div class="hero-inner">
     <h1>Who’s to Say What’s Possible.</h1>
@@ -71,7 +55,6 @@
     </p>
   </div>
 </section>
-
 
 <!-- PROGRAM GRID -->
 <main class="programs-wrapper">
@@ -166,17 +149,11 @@
   </div>
 </main>
 
-
 <footer class="site-footer">
   © <span id="year"></span> Who’s to Say ? Foundation
 </footer>
 
-<script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>
-
-<!-- Use the shared theme + submenu behavior -->
-<script src="/assets/js/theme.js"></script>
-
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script src="/assets/js/theme.js?v=7" defer></script>
 </body>
 </html>
