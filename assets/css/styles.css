@@ -366,9 +366,10 @@ h1{
   margin: var(--space-7) auto 0;
   padding: 0 5vw;
   display:grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 500px) minmax(0, 500px);
   gap: 1.75rem;
   align-items:start;
+  justify-content:center;
 }
 
 .program-section{
@@ -654,4 +655,153 @@ h1{
   padding: 1.75rem 5vw 2.25rem;
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   v6.2 Program Page Enhancements
+   - Sticky Pathways ribbon
+   - 60/40 layout
+   - Best-for inline
+   - Accordions for How It Works + DDD Summary
+   ========================================================= */
+
+:root{
+  --header-height: 76px; /* slightly larger best-practice header height */
+}
+
+/* Ensure header reserves consistent height */
+.header-inner{
+  min-height: var(--header-height);
+}
+
+/* Sticky pathways ribbon (under sticky header) */
+.pathways-ribbon--sticky{
+  position: sticky;
+  top: var(--header-height);
+  z-index: 40;
+  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--bg-main) 82%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+}
+
+/* Label + chips layout */
+.pathways-ribbon{
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.pathways-ribbon-label{
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--text-main) 78%, transparent);
+  margin-right: 0.25rem;
+}
+
+/* Best for under hero pills */
+.best-for-inline{
+  margin-top: 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+}
+.best-for-inline strong{
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+/* 60/40 Program shell */
+.program-shell--6040{
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 5vw var(--section-space);
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: clamp(1.25rem, 3vw, 2.25rem);
+  align-items: start;
+}
+
+/* Make inner pieces not fight the grid */
+.program-shell--6040 .program-content{
+  margin: 0;
+}
+.program-shell--6040 .program-sidebar{
+  margin: 0;
+  position: sticky;
+  top: calc(var(--header-height) + 72px); /* header + ribbon */
+  align-self: start;
+}
+
+/* Sidebar cards spacing */
+.program-sidebar{
+  display: grid;
+  gap: 1rem;
+}
+
+/* Accordions */
+.accordion-stack{
+  display: grid;
+  gap: 0.9rem;
+}
+
+.accordion{
+  background: var(--bg-elevated);
+  border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.accordion > summary{
+  list-style: none;
+  cursor: pointer;
+  padding: 1rem 1.05rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--text-main);
+}
+
+.accordion > summary::-webkit-details-marker{ display:none; }
+
+.accordion > summary::after{
+  content: "+";
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--text-main) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-main) 14%, transparent);
+  font-family: var(--font-body);
+  font-weight: 800;
+}
+
+.accordion[open] > summary::after{
+  content: "–";
+}
+
+.accordion-body{
+  padding: 0 1.05rem 1rem;
+  color: var(--text-muted);
+}
+.accordion-body p{ margin-top: 0.65rem; }
+.accordion-body ul{ margin: 0.6rem 0 0.25rem 1.1rem; }
+
+/* Responsive: stack columns */
+@media (max-width: 980px){
+  .program-shell--6040{
+    grid-template-columns: 1fr;
+  }
+  .program-shell--6040 .program-sidebar{
+    position: static;
+  }
+}
+
+/* Slightly wider content cards on desktop */
+@media (min-width: 1100px){
+  .program-shell--6040{
+    max-width: 1240px;
+  }
 }
