@@ -40,6 +40,7 @@
 
   /* Layout */
   --max-width: 1120px;
+  --page-width: 1240px; /* Program pages wider layout */
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 22px;
@@ -296,7 +297,7 @@ p { margin: 0; color: var(--text-muted); }
 
 /* Hero card */
 .program-hero{
-  max-width: var(--max-width);
+  max-width: var(--page-width);
   margin: var(--space-6) auto 0;
   padding: 0 5vw;
 }
@@ -362,11 +363,11 @@ h1{
 
 /* Content grid */
 .program-content{
-  max-width: var(--max-width);
+  max-width: var(--page-width);
   margin: var(--space-7) auto 0;
   padding: 0 5vw;
   display:grid;
-  grid-template-columns: minmax(0, 500px) minmax(0, 500px);
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   gap: 1.75rem;
   align-items:start;
   justify-content:center;
@@ -437,7 +438,7 @@ h1{
    ========================================================= */
 
 .pathways-ribbon{
-  max-width: var(--max-width);
+  max-width: var(--page-width);
   margin: var(--space-7) auto 0;
   padding: 0 5vw;
 }
