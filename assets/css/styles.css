@@ -363,14 +363,8 @@ h1{
 
 /* Content grid */
 .program-content{
-  max-width: var(--page-width);
-  margin: var(--space-7) auto 0;
-  padding: 0 5vw;
-  display:grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: 1.75rem;
-  align-items:start;
-  justify-content:center;
+  /* content column (left) */
+  min-width: 0;
 }
 
 .program-section{
@@ -711,12 +705,13 @@ h1{
 
 /* 60/40 Program shell */
 .program-shell--6040{
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 5vw var(--section-space);
+  /* 2-column layout: 60/40 */
+  max-width: var(--page-width);
+  margin: var(--space-7) auto 0;
+  padding: 0 5vw var(--space-8);
   display: grid;
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  gap: clamp(1.25rem, 3vw, 2.25rem);
+  gap: clamp(1.5rem, 2.2vw, 2.25rem);
   align-items: start;
 }
 
