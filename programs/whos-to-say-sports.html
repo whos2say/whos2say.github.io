@@ -6,56 +6,55 @@
 <title>Who’s to Say Sports | Who’s to Say ? Foundation</title>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="Challenger Sports, fitness, outings, and sports storytelling for participants who love sports." name="description"/>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Poppins:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<script>
-  (function () {
-    try {
-      var key = "wts-theme";
-      var saved = localStorage.getItem(key);
-      var theme = (saved === "light" || saved === "dark") ? saved : null;
-      var system = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", theme || system || "dark");
-    } catch (e) {}
-  })();
-</script>
-<link href="/assets/css/styles.css" rel="stylesheet"/>
-<script defer="" src="/assets/js/theme.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&amp;family=Poppins:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+
+<script src="/assets/js/theme.js"></script><link href="/assets/css/styles.css" rel="stylesheet"/>
+
 </head>
-<body>
+<body data-has-ribbon="true"><a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
-  <div class="header-inner">
-    <a href="/" class="brand" aria-label="Who’s to Say ? Foundation Home">
-      <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
-      <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
-    </a>
-
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/programs.html" class="nav-link active">Programs</a>
-      <a href="/donate.html" class="nav-link">Donate</a>
-      <a href="/#contact" class="nav-link">Contact</a>
-    </nav>
-
-    <div class="header-actions">
-      <button class="theme-toggle" type="button" aria-label="Toggle light and dark mode">🌙</button>
-    </div>
-  </div>
+<div class="header-inner">
+<a aria-label="Who’s to Say ? Foundation Home" class="brand" href="/">
+<img alt="Who’s to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+<img alt="Who’s to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a class="nav-link" data-nav="home" href="/">Home</a>
+<div class="nav-item has-submenu" data-submenu="programs">
+<a aria-expanded="false" aria-haspopup="true" class="nav-link" data-nav="programs" href="/programs.html">
+          Programs
+        </a>
+<div aria-label="Programs submenu" class="nav-submenu" role="menu">
+<a class="submenu-link" href="/programs/digital-content-creator.html" role="menuitem">Digital Path</a>
+<a class="submenu-link" href="/programs/whos-to-say-sports.html" role="menuitem">Sports Path</a>
+<a class="submenu-link" href="/programs/life-skills-independent-living.html" role="menuitem">Independence Path</a>
+<a class="submenu-link" href="/programs/community-integration-advocacy.html" role="menuitem">Community Path</a>
+<a class="submenu-link" href="/programs/maker-market-events.html" role="menuitem">Art Path</a>
+<a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+</div>
+</div>
+<a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+<a class="nav-link" href="/#contact">Contact</a>
+</nav>
+<div class="header-actions">
+<button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+</div>
+</div>
 </header>
 <nav aria-label="Pathways" class="pathways-ribbon pathways-ribbon--sticky">
 <span class="pathways-ribbon-label">Explore the Possibility Paths</span>
 <div class="pathways-chip-grid">
 <a class="pathway-chip" data-path="digital" href="/programs/digital-content-creator.html">Digital</a>
 <a class="pathway-chip" data-path="sports" href="/programs/whos-to-say-sports.html">Sports</a>
-<a class="pathway-chip" data-path="life" href="/programs/life-skills-independent-living.html">Independence</a>
+<a class="pathway-chip" data-path="independence" href="/programs/life-skills-independent-living.html">Independence</a>
 <a class="pathway-chip" data-path="community" href="/programs/community-integration-advocacy.html">Community</a>
-<a class="pathway-chip" data-path="maker" href="/programs/maker-market-events.html">Art</a>
+<a class="pathway-chip" data-path="art" href="/programs/maker-market-events.html">Art</a>
 <a class="pathway-chip" data-path="entertainment" href="/programs/entertainment-pathways.html">Entertainment</a>
-
 </div>
 </nav>
-<main class="program-page" style="--program-accent: var(--path-sports);">
+<main class="program-page program-page--sports" id="main">
 <section class="program-hero">
-<div class="program-hero-media" style="background-image:url('/assets/images/Turkey-Bowl.jpg');"></div>
+<div class="program-hero-media"><img alt="" decoding="async" loading="lazy" src="/assets/images/Turkey-Bowl.jpg"/></div>
 <div class="program-hero-body">
 <div class="breadcrumb">
 <a href="/programs.html">Programs</a><span>›</span><span>Sports Path</span>
@@ -77,7 +76,6 @@
 <h2>Purpose</h2>
 <p><strong>Who’s to Say Sports</strong> blends athletics, sports media, and community engagement. It’s for participants who love sports—whether they want to play, talk about the game, or help create coverage as part of a “media crew.”</p>
 </section>
-
 <section class="program-section">
 <h2>Program Elements</h2>
 <h3>Sports Participation &amp; Wellness</h3>
@@ -109,7 +107,6 @@
 <li>Stronger sense of belonging and community pride</li>
 </ul>
 </section>
-
 </article>
 <aside class="program-sidebar">
 <div class="program-sidebar-card">
@@ -129,27 +126,24 @@
 </div>
 </div>
 <div class="accordion-stack">
-
-<details class="accordion" open>
-  <summary>How It Works</summary>
-  <div class="accordion-body">
-    <p>Using DDD Goods &amp; Services, families can fund:</p>
+<details class="accordion" open="">
+<summary>How It Works</summary>
+<div class="accordion-body">
+<p>Using DDD Goods &amp; Services, families can fund:</p>
 <ul>
 <li>Transportation and support to participate in Challenger Sports or inclusive leagues</li>
 <li>Outings to local high school, college, or pro games</li>
 <li>Sessions focused on filming, interviewing, and editing simple sports content</li>
 </ul>
-  </div>
+</div>
 </details>
-
 <details class="accordion">
-  <summary>Coordinator / DDD Summary</summary>
-  <div class="accordion-body">
-    <p>Supports funded via DDD Goods &amp; Services may include: assisting the person to participate in Challenger or other inclusive sports, structured group fitness activities, and supervised outings to games. Sessions can also focus on sports media skills—filming, commentary, and interviews—to build communication and community engagement skills.</p>
-  </div>
+<summary>Coordinator / DDD Summary</summary>
+<div class="accordion-body">
+<p>Supports funded via DDD Goods &amp; Services may include: assisting the person to participate in Challenger or other inclusive sports, structured group fitness activities, and supervised outings to games. Sessions can also focus on sports media skills—filming, commentary, and interviews—to build communication and community engagement skills.</p>
+</div>
 </details>
 </div>
-
 </aside>
 </section>
 </main>
