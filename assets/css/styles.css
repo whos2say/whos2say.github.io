@@ -29,9 +29,9 @@
   /* Path Colors */
   --path-digital: #7c3aed;
   --path-sports: #1e64f0;
-  --path-life: #22c55e;
+  --path-independence: #22c55e;
   --path-community: #f97316;
-  --path-maker: #f59e0b;
+  --path-art: #f59e0b;
   --path-entertainment: #d946ef;
 
   /* Typography */
@@ -105,7 +105,34 @@ body {
   line-height: 1.6;
 }
 
-img { max-width: 100%; display: block; }
+/* Global media defaults
+   - height:auto prevents distortion when only width is constrained
+   - display:block removes inline baseline gaps in layouts
+*/
+img { max-width: 100%; height: auto; display: block; }
+
+/* Accessibility: Skip link should be visually hidden until focused */
+.skip-link{
+  position: absolute;
+  left: -9999px;
+  top: 10px;
+  z-index: 9999;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+}
+.skip-link:focus{
+  left: 12px;
+  outline: 3px solid rgba(99,245,239,0.65);
+  outline-offset: 3px;
+}
+html[data-theme="dark"] .skip-link{
+  background: rgba(20,22,28,0.92);
+  color: #fff;
+}
 
 a { color: inherit; text-decoration: none; }
 
@@ -159,7 +186,8 @@ html[data-theme="light"] .logo-light { display: block; }
 }
 
 .brand { display:inline-flex; align-items:center; gap: 0.75rem; min-width: 160px; }
-.brand-logo { height: 56px; width:auto; display:block; }
+/* Keep display controlled by theme swap rules above */
+.brand-logo { height: 56px; width:auto; }
 @media (max-width: 640px){ .brand-logo{ height: 46px; } }
 
 .site-nav{
@@ -320,9 +348,15 @@ html[data-theme="light"] .logo-light { display: block; }
 
 .program-hero-media{
   height: clamp(220px, 30vw, 360px);
-  background-size: cover;
-  background-position: center;
   position: relative;
+  overflow: hidden;
+}
+
+.program-hero-media img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display:block;
 }
 .program-hero-media::after{
   content:"";
@@ -614,9 +648,9 @@ h1{
 /* path color wash */
 .pathway-tile[data-path="digital"]::before { background: var(--path-digital); }
 .pathway-tile[data-path="sports"]::before { background: var(--path-sports); }
-.pathway-tile[data-path="life"]::before { background: var(--path-life); }
+.pathway-tile[data-path="independence"]::before { background: var(--path-independence); }
 .pathway-tile[data-path="community"]::before { background: var(--path-community); }
-.pathway-tile[data-path="maker"]::before { background: var(--path-maker); }
+.pathway-tile[data-path="art"]::before { background: var(--path-art); }
 .pathway-tile[data-path="entertainment"]::before { background: var(--path-entertainment); }
 
 .pathway-tile:hover{
@@ -628,17 +662,17 @@ h1{
 
 .pathway-tile[data-path="digital"]:hover .pathway-title{ color: var(--path-digital); }
 .pathway-tile[data-path="sports"]:hover .pathway-title{ color: var(--path-sports); }
-.pathway-tile[data-path="life"]:hover .pathway-title{ color: var(--path-life); }
+.pathway-tile[data-path="independence"]:hover .pathway-title{ color: var(--path-independence); }
 .pathway-tile[data-path="community"]:hover .pathway-title{ color: var(--path-community); }
-.pathway-tile[data-path="maker"]:hover .pathway-title{ color: var(--path-maker); }
+.pathway-tile[data-path="art"]:hover .pathway-title{ color: var(--path-art); }
 .pathway-tile[data-path="entertainment"]:hover .pathway-title{ color: var(--path-entertainment); }
 
 /* active tile */
 .pathway-nav[data-active-path="digital"] .pathway-tile[data-path="digital"],
 .pathway-nav[data-active-path="sports"] .pathway-tile[data-path="sports"],
-.pathway-nav[data-active-path="life"] .pathway-tile[data-path="life"],
+.pathway-nav[data-active-path="life"] .pathway-tile[data-path="independence"],
 .pathway-nav[data-active-path="community"] .pathway-tile[data-path="community"],
-.pathway-nav[data-active-path="maker"] .pathway-tile[data-path="maker"],
+.pathway-nav[data-active-path="maker"] .pathway-tile[data-path="art"],
 .pathway-nav[data-active-path="entertainment"] .pathway-tile[data-path="entertainment"]{
   border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
   background: color-mix(in srgb, var(--bg-elevated) 97%, transparent);
@@ -838,111 +872,17 @@ h1{
     max-width: 1240px;
   }
 }
-<!-- PROGRAM GRID -->
-<main class="programs-wrapper">
-  <header class="section-heading">
-    <h2>The Possibility Paths</h2>
-    <p>
-      Participants can explore one or multiple pathways depending on their interests,
-      strengths, and goals.
-    </p>
-  </header>
 
-  <div class="program-grid">
-
-    <!-- Digital -->
-    <a href="/programs/digital-content-creator.html"
-       class="program-card"
-       data-path="digital">
-      <div class="card-media"
-           style="background-image:url('/assets/images/Modern_podcast_Studio_setup.png');"></div>
-      <div class="card-content">
-        <span class="program-label">Digital Path</span>
-        <h3>Digital Content Creator Pathways</h3>
-        <p>Video, design, photography, and production skills built one project at a time.</p>
-      </div>
-    </a>
-
-    <!-- Sports -->
-    <a href="/programs/whos-to-say-sports.html"
-       class="program-card"
-       data-path="sports">
-      <div class="card-media"
-           style="background-image:url('/assets/images/Turkey-Bowl.jpg');"></div>
-      <div class="card-content">
-        <span class="program-label">Sports Path</span>
-        <h3>Who’s to Say Sports</h3>
-        <p>Challenger Sports, fitness, outings, and sports storytelling.</p>
-      </div>
-    </a>
-
-    <!-- Independence (was Life) -->
-    <a href="/programs/life-skills-independent-living.html"
-       class="program-card"
-       data-path="life">
-      <div class="card-media"
-           style="background-image:url('/assets/images/cooking1.png');"></div>
-      <div class="card-content">
-        <span class="program-label">Independence Path</span>
-        <h3>Life Skills & Independent Living</h3>
-        <p>Everyday skills for confidence, independence, and routine.</p>
-      </div>
-    </a>
-
-    <!-- Community -->
-    <a href="/programs/community-integration-advocacy.html"
-       class="program-card"
-       data-path="community">
-      <div class="card-media"
-           style="background-image:url('/assets/images/Matt-Presentation.png');"></div>
-      <div class="card-content">
-        <span class="program-label">Community Path</span>
-        <h3>Community Integration & Advocacy</h3>
-        <p>Show up, speak up, and be seen through supported community engagement.</p>
-      </div>
-    </a>
-
-    <!-- Art (was Maker) -->
-    <a href="/programs/maker-market-events.html"
-       class="program-card"
-       data-path="maker">
-      <div class="card-media"
-           style="background-image:url('/assets/images/Maker_space.png');"></div>
-      <div class="card-content">
-        <span class="program-label">Art Path</span>
-        <h3>Art Studio & Events</h3>
-        <p>Create, share, and celebrate work in supportive settings.</p>
-      </div>
-    </a>
-
-    <!-- Entertainment -->
-    <a href="/programs/entertainment-pathways.html"
-       class="program-card"
-       data-path="entertainment">
-      <div class="card-media"
-           style="background-image:url('/assets/images/Matt-Teleprompter.JPG');"></div>
-      <div class="card-content">
-        <span class="program-label">Entertainment Path</span>
-        <h3>Entertainment Pathways</h3>
-        <p>On-camera confidence, acting basics, and voice work.</p>
-      </div>
-    </a>
-
-  </div>
-</main>
 /* ===============================
    PROGRAMS PAGE (Hard-lock)
 ================================ */
 
 .programs-hero {
-  padding: clamp(2.5rem, 5vw, 4.5rem) 5vw;
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
   background: radial-gradient(circle at top, #1b1b2a, var(--bg-main));
 }
 
-.programs-hero .hero-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
+.programs-hero .hero-inner { /* uses .programs-wrapper sizing */ }
 
 .programs-wrapper {
   max-width: var(--max-width);
@@ -998,9 +938,16 @@ h1{
 
 .card-media {
   height: 190px;
-  background-size: cover;
-  background-position: center;
   position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-media img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display:block;
 }
 
 .card-media::after {
@@ -1015,9 +962,9 @@ h1{
 .program-card h3 { transition: color .18s ease; }
 .program-card[data-path="digital"]:hover h3 { color: var(--path-digital); }
 .program-card[data-path="sports"]:hover h3 { color: var(--path-sports); }
-.program-card[data-path="life"]:hover h3 { color: var(--path-life); }
+.program-card[data-path="independence"]:hover h3 { color: var(--path-independence); }
 .program-card[data-path="community"]:hover h3 { color: var(--path-community); }
-.program-card[data-path="maker"]:hover h3 { color: var(--path-maker); }
+.program-card[data-path="art"]:hover h3 { color: var(--path-art); }
 .program-card[data-path="entertainment"]:hover h3 { color: var(--path-entertainment); }
 
 .card-content {
@@ -1206,3 +1153,109 @@ h1{
   .nav-submenu{ position: static; box-shadow:none; }
   .has-submenu:hover .nav-submenu{ display:none; } /* hover off on touch */
 }
+
+/* =========================================================
+   Utilities
+   ========================================================= */
+.section-anchor{
+  position: relative;
+  top: calc(var(--header-height) * -1 - 18px);
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
+/* =========================================================
+   Home (index) — minimal, stable, no inline CSS
+   ========================================================= */
+.home{
+  min-height: calc(100vh - var(--header-height));
+  display: grid;
+  place-items: center;
+}
+
+.home-hero{
+  width: 100%;
+  padding: clamp(2.5rem, 6vw, 5.5rem) 5vw;
+}
+
+.home-hero-inner{
+  max-width: 820px;
+  margin: 0 auto;
+  text-align: center;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 14px 40px rgba(0,0,0,.25);
+}
+
+.home-kicker{
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-bottom: .65rem;
+}
+
+.home-hero h1{
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4.2vw, 3.25rem);
+  line-height: 1.12;
+  margin-bottom: .75rem;
+}
+
+.home-subhead{
+  font-size: clamp(1.05rem, 2.1vw, 1.2rem);
+  margin: 0 auto 1.35rem;
+  color: var(--text-muted);
+}
+
+.home-actions{
+  display:flex;
+  gap: .75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.home-note{
+  font-size: .95rem;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   Beta utilities (used only on beta.html, kept generic)
+   ========================================================= */
+.embed-16x9{
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-top: 56.25%;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+}
+.embed-16x9__item{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.mt{ margin-top: 1rem; }
+.mb{ margin-bottom: 1rem; }
+
+
+/* Light mode: Programs hero should be plain white (no gradient) */
+html[data-theme="light"] .programs-hero{ background: #fff; }
+
+
+/* On program detail pages with the ribbon, suppress the Programs dropdown entirely */
+body[data-has-ribbon="true"] .has-submenu .nav-submenu{ display:none !important; }
+body[data-has-ribbon="true"] .has-submenu:hover .nav-submenu{ display:none !important; }
+body[data-has-ribbon="true"] .has-submenu.is-open .nav-submenu{ display:none !important; }
