@@ -148,9 +148,9 @@
     if (btn) btn.setAttribute("aria-expanded", "false");
   }
 
-  function openDropdown(dd, pinned = false) {
+  function openDropdown(dd) {
     dd.classList.add("is-open");
-    dd.classList.toggle("is-pinned", pinned);
+    dd.classList.remove("is-pinned");
     const btn = getTrigger(dd);
     if (btn) btn.setAttribute("aria-expanded", "true");
   }
@@ -177,44 +177,17 @@
         "aria-expanded",
         dd.classList.contains("is-open") ? "true" : "false"
       );
-
-      // CLICK pins open
-      trigger.addEventListener("click", (e) => {
-        // If trigger is actually linking to /programs.html, we still want pin-open behavior.
-        // Prevent default only when we are toggling open/close.
-        e.preventDefault();
-        e.stopPropagation();
-
-        const isOpen = dd.classList.contains("is-open");
-        const isPinned = dd.classList.contains("is-pinned");
-
-        if (!isOpen) {
-          closeAll(dd);
-          openDropdown(dd, true);
-          return;
-        }
-
-        // open + pinned -> close
-        if (isPinned) {
-          closeDropdown(dd);
-          return;
-        }
-
-        // open but not pinned -> pin it
-        openDropdown(dd, true);
-      });
+      // CLICK navigates normally (dropdown opens on hover)
 
       // HOVER opens on desktop (unless pinned)
       dd.addEventListener("mouseenter", () => {
         if (!isDesktopHover()) return;
-        if (dd.classList.contains("is-pinned")) return;
         closeAll(dd);
-        openDropdown(dd, false);
+        openDropdown(dd);
       });
 
       dd.addEventListener("mouseleave", () => {
         if (!isDesktopHover()) return;
-        if (dd.classList.contains("is-pinned")) return;
         closeDropdown(dd);
       });
     });
@@ -236,7 +209,30 @@
     });
   }
 
+  
   // -------------------------
+  // Active nav link (no per-page markup needed)
+  // -------------------------
+  function markActiveNav() {
+    const here = window.location.pathname.replace(/\/index\.html$/, "/").replace(/\/+$/, "");
+    document.querySelectorAll(".site-nav .nav-link").forEach((a) => {
+      const hrefRaw = a.getAttribute("href") || "";
+      // ignore external links
+      if (/^https?:\/\//i.test(hrefRaw) || hrefRaw.startsWith("mailto:")) return;
+
+      const href = hrefRaw.split("#")[0].replace(/\/index\.html$/, "/").replace(/\/+$/, "");
+      const isHome = (here === "" || here === "/");
+      const targetIsHome = (href === "" || href === "/");
+
+      const active = targetIsHome ? isHome : (href && href === here);
+      a.classList.toggle("active", active);
+      if (active) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+  }
+
+
+// -------------------------
   // Pathways ribbon auto-active
   // -------------------------
   function markActivePathwayChip() {
@@ -259,8 +255,10 @@
   document.addEventListener("DOMContentLoaded", function () {
     initThemeEarly();
     bindThemeToggle();
-    bindSystemListener();
-    bindSubmenu();
+    bindSystemListener();    // Programs dropdown (disabled on ribbon pages)
+    const hasRibbon = document.body && document.body.dataset && document.body.dataset.hasRibbon === "true";
+    if (!hasRibbon) bindDropdowns();
+    markActiveNav();
     markActivePathwayChip();
   });
 })();
