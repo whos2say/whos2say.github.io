@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Who’s to Say Sports Path | Who’s to Say? Foundation</title>
+
+  <link rel="stylesheet" href="/styles.css" />
+  <script defer src="/theme.js"></script>
+
+  <meta name="description" content="The Sports Path builds confidence and belonging through inclusive sports participation, school team support roles, and sports media storytelling." />
+</head>
+
+<body data-has-ribbon="true">
+
+  <!-- Optional: Skip link (supported by CSS) -->
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Header (keep your existing global header markup if you already have it site-wide) -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="Who’s to Say? Foundation Home">
+        <img class="brand-logo logo-light" src="/assets/logo-light.png" alt="Who’s to Say? Foundation" />
+        <img class="brand-logo logo-dark" src="/assets/logo-dark.png" alt="Who’s to Say? Foundation" />
+      </a>
+
+      <nav class="site-nav" aria-label="Primary Navigation">
+        <a class="nav-link" href="/programs/">Programs</a>
+        <a class="nav-link" href="/#about">About</a>
+        <a class="nav-link" href="/#donate">Donate</a>
+        <a class="nav-link" href="mailto:info@whostosay.org">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" aria-label="Toggle theme">
+          ☾
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Pathways Ribbon (uses existing CSS) -->
+  <div class="pathways-ribbon pathways-ribbon--sticky" role="navigation" aria-label="Possibility Paths">
+    <div class="pathways-ribbon-label">The Possibility Paths</div>
+    <div class="chips pathways-chip-grid">
+      <a class="pathway-chip" href="/programs/whos-to-say-digital.html">
+        <span class="dot" aria-hidden="true" style="background: var(--path-digital);"></span>
+        Digital
+      </a>
+      <a class="pathway-chip is-active" href="/programs/whos-to-say-sports.html" aria-current="page">
+        <span class="dot" aria-hidden="true" style="background: var(--path-sports);"></span>
+        Sports
+      </a>
+      <a class="pathway-chip" href="/programs/whos-to-say-life.html">
+        <span class="dot" aria-hidden="true" style="background: var(--path-independence);"></span>
+        Independence
+      </a>
+      <a class="pathway-chip" href="/programs/whos-to-say-community.html">
+        <span class="dot" aria-hidden="true" style="background: var(--path-community);"></span>
+        Community
+      </a>
+      <a class="pathway-chip" href="/programs/whos-to-say-art.html">
+        <span class="dot" aria-hidden="true" style="background: var(--path-art);"></span>
+        Art
+      </a>
+      <a class="pathway-chip" href="/programs/whos-to-say-entertainment.html">
+        <span class="dot" aria-hidden="true" style="background: var(--path-entertainment);"></span>
+        Entertainment
+      </a>
+    </div>
+  </div>
+
+  <main class="program-page" id="main">
+
+    <!-- HERO -->
+    <section class="program-hero">
+      <div class="program-hero-card">
+        <div class="program-hero-media">
+          <!-- Keep or swap your hero image -->
+          <img src="/assets/images/programs/sports-hero.jpg" alt="A team moment in sports" />
+        </div>
+
+        <div class="program-hero-body">
+          <div class="breadcrumb">
+            <a href="/programs/">Programs</a> / <span>Sports Path</span>
+          </div>
+
+          <h1>Who’s to Say Sports Path</h1>
+          <p class="program-subtitle">
+            Sports create belonging. This pathway supports inclusive participation — from community play to
+            meaningful roles alongside high school teams — so connection doesn’t end at graduation.
+          </p>
+
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#get-started">Get Started</a>
+            <a class="btn btn-secondary" href="#for-schools">For Schools</a>
+          </div>
+
+          <div class="best-for-inline">
+            <strong>Best for:</strong> participants who love teams, routines, game-day energy, community pride, and sports storytelling.
+          </div>
+
+          <div class="pills" aria-label="Highlights">
+            <span class="pill">Inclusive Participation</span>
+            <span class="pill">Team Roles & Responsibility</span>
+            <span class="pill">Sports Media & Storytelling</span>
+            <span class="pill">Community Integration</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 60/40 Layout: Content + Sidebar -->
+    <section class="program-shell program-shell--6040">
+      <div class="program-content">
+
+        <!-- OVERVIEW -->
+        <section class="program-section">
+          <h2>Overview</h2>
+          <p>
+            The Sports Path helps participants build confidence, relationships, and leadership through sports.
+            Some participants engage by playing; others thrive in support roles that keep them close to the team.
+            We meet people where they are — and help them grow over time.
+          </p>
+
+          <h3>Core components</h3>
+          <ul>
+            <li>Community-based sports (including Challenger and recreational programs)</li>
+            <li>Fitness and movement routines that reinforce confidence and wellness</li>
+            <li>Team belonging through game-day routines and social connection</li>
+            <li>Optional sports media/storytelling (highlights, interviews, commentary)</li>
+          </ul>
+        </section>
+
+        <!-- CONTINUUM (NEW) -->
+        <section class="program-section" id="continuum">
+          <h2>A Lifelong Sports Participation Continuum</h2>
+          <p>
+            Every participant’s sports journey is different — and it can evolve. This pathway supports a
+            progression from entry-level engagement to meaningful team contribution and leadership.
+          </p>
+
+          <h3>Phase 1: Engage</h3>
+          <ul>
+            <li>Try sports in supportive settings</li>
+            <li>Build comfort with routines, rules, and environments</li>
+            <li>Strengthen social connection through team culture</li>
+          </ul>
+
+          <h3>Phase 2: Contribute</h3>
+          <ul>
+            <li>Step into structured, reliable roles on a team</li>
+            <li>Build responsibility through checklists and repeatable tasks</li>
+            <li>Support game-day operations and team readiness</li>
+          </ul>
+
+          <h3>Phase 3: Lead</h3>
+          <ul>
+            <li>Mentor younger participants</li>
+            <li>Represent community pride and inclusive team identity</li>
+            <li>Grow visibility through sports storytelling and leadership</li>
+          </ul>
+        </section>
+
+        <!-- SCHOOL TEAM SUPPORT ROLES (NEW) -->
+        <section class="program-section" id="for-schools">
+          <h2>School Team Support Roles</h2>
+          <p>
+            Many participants form deep, positive relationships with school athletic communities.
+            When they age out, those connections can be interrupted due to administrative and liability concerns.
+            We help schools keep what’s working by providing a structured, supervised framework for inclusion.
+          </p>
+
+          <h3>Example roles</h3>
+          <ul>
+            <li><strong>Team Manager Assistant</strong> (equipment, checklists, setup, breakdown)</li>
+            <li><strong>Game-Day Operations</strong> (water, supplies, sideline readiness)</li>
+            <li><strong>Stats / Film / Media Assistant</strong> (filming, simple stat tracking, highlights)</li>
+            <li><strong>Team Culture Ambassador</strong> (morale, pre-game routines, introductions)</li>
+            <li><strong>Community Storytelling Crew</strong> (interviews, recaps, social posts)</li>
+          </ul>
+
+          <h3>Safety & clarity (boundaries)</h3>
+          <ul>
+            <li>No coaching or instruction</li>
+            <li>No independent supervision of minors</li>
+            <li>No transporting students</li>
+            <li>On-site supervision by a designated staff member</li>
+            <li>Roles and schedules defined and approved in advance</li>
+          </ul>
+
+          <div class="accordion-stack" style="margin-top: 1rem;">
+            <details class="accordion">
+              <summary>Why schools partner with us</summary>
+              <div class="accordion-body">
+                <ul>
+                  <li>Strengthens team culture through belonging and inclusion</li>
+                  <li>Preserves alumni continuity and community pride</li>
+                  <li>Provides clear role definitions and boundaries</li>
+                  <li>Keeps administrative burden low with ready-made program materials</li>
+                </ul>
+              </div>
+            </details>
+
+            <details class="accordion">
+              <summary>Partnership options (simple → structured)</summary>
+              <div class="accordion-body">
+                <p>
+                  Schools may implement this in multiple ways depending on district preferences:
+                </p>
+                <ul>
+                  <li><strong>Volunteer-aligned model:</strong> participant is approved under district volunteer procedures with a defined role.</li>
+                  <li><strong>Nonprofit placement model:</strong> participant is placed through Who’s to Say? with defined supervision and program documentation.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- INCLUSION SUPPORT (NEW) -->
+        <section class="program-section" id="inclusion">
+          <h2>How We Support Inclusive Participation</h2>
+          <p>
+            Inclusion isn’t just access — it’s intentional support. We collaborate with families, coaches, and partners
+            to align roles to strengths, build predictable routines, and support success for everyone involved.
+          </p>
+
+          <ul>
+            <li><strong>Role matching:</strong> align interests, strengths, and goals to meaningful responsibilities</li>
+            <li><strong>Preparation:</strong> checklists, visual prompts, and repeatable routines</li>
+            <li><strong>Coach-friendly structure:</strong> clear expectations and boundaries</li>
+            <li><strong>Consistency:</strong> light-touch coordination so the experience stays stable</li>
+          </ul>
+        </section>
+
+        <!-- OUTCOMES (REFINED) -->
+        <section class="program-section" id="outcomes">
+          <h2>Outcomes & Skills</h2>
+          <p>
+            The Sports Path builds transferable life skills through teamwork and responsibility.
+          </p>
+
+          <h3>Confidence & belonging</h3>
+          <ul>
+            <li>Team identity, routines, and community presence</li>
+            <li>Social comfort in group settings</li>
+            <li>Reduced isolation after aging out of school</li>
+          </ul>
+
+          <h3>Responsibility</h3>
+          <ul>
+            <li>Time-on-task and follow-through</li>
+            <li>Operational reliability through repeatable roles</li>
+            <li>Ownership and pride in contribution</li>
+          </ul>
+
+          <h3>Communication & leadership</h3>
+          <ul>
+            <li>Team communication and social fluency</li>
+            <li>Storytelling, interviews, commentary (optional)</li>
+            <li>Mentoring and inclusive leadership modeling</li>
+          </ul>
+        </section>
+
+        <!-- IMPACT STORIES (NEW, SAFE PLACEHOLDER) -->
+        <section class="program-section" id="stories">
+          <h2>Impact Stories</h2>
+          <p>
+            We collect stories and reflections from coaches, athletes, families, and participants. As pilots expand,
+            we’ll feature real quotes and short profiles here.
+          </p>
+
+          <div class="accordion-stack" style="margin-top: 1rem;">
+            <details class="accordion">
+              <summary>Coach perspective (example)</summary>
+              <div class="accordion-body">
+                <p>
+                  “Having him with our program made the team better — not just as athletes, but as people.”
+                </p>
+              </div>
+            </details>
+
+            <details class="accordion">
+              <summary>Family perspective (example)</summary>
+              <div class="accordion-body">
+                <p>
+                  “He feels like he belongs again. The routine and the team gave him purpose.”
+                </p>
+              </div>
+            </details>
+
+            <details class="accordion">
+              <summary>Student-athlete perspective (example)</summary>
+              <div class="accordion-body">
+                <p>
+                  “He’s part of our culture. He lifts everyone up.”
+                </p>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- GET STARTED -->
+        <section class="program-section" id="get-started">
+          <h2>Get Started</h2>
+          <p>
+            Whether you’re a family, coach, or school leader — we’ll help map a realistic, supportive way to build
+            belonging through sports.
+          </p>
+
+          <div class="btn-row">
+            <a class="btn btn-primary" href="mailto:info@whostosay.org?subject=Sports%20Path%20Inquiry">Email Us</a>
+            <a class="btn btn-secondary" href="/#donate">Support This Path</a>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="program-sidebar" aria-label="Sports Path sidebar">
+        <div class="program-sidebar-card">
+          <h3>Who it’s for</h3>
+          <p>
+            Young adults (18+) with IDD who want team belonging — as players, supporters, or storytellers.
+          </p>
+        </div>
+
+        <div class="program-sidebar-card">
+          <h3>What it can include</h3>
+          <p>
+            Challenger/recreation, fitness routines, school team support roles, and sports media storytelling.
+          </p>
+        </div>
+
+        <div class="program-sidebar-card">
+          <h3>For schools</h3>
+          <p>
+            Want to keep a great alumni connection alive? We can provide role definitions, boundaries, and a
+            partnership pathway that’s simple to implement.
+          </p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="mailto:info@whostosay.org?subject=School%20Sports%20Partnership">Request a Call</a>
+            <a class="btn btn-secondary" href="#for-schools">Read more</a>
+          </div>
+        </div>
+
+        <div class="program-sidebar-card">
+          <h3>Resources (optional)</h3>
+          <p>
+            You can add PDFs later without changing this layout.
+          </p>
+          <ul>
+            <li><a href="/resources/sports-path-one-pager.pdf">Program One-Pager</a></li>
+            <li><a href="/resources/sports-role-templates.pdf">Role Templates</a></li>
+            <li><a href="/resources/school-partnership-guide.pdf">School Guide</a></li>
+          </ul>
+        </div>
+      </aside>
+
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Who’s to Say? Foundation. All rights reserved.</p>
+    </div>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </footer>
+</body>
+</html>
