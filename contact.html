@@ -14,8 +14,6 @@
   <script src="/assets/js/theme.js" defer></script>
   <link rel="stylesheet" href="/assets/css/styles.css" />
 
-  <!-- Basic Google reCAPTCHA v2 (checkbox) -->
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body data-page="contact">
@@ -101,46 +99,19 @@
             Please include the best way to reach you and a little context. All fields are required.
           </p>
 
-          <!-- Static-site note: replace action with your form handler endpoint -->
-          <form class="contact-form" action="#" method="POST">
-            <div class="form-grid">
-              <div class="form-field">
-                <label for="name">Name <span aria-hidden="true">*</span></label>
-                <input id="name" name="name" type="text" required autocomplete="name" />
-              </div>
+<form
+  action="https://formspree.io/f/xlggrjqy"
+  method="POST"
+  class="contact-form"
+>
+  <input type="hidden" name="_subject" value="New Contact Message — Who’s to Say ? Foundation">
+  <input type="hidden" name="_template" value="table">
+  <input type="hidden" name="_captcha" value="true">
+  <input type="hidden" name="_redirect" value="https://whostosay.org/contact-thank-you.html">
 
-              <div class="form-field">
-                <label for="email">Email <span aria-hidden="true">*</span></label>
-                <input id="email" name="email" type="email" required autocomplete="email" />
-              </div>
+  <!-- fields -->
+</form>
 
-              <div class="form-field">
-                <label for="phone">Phone <span aria-hidden="true">*</span></label>
-                <input id="phone" name="phone" type="tel" required autocomplete="tel" />
-              </div>
-
-              <div class="form-field form-field--full">
-                <label for="message">Message <span aria-hidden="true">*</span></label>
-                <textarea id="message" name="message" rows="7" required></textarea>
-              </div>
-
-              <div class="form-field form-field--full">
-                <!-- Replace YOUR_SITE_KEY with your actual reCAPTCHA site key -->
-                <div class="g-recaptcha" data-sitekey="6LcZrUUsAAAAAMVpPE4HGFnmJiimwKzN5MLiv02n"></div>
-              </div>
-
-              <div class="form-field form-field--full">
-                <div class="btn-row">
-                  <button type="submit" class="btn btn-primary">Send</button>
-                  <a class="btn btn-secondary" href="mailto:info@whostosay.org">Email Instead</a>
-                </div>
-
-                <p class="contact-fineprint">
-                  By submitting this form, you agree to be contacted by Who’s to Say ? Foundation.
-                </p>
-              </div>
-            </div>
-          </form>
         </section>
       </article>
 
