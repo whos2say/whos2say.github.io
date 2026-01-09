@@ -1,12 +1,18 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Contact Us • Who’s to Say ? Foundation</title>
+  <title>Contact Us | Who’s to Say ? Foundation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Contact Who’s to Say ? Foundation — programs, partnerships, and general inquiries." />
 
-  <link rel="stylesheet" href="/assets/css/styles.css?v=contact-1" />
-  <script src="/assets/js/theme.js?v=contact-1" defer></script>
+  <!-- Keep consistent with existing pages -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="/assets/js/theme.js" defer></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
 
   <!-- Basic Google reCAPTCHA v2 (checkbox) -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -15,19 +21,33 @@
 <body data-page="contact">
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Canonical Header -->
+  <!-- Canonical Header (same as program page) -->
   <header class="site-header">
     <div class="header-inner">
-      <a href="/" class="brand" aria-label="Who’s to Say ? Foundation Home">
+      <a class="brand" href="/" aria-label="Who’s to Say ? Foundation Home">
         <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
         <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
       </a>
 
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href="/" class="nav-link" data-nav="home">Home</a>
-        <a href="/programs.html" class="nav-link" data-nav="programs">Programs</a>
-        <a href="https://givebutter.com/whostosayfoundation" class="nav-link" target="_blank" rel="noopener">Donate</a>
-        <a href="/contact.html" class="nav-link" data-nav="contact" aria-current="page">Contact</a>
+        <a class="nav-link" data-nav="home" href="/">Home</a>
+
+        <div class="nav-item has-submenu" data-submenu="programs">
+          <a class="nav-link" data-nav="programs" href="/programs.html" aria-haspopup="true" aria-expanded="false">
+            Programs
+          </a>
+          <div class="nav-submenu" role="menu" aria-label="Programs submenu">
+            <a class="submenu-link" role="menuitem" href="/programs/digital-content-creator.html">Digital Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs/whos-to-say-sports.html">Sports Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs/life-skills-independent-living.html">Independence Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs/community-integration-advocacy.html">Community Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs/maker-market-events.html">Art Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs/entertainment-pathways.html">Entertainment Path</a>
+          </div>
+        </div>
+
+        <a class="nav-link" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate</a>
+        <a class="nav-link active" data-nav="contact" href="/contact.html" aria-current="page">Contact</a>
       </nav>
 
       <div class="header-actions">
@@ -36,95 +56,143 @@
     </div>
   </header>
 
-  <main id="main" class="page">
-    <section class="section">
-      <div class="container">
-        <header class="section-heading">
-          <h1>Contact Us</h1>
-          <p>We’d love to hear from you. Send a message and we’ll get back as soon as we can.</p>
-        </header>
-
-        <div class="contact-grid">
-          <!-- Contact card -->
-          <div class="card">
-            <div class="card-body">
-              <h2 class="h3">Get in touch</h2>
-
-              <p class="muted">
-                Phone:
-                <a href="tel:+17323141943">(732) 314-1943</a>
-              </p>
-
-              <p class="muted">
-                Email:
-                <a href="mailto:info@whostosay.org">info@whostosay.org</a>
-              </p>
-
-              <div class="divider"></div>
-
-              <p class="muted">
-                If you’re reaching out about programs, partnerships, media, or volunteering, include a few details and the best time to connect.
-              </p>
-            </div>
-          </div>
-
-          <!-- Form card -->
-          <div class="card">
-            <div class="card-body">
-              <h2 class="h3">Send a message</h2>
-
-              <!-- NOTE: This is a static site. You’ll need a form handler (Formspree/Netlify/etc.) or custom backend.
-                   For now action="#" prevents navigation. Replace with your handler endpoint. -->
-              <form class="form" action="#" method="POST" novalidate>
-                <div class="form-row">
-                  <label for="name">Name <span aria-hidden="true">*</span></label>
-                  <input id="name" name="name" type="text" required autocomplete="name" />
-                </div>
-
-                <div class="form-row">
-                  <label for="email">Email <span aria-hidden="true">*</span></label>
-                  <input id="email" name="email" type="email" required autocomplete="email" />
-                </div>
-
-                <div class="form-row">
-                  <label for="phone">Phone <span aria-hidden="true">*</span></label>
-                  <input id="phone" name="phone" type="tel" required autocomplete="tel" />
-                </div>
-
-                <div class="form-row">
-                  <label for="message">Message <span aria-hidden="true">*</span></label>
-                  <textarea id="message" name="message" rows="6" required></textarea>
-                </div>
-
-                <div class="form-row">
-                  <!-- Replace YOUR_SITE_KEY with your real reCAPTCHA site key -->
-                  <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
-                </div>
-
-                <div class="form-actions">
-                  <button type="submit" class="btn btn-primary">Send</button>
-                  <p class="fineprint muted">
-                    By submitting this form, you agree to be contacted by Who’s to Say ? Foundation.
-                  </p>
-                </div>
-              </form>
-
-            </div>
-          </div>
+  <main id="main" class="program-page contact-page">
+    <!-- HERO (same pattern as program pages, but “Contact” themed) -->
+    <section class="program-hero contact-hero">
+      <div class="program-hero-card">
+        <div class="program-hero-media contact-hero-media">
+          <!-- Use an existing site image to stay consistent; swap if you want -->
+          <img src="/assets/images/Abstract_Program-hero.png" alt="" loading="lazy" decoding="async" />
         </div>
 
+        <div class="program-hero-body">
+          <div class="breadcrumb">
+            <a href="/">Home</a><span>›</span><span>Contact</span>
+          </div>
+
+          <h1>Contact Us</h1>
+          <p class="program-subtitle">
+            Programs, partnerships, media inquiries, or general questions — send a message and we’ll get back to you.
+          </p>
+
+          <div class="pills">
+            <span class="pill">Programs</span>
+            <span class="pill">Partnerships</span>
+            <span class="pill">Volunteering</span>
+            <span class="pill">Media</span>
+          </div>
+
+          <div class="best-for-inline">
+            <strong>Email:</strong> <a href="mailto:info@whostosay.org">info@whostosay.org</a>
+            &nbsp;&nbsp;•&nbsp;&nbsp;
+            <strong>Phone:</strong> <a href="tel:+17323141943">(732) 314-1943</a>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <!-- 60/40 shell (same as program pages) -->
+    <section class="program-shell program-shell--6040 contact-shell">
+      <!-- LEFT: Form inside a program-section card -->
+      <article class="program-content">
+        <section class="program-section">
+          <h2>Send a Message</h2>
+          <p>
+            Please include the best way to reach you and a little context. All fields are required.
+          </p>
+
+          <!-- Static-site note: replace action with your form handler endpoint -->
+          <form class="contact-form" action="#" method="POST">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="name">Name <span aria-hidden="true">*</span></label>
+                <input id="name" name="name" type="text" required autocomplete="name" />
+              </div>
+
+              <div class="form-field">
+                <label for="email">Email <span aria-hidden="true">*</span></label>
+                <input id="email" name="email" type="email" required autocomplete="email" />
+              </div>
+
+              <div class="form-field">
+                <label for="phone">Phone <span aria-hidden="true">*</span></label>
+                <input id="phone" name="phone" type="tel" required autocomplete="tel" />
+              </div>
+
+              <div class="form-field form-field--full">
+                <label for="message">Message <span aria-hidden="true">*</span></label>
+                <textarea id="message" name="message" rows="7" required></textarea>
+              </div>
+
+              <div class="form-field form-field--full">
+                <!-- Replace YOUR_SITE_KEY with your actual reCAPTCHA site key -->
+                <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
+              </div>
+
+              <div class="form-field form-field--full">
+                <div class="btn-row">
+                  <button type="submit" class="btn btn-primary">Send</button>
+                  <a class="btn btn-secondary" href="mailto:info@whostosay.org">Email Instead</a>
+                </div>
+
+                <p class="contact-fineprint">
+                  By submitting this form, you agree to be contacted by Who’s to Say ? Foundation.
+                </p>
+              </div>
+            </div>
+          </form>
+        </section>
+      </article>
+
+      <!-- RIGHT: Sidebar cards (same style as program pages) -->
+      <aside class="program-sidebar">
+        <div class="program-sidebar-card">
+          <h3>Contact</h3>
+          <ul class="contact-list">
+            <li><strong>Phone:</strong> <a href="tel:+17323141943">(732) 314-1943</a></li>
+            <li><strong>Email:</strong> <a href="mailto:info@whostosay.org">info@whostosay.org</a></li>
+          </ul>
+        </div>
+
+        <div class="program-sidebar-card">
+          <h3>Best for</h3>
+          <ul class="contact-list">
+            <li>Program interest & enrollment questions</li>
+            <li>Partnerships & sponsorships</li>
+            <li>Volunteer opportunities</li>
+            <li>Media / storytelling collaboration</li>
+          </ul>
+        </div>
+
+        <div class="accordion-stack">
+          <details class="accordion">
+            <summary>What happens after I submit?</summary>
+            <div class="accordion-body">
+              <p>We’ll review your message and respond using the contact info you provided. If your request is time-sensitive, email us directly.</p>
+            </div>
+          </details>
+
+          <details class="accordion">
+            <summary>Are you accepting partners?</summary>
+            <div class="accordion-body">
+              <p>Yes. We welcome community partners, sponsors, and creators who align with our mission and pathways. Share what you have in mind.</p>
+            </div>
+          </details>
+        </div>
+      </aside>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <p class="muted">© <span id="year"></span> Who’s to Say ? Foundation</p>
-    </div>
+    © <span id="year"></span> Who’s to Say ? Foundation
   </footer>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    (function () {
+      var el = document.getElementById("year");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
   </script>
 </body>
 </html>
+
