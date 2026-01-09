@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Message Sent | Who’s to Say ? Foundation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Thank you for contacting Who’s to Say ? Foundation." />
+
+  <!-- Keep consistent with the rest of the site -->
+  <script src="/assets/js/theme.js" defer></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+
+<body data-page="contact-thank-you">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Canonical Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="Who’s to Say ? Foundation Home">
+        <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
+        <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a class="nav-link" data-nav="home" href="/">Home</a>
+
+        <div class="nav-item has-submenu" data-submenu="programs">
+          <a class="nav-link" data-nav="programs" href="/programs.html" aria-haspopup="true" aria-expanded="false">
+            Programs
+          </a>
+          <div class="nav-submenu" role="menu" aria-label="Programs submenu">
+            <a class="submenu-link" role="menuitem" href="/programs.html#digital">Digital Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs.html#sports">Sports Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs.html#independence">Independence Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs.html#community">Community Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs.html#art">Art Path</a>
+            <a class="submenu-link" role="menuitem" href="/programs.html#entertainment">Entertainment Path</a>
+          </div>
+        </div>
+
+        <a class="nav-link" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate</a>
+        <a class="nav-link active" data-nav="contact" href="/contact.html">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false"></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="program-page contact-page">
+    <!-- HERO -->
+    <section class="program-hero contact-hero">
+      <div class="program-hero-card">
+        <div class="program-hero-media contact-hero-media">
+          <!-- Use an existing site asset; swap if you prefer -->
+          <img src="/assets/images/Abstract_Program-hero.png" alt="" loading="lazy" decoding="async" />
+        </div>
+
+        <div class="program-hero-body">
+          <div class="breadcrumb">
+            <a href="/">Home</a><span>›</span><a href="/contact.html">Contact</a><span>›</span><span>Success</span>
+          </div>
+
+          <h1>Message Sent</h1>
+          <p class="program-subtitle">
+            Thanks for reaching out — we received your message and will respond as soon as we can.
+          </p>
+
+          <div class="pills">
+            <span class="pill">Received</span>
+            <span class="pill">In Review</span>
+            <span class="pill">Reply Soon</span>
+          </div>
+
+          <div class="btn-row" style="margin-top: 14px;">
+            <a class="btn btn-primary" href="/programs.html">Explore Programs</a>
+            <a class="btn btn-secondary" href="/">Back Home</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 60/40 shell -->
+    <section class="program-shell program-shell--6040 contact-shell">
+      <!-- LEFT -->
+      <article class="program-content">
+        <section class="program-section">
+          <h2>What happens next?</h2>
+          <p>
+            If your message includes a specific question or request, we’ll reply to the email you provided.
+            If your inquiry is time-sensitive, email us directly or call.
+          </p>
+
+          <div class="program-section" style="margin-top: 16px;">
+            <h3>Quick links</h3>
+            <ul>
+              <li><a href="/programs.html">The Possibility Paths</a></li>
+              <li><a href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Support our mission</a></li>
+              <li><a href="/contact.html">Send another message</a></li>
+            </ul>
+          </div>
+        </section>
+      </article>
+
+      <!-- RIGHT -->
+      <aside class="program-sidebar">
+        <div class="program-sidebar-card">
+          <h3>Contact</h3>
+          <ul class="contact-list">
+            <li><strong>Email:</strong> <a href="mailto:info@whostosay.org">info@whostosay.org</a></li>
+            <li><strong>Phone:</strong> <a href="tel:+17323141943">(732) 314-1943</a></li>
+          </ul>
+        </div>
+
+        <div class="program-sidebar-card">
+          <h3>Prefer email?</h3>
+          <p class="muted" style="margin-top: 8px;">
+            Send a note and include “Programs”, “Partnership”, or “Media” in the subject line.
+          </p>
+          <div class="btn-row" style="margin-top: 12px;">
+            <a class="btn btn-secondary" href="mailto:info@whostosay.org?subject=Who%E2%80%99s%20to%20Say%20%E2%80%94%20Contact">Email Us</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © <span id="year"></span> Who’s to Say ? Foundation
+  </footer>
+
+  <script>
+    (function () {
+      var el = document.getElementById("year");
+      if (el) el.textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
