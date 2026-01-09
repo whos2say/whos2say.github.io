@@ -104,12 +104,37 @@
   method="POST"
   class="contact-form"
 >
+  
   <input type="hidden" name="_subject" value="New Contact Message — Who’s to Say ? Foundation">
   <input type="hidden" name="_template" value="table">
   <input type="hidden" name="_captcha" value="true">
   <input type="hidden" name="_redirect" value="https://whostosay.org/contact-thank-you.html">
 
-  <!-- fields -->
+  <!-- REQUIRED FIELDS -->
+ <div class="form-field">
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text" required>
+  </div>
+
+  <div class="form-field">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" required>
+  </div>
+
+  <div class="form-field">
+    <label for="phone">Phone</label>
+    <input id="phone" name="phone" type="tel" required>
+  </div>
+
+  <div class="form-field">
+    <label for="message">Message</label>
+    <textarea id="message" name="message" rows="6" required></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Send</button>
+</form>
+
+
 </form>
 
         </section>
