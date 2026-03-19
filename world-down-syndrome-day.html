@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>World Down Syndrome Day 3·21·2026 | Who's to Say Foundation</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Join Who's to Say Foundation for World Down Syndrome Day on 3/21 at 3:21 PM. Celebrating that little something Extra!" name="description"/>
+<meta content="index,follow" name="robots"/>
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-46JBLZ3YPT');
+</script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="/assets/js/theme.js"></script>
+<link href="/assets/css/styles.css" rel="stylesheet"/>
+
+<style>
+  /* ── Page shell ── */
+  .wdsd-page {
+    min-height: 100vh;
+    background: #1578d4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* ── Confetti canvas ── */
+  #confetti-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Everything above canvas ── */
+  .wdsd-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  /* ── Banner strip ── */
+  .wdsd-banner {
+    background: #ffd700;
+    color: #1578d4;
+    font-size: clamp(0.75rem, 2.5vw, 1rem);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.45rem 2.5rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+
+  /* ── Logo ── */
+  .wdsd-logo {
+    width: clamp(180px, 50vw, 300px);
+    margin-bottom: 1.25rem;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.25));
+  }
+
+  /* ── Headline ── */
+  .wdsd-headline {
+    color: #fff;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.15;
+    margin: 0 0 0.4rem;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.22);
+  }
+
+  .wdsd-headline em {
+    color: #ffd700;
+    font-style: normal;
+  }
+
+  .wdsd-subhead {
+    color: rgba(255,255,255,0.88);
+    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+    text-align: center;
+    margin: 0 0 2rem;
+    font-weight: 500;
+  }
+
+  /* ── Socks accent ── */
+  .sock-row {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* ── Countdown card ── */
+  .countdown-card {
+    background: rgba(0,0,0,0.22);
+    border: 2px solid rgba(255,215,0,0.45);
+    border-radius: 24px;
+    padding: 2rem 2.5rem 1.75rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .countdown-label-top {
+    text-align: center;
+    color: #ffd700;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── Timer grid ── */
+  .timer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 420px) {
+    .timer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .timer-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .timer-digits {
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+    background: rgba(255,255,255,0.08);
+    border-radius: 14px;
+    width: 100%;
+    text-align: center;
+    padding: 0.4em 0.1em;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .timer-digits.highlight {
+    color: #ffd700;
+  }
+
+  .timer-unit-label {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+  }
+
+  /* ── Target line ── */
+  .target-line {
+    text-align: center;
+    color: rgba(255,255,255,0.72);
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+  }
+
+  .target-line strong {
+    color: #ffd700;
+  }
+
+  /* ── "It's time!" state ── */
+  .celebration-msg {
+    display: none;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .celebration-msg .cel-emoji {
+    font-size: 3rem;
+  }
+
+  .celebration-msg h2 {
+    color: #ffd700;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 900;
+    margin: 0;
+  }
+
+  .celebration-msg p {
+    color: #fff;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* ── Info block ── */
+  .wdsd-info {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+  }
+
+  .info-pill {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.45rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .info-pill span.icon {
+    font-style: normal;
+  }
+
+  /* ── Why 3:21 callout ── */
+  .why-321 {
+    margin-top: 2.5rem;
+    background: rgba(255,215,0,0.12);
+    border: 1.5px solid rgba(255,215,0,0.4);
+    border-radius: 18px;
+    padding: 1.25rem 1.5rem;
+    max-width: 540px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .why-321 h3 {
+    color: #ffd700;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+  }
+
+  .why-321 p {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ── CTA button ── */
+  .wdsd-cta {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .wdsd-btn {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+    border: none;
+  }
+
+  .wdsd-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  }
+
+  .wdsd-btn-primary {
+    background: #ffd700;
+    color: #1578d4;
+  }
+
+  .wdsd-btn-secondary {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.4);
+  }
+
+  /* ── Hashtag ── */
+  .wdsd-hashtag {
+    margin-top: 2rem;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Decorative dots ── */
+  .dot-decor {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+    pointer-events: none;
+  }
+
+  .dot-decor.d1 { width: 320px; height: 320px; background: #fff; top: -80px; right: -100px; }
+  .dot-decor.d2 { width: 200px; height: 200px; background: #ffd700; bottom: 60px; left: -60px; }
+  .dot-decor.d3 { width: 120px; height: 120px; background: #fff; bottom: 200px; right: 20px; }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+<div class="header-inner">
+<a aria-label="Who's to Say ? Foundation Home" class="brand" href="/">
+<img alt="Who's to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+<img alt="Who's to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a class="nav-link" data-nav="home" href="/">Home</a>
+<div class="nav-item has-submenu" data-submenu="programs">
+<a aria-expanded="false" aria-haspopup="true" class="nav-link" data-nav="programs" href="/programs.html">Programs</a>
+<div aria-label="Programs submenu" class="nav-submenu" role="menu">
+<a class="submenu-link" href="/programs/digital-content-creator.html" role="menuitem">Digital Path</a>
+<a class="submenu-link" href="/programs/whos-to-say-sports.html" role="menuitem">Sports Path</a>
+<a class="submenu-link" href="/programs/life-skills-independent-living.html" role="menuitem">Independence Path</a>
+<a class="submenu-link" href="/programs/community-integration-advocacy.html" role="menuitem">Community Path</a>
+<a class="submenu-link" href="/programs/maker-market-events.html" role="menuitem">Art Path</a>
+<a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+</div>
+</div>
+<a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+<a class="nav-link" href="/contact.html">Contact</a>
+</nav>
+<div class="header-actions">
+<button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+</div>
+</div>
+</header>
+
+<main id="main">
+<canvas id="confetti-canvas"></canvas>
+
+<div class="wdsd-page">
+  <!-- decorative blobs -->
+  <div class="dot-decor d1"></div>
+  <div class="dot-decor d2"></div>
+  <div class="dot-decor d3"></div>
+
+  <div class="wdsd-content">
+
+    <!-- banner -->
+    <div class="wdsd-banner">&#127882; World Down Syndrome Day &#127882;</div>
+
+    <!-- logo -->
+    <img
+      alt="Who's to Say Foundation"
+      class="wdsd-logo"
+      src="/assets/images/W2S-Logo.png"
+    />
+
+    <!-- headline -->
+    <div class="sock-row" aria-hidden="true">🧦🧦</div>
+    <h1 class="wdsd-headline">Celebrating that little something<br><em>Extra!</em> (Chromosome)</h1>
+    <p class="wdsd-subhead">Join us for World Down Syndrome Day — 3/21 at 3:21</p>
+
+    <!-- countdown card -->
+    <div class="countdown-card">
+      <div class="countdown-label-top">Countdown to 3·21 at 3:21 PM</div>
+
+      <!-- live timer -->
+      <div id="timer-display">
+        <div class="timer-grid">
+          <div class="timer-unit">
+            <div class="timer-digits" id="cd-days">--</div>
+            <div class="timer-unit-label">Days</div>
+          </div>
+          <div class="timer-unit">
+            <div class="timer-digits" id="cd-hours">--</div>
+            <div class="timer-unit-label">Hours</div>
+          </div>
+          <div class="timer-unit">
+            <div class="timer-digits highlight" id="cd-minutes">--</div>
+            <div class="timer-unit-label">Minutes</div>
+          </div>
+          <div class="timer-unit">
+            <div class="timer-digits highlight" id="cd-seconds">--</div>
+            <div class="timer-unit-label">Seconds</div>
+          </div>
+        </div>
+        <div class="target-line">
+          Until <strong>Saturday, March 21, 2026 at 3:21 PM ET</strong>
+        </div>
+      </div>
+
+      <!-- celebration state (shown after target time) -->
+      <div class="celebration-msg" id="celebration-display">
+        <div class="cel-emoji">🎉🧦🎊</div>
+        <h2>It's World Down Syndrome Day!</h2>
+        <p>Celebrate that little something <strong style="color:#ffd700">Extra!</strong></p>
+      </div>
+    </div>
+
+    <!-- event info -->
+    <div class="wdsd-info" aria-label="Event details">
+      <div class="info-pill"><span class="icon">📅</span> Saturday, March 21, 2026</div>
+      <div class="info-pill"><span class="icon">⏰</span> 3:21 PM</div>
+      <div class="info-pill"><span class="icon">📍</span> 1216 River Ave · Point Pleasant, NJ 08742</div>
+      <div class="info-pill"><span class="icon">🍦</span> Ice Cream Cake, Snacks &amp; Hugs!</div>
+    </div>
+
+    <!-- why 3:21 -->
+    <div class="why-321">
+      <h3>Why 3·21?</h3>
+      <p>Down syndrome occurs when a person is born with three copies of chromosome 21 — that <em>extra</em> chromosome is something worth celebrating! The date 3/21 and time 3:21 honor Trisomy 21.</p>
+    </div>
+
+    <!-- CTA -->
+    <div class="wdsd-cta">
+      <a class="wdsd-btn wdsd-btn-primary" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Support the Foundation</a>
+      <a class="wdsd-btn wdsd-btn-secondary" href="/contact.html">Get in Touch</a>
+    </div>
+
+    <div class="wdsd-hashtag">#WhosToSayWhatsPossible</div>
+
+  </div><!-- /wdsd-content -->
+</div><!-- /wdsd-page -->
+</main>
+
+<script>
+(function () {
+  // ── Countdown ──────────────────────────────────────────────
+  // Target: March 21 2026, 3:21:00 PM Eastern Time
+  // We build an ISO string in ET; the browser converts automatically.
+  function getTargetMs() {
+    // "2026-03-21T15:21:00" local to US Eastern (UTC-4 in March = EDT)
+    // Using the Date constructor with an explicit timezone via Intl is
+    // complex cross-browser; simplest reliable approach: hardcode UTC offset.
+    // EDT (Eastern Daylight Time) = UTC-4, so 3:21 PM ET = 19:21 UTC
+    return Date.UTC(2026, 2, 21, 19, 21, 0); // month is 0-indexed
+  }
+
+  var target = getTargetMs();
+  var daysEl    = document.getElementById('cd-days');
+  var hoursEl   = document.getElementById('cd-hours');
+  var minsEl    = document.getElementById('cd-minutes');
+  var secsEl    = document.getElementById('cd-seconds');
+  var timerDisp = document.getElementById('timer-display');
+  var celDisp   = document.getElementById('celebration-display');
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function tick() {
+    var now  = Date.now();
+    var diff = target - now;
+
+    if (diff <= 0) {
+      timerDisp.style.display = 'none';
+      celDisp.style.display   = 'flex';
+      launchCelebration();
+      return;
+    }
+
+    var totalSecs = Math.floor(diff / 1000);
+    var secs  = totalSecs % 60;
+    var mins  = Math.floor(totalSecs / 60) % 60;
+    var hours = Math.floor(totalSecs / 3600) % 24;
+    var days  = Math.floor(totalSecs / 86400);
+
+    daysEl.textContent  = pad(days);
+    hoursEl.textContent = pad(hours);
+    minsEl.textContent  = pad(mins);
+    secsEl.textContent  = pad(secs);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  // ── Confetti ───────────────────────────────────────────────
+  var canvas  = document.getElementById('confetti-canvas');
+  var ctx     = canvas.getContext('2d');
+  var pieces  = [];
+  var running = false;
+
+  var COLORS = ['#ffd700','#ffffff','#ff6b6b','#7ecfff','#a8e6cf','#ffaad4','#ffd700'];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function randomPiece(fromTop) {
+    return {
+      x:      Math.random() * canvas.width,
+      y:      fromTop ? -10 - Math.random() * 80 : Math.random() * canvas.height,
+      w:      6 + Math.random() * 8,
+      h:      4 + Math.random() * 5,
+      color:  COLORS[Math.floor(Math.random() * COLORS.length)],
+      angle:  Math.random() * Math.PI * 2,
+      vx:     (Math.random() - 0.5) * 2.5,
+      vy:     1.5 + Math.random() * 2.5,
+      va:     (Math.random() - 0.5) * 0.12,
+      shape:  Math.random() > 0.5 ? 'rect' : 'circle',
+    };
+  }
+
+  function spawnBurst(n) {
+    for (var i = 0; i < n; i++) pieces.push(randomPiece(true));
+  }
+
+  function drawFrame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = pieces.length - 1; i >= 0; i--) {
+      var p = pieces[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.angle += p.va;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = 0.9;
+      if (p.shape === 'circle') {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      }
+      ctx.restore();
+      if (p.y > canvas.height + 20) pieces.splice(i, 1);
+    }
+    if (running || pieces.length > 0) requestAnimationFrame(drawFrame);
+  }
+
+  // gentle ambient confetti on load
+  spawnBurst(60);
+  running = true;
+  drawFrame();
+
+  // stop ambient after a bit
+  setTimeout(function () { running = false; }, 5000);
+
+  // re-spawn every 8s for ongoing light confetti
+  setInterval(function () {
+    if (!running) {
+      spawnBurst(25);
+      running = true;
+      drawFrame();
+      setTimeout(function () { running = false; }, 3000);
+    }
+  }, 8000);
+
+  function launchCelebration() {
+    running = true;
+    var bursts = 0;
+    var interval = setInterval(function () {
+      spawnBurst(80);
+      bursts++;
+      if (bursts >= 6) clearInterval(interval);
+    }, 600);
+    drawFrame();
+  }
+})();
+</script>
+</body>
+</html>
