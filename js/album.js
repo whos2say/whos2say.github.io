@@ -288,11 +288,18 @@ async function loadMusicUrl() {
 
     if (error && error.code !== 'PGRST116') throw error
     
-    if (albumData?.music_url) {
-      musicUrlInput.value = albumData.music_url
-    } else {
-      musicUrlInput.value = ''
+    const savedUrl = albumData?.music_url || ''
+    musicUrlInput.value = savedUrl
+
+    // Show/hide the saved URL preview in modal
+    let urlPreview = document.getElementById('music-url-preview')
+    if (!urlPreview) {
+      urlPreview = document.createElement('div')
+      urlPreview.id = 'music-url-preview'
+      urlPreview.style.cssText = 'margin-top:8px;font-size:0.8rem;color:var(--text-muted);word-break:break-all;'
+      musicUrlInput.parentElement.appendChild(urlPreview)
     }
+    urlPreview.textContent = savedUrl ? `Saved: ${savedUrl}` : ''
   } catch (err) {
     console.error('Load music URL error:', err)
   }
@@ -315,7 +322,7 @@ async function saveMusicUrl() {
     if (error) throw error
 
     showToast(musicUrl ? '✓ Music URL saved!' : '✓ Music removed.')
-    updateMusicBadge(musicUrl ? true : false)
+    updateMusicBadge(!!musicUrl, musicUrl)
     musicModal.classList.remove('show')
   } catch (err) {
     console.error('Save music error:', err)
@@ -331,10 +338,15 @@ function closeMusicModal() {
   musicModal.classList.remove('show')
 }
 
-function updateMusicBadge(hasMusic) {
+function updateMusicBadge(hasMusic, url) {
   const badge = document.getElementById('music-badge')
   if (badge) {
     badge.style.display = hasMusic ? 'inline-block' : 'none'
+  }
+  if (musicBtnEl) {
+    musicBtnEl.title = hasMusic && url
+      ? `Music: ${url}`
+      : 'Add or edit slideshow music'
   }
 }
 
@@ -373,10 +385,10 @@ async function loadAlbum() {
   slideshowBtnEl.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
 
   try {
-    // Fetch album data including cover_photo_id
+    // Fetch album data including cover_photo_id and music_url
     const { data: albumData, error: albumError } = await supabase
       .from('albums')
-      .select('name, cover_photo_id')
+      .select('name, cover_photo_id, music_url')
       .eq('id', currentAlbumId)
       .limit(1)
       .single()
@@ -386,10 +398,12 @@ async function loadAlbum() {
     if (albumData?.name) {
       albumNameEl.textContent = albumData.name
     }
-    
+
     if (albumData?.cover_photo_id) {
       coverPhotoId = albumData.cover_photo_id
     }
+
+    updateMusicBadge(!!albumData?.music_url, albumData?.music_url)
 
     // Fetch photos for this album
     const { data: photos, error: photosError } = await supabase

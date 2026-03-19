@@ -87,20 +87,31 @@ async function loadPhotos() {
 
 function setupAudioPlayer() {
   audioControlsEl.style.display = 'flex'
-  
+  const playerContainer = audioPlayerEl.parentElement // .audio-player-small
+
   // Handle different audio source types
   if (audioUrl.includes('youtube.com') || audioUrl.includes('youtu.be')) {
-    // Extract YouTube video ID
     const videoId = extractYouTubeId(audioUrl)
     if (videoId) {
-      // Use noCookie YouTube embed for better privacy and autoplay support
-      audioPlayerEl.innerHTML = `<iframe style="width:200px;height:32px;border:1px solid var(--color-primary);border-radius:4px" src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+      audioPlayerEl.style.display = 'none'
+      audioMuteBtn.style.display = 'none'
+      const iframe = document.createElement('iframe')
+      iframe.style.cssText = 'width:220px;height:80px;border:1px solid var(--color-primary);border-radius:4px'
+      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1`
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+      playerContainer.appendChild(iframe)
     }
   } else if (audioUrl.includes('spotify.com')) {
-    // Spotify embed
     const trackId = extractSpotifyId(audioUrl)
     if (trackId) {
-      audioPlayerEl.innerHTML = `<iframe style="border-radius:6px;width:200px;height:32px;border:1px solid var(--color-primary)" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator" allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`
+      audioPlayerEl.style.display = 'none'
+      audioMuteBtn.style.display = 'none'
+      const iframe = document.createElement('iframe')
+      iframe.style.cssText = 'border-radius:6px;width:220px;height:80px;border:1px solid var(--color-primary)'
+      iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&autoplay=1`
+      iframe.allow = 'clipboard-write; encrypted-media; fullscreen; picture-in-picture; autoplay'
+      iframe.loading = 'lazy'
+      playerContainer.appendChild(iframe)
     }
   } else {
     // Assume it's a direct MP3 URL
@@ -109,25 +120,28 @@ function setupAudioPlayer() {
     audioPlayerEl.controls = true
     audioPlayerEl.style.display = 'block'
     audioPlayerEl.muted = false
+    audioMuteBtn.textContent = '🔊'
   }
-  
+
   audioMuteBtn.addEventListener('click', toggleAudioMute)
-  
-  // Try to autoplay with muted first, then unmute
+
+  // Try to autoplay after a short delay
   setTimeout(() => {
     playAudioIfPossible()
   }, 500)
 }
 
 function playAudioIfPossible() {
-  // Try to play audio with muted autoplay (works in most browsers)
-  if (audioPlayerEl.tagName === 'AUDIO' && isPlaying) {
-    audioPlayerEl.muted = false // Start unmuted
+  // Only applies to native audio elements (MP3), not iframes
+  if (audioPlayerEl.tagName === 'AUDIO' && audioPlayerEl.src) {
+    audioPlayerEl.muted = false
     const playPromise = audioPlayerEl.play()
     if (playPromise !== undefined) {
-      playPromise.catch(err => {
+      playPromise.then(() => {
+        audioMuteBtn.textContent = '🔊'
+      }).catch(err => {
         console.log('Audio autoplay blocked, user interaction required:', err)
-        audioMuteBtn.textContent = '🔊 (Click to play)'
+        audioMuteBtn.textContent = '🔊 (Click)'
       })
     }
   }

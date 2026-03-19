@@ -26,7 +26,7 @@ async function checkAuth() {
 
 function resizeImage(file, maxDimension = 1600, quality = 0.8) {
   return new Promise((resolve, reject) => {
-    if (!file.type.startsWith('image/')) {
+    if (file.type && !file.type.startsWith('image/')) {
       resolve(file)
       return
     }
@@ -115,17 +115,19 @@ async function handleFiles(files) {
       fileItem.innerHTML = `<span>${file.name}</span><span class="status">Processing...</span>`
       uploadStatusEl.appendChild(fileItem)
 
-      // Convert HEIC if needed
+      // Convert HEIC if needed (check both MIME type and file extension)
       let uploadFile = file
-      if (file.type.includes('image/heic') || file.type.includes('image/heif')) {
+      const lowerName = file.name.toLowerCase()
+      if (file.type.includes('image/heic') || file.type.includes('image/heif') ||
+          lowerName.endsWith('.heic') || lowerName.endsWith('.heif')) {
         uploadFile = await convertHeicToJpeg(file)
       }
 
-      // Resize image
+      // Resize image — treat HEIC/blank-type blobs from conversion as jpeg
       let uploadBlob = uploadFile
-      let contentType = uploadFile.type
+      let contentType = uploadFile.type || 'image/jpeg'
 
-      if (uploadFile.type.startsWith('image/')) {
+      if (uploadFile.type.startsWith('image/') || uploadFile.type === '') {
         uploadBlob = await resizeImage(uploadFile, 1600, 0.8)
         contentType = 'image/jpeg'
       }
