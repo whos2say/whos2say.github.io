@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Down Syndrome Day 3·21·2026 | Who's to Say? Foundation</title>
+  <meta name="description" content="Join Who's to Say? Foundation for World Down Syndrome Day on March 21, 2026 at 3:21 PM in Point Pleasant, NJ. Celebrating that little something Extra!">
+  <meta property="og:title"       content="World Down Syndrome Day 3·21·2026">
+  <meta property="og:description" content="Celebrating that little something Extra! (Chromosome 21) — March 21, 2026 at 3:21 PM · Point Pleasant, NJ">
+  <meta property="og:image"       content="../assets/images/W2S-Logo.png">
+  <meta name="robots" content="index,follow">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-46JBLZ3YPT');
+  </script>
+
+  <!-- Fonts: Dancing Script (script accent) + Poppins (sans-serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============================================================
+     SECTION 1 — HERO
+     ============================================================ -->
+<section id="hero" class="hero" aria-label="Event hero">
+  <canvas id="hero-confetti" aria-hidden="true"></canvas>
+
+  <!-- Floating sock / heart / balloon decorations -->
+  <span class="deco deco-s1" aria-hidden="true">🧦</span>
+  <span class="deco deco-s2" aria-hidden="true">🧦</span>
+  <span class="deco deco-s3" aria-hidden="true">💛</span>
+  <span class="deco deco-s4" aria-hidden="true">🩵</span>
+  <span class="deco deco-s5" aria-hidden="true">🎈</span>
+  <span class="deco deco-s6" aria-hidden="true">🎉</span>
+
+  <!-- Subtle ribbon swoosh -->
+  <div class="hero-swoosh" aria-hidden="true">
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+      <path d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,25 1440,50 L1440,100 L0,100 Z" fill="#fff"/>
+    </svg>
+  </div>
+
+  <div class="hero-grid">
+    <!-- ── Left column ── -->
+    <div class="hero-left">
+      <!-- ▸ Replace logo: swap out the <img> src below with your logo file path -->
+      <img
+        src="../assets/images/W2S-Logo.png"
+        alt="Who's to Say? Foundation"
+        class="hero-logo"
+      >
+
+      <div class="hero-badge">— Join Us For —</div>
+
+      <h1 class="hero-title">
+        <span class="hero-title-world">World</span>
+        <span class="hero-title-dsd">Down Syndrome Day</span>
+      </h1>
+
+      <p class="hero-sub">
+        Celebrating that little something
+        <em class="script">Extra!</em>
+      </p>
+      <p class="hero-chr">(Chromosome 21)</p>
+
+      <a href="#rsvp" class="btn btn--yellow hero-rsvp">RSVP Now 💙</a>
+    </div>
+
+    <!-- ── Right column — Event Card ── -->
+    <div class="hero-right">
+      <div class="event-card">
+        <div class="event-row">
+          <span class="event-row-icon">📅</span>
+          <div>
+            <div class="event-row-val">3/21/2026</div>
+            <div class="event-row-lbl">Saturday, March 21st</div>
+          </div>
+        </div>
+
+        <div class="event-row">
+          <span class="event-row-icon">⏰</span>
+          <div>
+            <div class="event-row-val">3:21 PM</div>
+            <div class="event-row-lbl">Eastern Time</div>
+          </div>
+        </div>
+
+        <div class="event-row">
+          <span class="event-row-icon">📍</span>
+          <div>
+            <div class="event-row-val">1216 River Ave</div>
+            <div class="event-row-lbl">Point Pleasant, NJ 08742</div>
+          </div>
+        </div>
+
+        <div class="event-divider"></div>
+
+        <p class="event-treats">
+          🍦 Ice Cream Cake &nbsp;•&nbsp; Snacks &nbsp;•&nbsp; Hugs &nbsp;•&nbsp; Fun!
+        </p>
+
+        <a href="#rsvp" class="btn btn--yellow btn--full">RSVP NOW 💙</a>
+        <p class="event-card-note">Let us know you're coming!</p>
+      </div>
+    </div>
+  </div><!-- /hero-grid -->
+
+  <!-- Wave transition into next section -->
+  <div class="hero-wave" aria-hidden="true">
+    <svg viewBox="0 0 1440 72" preserveAspectRatio="none">
+      <path d="M0,36 C240,72 480,0 720,36 C960,72 1200,0 1440,36 L1440,72 L0,72 Z" fill="#0F4BB5"/>
+    </svg>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SECTION 2 — COUNTDOWN
+     ============================================================ -->
+<section id="countdown" class="countdown" aria-label="Countdown timer">
+  <div class="wrap">
+    <span class="eyebrow">The Celebration Begins In</span>
+
+    <!-- Live timer — hidden once countdown ends -->
+    <div class="countdown-wrap" id="countdown-wrap">
+      <div class="countdown-row">
+        <div class="countdown-unit">
+          <div class="countdown-num" id="cd-days">---</div>
+          <div class="countdown-lbl">Days</div>
+        </div>
+        <span class="countdown-sep" aria-hidden="true">:</span>
+
+        <div class="countdown-unit">
+          <div class="countdown-num" id="cd-hours">--</div>
+          <div class="countdown-lbl">Hours</div>
+        </div>
+        <span class="countdown-sep" aria-hidden="true">:</span>
+
+        <div class="countdown-unit countdown-unit--gold">
+          <div class="countdown-num" id="cd-mins">--</div>
+          <div class="countdown-lbl">Minutes</div>
+        </div>
+        <span class="countdown-sep" aria-hidden="true">:</span>
+
+        <div class="countdown-unit countdown-unit--gold">
+          <div class="countdown-num" id="cd-secs">--</div>
+          <div class="countdown-lbl">Seconds</div>
+        </div>
+      </div>
+
+      <div class="countdown-target">
+        📅 Target Date: <strong>March 21, 2026</strong>
+        &nbsp;•&nbsp;
+        ⏰ <strong>3:21 PM Eastern Time</strong>
+      </div>
+    </div>
+
+    <!-- Celebration message — shown when countdown reaches zero -->
+    <div class="cel-card" id="cel-card" hidden aria-live="polite">
+      <div class="cel-emoji">🎉🧦🎊</div>
+      <h2 class="cel-title">It's World Down Syndrome Day!</h2>
+      <p class="cel-sub">
+        Celebrating that little something
+        <em class="script" style="color:var(--yellow)">Extra!</em>
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SECTION 3 — MEMORY LANE / PHOTO SHARING
+     ============================================================ -->
+<section id="memory-lane" class="memory" aria-label="Memory lane and photo sharing">
+  <div class="wrap memory-grid">
+
+    <!-- Text column -->
+    <div class="memory-text">
+      <span class="eyebrow eyebrow--blue">Memory Lane</span>
+      <h2 class="section-title section-title--dark">
+        Our Journey
+        <em class="script script--blue">Gallery</em>
+      </h2>
+
+      <p class="memory-body">
+        We want to create a fun little trip down memory lane —
+        celebrating our kids' accomplishments through the years!
+        Share your favorite photos and they may appear in the
+        slideshow at the event.
+      </p>
+
+      <ul class="memory-steps" aria-label="How to share photos">
+        <li>📸 Tap the button below to open our shared album</li>
+        <li>📤 Upload any photos you'd like to contribute</li>
+        <li>🌟 Approved photos will appear in the event slideshow!</li>
+      </ul>
+
+      <!--
+        ▸ PHOTO UPLOAD BUTTON
+        Replace REPLACE_WITH_GOOGLE_DRIVE_FOLDER_URL with your actual
+        shared Google Drive folder link. See README for setup instructions.
+      -->
+      <a
+        href="REPLACE_WITH_GOOGLE_DRIVE_FOLDER_URL"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn--yellow"
+        id="upload-btn"
+      >
+        📷 Upload Your Photos
+      </a>
+      <p class="upload-note">
+        Opens a shared Google Drive folder — no Google account required to upload.
+      </p>
+    </div>
+
+    <!-- Decorative photo stack -->
+    <div class="memory-visual" aria-hidden="true">
+      <div class="photo-stack">
+        <div class="stack-card stack-card-1">📸</div>
+        <div class="stack-card stack-card-2">🌟</div>
+        <div class="stack-card stack-card-3">💛</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SECTION 4 — GALLERY
+     ============================================================ -->
+<section id="gallery" class="gallery" aria-label="Photo gallery">
+  <div class="wrap">
+    <span class="eyebrow eyebrow--blue">Our Family</span>
+    <h2 class="section-title section-title--dark">Moments &amp; Memories</h2>
+    <p class="gallery-sub">A few of our favourite smiles through the years.</p>
+
+    <!--
+      Gallery grid — populated by script.js reading gallery-images.json.
+      Skeleton placeholders shown while loading.
+    -->
+    <div class="gallery-grid" id="gallery-grid" role="list">
+      <div class="gallery-skeleton" aria-hidden="true"></div>
+      <div class="gallery-skeleton" aria-hidden="true"></div>
+      <div class="gallery-skeleton" aria-hidden="true"></div>
+      <div class="gallery-skeleton" aria-hidden="true"></div>
+      <div class="gallery-skeleton" aria-hidden="true"></div>
+      <div class="gallery-skeleton" aria-hidden="true"></div>
+    </div>
+
+    <p class="gallery-empty" id="gallery-empty" hidden>
+      Photos coming soon! <a href="#memory-lane">Be the first to share yours. 📸</a>
+    </p>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+  <button class="lb-btn lb-close" id="lb-close" aria-label="Close photo viewer">×</button>
+  <button class="lb-btn lb-prev"  id="lb-prev"  aria-label="Previous photo">‹</button>
+  <button class="lb-btn lb-next"  id="lb-next"  aria-label="Next photo">›</button>
+  <div class="lb-inner">
+    <img class="lb-img" id="lb-img" src="" alt="">
+    <p class="lb-caption" id="lb-caption"></p>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SECTION 5 — RSVP
+     ============================================================ -->
+<section id="rsvp" class="rsvp" aria-label="RSVP form">
+  <div class="wrap rsvp-grid">
+
+    <!-- Text column -->
+    <div class="rsvp-text">
+      <span class="eyebrow">You're Invited</span>
+      <h2 class="section-title">
+        Let Us Know<br>You're Coming!
+      </h2>
+      <p class="rsvp-body">
+        We'd love to see you there.
+        RSVP so we know how much ice cream cake to order! 🍦
+      </p>
+
+      <div class="rsvp-details">
+        <div class="rsvp-detail">📅 Saturday, March 21, 2026</div>
+        <div class="rsvp-detail">⏰ 3:21 PM Eastern Time</div>
+        <div class="rsvp-detail">📍 1216 River Ave, Point Pleasant, NJ 08742</div>
+      </div>
+    </div>
+
+    <!-- Form column -->
+    <div class="form-card">
+      <!--
+        ▸ FORM ENDPOINT
+        For Formspree: set action="https://formspree.io/f/YOUR_FORM_ID"
+        For Netlify:   add data-netlify="true" to the <form> tag
+        For Google Forms: see README — use the hidden iframe proxy method
+        Until you set a real endpoint, submitting shows the success state (dev mode).
+      -->
+      <form
+        id="rsvp-form"
+        name="rsvp"
+        method="POST"
+        action="REPLACE_WITH_FORM_ENDPOINT"
+        novalidate
+        aria-label="RSVP form"
+      >
+        <!-- Family name -->
+        <div class="form-group">
+          <label for="family-name">Family Name *</label>
+          <input
+            type="text"
+            id="family-name"
+            name="family_name"
+            placeholder="e.g. The Johnson Family"
+            required
+            autocomplete="name"
+          >
+        </div>
+
+        <!-- Attending? -->
+        <div class="form-group">
+          <label>Will you be attending? *</label>
+          <div class="radio-row">
+            <label class="radio-pill">
+              <input type="radio" name="attending" value="yes" required>
+              Yes, we'll be there! 🎉
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="attending" value="no">
+              Can't make it 😔
+            </label>
+          </div>
+        </div>
+
+        <!-- Guest count (hidden until "yes" selected) -->
+        <div class="form-group" id="guest-count-group" hidden>
+          <label for="guest-count">How many people in your group?</label>
+          <select id="guest-count" name="guest_count">
+            <option value="">Select…</option>
+            <option value="1">Just me (1)</option>
+            <option value="2">2 people</option>
+            <option value="3">3 people</option>
+            <option value="4">4 people</option>
+            <option value="5">5 people</option>
+            <option value="6+">6 or more 🎊</option>
+          </select>
+        </div>
+
+        <!-- Optional note -->
+        <div class="form-group">
+          <label for="note">
+            A note for us <span class="optional">(optional)</span>
+          </label>
+          <textarea
+            id="note"
+            name="note"
+            rows="3"
+            placeholder="Anything we should know — dietary needs, etc."
+          ></textarea>
+        </div>
+
+        <!-- Photo sharing opt-in -->
+        <div class="form-group">
+          <label class="check-row">
+            <input type="checkbox" name="share_photos" value="yes">
+            <span>
+              I'd also like to share photos for the slideshow!
+              <a href="#memory-lane" class="form-link">Learn more ↗</a>
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn--yellow btn--full">
+          Send My RSVP 💙
+        </button>
+
+        <p class="form-note">
+          Your info is only used to plan this event. We promise.
+        </p>
+      </form>
+
+      <!-- Success state (hidden until form submits) -->
+      <div class="rsvp-success" id="rsvp-success" hidden aria-live="polite">
+        <div class="s-emoji">🎉</div>
+        <h3>You're on the list!</h3>
+        <p>Thanks for RSVPing! We can't wait to see you on 3/21/2026.</p>
+        <a href="#memory-lane" class="btn btn--ghost">Share Your Photos 📸</a>
+      </div>
+    </div><!-- /form-card -->
+
+  </div><!-- /rsvp-grid -->
+</section>
+
+
+<!-- ============================================================
+     FOOTER CTA
+     ============================================================ -->
+<footer class="footer-cta" aria-label="Footer call to action">
+  <div class="wrap" style="display:flex;flex-direction:column;align-items:center;">
+
+    <p class="footer-cta-headline">
+      💛 Help Us Make This Day
+      <em class="script">Unforgettable!</em>
+    </p>
+
+    <div class="footer-pill">
+      <a href="#rsvp" class="footer-pill-item">
+        <span>✅</span> <strong>RSVP Today!</strong>
+      </a>
+      <div class="footer-pill-sep" aria-hidden="true"></div>
+      <!--
+        ▸ Same Google Drive URL as the upload button above.
+        Replace REPLACE_WITH_GOOGLE_DRIVE_FOLDER_URL with your actual link.
+      -->
+      <a
+        href="REPLACE_WITH_GOOGLE_DRIVE_FOLDER_URL"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-pill-item"
+        id="footer-upload-btn"
+      >
+        <span>📷</span> <strong>Upload Your Photos →</strong>
+      </a>
+      <div class="footer-pill-sep" aria-hidden="true"></div>
+      <div class="footer-pill-item">
+        <span>💙💛</span> <strong>Spread the Love</strong>
+      </div>
+    </div>
+
+    <p class="footer-tagline">
+      Let's celebrate every smile, every milestone, every little something
+      <em class="script" style="color:var(--yellow)">extra!</em>
+      &nbsp; <strong>#WhosToSay</strong>
+    </p>
+
+    <a href="../index.html" class="footer-back">← Back to Who's to Say? Foundation</a>
+
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
