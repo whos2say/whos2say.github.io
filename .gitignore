@@ -1,0 +1,5 @@
+# Supabase credentials
+js/supabase.js
+js/credentials.js
+.env
+.env.local

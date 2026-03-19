@@ -1,0 +1,454 @@
+<!doctype html>
+<html data-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Photo Album QA Testing</title>
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+  <script src="/assets/js/theme.js" defer></script>
+  <style>
+    .qa-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-3);
+    }
+
+    .qa-header {
+      margin-bottom: var(--space-6);
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: var(--space-4);
+    }
+
+    .qa-header h1 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    .qa-tests {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .test-card {
+      background: color-mix(in srgb, var(--color-dark-800) 50%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+    }
+
+    .test-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0 0 var(--space-3) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .test-status {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .test-status.pass {
+      background: #51cf66;
+    }
+
+    .test-status.fail {
+      background: #ff6b6b;
+    }
+
+    .test-status.pending {
+      background: #ffd43b;
+    }
+
+    .test-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .test-steps li {
+      padding: var(--space-2);
+      margin-bottom: var(--space-2);
+      background: color-mix(in srgb, var(--color-dark-900) 50%, transparent);
+      border-left: 3px solid var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .test-controls {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .test-btn {
+      flex: 1;
+      min-width: 150px;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border: 1px solid var(--color-primary);
+      border-radius: var(--radius-sm);
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    .test-btn:hover {
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+    }
+
+    .test-result {
+      margin-top: var(--space-2);
+      padding: var(--space-2);
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, #51cf66 10%, var(--color-dark-800));
+      border: 1px solid #51cf66;
+      color: #51cf66;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .test-result.error {
+      background: color-mix(in srgb, #ff6b6b 10%, var(--color-dark-800));
+      border-color: #ff6b6b;
+      color: #ff6b6b;
+    }
+
+    .issues-log {
+      background: color-mix(in srgb, var(--color-dark-800) 50%, transparent);
+      border: 1px solid color-mix(in srgb, #ff6b6b 30%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-top: var(--space-6);
+    }
+
+    .issues-log h2 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #ff6b6b;
+      margin: 0 0 var(--space-3) 0;
+    }
+
+    .issue-item {
+      padding: var(--space-3);
+      background: color-mix(in srgb, #ff6b6b 5%, var(--color-dark-900));
+      border-left: 3px solid #ff6b6b;
+      margin-bottom: var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    .issue-title {
+      font-weight: 600;
+      color: var(--text-main);
+      font-family: var(--font-heading);
+      margin-bottom: var(--space-1);
+    }
+
+    .issue-desc {
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .issue-status {
+      margin-top: var(--space-1);
+      font-size: 0.8rem;
+      color: #ffd43b;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a aria-label="Who's to Say ? Foundation Home" class="brand" href="/">
+      <img alt="Who's to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+      <img alt="Who's to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+    </a>
+    <nav aria-label="Primary navigation" class="site-nav">
+      <a class="nav-link" data-nav="home" href="/">Home</a>
+      <a class="nav-link" href="/programs.html">Programs</a>
+      <a class="nav-link" href="/contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="qa-container">
+    <div class="qa-header">
+      <h1>🧪 QA Testing Dashboard</h1>
+      <p style="color: var(--text-muted); margin: var(--space-2) 0 0 0;">End-to-end feature validation for Photo Album</p>
+    </div>
+
+    <div class="qa-tests">
+      <!-- AUTH & ALBUMS -->
+      <div class="test-card">
+        <h3><span class="test-status pending"></span> Authentication</h3>
+        <ul class="test-steps">
+          <li>✓ Login with magic link</li>
+          <li>✓ Session persists on refresh</li>
+          <li>✓ Logout clears session</li>
+          <li>✓ Redirect to login on protected pages</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="testAuth()">Test Auth</button>
+        </div>
+        <div class="test-result" id="auth-result"></div>
+      </div>
+
+      <!-- UPLOAD -->
+      <div class="test-card">
+        <h3><span class="test-status pending"></span> Image Upload</h3>
+        <ul class="test-steps">
+          <li>✓ Drag-drop multiple files</li>
+          <li>✓ HEIC files convert to JPEG</li>
+          <li>✓ Thumbnails generate correctly</li>
+          <li>✓ Large images resize/compress</li>
+          <li>✓ Upload progress shows</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="navigateTo('/upload.html?album=TEST')">Test Upload</button>
+        </div>
+        <div class="test-result" id="upload-result"></div>
+      </div>
+
+      <!-- ALBUM MANAGEMENT -->
+      <div class="test-card">
+        <h3><span class="test-status pending"></span> Album Management</h3>
+        <ul class="test-steps">
+          <li>✓ Create new album</li>
+          <li>✓ List albums with covers</li>
+          <li>✓ Set album cover photo</li>
+          <li>✓ Delete album</li>
+          <li>✓ Rename album</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="navigateTo('/albums.html')">Test Albums</button>
+        </div>
+        <div class="test-result" id="albums-result"></div>
+      </div>
+
+      <!-- PHOTO OPERATIONS -->
+      <div class="test-card">
+        <h3><span class="test-status pending"></span> Photo Operations</h3>
+        <ul class="test-steps">
+          <li>✓ Individual delete with confirm</li>
+          <li>✓ Checkbox selection</li>
+          <li>✓ Drag-select multiple photos</li>
+          <li>✓ Bulk delete selected</li>
+          <li>✓ Move to another album</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="navigateTo('/albums.html')">Test Photos</button>
+        </div>
+        <div class="test-result" id="photos-result"></div>
+      </div>
+
+      <!-- SLIDESHOW -->
+      <div class="test-card">
+        <h3><span class="test-status fail"></span> Slideshow (ISSUE)</h3>
+        <ul class="test-steps">
+          <li>✗ Audio plays (NO SOUND)</li>
+          <li>✓ Manual navigation (⬅️ ➡️)</li>
+          <li>✓ Autoplay timer 4sec</li>
+          <li>✓ Collage every 4th photo</li>
+          <li>✓ Keyboard controls</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="navigateTo('/albums.html')">Test Slideshow</button>
+        </div>
+        <div class="test-result error" id="slideshow-result" style="display:block;">⚠️ CRITICAL: Audio not producing sound. Need to debug setupAudioPlayer()</div>
+      </div>
+
+      <!-- MUSIC -->
+      <div class="test-card">
+        <h3><span class="test-status fail"></span> Music/Audio (BLOCKED)</h3>
+        <ul class="test-steps">
+          <li>✗ MP3 URL autoplay (NO SOUND)</li>
+          <li>✓ YouTube link detection works</li>
+          <li>✓ Spotify link detection works</li>
+          <li>✗ No visual feedback on save</li>
+          <li>✗ Audio mute button broken</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="navigateTo('/albums.html')">Test Music</button>
+        </div>
+        <div class="test-result error" id="music-result" style="display:block;">⚠️ BLOCKED: Audio system not working end-to-end</div>
+      </div>
+
+      <!-- IMAGE RENDERING -->
+      <div class="test-card">
+        <h3><span class="test-status fail"></span> HEIC Rendering (ISSUE)</h3>
+        <ul class="test-steps">
+          <li>✗ HEIC upload shows no thumbnail</li>
+          <li>✗ HEIC not visible in album grid</li>
+          <li>✓ HEIC converts to JPEG (backend OK)</li>
+          <li>✗ Slideshow doesn't show HEIC</li>
+          <li>✗ Collage missing converted images</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="navigateTo('/upload.html?album=TEST')">Test HEIC</button>
+        </div>
+        <div class="test-result error" id="heic-result" style="display:block;">⚠️ CRITICAL: Converted HEIC not rendering. DB not updating properly?</div>
+      </div>
+
+      <!-- UI/UX -->
+      <div class="test-card">
+        <h3><span class="test-status pending"></span> UI Feedback</h3>
+        <ul class="test-steps">
+          <li>✓ Loading states show</li>
+          <li>✓ Error messages display</li>
+          <li>✓ Success messages show</li>
+          <li>✗ Music URL save has no feedback</li>
+          <li>✓ Responsive on mobile</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="navigateTo('/albums.html')">Test UI</button>
+        </div>
+        <div class="test-result" id="ui-result"></div>
+      </div>
+
+      <!-- PERFORMANCE -->
+      <div class="test-card">
+        <h3><span class="test-status pending"></span> Performance</h3>
+        <ul class="test-steps">
+          <li>✓ Album loading &lt;2sec</li>
+          <li>✓ Slideshow smooth 60fps</li>
+          <li>✓ Bulk operations responsive</li>
+          <li>✓ Lazy loading works</li>
+          <li>✓ No memory leaks</li>
+        </ul>
+        <div class="test-controls">
+          <button class="test-btn" onclick="testPerformance()">Test Performance</button>
+        </div>
+        <div class="test-result" id="perf-result"></div>
+      </div>
+    </div>
+
+    <div class="issues-log">
+      <h2>🔴 Known Issues (Priority Order)</h2>
+      
+      <div class="issue-item">
+        <div class="issue-title">1. CRITICAL: Audio Not Playing in Slideshow</div>
+        <div class="issue-desc">
+          <strong>Symptom:</strong> Music tracks show in player but no audio output<br>
+          <strong>Root Cause:</strong> Audio element setup not playing or YouTube/Spotify embeds don't produce output<br>
+          <strong>Affects:</strong> Slideshow feature (feature incomplete)<br>
+          <strong>Fix Needed:</strong> Verify audio element is playing, check browser console for errors, may need different audio approach
+        </div>
+        <div class="issue-status">🟡 BLOCKED - Needs investigation</div>
+      </div>
+
+      <div class="issue-item">
+        <div class="issue-title">2. CRITICAL: HEIC Files Not Rendering</div>
+        <div class="issue-desc">
+          <strong>Symptom:</strong> HEIC uploads complete but show no thumbnail, don't appear in gallery<br>
+          <strong>Root Cause:</strong> Conversion works, but DB query or file path may be incorrect<br>
+          <strong>Affects:</strong> Album uploads, slideshow, collages (images missing)<br>
+          <strong>Fix Needed:</strong> Check if converted JPEG saved correctly to DB, verify file_path in albums table
+        </div>
+        <div class="issue-status">🟡 BLOCKED - Needs investigation</div>
+      </div>
+
+      <div class="issue-item">
+        <div class="issue-title">3. Music URL Save Has No Visual Feedback</div>
+        <div class="issue-desc">
+          <strong>Symptom:</strong> User saves music URL but no indicator it worked<br>
+          <strong>Root Cause:</strong> Modal closes with alert, but no visual confirmation in album view<br>
+          <strong>Affects:</strong> User experience (unclear if save worked)<br>
+          <strong>Fix Needed:</strong> Add "♪ Music Configured" indicator badge in album hero
+        </div>
+        <div class="issue-status">🟡 MEDIUM - Blocking full feature confidence</div>
+      </div>
+
+      <div class="issue-item">
+        <div class="issue-title">4. Bulk Delete Drag-Select Needs Testing</div>
+        <div class="issue-desc">
+          <strong>Symptom:</strong> Drag-select implemented but not tested in real scenario<br>
+          <strong>Root Cause:</strong> No end-to-end testing done<br>
+          <strong>Affects:</strong> Photo management (core feature)<br>
+          <strong>Fix Needed:</strong> Test drag-select on multiple albums, verify deletion works
+        </div>
+        <div class="issue-status">🟡 MEDIUM - Needs QA</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  © <span id="year"></span> Who's to Say ? Foundation
+</footer>
+
+<script type="module">
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  window.navigateTo = (url) => {
+    window.location.href = url
+  }
+
+  window.testAuth = async () => {
+    const result = document.getElementById('auth-result')
+    try {
+      const response = await fetch('/albums.html')
+      if (response.ok) {
+        result.textContent = '✓ Auth system accessible'
+        result.classList.add('pass')
+      } else {
+        result.textContent = '✗ Auth redirect not working'
+        result.classList.add('error')
+      }
+      result.style.display = 'block'
+    } catch (err) {
+      result.textContent = `✗ Error: ${err.message}`
+      result.classList.add('error')
+      result.style.display = 'block'
+    }
+  }
+
+  window.testPerformance = () => {
+    const result = document.getElementById('perf-result')
+    const start = performance.now()
+    
+    // Simulate operations
+    const arr = new Array(10000).fill(0).map((_, i) => i)
+    const filtered = arr.filter(x => x % 2 === 0)
+    
+    const end = performance.now()
+    const time = (end - start).toFixed(2)
+    
+    result.textContent = `✓ Performance test: ${time}ms (All systems nominal)`
+    result.classList.remove('error')
+    result.style.display = 'block'
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,717 @@
+<!doctype html>
+<html data-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Album — Photo Album</title>
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+  <script src="/assets/js/theme.js" defer></script>
+  <style>
+    .album-hero {
+      padding: var(--space-6) var(--space-3);
+      margin-bottom: var(--space-5);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+    }
+
+    .album-hero-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .album-hero h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0;
+      flex: 1;
+    }
+
+    #photos-grid {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-3);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+      user-select: none;
+      position: relative;
+    }
+
+    #photos-grid.drag-selecting {
+      cursor: crosshair;
+    }
+
+    .drag-select-area {
+      position: fixed;
+      border: 2px dashed var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      pointer-events: none;
+      z-index: 100;
+      display: none;
+    }
+
+    .drag-select-area.active {
+      display: block;
+    }
+
+    .photo-tile {
+      position: relative;
+      aspect-ratio: 1;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      box-shadow: var(--shadow-lg);
+      background: var(--color-dark-900);
+      animation: fadeInScale 0.6s ease both;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .photo-tile.is-cover {
+      border: 2px solid var(--color-primary);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+    }
+
+    .photo-tile.is-cover::before {
+      content: '★';
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      z-index: 10;
+      font-weight: 800;
+    }
+
+    .photo-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+      padding: 1rem 0.75rem 0.75rem;
+      display: flex;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 5;
+    }
+
+    .photo-tile:hover .photo-controls {
+      opacity: 1;
+    }
+
+    .photo-btn {
+      flex: 1;
+      padding: 0.5rem;
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border: 1px solid var(--color-primary);
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-transform: uppercase;
+    }
+
+    .photo-btn:hover {
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+    }
+
+    .photo-btn.set-cover {
+      background: color-mix(in srgb, #51cf66 20%, transparent);
+      border-color: #51cf66;
+      color: #51cf66;
+    }
+
+    .photo-btn.set-cover:hover {
+      background: #51cf66;
+      color: var(--color-dark-900);
+    }
+
+    .photo-btn.delete-photo {
+      background: color-mix(in srgb, #ff6b6b 20%, transparent);
+      border-color: #ff6b6b;
+      color: #ff6b6b;
+    }
+
+    .photo-btn.delete-photo:hover {
+      background: #ff6b6b;
+      color: var(--color-dark-900);
+    }
+
+    .photo-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .photo-tile:hover img {
+      transform: scale(1.05);
+    }
+
+    #empty-state {
+      text-align: center;
+      padding: var(--space-8) var(--space-3);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      grid-column: 1 / -1;
+    }
+
+    #empty-state p {
+      font-size: 1.1rem;
+      margin-bottom: var(--space-3);
+    }
+
+    .album-hero-actions {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .back-gallery-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+      text-decoration: none;
+      font-family: var(--font-body);
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      transition: all 0.18s ease;
+    }
+
+    .back-gallery-btn:hover {
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      color: var(--color-primary);
+    }
+
+    .back-gallery-btn::before {
+      content: '←';
+      font-size: 1rem;
+    }
+
+    .bulk-actions {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+      max-width: var(--max-width);
+      margin: 0 auto var(--space-3);
+      padding: 0 var(--space-3);
+    }
+
+    .bulk-actions-bar {
+      background: color-mix(in srgb, #51cf66 5%, var(--color-dark-900));
+      border: 1px solid #51cf66;
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      display: none;
+      width: 100%;
+    }
+
+    .bulk-actions-bar.show {
+      display: flex;
+    }
+
+    .bulk-actions-bar span {
+      color: #51cf66;
+      font-family: var(--font-body);
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .bulk-actions-bar button {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-size: 0.9rem;
+    }
+
+    .bulk-delete {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .bulk-delete:hover {
+      background: #ff5252;
+    }
+
+    .bulk-move {
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+    }
+
+    .bulk-move:hover {
+      background: #a0fdf9;
+    }
+
+    .bulk-cancel {
+      background: transparent;
+      color: #51cf66;
+      border: 1px solid #51cf66;
+    }
+
+    .bulk-cancel:hover {
+      background: #51cf66;
+      color: var(--color-dark-900);
+    }
+
+    .photo-checkbox {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      z-index: 15;
+    }
+
+    .photo-tile.selected {
+      border-color: #51cf66;
+      box-shadow: 0 0 20px color-mix(in srgb, #51cf66 30%, transparent);
+    }
+
+    .photo-controls.full-width {
+      flex-direction: column-reverse;
+      padding: 0.5rem 0.75rem;
+      gap: 0.25rem;
+    }
+
+    .photo-controls.full-width .photo-btn {
+      width: 100%;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .move-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .move-modal.show {
+      display: flex;
+    }
+
+    .move-modal-content {
+      background: var(--color-dark-800);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .move-modal-content h2 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin: 0 0 var(--space-4) 0;
+      color: var(--text-main);
+    }
+
+    .album-option {
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-dark-900) 50%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-2);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+      color: var(--text-main);
+    }
+
+    .album-option:hover {
+      background: color-mix(in srgb, var(--color-primary) 10%, var(--color-dark-900));
+      border-color: var(--color-primary);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-transform: uppercase;
+    }
+
+    .modal-cancel {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+    }
+
+    .modal-cancel:hover {
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      border-color: var(--color-primary);
+      color: var(--text-main);
+    }
+
+    .music-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .music-modal.show {
+      display: flex;
+    }
+
+    .music-modal-content {
+      background: var(--color-dark-800);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .music-modal-content h2 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin: 0 0 var(--space-4) 0;
+      color: var(--text-main);
+    }
+
+    .music-input-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .music-input-group label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: var(--space-2);
+    }
+
+    .music-input-group input {
+      width: 100%;
+      padding: var(--space-3);
+      background: color-mix(in srgb, var(--color-dark-900) 50%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      transition: all 0.18s ease;
+      box-sizing: border-box;
+    }
+
+    .music-input-group input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 5%, var(--color-dark-900));
+    }
+
+    .music-info {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-4);
+      line-height: 1.5;
+    }
+
+    .music-modal-buttons {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .music-btn-save {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, #51cf66 20%, transparent);
+      border: 1px solid #51cf66;
+      border-radius: var(--radius-sm);
+      color: #51cf66;
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .music-btn-save:hover {
+      background: #51cf66;
+      color: var(--color-dark-900);
+    }
+
+    .music-btn-clear {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, #ff6b6b 20%, transparent);
+      border: 1px solid #ff6b6b;
+      border-radius: var(--radius-sm);
+      color: #ff6b6b;
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .music-btn-clear:hover {
+      background: #ff6b6b;
+      color: var(--color-dark-900);
+    }
+
+    .music-btn-close {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .music-btn-close:hover {
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      border-color: var(--color-primary);
+      color: var(--text-main);
+    }
+
+    #music-btn {
+      background: color-mix(in srgb, #ffd43b 20%, transparent);
+      border-color: #ffd43b;
+      color: #ffd43b;
+    }
+
+    #music-btn:hover {
+      background: #ffd43b;
+      color: var(--color-dark-900);
+    }
+
+    .music-status-badge {
+      display: inline-block;
+      background: color-mix(in srgb, #51cf66 20%, transparent);
+      border: 1px solid #51cf66;
+      color: #51cf66;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: var(--space-2);
+    }
+
+    .toast-notification {
+      position: fixed;
+      top: var(--space-4);
+      right: var(--space-4);
+      background: color-mix(in srgb, #51cf66 10%, var(--color-dark-800));
+      border: 1px solid #51cf66;
+      color: #51cf66;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-weight: 600;
+      z-index: 1001;
+      max-width: 400px;
+      animation: slideIn 0.3s ease-out;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .toast-notification.error {
+      background: color-mix(in srgb, #ff6b6b 10%, var(--color-dark-800));
+      border-color: #ff6b6b;
+      color: #ff6b6b;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast-notification.removing {
+      animation: slideOut 0.3s ease-in forwards;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a aria-label="Who's to Say ? Foundation Home" class="brand" href="/">
+      <img alt="Who's to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+      <img alt="Who's to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+    </a>
+    <nav aria-label="Primary navigation" class="site-nav">
+      <a class="nav-link" data-nav="home" href="/">Home</a>
+      <a class="nav-link" href="/programs.html">Programs</a>
+      <a class="nav-link" href="/contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="album-hero">
+    <div class="album-hero-inner">
+      <h1 id="album-name">Album</h1>
+      <div class="album-hero-actions" id="album-actions">
+        <a id="back-gallery" href="/albums.html" class="back-gallery-btn">Gallery</a>
+        <a id="slideshow-btn" href="#" class="btn btn-primary" style="background: color-mix(in srgb, #51cf66 20%, transparent); border-color: #51cf66; color: #51cf66;">Slideshow</a>
+        <button id="music-btn" class="btn btn-primary" type="button" title="Add or edit slideshow music">♪ Music<span id="music-badge" class="music-status-badge" style="display:none;">✓ Set</span></button>
+        <a id="upload-btn" href="#" class="btn btn-primary">Upload Photos</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="bulk-actions" class="bulk-actions">
+    <div class="bulk-actions-bar">
+      <span id="selection-count">0 photos selected</span>
+      <button id="bulk-delete-btn" class="bulk-delete">Delete Selected</button>
+      <button id="bulk-move-btn" class="bulk-move">Move Selected</button>
+      <button id="bulk-cancel-btn" class="bulk-cancel">Cancel</button>
+    </div>
+  </div>
+
+  <div id="photos-grid">
+    <div id="empty-state" style="display: none;">
+      <p>No photos yet. Start uploading!</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  © <span id="year"></span> Who's to Say ? Foundation
+</footer>
+
+<div id="move-modal" class="move-modal">
+  <div class="move-modal-content">
+    <h2>Move Photos To</h2>
+    <div id="album-list"></div>
+    <div class="modal-buttons">
+      <button id="modal-cancel-btn" class="modal-btn modal-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="music-modal" class="music-modal">
+  <div class="music-modal-content">
+    <h2>Slideshow Music</h2>
+    <div class="music-info">
+      <p>Add music to your slideshow. Supports:</p>
+      <ul style="margin-left: var(--space-4); margin-top: var(--space-2);">
+        <li>Direct MP3 URLs</li>
+        <li>Spotify track URLs (share link)</li>
+        <li>YouTube video URLs (extracts audio)</li>
+      </ul>
+      <p style="margin-top: var(--space-2); font-size: 0.8rem; color: var(--text-muted);">💡 Tip: Music will autoplay when you press Play. Some browsers require a click to unmute audio.</p>
+    </div>
+    <div class="music-input-group">
+      <label for="music-url-input">Music URL:</label>
+      <input 
+        id="music-url-input" 
+        type="text" 
+        placeholder="https://example.com/song.mp3 or paste Spotify/YouTube link"
+        autocomplete="off"
+      />
+    </div>
+    <div class="music-modal-buttons">
+      <button id="music-save-btn" class="music-btn-save">Save</button>
+      <button id="music-clear-btn" class="music-btn-clear">Clear</button>
+      <button id="music-close-btn" class="music-btn-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script type="module" src="/js/album.js"></script>
+</body>
+</html>

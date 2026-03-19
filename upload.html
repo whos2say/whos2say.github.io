@@ -1,0 +1,193 @@
+<!doctype html>
+<html data-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Upload Photos</title>
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+  <script src="/assets/js/theme.js" defer></script>
+  <style>
+    .upload-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-3);
+    }
+
+    .upload-container h1 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: var(--space-1);
+      color: var(--text-main);
+    }
+
+    .album-info {
+      font-family: var(--font-body);
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: var(--space-6);
+    }
+
+    .drop-area {
+      border: 2px dashed color-mix(in srgb, var(--color-primary) 40%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-8) var(--space-4);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      background: color-mix(in srgb, var(--color-dark-800) 50%, transparent);
+    }
+
+    .drop-area:hover {
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 5%, var(--color-dark-800));
+    }
+
+    .drop-area.drag-over {
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 15%, var(--color-dark-800));
+      box-shadow: var(--shadow-lg);
+    }
+
+    .drop-area p {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .drop-area label {
+      color: var(--color-primary);
+      text-decoration: underline;
+      cursor: pointer;
+      transition: color 0.18s ease;
+    }
+
+    .drop-area:hover label {
+      color: #a0fdf9;
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    #upload-status {
+      margin-top: var(--space-6);
+    }
+
+    .upload-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--color-dark-800) 50%, transparent);
+      margin-bottom: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .upload-item span:first-child {
+      flex: 0 1 auto;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text-main);
+      word-break: break-word;
+      max-width: 200px;
+    }
+
+    .upload-item .status {
+      flex: 0 0 auto;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .upload-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      margin-top: var(--space-2);
+      flex: 0 0 auto;
+      order: 3;
+    }
+
+    .upload-complete {
+      margin-top: var(--space-6);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, #51cf66 5%, var(--color-dark-800));
+      border: 1px solid #51cf66;
+      text-align: center;
+    }
+
+    .upload-complete h3 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #51cf66;
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    .upload-complete p {
+      font-family: var(--font-body);
+      color: var(--text-main);
+      margin: 0 0 var(--space-3) 0;
+    }
+
+    .view-album-btn {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a aria-label="Who's to Say ? Foundation Home" class="brand" href="/">
+      <img alt="Who's to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+      <img alt="Who's to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+    </a>
+    <nav aria-label="Primary navigation" class="site-nav">
+      <a class="nav-link" data-nav="home" href="/">Home</a>
+      <a class="nav-link" href="/programs.html">Programs</a>
+      <a class="nav-link" href="/contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="upload-container">
+    <h1>Upload Photos</h1>
+    <div class="album-info">
+      Album: <strong id="album-id-display">—</strong>
+    </div>
+
+    <div id="drop-area" class="drop-area">
+      <p>Drag & drop images here, or <label for="file-input">choose files</label></p>
+      <input id="file-input" type="file" accept="image/*" multiple />
+    </div>
+
+    <div id="upload-status"></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  © <span id="year"></span> Who's to Say ? Foundation
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script src="https://unpkg.com/heic2any"></script>
+<script type="module" src="/js/upload.js"></script>
+</body>
+</html>

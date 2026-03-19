@@ -1,0 +1,140 @@
+<!doctype html>
+<html data-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Photo Album</title>
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+  <script src="/assets/js/theme.js" defer></script>
+  <style>
+    #main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      padding: var(--space-6) var(--space-3);
+    }
+
+    .auth-shell {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .auth-card {
+      background: color-mix(in srgb, var(--color-dark-800) 95%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-card h2 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: var(--space-2);
+      color: var(--text-main);
+    }
+
+    .auth-card p {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-4);
+    }
+
+    #auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    #auth-email {
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--color-dark-900) 95%, transparent);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    #auth-email:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+
+    #auth-email::placeholder {
+      color: var(--text-muted);
+    }
+
+    #auth-message {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--color-dark-900) 50%, transparent);
+      color: var(--text-main);
+      min-height: 1.2rem;
+    }
+
+    #auth-message.error {
+      color: #ff6b6b;
+      background: color-mix(in srgb, #ff6b6b 10%, var(--color-dark-900));
+      border: 1px solid #ff6b6b;
+    }
+
+    #auth-message.success {
+      color: #51cf66;
+      background: color-mix(in srgb, #51cf66 10%, var(--color-dark-900));
+      border: 1px solid #51cf66;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a aria-label="Who's to Say ? Foundation Home" class="brand" href="/">
+      <img alt="Who's to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+      <img alt="Who's to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+    </a>
+    <nav aria-label="Primary navigation" class="site-nav">
+      <a class="nav-link" data-nav="home" href="/">Home</a>
+      <a class="nav-link" href="/programs.html">Programs</a>
+      <a class="nav-link" href="/contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="auth-shell">
+    <div class="auth-card">
+      <h2>Sign in</h2>
+      <p>Enter your email to receive a magic link</p>
+      <form id="auth-form">
+        <input id="auth-email" type="email" placeholder="you@example.com" required />
+        <button id="auth-submit" type="submit" class="btn btn-primary">Send Magic Link</button>
+      </form>
+      <div id="auth-message"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  © <span id="year"></span> Who's to Say ? Foundation
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script type="module" src="/js/login.js"></script>
+</body>
+</html>

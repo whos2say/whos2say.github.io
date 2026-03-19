@@ -1,0 +1,400 @@
+<!doctype html>
+<html data-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Photo Album — Complete Workflow Test</title>
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+  <script src="/assets/js/theme.js" defer></script>
+  <style>
+    .workflow-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .workflow-step {
+      background: color-mix(in srgb, var(--color-dark-800) 95%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .workflow-step.active {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+
+    .workflow-step.completed {
+      border-color: #51cf66;
+      background: color-mix(in srgb, #51cf66 5%, var(--color-dark-800));
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border: 2px solid var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+
+    .workflow-step.completed .step-number {
+      background: #51cf66;
+      border-color: #51cf66;
+      color: var(--color-dark-900);
+    }
+
+    .step-title {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+    }
+
+    .step-content {
+      margin: 1rem 0;
+    }
+
+    .step-content p {
+      font-family: var(--font-body);
+      color: var(--text-muted);
+      margin: 0.5rem 0;
+    }
+
+    .album-uuid {
+      background: color-mix(in srgb, var(--color-dark-900) 80%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      word-break: break-all;
+      margin: 0.5rem 0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .button-group button,
+    .button-group a {
+      transition: all 0.18s ease;
+    }
+
+    .workflow-status {
+      font-family: var(--font-body);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      margin: 1rem 0;
+    }
+
+    .workflow-status.loading {
+      background: color-mix(in srgb, var(--color-primary) 10%, var(--color-dark-900));
+      color: var(--color-primary);
+    }
+
+    .workflow-status.success {
+      background: color-mix(in srgb, #51cf66 10%, var(--color-dark-900));
+      color: #51cf66;
+      border: 1px solid #51cf66;
+    }
+
+    .workflow-status.error {
+      background: color-mix(in srgb, #ff6b6b 10%, var(--color-dark-900));
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+    }
+
+    .auth-state {
+      background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+      border-left: 4px solid var(--color-primary);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem;
+      font-family: var(--font-body);
+    }
+
+    .auth-state strong {
+      color: var(--text-main);
+    }
+
+    .intro-text {
+      margin-bottom: 2rem;
+    }
+
+    .intro-text h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0 0 0.5rem 0;
+    }
+
+    .intro-text p {
+      font-family: var(--font-body);
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    #album-name-input {
+      padding: 0.75rem;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--color-dark-900) 95%, transparent);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      width: 100%;
+      max-width: 300px;
+      margin: 0.5rem 0;
+    }
+
+    #album-name-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a aria-label="Who's to Say ? Foundation Home" class="brand" href="/">
+      <img alt="Who's to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+      <img alt="Who's to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+    </a>
+    <nav aria-label="Primary navigation" class="site-nav">
+      <a class="nav-link" data-nav="home" href="/">Home</a>
+      <a class="nav-link" href="/programs.html">Programs</a>
+      <a class="nav-link" href="/contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="workflow-container">
+    <div class="intro-text">
+      <h1>Photo Album Workflow</h1>
+      <p>Complete end-to-end test of the photo album application</p>
+    </div>
+
+    <div id="auth-state" class="auth-state"></div>
+
+    <!-- Step 1: Authentication -->
+    <div id="step-1" class="workflow-step">
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <div class="step-title">Sign in with Magic Link</div>
+      </div>
+      <div class="step-content">
+        <p>Start by authenticating with your email. You'll receive a magic link.</p>
+        <div class="button-group">
+          <a id="login-btn" href="/login.html?redirect=/photo-album-test.html" class="btn btn-primary">Go to Login</a>
+        </div>
+        <div id="step-1-status"></div>
+      </div>
+    </div>
+
+    <!-- Step 2: Create Test Album -->
+    <div id="step-2" class="workflow-step" style="display: none;">
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <div class="step-title">Create Test Album</div>
+      </div>
+      <div class="step-content">
+        <p>Create a new album to upload photos to.</p>
+        <input id="album-name-input" type="text" placeholder="Album name (e.g., 'Test Album')" />
+        <div class="button-group">
+          <button id="create-album-btn" class="btn btn-primary">Create Album</button>
+        </div>
+        <div id="step-2-status"></div>
+      </div>
+    </div>
+
+    <!-- Step 3: Upload Photos -->
+    <div id="step-3" class="workflow-step" style="display: none;">
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <div class="step-title">Upload Photos</div>
+      </div>
+      <div class="step-content">
+        <p id="step-3-album-info"></p>
+        <div class="button-group">
+          <a id="upload-btn" href="#" class="btn btn-primary">Go to Upload</a>
+        </div>
+        <div id="step-3-status"></div>
+      </div>
+    </div>
+
+    <!-- Step 4: View Album -->
+    <div id="step-4" class="workflow-step" style="display: none;">
+      <div class="step-header">
+        <div class="step-number">4</div>
+        <div class="step-title">View Album</div>
+      </div>
+      <div class="step-content">
+        <p>View all uploaded photos in the gallery.</p>
+        <div class="button-group">
+          <a id="view-album-btn" href="#" class="btn btn-primary">View Album</a>
+          <a href="/albums.html" class="btn">Browse All Albums</a>
+        </div>
+        <div id="step-4-status"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  © <span id="year"></span> Who's to Say ? Foundation
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script type="module">
+  import { supabase } from './js/supabase.js'
+
+  const authStateEl = document.getElementById('auth-state')
+  const step1El = document.getElementById('step-1')
+  const step2El = document.getElementById('step-2')
+  const step3El = document.getElementById('step-3')
+  const step4El = document.getElementById('step-4')
+  const createAlbumInput = document.getElementById('album-name-input')
+  const createAlbumBtn = document.getElementById('create-album-btn')
+  const uploadBtn = document.getElementById('upload-btn')
+  const viewAlbumBtn = document.getElementById('view-album-btn')
+  const step3Status = document.getElementById('step-3-status')
+  const step3AlbumInfo = document.getElementById('step-3-album-info')
+  const step2Status = document.getElementById('step-2-status')
+
+  let currentAlbumId = null
+  let isAuthenticated = false
+
+  async function checkAuth() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        isAuthenticated = true
+        authStateEl.innerHTML = `<strong>✓ Signed in as:</strong> ${user.email}`
+        authStateEl.style.borderLeftColor = '#51cf66'
+        authStateEl.style.backgroundColor = 'color-mix(in srgb, #51cf66 5%, var(--color-dark-900))'
+        
+        step1El.classList.add('completed')
+        step2El.style.display = 'block'
+        step2El.classList.add('active')
+      } else {
+        isAuthenticated = false
+        authStateEl.innerHTML = '<strong>Not signed in.</strong> Complete Step 1 first.'
+        authStateEl.style.borderLeftColor = 'var(--color-primary)'
+        step1El.classList.add('active')
+      }
+    } catch (err) {
+      console.error('Auth check error:', err)
+      authStateEl.innerHTML = '<strong>Error checking auth status</strong>'
+    }
+  }
+
+  createAlbumBtn.addEventListener('click', async () => {
+    const albumName = createAlbumInput.value.trim()
+    if (!albumName) {
+      showStatus(step2Status, 'Please enter an album name', 'error')
+      return
+    }
+
+    showStatus(step2Status, 'Creating album...', 'loading')
+    
+    try {
+      const { data: newAlbum, error } = await supabase
+        .from('albums')
+        .insert([{ name: albumName }])
+        .select()
+
+      if (error) throw error
+
+      currentAlbumId = newAlbum[0].id
+      showStatus(step2Status, `✓ Album created!`, 'success')
+      
+      step2El.classList.remove('active')
+      step2El.classList.add('completed')
+      
+      // Show step 3
+      step3El.style.display = 'block'
+      step3El.classList.add('active')
+      step3AlbumInfo.textContent = `Album ID: ${currentAlbumId}`
+      uploadBtn.href = `/upload.html?album=${encodeURIComponent(currentAlbumId)}`
+      
+      createAlbumInput.disabled = true
+      createAlbumBtn.disabled = true
+    } catch (err) {
+      showStatus(step2Status, `Error: ${err.message}`, 'error')
+    }
+  })
+
+  uploadBtn.addEventListener('click', () => {
+    window.location.href = `/upload.html?album=${encodeURIComponent(currentAlbumId)}`
+  })
+
+  viewAlbumBtn.addEventListener('click', () => {
+    window.location.href = `/album.html?album=${encodeURIComponent(currentAlbumId)}`
+  })
+
+  function showStatus(el, msg, type) {
+    el.innerHTML = `<div class="workflow-status ${type}">${msg}</div>`
+  }
+
+  function unlockViewStep() {
+    if (currentAlbumId) {
+      step3El.classList.remove('active')
+      step3El.classList.add('completed')
+      
+      step4El.style.display = 'block'
+      step4El.classList.add('active')
+      viewAlbumBtn.href = `/album.html?album=${encodeURIComponent(currentAlbumId)}`
+    }
+  }
+
+  // Check if returning from upload
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('album')) {
+    currentAlbumId = params.get('album')
+    unlockViewStep()
+  }
+
+  // Initialize
+  checkAuth()
+</script>
+</body>
+</html>
