@@ -28,7 +28,7 @@ async function handleSignIn(e) {
     const redirectParam = new URLSearchParams(window.location.search).get('redirect')
     const redirectTo = redirectParam
       ? new URL(redirectParam, SITE_ORIGIN).href
-      : SITE_ORIGIN + '/upload.html'
+      : SITE_ORIGIN + '/albums.html'
 
     const { error } = await supabase.auth.signInWithOtp({
       email,

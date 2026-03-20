@@ -8,6 +8,7 @@ const albumNameInputEl = document.getElementById('album-name-input')
 const createMessageEl = document.getElementById('create-message')
 
 let userIsAdmin = false
+let userIsLoggedIn = false
 
 async function loadAlbums() {
   try {
@@ -19,7 +20,15 @@ async function loadAlbums() {
     if (error) throw error
 
     if (!albums || albums.length === 0) {
-      emptyStateEl.textContent = 'No albums yet. Create one to get started!'
+      if (userIsLoggedIn) {
+        emptyStateEl.innerHTML = `
+          <p>No albums yet.</p>
+          <button class="btn btn-primary btn-create-first" onclick="document.getElementById('album-name-input').focus(); document.getElementById('create-album-section').scrollIntoView({behavior:'smooth'})">
+            + Create Your First Album
+          </button>`
+      } else {
+        emptyStateEl.innerHTML = '<p>No albums yet.</p>'
+      }
       emptyStateEl.style.display = 'block'
       return
     }
@@ -105,6 +114,7 @@ async function checkAuth() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     userIsAdmin = user?.email === 'joe@whostosay.org'
+    userIsLoggedIn = !!user
     createSectionEl.style.display = user ? 'block' : 'none'
   } catch (err) {
     console.error('Auth check error:', err)
