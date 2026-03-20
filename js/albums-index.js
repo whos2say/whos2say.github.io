@@ -38,26 +38,29 @@ async function loadAlbums() {
 
     for (const album of albums) {
       let coverFilePath = null
+      let coverFocalPoint = '50% 35%'
 
       if (album.cover_photo_id) {
         // Use the designated cover photo
         const { data: coverPhoto } = await supabase
           .from('photos')
-          .select('file_path')
+          .select('file_path, focal_point')
           .eq('id', album.cover_photo_id)
           .single()
         coverFilePath = coverPhoto?.file_path || null
+        coverFocalPoint = coverPhoto?.focal_point || '50% 35%'
       }
 
       if (!coverFilePath) {
         // Fall back to most recent photo
         const { data: photos } = await supabase
           .from('photos')
-          .select('file_path')
+          .select('file_path, focal_point')
           .eq('album_id', album.id)
           .order('created_at', { ascending: false })
           .limit(1)
         coverFilePath = photos?.[0]?.file_path || null
+        coverFocalPoint = photos?.[0]?.focal_point || '50% 35%'
       }
 
       const card = document.createElement('div')
@@ -69,7 +72,7 @@ async function loadAlbums() {
 
       if (coverFilePath) {
         const publicUrl = supabase.storage.from('photos').getPublicUrl(coverFilePath).data.publicUrl
-        coverHtml = `<div class="album-cover"><img src="${publicUrl}" alt="Album cover" loading="lazy" width="280" height="160" /></div>`
+        coverHtml = `<div class="album-cover"><img src="${publicUrl}" alt="Album cover" loading="lazy" width="280" height="160" style="object-position:${coverFocalPoint}" /></div>`
       } else {
         coverHtml = `<div class="album-cover"><div class="album-cover-placeholder">📷</div></div>`
       }
