@@ -118,14 +118,14 @@ function setupAudioPlayer() {
     audioPlayerEl.type = 'audio/mpeg'
     audioPlayerEl.src = audioUrl
     audioPlayerEl.controls = true
+    audioPlayerEl.loop = true
     audioPlayerEl.style.display = 'block'
     audioPlayerEl.muted = false
     audioMuteBtn.textContent = '🔊'
+    audioMuteBtn.addEventListener('click', toggleAudioMute)
   }
 
-  audioMuteBtn.addEventListener('click', toggleAudioMute)
-
-  // Try to autoplay after a short delay
+  // Try to autoplay after a short delay (may be blocked by browser until user gesture)
   setTimeout(() => {
     playAudioIfPossible()
   }, 500)
@@ -311,13 +311,13 @@ function togglePlayPause() {
   updatePlayPauseButton()
 
   if (isPlaying) {
-    // Start audio if available
-    if (audioPlayerEl && audioPlayerEl.tagName === 'AUDIO') {
+    // Start audio if an MP3 is configured and loaded
+    if (audioUrl && audioPlayerEl && audioPlayerEl.src) {
       audioPlayerEl.muted = false
       const playPromise = audioPlayerEl.play()
       if (playPromise !== undefined) {
         playPromise.catch(err => {
-          console.log('Audio autoplay blocked:', err)
+          console.log('Audio play blocked:', err)
           // Keep slideshow playing even if audio fails
         })
       }
@@ -325,7 +325,7 @@ function togglePlayPause() {
     scheduleAutoplay()
   } else {
     // Pause audio if playing
-    if (audioPlayerEl && audioPlayerEl.tagName === 'AUDIO' && !audioPlayerEl.paused) {
+    if (audioUrl && audioPlayerEl && !audioPlayerEl.paused) {
       audioPlayerEl.pause()
     }
     clearAutoplay()
