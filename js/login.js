@@ -24,8 +24,7 @@ async function handleSignIn(e) {
   submitBtn.textContent = 'Sending link...'
   
   try {
-    // TODO: Change SITE_ORIGIN to https://whostosay.org once the domain is pointed
-    const SITE_ORIGIN = 'https://whos2say-github-io.vercel.app'
+    const SITE_ORIGIN = 'https://whostosay.org'
     const redirectParam = new URLSearchParams(window.location.search).get('redirect')
     const redirectTo = redirectParam
       ? new URL(redirectParam, SITE_ORIGIN).href
