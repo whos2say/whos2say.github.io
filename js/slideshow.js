@@ -25,6 +25,54 @@ let audioUrl = null
 const AUTOPLAY_DELAY = 4000 // 4 seconds
 const COLLAGE_INTERVAL = 4 // Show collage every 4th photo
 
+// Named grid-template-area layouts for collage slides.
+// template: CSS grid-template shorthand (areas + row sizes / col sizes)
+// slots:    area names in order — photo[i] gets slotted into slots[i]
+const COLLAGE_LAYOUTS = [
+  {
+    name: 'duo',
+    count: 2,
+    template: '"a b" 1fr / 1fr 1fr',
+    slots: ['a', 'b'],
+  },
+  {
+    name: 'trio',
+    count: 3,
+    template: '"a b" 2fr "a c" 1fr / 1fr 1fr',
+    slots: ['a', 'b', 'c'],
+  },
+  {
+    name: 'quad',
+    count: 4,
+    template: '"a b" 1fr "c d" 1fr / 1fr 1fr',
+    slots: ['a', 'b', 'c', 'd'],
+  },
+  {
+    name: 'tall-stack',
+    count: 4,
+    template: '"a b" 1fr "a c" 1fr "a d" 1fr / 2fr 1fr',
+    slots: ['a', 'b', 'c', 'd'],
+  },
+  {
+    name: 'feature-top',
+    count: 4,
+    template: '"top top top" 2fr "b1 b2 b3" 1fr / 1fr 1fr 1fr',
+    slots: ['top', 'b1', 'b2', 'b3'],
+  },
+  {
+    name: 'hero-left',
+    count: 5,
+    template: '"big big sm1" 1fr "big big sm2" 1fr "sm3 sm4 sm4" 1fr / 2fr 1fr 1fr',
+    slots: ['big', 'sm1', 'sm2', 'sm3', 'sm4'],
+  },
+  {
+    name: 'magazine',
+    count: 6,
+    template: '"a b c" 1fr "a d c" 1fr "e d f" 1fr / 1fr 1fr 1fr',
+    slots: ['a', 'b', 'c', 'd', 'e', 'f'],
+  },
+]
+
 function getAlbumId() {
   return new URLSearchParams(window.location.search).get('album') || 
          new URLSearchParams(window.location.search).get('id')
@@ -61,7 +109,7 @@ async function loadPhotos() {
     // Fetch photos
     const { data: photosData, error: photosError } = await supabase
       .from('photos')
-      .select('id, file_path, created_at')
+      .select('id, file_path, created_at, focal_point')
       .eq('album_id', albumId)
       .order('created_at', { ascending: false })
 
@@ -208,34 +256,38 @@ function isCollageSlide() {
   return (currentPhotoIndex + 1) % COLLAGE_INTERVAL === 0
 }
 
-async function generateCollage() {
-  // Select up to 10 random photos from the album (excluding the current set of 4)
-  const collageSize = Math.min(10, photos.length)
-  const collagePhotos = []
-  
-  for (let i = 0; i < collageSize; i++) {
-    const randomIndex = Math.floor(Math.random() * photos.length)
-    collagePhotos.push(photos[randomIndex])
-  }
+function generateCollage() {
+  // Pick a layout whose slot count fits the number of available photos
+  const validLayouts = COLLAGE_LAYOUTS.filter(l => l.count <= photos.length)
+  const layout = validLayouts[Math.floor(Math.random() * validLayouts.length)]
 
+  // Shuffle photos and take as many as the layout needs
+  const shuffled = [...photos].sort(() => Math.random() - 0.5)
+  const collagePhotos = shuffled.slice(0, layout.count)
+
+  // Apply the grid template
+  collageGridEl.style.gridTemplate = layout.template
   collageGridEl.innerHTML = ''
-  
-  for (const photo of collagePhotos) {
+
+  collagePhotos.forEach((photo, i) => {
     const publicUrl = supabase.storage
       .from('photos')
       .getPublicUrl(photo.file_path).data.publicUrl
 
     const collageItem = document.createElement('div')
     collageItem.className = 'collage-item'
+    collageItem.style.gridArea = layout.slots[i]
+    collageItem.style.animationDelay = `${i * 0.07}s`
 
     const img = document.createElement('img')
     img.src = publicUrl
     img.alt = 'Collage photo'
     img.loading = 'lazy'
+    img.style.objectPosition = photo.focal_point || '50% 35%'
 
     collageItem.appendChild(img)
     collageGridEl.appendChild(collageItem)
-  }
+  })
 }
 
 function displayPhoto() {
@@ -244,7 +296,7 @@ function displayPhoto() {
   if (isCollageSlide()) {
     // Show collage instead of single photo
     slideShowImageEl.style.display = 'none'
-    collageViewerEl.style.display = 'flex'
+    collageViewerEl.style.display = 'block'
     generateCollage()
   } else {
     // Show single photo
@@ -410,8 +462,9 @@ window.addEventListener('resize', () => {
   }
 })
 
-// Load photos on page load
-document.addEventListener('DOMContentLoaded', loadPhotos)
+// Load photos on page load — call directly since this is a module script
+// at end of <body>, so DOM is already fully parsed when this runs.
+loadPhotos()
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {

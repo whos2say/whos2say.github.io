@@ -1,6 +1,14 @@
 import { supabase } from './supabase.js'
 
 const albumNameEl = document.getElementById('album-name')
+const albumNameEditEl = document.getElementById('album-name-edit')
+const editTitleBtnEl = document.getElementById('edit-title-btn')
+const saveTitleBtnEl = document.getElementById('save-title-btn')
+const cancelTitleBtnEl = document.getElementById('cancel-title-btn')
+const titleEditBtnsEl = document.getElementById('title-edit-btns')
+const lightboxEl = document.getElementById('lightbox')
+const lightboxImgEl = document.getElementById('lightbox-img')
+const lightboxCloseEl = document.getElementById('lightbox-close')
 const photosGridEl = document.getElementById('photos-grid')
 const emptyStateEl = document.getElementById('empty-state')
 const uploadBtnEl = document.getElementById('upload-btn')
@@ -46,6 +54,70 @@ async function checkAlbumOwner() {
   }
 }
 
+// --- Lightbox ---
+function openLightbox(url) {
+  lightboxImgEl.src = url
+  lightboxEl.classList.add('show')
+  document.body.style.overflow = 'hidden'
+}
+
+function closeLightbox() {
+  lightboxEl.classList.remove('show')
+  document.body.style.overflow = ''
+  lightboxImgEl.src = ''
+}
+
+lightboxCloseEl.addEventListener('click', closeLightbox)
+lightboxEl.addEventListener('click', e => { if (e.target === lightboxEl) closeLightbox() })
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && lightboxEl.classList.contains('show')) closeLightbox()
+})
+
+// --- Title edit ---
+function startTitleEdit() {
+  albumNameEditEl.value = albumNameEl.textContent
+  albumNameEl.style.display = 'none'
+  editTitleBtnEl.style.display = 'none'
+  albumNameEditEl.style.display = ''
+  titleEditBtnsEl.style.display = 'flex'
+  albumNameEditEl.focus()
+  albumNameEditEl.select()
+}
+
+async function saveTitleEdit() {
+  const name = albumNameEditEl.value.trim()
+  if (!name) return
+  try {
+    const { data, error } = await supabase
+      .from('albums')
+      .update({ name })
+      .eq('id', currentAlbumId)
+      .select('name')
+    if (error) throw error
+    if (!data || !data.length) throw new Error('Update blocked — check Supabase RLS UPDATE policy for albums')
+    albumNameEl.textContent = name
+    showToast('✓ Album name updated')
+  } catch (err) {
+    showToast(err.message, true)
+  }
+  cancelTitleEdit()
+}
+
+function cancelTitleEdit() {
+  albumNameEl.style.display = ''
+  editTitleBtnEl.style.display = 'inline-block'
+  albumNameEditEl.style.display = 'none'
+  titleEditBtnsEl.style.display = 'none'
+}
+
+editTitleBtnEl.addEventListener('click', startTitleEdit)
+saveTitleBtnEl.addEventListener('click', saveTitleEdit)
+cancelTitleBtnEl.addEventListener('click', cancelTitleEdit)
+albumNameEditEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveTitleEdit()
+  if (e.key === 'Escape') cancelTitleEdit()
+})
+
 function showToast(message, isError = false) {
   const toast = document.createElement('div')
   toast.className = 'toast-notification' + (isError ? ' error' : '')
@@ -67,18 +139,21 @@ async function setCoverPhoto(photoId) {
   if (!isAlbumOwner || !currentAlbumId) return
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('albums')
       .update({ cover_photo_id: photoId })
       .eq('id', currentAlbumId)
+      .select('cover_photo_id')
 
     if (error) throw error
+    if (!data || data.length === 0) throw new Error('Cover update blocked — check Supabase RLS UPDATE policy for albums table')
 
     coverPhotoId = photoId
     updateCoverIndicators()
+    showToast('✓ Cover photo set')
   } catch (err) {
     console.error('Error setting cover:', err)
-    alert('Failed to set cover photo')
+    showToast(err.message, true)
   }
 }
 
@@ -204,6 +279,15 @@ function updateSelectionUI() {
   })
 }
 
+async function deletePhoto(photoId, filePath) {
+  const { error: storageError } = await supabase.storage.from('photos').remove([filePath])
+  if (storageError) throw new Error(`Storage delete failed: ${storageError.message}`)
+
+  const { data, error: dbError } = await supabase.from('photos').delete().eq('id', photoId).select('id')
+  if (dbError) throw new Error(`DB delete failed: ${dbError.message}`)
+  if (!data || data.length === 0) throw new Error('Delete blocked — add a DELETE policy for the photos table in Supabase (Authentication → Policies)')
+}
+
 async function deleteSelectedPhotos() {
   if (selectedPhotos.size === 0 || !isAlbumOwner) return
 
@@ -214,16 +298,15 @@ async function deleteSelectedPhotos() {
     for (const photoId of selectedPhotos) {
       const photo = allPhotos.find(p => p.id === photoId)
       if (!photo) continue
-
-      await supabase.storage.from('photos').remove([photo.file_path])
-      await supabase.from('photos').delete().eq('id', photoId)
+      await deletePhoto(photoId, photo.file_path)
     }
 
     selectedPhotos.clear()
+    updateSelectionUI()
     loadAlbum()
   } catch (err) {
     console.error('Delete error:', err)
-    alert(`Failed to delete photos: ${err.message}`)
+    showToast(err.message, true)
   }
 }
 
@@ -314,12 +397,17 @@ async function saveMusicUrl() {
   const musicUrl = musicUrlInput.value.trim()
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('albums')
       .update({ music_url: musicUrl || null })
       .eq('id', currentAlbumId)
+      .select('music_url')
 
     if (error) throw error
+
+    if (!data || data.length === 0) {
+      throw new Error('Update blocked — check Supabase RLS policy for albums table (need UPDATE policy for authenticated users)')
+    }
 
     showToast(musicUrl ? '✓ Music URL saved!' : '✓ Music removed.')
     updateMusicBadge(!!musicUrl, musicUrl)
@@ -373,9 +461,12 @@ async function loadAlbum() {
   // Check if user owns this album (for cover selection UI)
   await checkAlbumOwner()
 
-  // Show/hide music button based on ownership
+  // Show/hide owner-only controls
   if (musicBtnEl) {
     musicBtnEl.style.display = isAlbumOwner ? 'inline-block' : 'none'
+  }
+  if (editTitleBtnEl) {
+    editTitleBtnEl.style.display = isAlbumOwner ? 'inline-block' : 'none'
   }
 
   // Set upload link
@@ -408,7 +499,7 @@ async function loadAlbum() {
     // Fetch photos for this album
     const { data: photos, error: photosError } = await supabase
       .from('photos')
-      .select('id, file_path, created_at')
+      .select('id, file_path, created_at, focal_point')
       .eq('album_id', currentAlbumId)
       .order('created_at', { ascending: false })
 
@@ -443,6 +534,9 @@ async function loadAlbum() {
       img.loading = 'lazy'
       img.width = 600
       img.height = 400
+      img.style.objectPosition = photo.focal_point || '50% 50%'
+      img.style.cursor = 'zoom-in'
+      img.addEventListener('click', () => openLightbox(publicUrl))
 
       tile.appendChild(img)
 
@@ -484,12 +578,12 @@ async function loadAlbum() {
             try {
               const photoToDelete = allPhotos.find(p => p.id === photo.id)
               if (photoToDelete) {
-                await supabase.storage.from('photos').remove([photoToDelete.file_path])
-                await supabase.from('photos').delete().eq('id', photo.id)
+                await deletePhoto(photo.id, photoToDelete.file_path)
                 loadAlbum()
               }
             } catch (err) {
-              alert(`Failed to delete: ${err.message}`)
+              console.error('Delete error:', err)
+              showToast(err.message, true)
             }
           }
         })

@@ -184,28 +184,39 @@
       }
     }
 
-    .collage-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 8px;
+    #collage-viewer {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      padding: 20px;
-      overflow: auto;
+    }
+
+    .collage-grid {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      gap: 4px;
+      /* grid-template set dynamically per layout */
     }
 
     .collage-item {
-      aspect-ratio: 1;
       overflow: hidden;
-      border-radius: var(--radius-sm);
-      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
       background: var(--color-dark-900);
+      position: relative;
+      animation: collageIn 0.45s ease both;
     }
 
     .collage-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      /* object-position set from focal_point */
+    }
+
+    @keyframes collageIn {
+      from { opacity: 0; transform: scale(1.04); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
     .audio-controls {
@@ -272,7 +283,7 @@
 
   <div class="slideshow-viewer">
     <img id="slideshow-image" class="slideshow-image" alt="Slideshow photo" />
-    <div id="collage-viewer" class="slideshow-image" style="display: none;">
+    <div id="collage-viewer" style="display: none;">
       <div id="collage-grid" class="collage-grid"></div>
     </div>
     <div id="empty-state" class="empty-state" style="display: none;">

@@ -68,33 +68,71 @@ function resizeImage(file, maxDimension = 1600, quality = 0.8) {
   })
 }
 
-async function convertHeicToJpeg(file) {
-  // Check if file is HEIC
-  if (!file.type.includes('image/heic') && !file.type.includes('image/heif') && !file.name.toLowerCase().endsWith('.heic')) {
-    return file
-  }
-
-  try {
-    // Check if heic2any is available
-    if (typeof window.heic2any === 'undefined') {
-      console.warn('heic2any not available, attempting canvas conversion')
-      return file
+// Lazy-load the TinyFaceDetector model once on first upload
+let faceApiReady = null
+async function ensureFaceApi() {
+  if (faceApiReady !== null) return faceApiReady
+  faceApiReady = (async () => {
+    if (!window.faceapi) return false
+    try {
+      await faceapi.nets.tinyFaceDetector.loadFromUri(
+        'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights'
+      )
+      return true
+    } catch (err) {
+      console.warn('[face] model load failed:', err)
+      return false
     }
+  })()
+  return faceApiReady
+}
 
-    // Convert HEIC to blob array
-    const convertedBlobs = await window.heic2any({
-      blob: file,
-      toType: 'image/jpeg',
-      quality: 0.8
-    })
+async function detectFocalPoint(blob) {
+  const ready = await ensureFaceApi()
+  if (!ready) return '50% 50%'
+  try {
+    const bitmap = await createImageBitmap(blob)
+    const canvas = document.createElement('canvas')
+    canvas.width = bitmap.width
+    canvas.height = bitmap.height
+    canvas.getContext('2d').drawImage(bitmap, 0, 0)
+    bitmap.close()
 
-    // heic2any returns array of blobs for multi-image HEIC
-    const blob = Array.isArray(convertedBlobs) ? convertedBlobs[0] : convertedBlobs
-    return blob
+    const detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions())
+    if (!detections.length) return '50% 50%'
+
+    // Use the largest face as the focal point
+    const primary = detections.reduce((a, b) =>
+      a.box.width * a.box.height > b.box.width * b.box.height ? a : b
+    )
+    const cx = Math.round((primary.box.left + primary.box.width / 2) / canvas.width * 100)
+    const cy = Math.round((primary.box.top + primary.box.height / 2) / canvas.height * 100)
+    return `${cx}% ${cy}%`
   } catch (err) {
-    console.warn('HEIC conversion failed, using original file:', err)
-    return file
+    console.warn('[face] detection error:', err)
+    return '50% 50%'
   }
+}
+
+async function convertHeicToJpeg(file) {
+  const lowerName = file.name.toLowerCase()
+  const isHeic = file.type.includes('image/heic') || file.type.includes('image/heif') ||
+                 lowerName.endsWith('.heic') || lowerName.endsWith('.heif')
+
+  if (!isHeic) return file
+
+  if (typeof window.heic2any === 'undefined') {
+    throw new Error('HEIC conversion library not available. Try a different browser or convert the file first.')
+  }
+
+  const convertedBlobs = await window.heic2any({
+    blob: file,
+    toType: 'image/jpeg',
+    quality: 0.8
+  })
+
+  const blob = Array.isArray(convertedBlobs) ? convertedBlobs[0] : convertedBlobs
+  return blob
 }
 
 async function handleFiles(files) {
@@ -116,12 +154,7 @@ async function handleFiles(files) {
       uploadStatusEl.appendChild(fileItem)
 
       // Convert HEIC if needed (check both MIME type and file extension)
-      let uploadFile = file
-      const lowerName = file.name.toLowerCase()
-      if (file.type.includes('image/heic') || file.type.includes('image/heif') ||
-          lowerName.endsWith('.heic') || lowerName.endsWith('.heif')) {
-        uploadFile = await convertHeicToJpeg(file)
-      }
+      let uploadFile = await convertHeicToJpeg(file)
 
       // Resize image — treat HEIC/blank-type blobs from conversion as jpeg
       let uploadBlob = uploadFile
@@ -131,6 +164,9 @@ async function handleFiles(files) {
         uploadBlob = await resizeImage(uploadFile, 1600, 0.8)
         contentType = 'image/jpeg'
       }
+
+      // Detect face focal point for smart thumbnail cropping
+      const focalPoint = await detectFocalPoint(uploadBlob)
 
       // Sanitize filename and handle HEIC conversion
       const baseName = file.name
@@ -169,7 +205,8 @@ async function handleFiles(files) {
         .insert([{
           album_id: albumId,
           file_path: path,
-          uploaded_by: user?.id || null
+          uploaded_by: user?.id || null,
+          focal_point: focalPoint
         }])
 
       if (dbError) throw dbError

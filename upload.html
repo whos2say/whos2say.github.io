@@ -172,7 +172,7 @@
 
     <div id="drop-area" class="drop-area">
       <p>Drag & drop images here, or <label for="file-input">choose files</label></p>
-      <input id="file-input" type="file" accept="image/*" multiple />
+      <input id="file-input" type="file" accept="image/*,.heic,.heif" multiple />
     </div>
 
     <div id="upload-status"></div>
@@ -188,6 +188,7 @@
 </script>
 
 <script src="https://unpkg.com/heic2any"></script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <script type="module" src="/js/upload.js"></script>
 </body>
 </html>
