@@ -57,7 +57,7 @@ async function checkSession() {
       const redirectParam = new URLSearchParams(window.location.search).get('redirect')
       const redirectTo = redirectParam 
         ? new URL(redirectParam, window.location.origin).href 
-        : '/upload.html'
+        : '/albums.html'
       window.location.href = redirectTo
     }
   } catch (err) {

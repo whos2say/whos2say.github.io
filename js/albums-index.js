@@ -111,15 +111,31 @@ function escapeHtml(text) {
 }
 
 async function checkAuth() {
+  const authEl = document.getElementById('auth-header-action')
   try {
     const { data: { user } } = await supabase.auth.getUser()
     userIsAdmin = user?.email === 'joe@whostosay.org'
     userIsLoggedIn = !!user
     createSectionEl.style.display = user ? 'block' : 'none'
+    if (authEl) {
+      if (user) {
+        authEl.innerHTML = `
+          <span style="font-family:var(--font-body);font-size:0.85rem;color:var(--text-muted);margin-right:var(--space-2)">${escapeHtml(user.email)}</span>
+          <button id="sign-out-btn" class="btn btn-primary" style="background:transparent;border-color:#ff6b6b;color:#ff6b6b">Sign Out</button>`
+        document.getElementById('sign-out-btn').addEventListener('click', signOut)
+      } else {
+        authEl.innerHTML = `<a href="/login.html" class="btn btn-primary">Sign In</a>`
+      }
+    }
   } catch (err) {
     console.error('Auth check error:', err)
     createSectionEl.style.display = 'none'
   }
+}
+
+async function signOut() {
+  await supabase.auth.signOut()
+  window.location.reload()
 }
 
 async function deleteAlbum(albumId, albumName) {
