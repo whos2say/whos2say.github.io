@@ -24,11 +24,12 @@ async function handleSignIn(e) {
   submitBtn.textContent = 'Sending link...'
   
   try {
-    // Get redirect target from URL or default to upload
+    // TODO: Change SITE_ORIGIN to https://whostosay.org once the domain is pointed
+    const SITE_ORIGIN = 'https://whos2say-github-io.vercel.app'
     const redirectParam = new URLSearchParams(window.location.search).get('redirect')
-    const redirectTo = redirectParam 
-      ? new URL(redirectParam, window.location.origin).href 
-      : window.location.origin + '/upload.html'
+    const redirectTo = redirectParam
+      ? new URL(redirectParam, SITE_ORIGIN).href
+      : SITE_ORIGIN + '/upload.html'
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
