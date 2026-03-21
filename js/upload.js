@@ -68,6 +68,25 @@ function resizeImage(file, maxDimension = 1600, quality = 0.8) {
   })
 }
 
+const VIDEO_MAX_BYTES = 200 * 1024 * 1024  // 200 MB
+const VIDEO_MAX_SECONDS = 30
+
+function isVideoFile(file) {
+  return file.type.startsWith('video/') ||
+    /\.(mp4|mov|webm|m4v)$/i.test(file.name)
+}
+
+function getVideoDuration(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const v = document.createElement('video')
+    v.preload = 'metadata'
+    v.onloadedmetadata = () => { URL.revokeObjectURL(url); resolve(v.duration) }
+    v.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read video metadata')) }
+    v.src = url
+  })
+}
+
 function getOriginalDimensions(file) {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file)
@@ -190,91 +209,100 @@ async function handleFiles(files) {
       const fileItem = document.createElement('div')
       fileItem.className = 'upload-item'
       fileItem.innerHTML = `<span>${file.name}</span><span class="status">Processing...</span>`
-      // Quality badge will be injected after dimension check (below)
       uploadStatusEl.appendChild(fileItem)
 
-      // Convert HEIC if needed (check both MIME type and file extension)
-      let uploadFile = await convertHeicToJpeg(file)
-
-      // Quality check — warn if original image is below 1280×720 (may look soft full-screen)
-      const dims = await getOriginalDimensions(uploadFile)
-      const isLowRes = dims.width > 0 && (dims.width < 1280 || dims.height < 720)
-      if (isLowRes) {
-        const warn = document.createElement('span')
-        warn.className = 'quality-warn'
-        warn.title = `Original size: ${dims.width}×${dims.height}px. May appear soft on large screens.`
-        warn.textContent = '⚠ Low res'
-        fileItem.appendChild(warn)
+      const setStatus = (text, color) => {
+        const s = fileItem.querySelector('.status')
+        s.textContent = text
+        if (color) s.style.color = color
       }
 
-      // Resize image — treat HEIC/blank-type blobs from conversion as jpeg
-      let uploadBlob = uploadFile
-      let contentType = uploadFile.type || 'image/jpeg'
-
-      if (uploadFile.type.startsWith('image/') || uploadFile.type === '') {
-        uploadBlob = await resizeImage(uploadFile, 1600, 0.8)
-        contentType = 'image/jpeg'
-      }
-
-      // Detect face focal point for smart thumbnail cropping
-      const focalPoint = await detectFocalPoint(uploadBlob)
-
-      // Sanitize filename and handle HEIC conversion
-      const baseName = file.name
-        .replace(/\.[^/.]+$/, '')
-        .replace(/\s+/g, '_')
-        .toLowerCase()
-      
-      // Always save as JPEG for consistency (handles HEIC, HEIF, and other formats)
-      const filename = contentType === 'image/jpeg' ? `${baseName}.jpg` : file.name
-      const path = `${albumId}/${Date.now()}_${filename}`
-
-      fileItem.querySelector('.status').textContent = 'Uploading...'
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('photos')
-        .upload(path, uploadBlob, {
-          cacheControl: '3600',
-          upsert: false,
-          contentType
-        })
-
-      if (uploadError) throw uploadError
-
-      // Record in database
-      const { data: { user } } = await supabase.auth.getUser()
-      
       // Validate album ID is UUID
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-      if (!uuidRegex.test(albumId)) {
-        throw new Error(`Invalid album ID: ${albumId}. Must be a valid UUID.`)
+      if (!uuidRegex.test(albumId)) throw new Error(`Invalid album ID: ${albumId}`)
+
+      const { data: { user } } = await supabase.auth.getUser()
+      let path, contentType, focalPoint = '50% 50%', previewEl
+
+      if (isVideoFile(file)) {
+        // ── VIDEO ──────────────────────────────────────────────
+        if (file.size > VIDEO_MAX_BYTES) {
+          throw new Error(`Video too large (${(file.size / 1024 / 1024).toFixed(0)} MB). Max 200 MB.`)
+        }
+        const duration = await getVideoDuration(file)
+        if (duration > VIDEO_MAX_SECONDS) {
+          throw new Error(`Video is ${Math.ceil(duration)}s — max ${VIDEO_MAX_SECONDS} seconds.`)
+        }
+
+        contentType = file.type || 'video/mp4'
+        const ext = file.name.match(/\.[^/.]+$/)?.[0]?.toLowerCase() || '.mp4'
+        const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '_').toLowerCase()
+        path = `${albumId}/${Date.now()}_${baseName}${ext}`
+
+        setStatus('Uploading…')
+        const { error: uploadError } = await supabase.storage
+          .from('photos')
+          .upload(path, file, { cacheControl: '3600', upsert: false, contentType })
+        if (uploadError) throw uploadError
+
+        previewEl = document.createElement('video')
+        previewEl.muted = true
+        previewEl.playsInline = true
+        previewEl.preload = 'metadata'
+      } else {
+        // ── IMAGE ──────────────────────────────────────────────
+        let uploadFile = await convertHeicToJpeg(file)
+
+        // Quality warning
+        const dims = await getOriginalDimensions(uploadFile)
+        const isLowRes = dims.width > 0 && (dims.width < 1280 || dims.height < 720)
+        if (isLowRes) {
+          const warn = document.createElement('span')
+          warn.className = 'quality-warn'
+          warn.title = `Original: ${dims.width}×${dims.height}px. May look soft full-screen.`
+          warn.textContent = '⚠ Low res'
+          fileItem.appendChild(warn)
+        }
+
+        let uploadBlob = uploadFile
+        contentType = uploadFile.type || 'image/jpeg'
+        if (uploadFile.type.startsWith('image/') || uploadFile.type === '') {
+          uploadBlob = await resizeImage(uploadFile, 1600, 0.8)
+          contentType = 'image/jpeg'
+        }
+
+        focalPoint = await detectFocalPoint(uploadBlob)
+
+        const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '_').toLowerCase()
+        const filename = contentType === 'image/jpeg' ? `${baseName}.jpg` : file.name
+        path = `${albumId}/${Date.now()}_${filename}`
+
+        setStatus('Uploading…')
+        const { error: uploadError } = await supabase.storage
+          .from('photos')
+          .upload(path, uploadBlob, { cacheControl: '3600', upsert: false, contentType })
+        if (uploadError) throw uploadError
+
+        previewEl = document.createElement('img')
+        previewEl.alt = filename
+        previewEl.loading = 'lazy'
       }
 
-      const { error: dbError } = await supabase
-        .from('photos')
-        .insert([{
-          album_id: albumId,
-          file_path: path,
-          uploaded_by: user?.id || null,
-          focal_point: focalPoint
-        }])
-
+      // Record in database
+      const { error: dbError } = await supabase.from('photos').insert([{
+        album_id: albumId,
+        file_path: path,
+        uploaded_by: user?.id || null,
+        focal_point: focalPoint
+      }])
       if (dbError) throw dbError
 
-      // Get public URL and show thumbnail
-      const { data: { publicUrl } } = supabase.storage
-        .from('photos')
-        .getPublicUrl(path)
+      // Show preview thumbnail
+      const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(path)
+      previewEl.src = publicUrl
+      fileItem.appendChild(previewEl)
 
-      fileItem.querySelector('.status').textContent = '✓'
-      fileItem.querySelector('.status').style.color = '#63f5ef'
-
-      const img = document.createElement('img')
-      img.src = publicUrl
-      img.alt = filename
-      img.loading = 'lazy'
-      fileItem.appendChild(img)
+      setStatus('✓', '#63f5ef')
 
       uploadedCount++
     } catch (err) {
@@ -292,7 +320,7 @@ async function handleFiles(files) {
   completeMsg.className = 'upload-complete'
   completeMsg.innerHTML = `
     <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border)">
-      <strong style="color: var(--text-main); font-size: 1.1rem">✓ Uploaded ${uploadedCount} photo(s)</strong>
+      <strong style="color: var(--text-main); font-size: 1.1rem">✓ Uploaded ${uploadedCount} file(s)</strong>
       <div style="margin-top: 12px">
         <a href="album.html?album=${encodeURIComponent(albumId)}" class="btn btn-primary" style="display: inline-block">View Album</a>
       </div>

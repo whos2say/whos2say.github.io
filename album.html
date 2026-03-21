@@ -166,7 +166,8 @@
       color: var(--color-dark-900);
     }
 
-    .photo-tile img {
+    .photo-tile img,
+    .photo-tile video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -174,8 +175,23 @@
       transition: transform 0.3s ease;
     }
 
-    .photo-tile:hover img {
+    .photo-tile:hover img,
+    .photo-tile:hover video {
       transform: scale(1.05);
+    }
+
+    .video-badge {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.18rem 0.45rem;
+      border-radius: var(--radius-sm);
+      z-index: 10;
+      pointer-events: none;
     }
 
     #empty-state {
@@ -1188,6 +1204,7 @@
   <div class="lightbox-inner">
     <div class="lightbox-photo-wrap">
       <img id="lightbox-img" class="lightbox-img" alt="Full size photo" />
+      <video id="lightbox-video" class="lightbox-img" controls playsinline style="display:none;max-height:90vh;background:#000"></video>
     </div>
     <aside class="lightbox-comments" aria-label="Photo comments">
       <div class="lc-header">

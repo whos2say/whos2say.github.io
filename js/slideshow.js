@@ -20,8 +20,13 @@ const audioControlsEl = document.getElementById('audio-controls')
 const audioPlayerEl = document.getElementById('slideshow-audio')
 const audioMuteBtn = document.getElementById('audio-mute-btn')
 const slideshowBgEl = document.getElementById('slideshow-bg')
+const slideshowVideoEl = document.getElementById('slideshow-video')
 const QUALITY_MIN_W = 1280
 const QUALITY_MIN_H = 720
+
+function isVideoPath(path) {
+  return /\.(mp4|mov|webm|m4v)$/i.test(path || '')
+}
 
 function isPortraitMobile() {
   return window.matchMedia('(max-width: 768px) and (orientation: portrait)').matches
@@ -447,48 +452,77 @@ function displayPhoto() {
     collageViewerEl.style.display = 'block'
     generateCollage()
   } else {
-    // Show single photo — full-screen cover with focal_point
+    // Show single photo or video — full-screen
     collageViewerEl.style.display = 'none'
-    slideShowImageEl.style.display = 'block'
 
     const photo = photos[currentPhotoIndex]
     const publicUrl = supabase.storage
       .from('photos')
       .getPublicUrl(photo.file_path).data.publicUrl
 
-    // Set initial object-position from stored focal_point (will be refined on load)
-    const fp = photo.focal_point || '50% 35%'
-    slideShowImageEl.style.objectPosition = fp
-    if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = fp
+    if (isVideoPath(photo.file_path)) {
+      // ── VIDEO SLIDE ──────────────────────────────────────
+      slideShowImageEl.style.display = 'none'
+      slideShowImageEl.src = ''
+      if (slideshowBgEl) { slideshowBgEl.style.display = 'none'; slideshowBgEl.style.backgroundImage = '' }
 
-    // After image loads: mathematically center the face & check quality
-    const checkQuality = () => {
-      const nw = slideShowImageEl.naturalWidth
-      const nh = slideShowImageEl.naturalHeight
-      if (nw && nh) {
-        const [fx, fy] = parseFocalPoint(fp)
-        const centeredPos = computeCenteredObjectPosition(fx, fy, nw, nh, window.innerWidth, window.innerHeight)
-        slideShowImageEl.style.objectPosition = centeredPos
-        if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = centeredPos
+      slideshowVideoEl.style.display = 'block'
+      // Remove old ended listener before reassigning
+      slideshowVideoEl.onended = null
+      slideshowVideoEl.src = publicUrl
+      slideshowVideoEl.muted = false
+      slideshowVideoEl.load()
+      slideshowVideoEl.play().catch(() => {
+        // Autoplay blocked — still show the video, user can hit Play
+        slideshowVideoEl.muted = true
+        slideshowVideoEl.play().catch(() => {})
+      })
+      // When video ends, advance if playing
+      slideshowVideoEl.onended = () => {
+        if (isPlaying) { nextPhoto(); scheduleAutoplay() }
       }
-      const lowRes = nw < QUALITY_MIN_W || nh < QUALITY_MIN_H
-      if (slideshowBgEl) {
-        if (lowRes) {
-          slideshowBgEl.style.backgroundImage = `url("${publicUrl.replace(/"/g, '%22')}")`
-          slideshowBgEl.style.display = 'block'
-          slideShowImageEl.classList.add('low-res')
-        } else {
-          slideshowBgEl.style.backgroundImage = ''
-          slideshowBgEl.style.display = 'none'
-          slideShowImageEl.classList.remove('low-res')
+    } else {
+      // ── IMAGE SLIDE ──────────────────────────────────────
+      slideshowVideoEl.style.display = 'none'
+      slideshowVideoEl.pause()
+      slideshowVideoEl.src = ''
+
+      slideShowImageEl.style.display = 'block'
+
+      // Set initial object-position from stored focal_point (will be refined on load)
+      const fp = photo.focal_point || '50% 35%'
+      slideShowImageEl.style.objectPosition = fp
+      if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = fp
+
+      // After image loads: mathematically center the face & check quality
+      const checkQuality = () => {
+        const nw = slideShowImageEl.naturalWidth
+        const nh = slideShowImageEl.naturalHeight
+        if (nw && nh) {
+          const [fx, fy] = parseFocalPoint(fp)
+          const centeredPos = computeCenteredObjectPosition(fx, fy, nw, nh, window.innerWidth, window.innerHeight)
+          slideShowImageEl.style.objectPosition = centeredPos
+          if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = centeredPos
+        }
+        const lowRes = nw < QUALITY_MIN_W || nh < QUALITY_MIN_H
+        if (slideshowBgEl) {
+          if (lowRes) {
+            slideshowBgEl.style.backgroundImage = `url("${publicUrl.replace(/"/g, '%22')}")`
+            slideshowBgEl.style.display = 'block'
+            slideShowImageEl.classList.add('low-res')
+          } else {
+            slideshowBgEl.style.backgroundImage = ''
+            slideshowBgEl.style.display = 'none'
+            slideShowImageEl.classList.remove('low-res')
+          }
         }
       }
+      slideShowImageEl.onload = checkQuality
+      slideShowImageEl.src = publicUrl
+      slideShowImageEl.alt = `Photo ${currentPhotoIndex + 1} of ${photos.length}`
+      // Handle cached images (onload may not fire)
+      if (slideShowImageEl.complete && slideShowImageEl.naturalWidth > 0) checkQuality()
     }
-    slideShowImageEl.onload = checkQuality
-    slideShowImageEl.src = publicUrl
-    slideShowImageEl.alt = `Photo ${currentPhotoIndex + 1} of ${photos.length}`
-    // Handle cached images (onload may not fire)
-    if (slideShowImageEl.complete && slideShowImageEl.naturalWidth > 0) checkQuality()
   }
 
   updateCounter()
@@ -714,7 +748,6 @@ loadPhotos()
 window.addEventListener('beforeunload', () => {
   clearAutoplay()
   if (hideControlsTimer) clearTimeout(hideControlsTimer)
-  if (audioPlayerEl) {
-    audioPlayerEl.pause()
-  }
+  if (audioPlayerEl) audioPlayerEl.pause()
+  if (slideshowVideoEl) slideshowVideoEl.pause()
 })

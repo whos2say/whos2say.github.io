@@ -8,7 +8,12 @@ const cancelTitleBtnEl = document.getElementById('cancel-title-btn')
 const titleEditBtnsEl = document.getElementById('title-edit-btns')
 const lightboxEl = document.getElementById('lightbox')
 const lightboxImgEl = document.getElementById('lightbox-img')
+const lightboxVideoEl = document.getElementById('lightbox-video')
 const lightboxCloseEl = document.getElementById('lightbox-close')
+
+function isVideoPath(path) {
+  return /\.(mp4|mov|webm|m4v)$/i.test(path || '')
+}
 const photosGridEl = document.getElementById('photos-grid')
 const emptyStateEl = document.getElementById('empty-state')
 const uploadBtnEl = document.getElementById('upload-btn')
@@ -60,8 +65,20 @@ async function checkAlbumOwner() {
 }
 
 // --- Lightbox ---
-function openLightbox(url, photoId) {
-  lightboxImgEl.src = url
+function openLightbox(url, photoId, filePath) {
+  const isVideo = isVideoPath(filePath || url)
+  if (isVideo) {
+    lightboxImgEl.style.display = 'none'
+    lightboxImgEl.src = ''
+    lightboxVideoEl.style.display = 'block'
+    lightboxVideoEl.src = url
+    lightboxVideoEl.load()
+  } else {
+    lightboxVideoEl.style.display = 'none'
+    lightboxVideoEl.src = ''
+    lightboxImgEl.style.display = 'block'
+    lightboxImgEl.src = url
+  }
   lightboxEl.classList.add('show')
   document.body.style.overflow = 'hidden'
   currentLightboxPhotoId = photoId || null
@@ -72,6 +89,8 @@ function closeLightbox() {
   lightboxEl.classList.remove('show')
   document.body.style.overflow = ''
   lightboxImgEl.src = ''
+  lightboxVideoEl.pause()
+  lightboxVideoEl.src = ''
   currentLightboxPhotoId = null
 }
 
@@ -739,17 +758,36 @@ async function loadAlbum() {
       tile.dataset.photoId = photo.id
       tile.style.animationDelay = `${idx * 0.05}s`
 
-      const img = document.createElement('img')
-      img.src = publicUrl
-      img.alt = `Photo from album`
-      img.loading = 'lazy'
-      img.width = 600
-      img.height = 400
-      img.style.objectPosition = photo.focal_point || '50% 50%'
-      img.style.cursor = 'zoom-in'
-      img.addEventListener('click', () => openLightbox(publicUrl, photo.id))
+      const isVid = isVideoPath(photo.file_path)
+      let media
+      if (isVid) {
+        media = document.createElement('video')
+        media.src = publicUrl
+        media.muted = true
+        media.playsInline = true
+        media.loop = true
+        media.preload = 'metadata'
+        media.style.cursor = 'pointer'
+        media.addEventListener('mouseenter', () => media.play())
+        media.addEventListener('mouseleave', () => { media.pause(); media.currentTime = 0 })
 
-      tile.appendChild(img)
+        const badge = document.createElement('span')
+        badge.className = 'video-badge'
+        badge.textContent = '▶ Video'
+        tile.appendChild(badge)
+      } else {
+        media = document.createElement('img')
+        media.src = publicUrl
+        media.alt = 'Photo from album'
+        media.loading = 'lazy'
+        media.width = 600
+        media.height = 400
+        media.style.objectPosition = photo.focal_point || '50% 50%'
+        media.style.cursor = 'zoom-in'
+      }
+      media.addEventListener('click', () => openLightbox(publicUrl, photo.id, photo.file_path))
+
+      tile.appendChild(media)
 
       // Add checkbox for selection
       if (isAlbumOwner) {

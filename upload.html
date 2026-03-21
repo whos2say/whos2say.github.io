@@ -105,7 +105,8 @@
       transition: color 0.2s ease;
     }
 
-    .upload-item img {
+    .upload-item img,
+    .upload-item video {
       width: 80px;
       height: 80px;
       object-fit: cover;
@@ -255,7 +256,7 @@
 
 <main id="main">
   <div class="upload-container">
-    <h1>Upload Photos</h1>
+    <h1>Upload Photos &amp; Videos</h1>
     <div class="album-info">
       Album: <strong id="album-id-display">—</strong>
     </div>
@@ -278,8 +279,9 @@
     </div>
 
     <div id="drop-area" class="drop-area">
-      <p>Drag & drop images here, or <label for="file-input">choose files</label></p>
-      <input id="file-input" type="file" accept="image/*,.heic,.heif" multiple autocomplete="off" />
+      <p>Drag &amp; drop photos or videos here, or <label for="file-input">choose files</label></p>
+      <p style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted)">Videos: MP4, MOV, WebM · max 30 seconds · max 200 MB</p>
+      <input id="file-input" type="file" accept="image/*,.heic,.heif,video/mp4,video/quicktime,video/webm,video/x-m4v" multiple autocomplete="off" />
     </div>
 
     <div id="upload-status"></div>
