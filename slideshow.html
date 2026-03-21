@@ -39,10 +39,19 @@
     }
 
     .slideshow-image {
-      max-width: 100vw;
-      max-height: 100vh;
-      object-fit: contain;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 35%;
       animation: fadeIn 0.3s ease-in-out;
+      z-index: 1;
+    }
+
+    .slideshow-image.low-res {
+      object-fit: contain;
+      background: transparent;
     }
 
     @keyframes fadeIn {
@@ -216,6 +225,17 @@
       object-position: 50% 35%; /* face-bias fallback; JS overrides with precise focal_point */
     }
 
+    .slideshow-bg {
+      position: absolute;
+      inset: -8%;
+      background-size: cover;
+      background-position: 50% 35%;
+      filter: blur(22px) brightness(0.28) saturate(1.3);
+      display: none;
+      z-index: 0;
+      pointer-events: none;
+    }
+
     @keyframes collageIn {
       from { opacity: 0; transform: scale(1.04); }
       to   { opacity: 1; transform: scale(1); }
@@ -265,6 +285,30 @@
       background: var(--color-primary);
       color: var(--color-dark-900);
     }
+
+    @media (max-width: 640px) {
+      .slideshow-controls {
+        padding: var(--space-3) var(--space-2);
+        flex-wrap: wrap;
+        gap: var(--space-2);
+      }
+      .slideshow-buttons {
+        gap: var(--space-2);
+      }
+      .slide-btn {
+        min-width: 52px;
+        padding: 0.45rem 0.6rem;
+        font-size: 0.72rem;
+        letter-spacing: 0;
+      }
+      .slide-btn.play-pause { min-width: 68px; }
+      .slideshow-counter {
+        font-size: 0.78rem;
+        padding: var(--space-1) var(--space-2);
+      }
+      .slideshow-title { font-size: 0.85rem; }
+      .slideshow-top-bar { padding: var(--space-2) var(--space-2); }
+    }
   </style>
 </head>
 <body>
@@ -284,6 +328,7 @@
   </div>
 
   <div class="slideshow-viewer">
+    <div id="slideshow-bg" class="slideshow-bg"></div>
     <img id="slideshow-image" class="slideshow-image" alt="Slideshow photo" />
     <div id="collage-viewer" style="display: none;">
       <div id="collage-grid" class="collage-grid"></div>

@@ -68,6 +68,45 @@ function resizeImage(file, maxDimension = 1600, quality = 0.8) {
   })
 }
 
+function getOriginalDimensions(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight })
+      URL.revokeObjectURL(url)
+    }
+    img.onerror = () => { resolve({ width: 0, height: 0 }); URL.revokeObjectURL(url) }
+    img.src = url
+  })
+}
+
+async function handleGooglePhotosClick() {
+  const btn = document.getElementById('google-photos-btn')
+  const statusEl = document.getElementById('google-photos-status')
+  const setupNote = document.getElementById('google-setup-note')
+
+  try {
+    const { openGooglePhotosPicker } = await import('./google-photos.js')
+    btn.disabled = true
+    statusEl.style.display = 'block'
+    statusEl.textContent = 'Opening Google Photos…'
+
+    await openGooglePhotosPicker(async (blobs) => {
+      statusEl.textContent = `Importing ${blobs.length} photo(s)…`
+      const fileList = blobs.map(b => new File([b.blob], b.name, { type: 'image/jpeg' }))
+      await handleFiles(fileList)
+      statusEl.style.display = 'none'
+    })
+  } catch (err) {
+    console.error('Google Photos error:', err)
+    statusEl.textContent = '⚠ ' + (err.message || 'Google Photos setup required')
+    if (setupNote) setupNote.style.display = 'block'
+  } finally {
+    btn.disabled = false
+  }
+}
+
 // Lazy-load the TinyFaceDetector model once on first upload
 let faceApiReady = null
 async function ensureFaceApi() {
@@ -151,10 +190,22 @@ async function handleFiles(files) {
       const fileItem = document.createElement('div')
       fileItem.className = 'upload-item'
       fileItem.innerHTML = `<span>${file.name}</span><span class="status">Processing...</span>`
+      // Quality badge will be injected after dimension check (below)
       uploadStatusEl.appendChild(fileItem)
 
       // Convert HEIC if needed (check both MIME type and file extension)
       let uploadFile = await convertHeicToJpeg(file)
+
+      // Quality check — warn if original image is below 1280×720 (may look soft full-screen)
+      const dims = await getOriginalDimensions(uploadFile)
+      const isLowRes = dims.width > 0 && (dims.width < 1280 || dims.height < 720)
+      if (isLowRes) {
+        const warn = document.createElement('span')
+        warn.className = 'quality-warn'
+        warn.title = `Original size: ${dims.width}×${dims.height}px. May appear soft on large screens.`
+        warn.textContent = '⚠ Low res'
+        fileItem.appendChild(warn)
+      }
 
       // Resize image — treat HEIC/blank-type blobs from conversion as jpeg
       let uploadBlob = uploadFile
@@ -290,4 +341,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   checkAuth()
+
+  // Google Photos import button
+  const googleBtn = document.getElementById('google-photos-btn')
+  if (googleBtn) googleBtn.addEventListener('click', handleGooglePhotosClick)
+
+  // Show iOS iCloud hint on mobile Apple devices
+  const iosHint = document.getElementById('ios-hint')
+  if (iosHint && /iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    iosHint.style.display = 'inline-flex'
+  }
 })

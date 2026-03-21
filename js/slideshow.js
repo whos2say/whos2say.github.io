@@ -19,6 +19,13 @@ const slideshowTopBarEl = document.querySelector('.slideshow-top-bar')
 const audioControlsEl = document.getElementById('audio-controls')
 const audioPlayerEl = document.getElementById('slideshow-audio')
 const audioMuteBtn = document.getElementById('audio-mute-btn')
+const slideshowBgEl = document.getElementById('slideshow-bg')
+const QUALITY_MIN_W = 1280
+const QUALITY_MIN_H = 720
+
+function isPortraitMobile() {
+  return window.matchMedia('(max-width: 768px) and (orientation: portrait)').matches
+}
 
 let photos = []
 let currentPhotoIndex = 0
@@ -329,7 +336,9 @@ function isCollageSlide() {
 
 function generateCollage() {
   // Pick a layout whose slot count fits the number of available photos
-  const validLayouts = COLLAGE_LAYOUTS.filter(l => l.count <= photos.length)
+  // On portrait mobile, only use simple layouts (duo/trio) to avoid tiny cells
+  const maxSlots = isPortraitMobile() ? 3 : 99
+  const validLayouts = COLLAGE_LAYOUTS.filter(l => l.count <= photos.length && l.count <= maxSlots)
   const layout = validLayouts[Math.floor(Math.random() * validLayouts.length)]
 
   // Shuffle photos and take as many as the layout needs
@@ -370,7 +379,7 @@ function displayPhoto() {
     collageViewerEl.style.display = 'block'
     generateCollage()
   } else {
-    // Show single photo
+    // Show single photo — full-screen cover with focal_point
     collageViewerEl.style.display = 'none'
     slideShowImageEl.style.display = 'block'
 
@@ -379,32 +388,38 @@ function displayPhoto() {
       .from('photos')
       .getPublicUrl(photo.file_path).data.publicUrl
 
+    // Apply face-detected focal point for cover crop positioning
+    const fp = photo.focal_point || '50% 35%'
+    slideShowImageEl.style.objectPosition = fp
+    if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = fp
+
+    // Quality check on load: show blurred bg for images below 1280×720
+    const checkQuality = () => {
+      const lowRes = slideShowImageEl.naturalWidth < QUALITY_MIN_W ||
+                     slideShowImageEl.naturalHeight < QUALITY_MIN_H
+      if (slideshowBgEl) {
+        if (lowRes) {
+          slideshowBgEl.style.backgroundImage = `url("${publicUrl.replace(/"/g, '%22')}")`
+          slideshowBgEl.style.display = 'block'
+          slideShowImageEl.classList.add('low-res')
+        } else {
+          slideshowBgEl.style.backgroundImage = ''
+          slideshowBgEl.style.display = 'none'
+          slideShowImageEl.classList.remove('low-res')
+        }
+      }
+    }
+    slideShowImageEl.onload = checkQuality
     slideShowImageEl.src = publicUrl
     slideShowImageEl.alt = `Photo ${currentPhotoIndex + 1} of ${photos.length}`
-
-    // Scale based on resolution
-    scaleImageForDisplay()
+    // Handle cached images (onload may not fire)
+    if (slideShowImageEl.complete && slideShowImageEl.naturalWidth > 0) checkQuality()
   }
 
   updateCounter()
   resetProgress()
 }
 
-function scaleImageForDisplay() {
-  // Check if screen resolution supports HQ 1080x720
-  const screenWidth = window.innerWidth
-  const screenHeight = window.innerHeight
-
-  if (screenWidth >= 1080 && screenHeight >= 720) {
-    // Scale for HQ display
-    slideShowImageEl.style.maxWidth = '1080px'
-    slideShowImageEl.style.maxHeight = '720px'
-  } else {
-    // Use full viewport
-    slideShowImageEl.style.maxWidth = '100vw'
-    slideShowImageEl.style.maxHeight = '100vh'
-  }
-}
 
 function updateCounter() {
   if (isCollageSlide()) {
@@ -547,6 +562,21 @@ function resetControlHide() {
 document.addEventListener('mousemove', resetControlHide)
 document.addEventListener('click', resetControlHide)
 
+// Touch / swipe navigation (mobile)
+let _touchX = 0, _touchY = 0
+document.addEventListener('touchstart', e => {
+  _touchX = e.touches[0].clientX
+  _touchY = e.touches[0].clientY
+  resetControlHide()
+}, { passive: true })
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - _touchX
+  const dy = e.changedTouches[0].clientY - _touchY
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
+    if (dx > 0) prevPhoto(); else nextPhoto()
+  }
+}, { passive: true })
+
 // ---- Navigation helpers ----
 
 function navigateBack() {
@@ -600,12 +630,6 @@ exitBtnEl.addEventListener('click', () => {
 
 document.addEventListener('keydown', handleKeyPress)
 
-// Handle window resize for scaling
-window.addEventListener('resize', () => {
-  if (photos.length > 0 && !isCollageSlide()) {
-    scaleImageForDisplay()
-  }
-})
 
 // Load photos on page load — call directly since this is a module script
 // at end of <body>, so DOM is already fully parsed when this runs.
