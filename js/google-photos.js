@@ -15,7 +15,7 @@
  * Once configured, the "Google Photos" button on the upload page will work.
  */
 
-const GOOGLE_CLIENT_ID = '620985968525-k3o97158rp6du1c3633ngnj9c1gm0o75.apps.googleusercontent.com'
+const GOOGLE_CLIENT_ID = '620985968525-665ve2r1oedvvqf9br24ql3g91746poj.apps.googleusercontent.com'
 // ↑ Replace with your actual client ID from Google Cloud Console
 
 const PICKER_SCOPE = 'https://www.googleapis.com/auth/photospicker.mediaitems.readonly'
@@ -116,21 +116,19 @@ async function createPickerSession(accessToken) {
 function pollSession(sessionId, accessToken, popup, maxWaitMs = 300000) {
   return new Promise((resolve, reject) => {
     const start = Date.now()
+    let popupClosedAt = null
+
     const interval = setInterval(async () => {
       try {
-        // Stop if popup was closed without selecting
-        if (popup?.closed && Date.now() - start > 3000) {
-          clearInterval(interval)
-          resolve([])
-          return
-        }
-
         if (Date.now() - start > maxWaitMs) {
           clearInterval(interval)
           reject(new Error('Google Photos picker timed out'))
           return
         }
 
+        // Always check mediaItemsSet FIRST — Google sets this when user clicks Done
+        // and simultaneously closes the popup, so we must not bail on closed popup
+        // before we've had a chance to see mediaItemsSet = true.
         const res = await fetch(`${PICKER_API}/sessions/${sessionId}`, {
           headers: { 'Authorization': `Bearer ${accessToken}` }
         })
@@ -138,18 +136,28 @@ function pollSession(sessionId, accessToken, popup, maxWaitMs = 300000) {
 
         if (data.mediaItemsSet) {
           clearInterval(interval)
-          // Fetch the selected media items
           const itemsRes = await fetch(`${PICKER_API}/mediaItems?sessionId=${sessionId}`, {
             headers: { 'Authorization': `Bearer ${accessToken}` }
           })
           const itemsData = await itemsRes.json()
           resolve(itemsData.mediaItems || [])
+          return
+        }
+
+        // Popup closed without selecting — give a 12s grace period in case
+        // the session update is slightly delayed after the popup closes
+        if (popup?.closed) {
+          if (!popupClosedAt) popupClosedAt = Date.now()
+          if (Date.now() - popupClosedAt > 12000) {
+            clearInterval(interval)
+            resolve([])
+          }
         }
       } catch (err) {
         clearInterval(interval)
         reject(err)
       }
-    }, 2500)
+    }, 1500)
   })
 }
 
