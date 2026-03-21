@@ -8,11 +8,14 @@ const prevBtnEl = document.getElementById('prev-btn')
 const nextBtnEl = document.getElementById('next-btn')
 const playPauseBtnEl = document.getElementById('play-pause-btn')
 const exitBtnEl = document.getElementById('exit-btn')
+const fullscreenBtnEl = document.getElementById('fullscreen-btn')
 const backToAlbumEl = document.getElementById('back-to-album')
 const slideshowTitleEl = document.getElementById('slideshow-title')
 const emptyStateEl = document.getElementById('empty-state')
 const progressBarEl = document.getElementById('slideshow-progress')
 const slideshowViewer = document.querySelector('.slideshow-viewer')
+const slideshowControlsEl = document.querySelector('.slideshow-controls')
+const slideshowTopBarEl = document.querySelector('.slideshow-top-bar')
 const audioControlsEl = document.getElementById('audio-controls')
 const audioPlayerEl = document.getElementById('slideshow-audio')
 const audioMuteBtn = document.getElementById('audio-mute-btn')
@@ -22,8 +25,17 @@ let currentPhotoIndex = 0
 let isPlaying = false
 let autoplayTimeout = null
 let audioUrl = null
+let hideControlsTimer = null
+// Track whether we are in multi-album mode
+let isMultiAlbum = false
+// Track the single album ID for back-navigation (single mode only)
+let singleAlbumId = null
+
 const AUTOPLAY_DELAY = 4000 // 4 seconds
 const COLLAGE_INTERVAL = 4 // Show collage every 4th photo
+
+// UUID validation
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // Named grid-template-area layouts for collage slides.
 // template: CSS grid-template shorthand (areas + row sizes / col sizes)
@@ -73,60 +85,119 @@ const COLLAGE_LAYOUTS = [
   },
 ]
 
-function getAlbumId() {
-  return new URLSearchParams(window.location.search).get('album') || 
-         new URLSearchParams(window.location.search).get('id')
+function getAlbumIds() {
+  const params = new URLSearchParams(window.location.search)
+
+  // Multi-album: ?albums=id1,id2,...
+  const albumsParam = params.get('albums')
+  if (albumsParam) {
+    const ids = albumsParam.split(',').map(s => s.trim()).filter(id => UUID_REGEX.test(id))
+    if (ids.length > 0) return ids
+  }
+
+  // Single album: ?album=id or ?id=id (legacy)
+  const singleId = params.get('album') || params.get('id')
+  if (singleId && UUID_REGEX.test(singleId.trim())) {
+    return [singleId.trim()]
+  }
+
+  return []
+}
+
+function shuffle(array) {
+  const arr = [...array]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
 }
 
 async function loadPhotos() {
-  const albumId = getAlbumId()
-  
-  if (!albumId) {
+  const albumIds = getAlbumIds()
+
+  if (albumIds.length === 0) {
     showEmptyState('Invalid album ID')
     return
   }
 
+  isMultiAlbum = albumIds.length > 1
+  if (!isMultiAlbum) {
+    singleAlbumId = albumIds[0]
+  }
+
   try {
-    // Fetch album data including cover_photo_id and music_url
-    const { data: albumData, error: albumError } = await supabase
-      .from('albums')
-      .select('name, cover_photo_id, music_url')
-      .eq('id', albumId)
-      .single()
+    let combinedPhotos = []
+    let firstMusicUrl = null
+    let albumNames = []
 
-    if (albumError) throw albumError
+    for (const albumId of albumIds) {
+      // Fetch album metadata
+      const { data: albumData, error: albumError } = await supabase
+        .from('albums')
+        .select('name, cover_photo_id, music_url')
+        .eq('id', albumId)
+        .single()
 
-    if (albumData?.name) {
-      slideshowTitleEl.textContent = `${albumData.name} - Slideshow`
+      if (albumError) throw albumError
+
+      if (albumData?.name) {
+        albumNames.push(albumData.name)
+      }
+
+      // Use first album's music_url if found
+      if (!firstMusicUrl && albumData?.music_url) {
+        firstMusicUrl = albumData.music_url
+      }
+
+      // Fetch photos for this album
+      const { data: photosData, error: photosError } = await supabase
+        .from('photos')
+        .select('id, file_path, created_at, focal_point')
+        .eq('album_id', albumId)
+        .order('created_at', { ascending: false })
+
+      if (photosError) throw photosError
+
+      if (photosData && photosData.length > 0) {
+        combinedPhotos = combinedPhotos.concat(photosData)
+      }
     }
 
-    // Load music URL if available
-    if (albumData?.music_url) {
-      audioUrl = albumData.music_url
-      setupAudioPlayer()
-    }
-
-    // Fetch photos
-    const { data: photosData, error: photosError } = await supabase
-      .from('photos')
-      .select('id, file_path, created_at, focal_point')
-      .eq('album_id', albumId)
-      .order('created_at', { ascending: false })
-
-    if (photosError) throw photosError
-
-    if (!photosData || photosData.length === 0) {
-      showEmptyState('No photos in this album')
+    if (combinedPhotos.length === 0) {
+      showEmptyState('No photos in the selected albums')
       return
     }
 
-    photos = photosData
+    // Multi-album: shuffle combined photos; single album: keep chronological order
+    photos = isMultiAlbum ? shuffle(combinedPhotos) : combinedPhotos
+
+    // Set title
+    if (isMultiAlbum) {
+      slideshowTitleEl.textContent = `${albumIds.length} Albums · ${photos.length} Photos`
+    } else {
+      const name = albumNames[0] || 'Album'
+      slideshowTitleEl.textContent = `${name} \u2014 Slideshow`
+    }
+
+    // Set back link
+    if (isMultiAlbum) {
+      backToAlbumEl.href = '/multi-slideshow.html'
+      backToAlbumEl.textContent = '\u2190 Picker'
+    } else {
+      backToAlbumEl.href = `/album.html?album=${encodeURIComponent(singleAlbumId)}`
+      backToAlbumEl.textContent = '\u2190 Back'
+    }
+
+    // Set up audio
+    if (firstMusicUrl) {
+      audioUrl = firstMusicUrl
+      setupAudioPlayer()
+    }
+
     currentPhotoIndex = 0
     displayPhoto()
     updateUI()
-
-    // Set back button href
-    backToAlbumEl.href = `/album.html?album=${encodeURIComponent(albumId)}`
   } catch (err) {
     console.error('Load photos error:', err)
     showEmptyState(`Error loading photos: ${err.message}`)
@@ -201,14 +272,14 @@ function extractYouTubeId(url) {
     /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/i, // Standard watch and short URLs
     /youtube\.com\/(?:embed|v)\/([a-zA-Z0-9_-]{11})/i, // Embed and v URLs
   ]
-  
+
   for (const pattern of patterns) {
     const match = url.match(pattern)
     if (match && match[1]) {
       return match[1]
     }
   }
-  
+
   // Fallback to legacy regex
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
   const match = url.match(regExp)
@@ -223,7 +294,7 @@ function extractSpotifyId(url) {
 
 function toggleAudioMute() {
   if (audioPlayerEl.tagName !== 'AUDIO') return
-  
+
   if (audioPlayerEl.paused) {
     audioPlayerEl.muted = false
     const playPromise = audioPlayerEl.play()
@@ -323,7 +394,6 @@ function scaleImageForDisplay() {
   // Check if screen resolution supports HQ 1080x720
   const screenWidth = window.innerWidth
   const screenHeight = window.innerHeight
-  const pixelRatio = window.devicePixelRatio || 1
 
   if (screenWidth >= 1080 && screenHeight >= 720) {
     // Scale for HQ display
@@ -346,6 +416,7 @@ function updateCounter() {
 
 function nextPhoto() {
   if (photos.length === 0) return
+  resetControlHide()
   currentPhotoIndex = (currentPhotoIndex + 1) % photos.length
   displayPhoto()
   resetAutoplay()
@@ -353,12 +424,14 @@ function nextPhoto() {
 
 function prevPhoto() {
   if (photos.length === 0) return
+  resetControlHide()
   currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length
   displayPhoto()
   resetAutoplay()
 }
 
 function togglePlayPause() {
+  resetControlHide()
   isPlaying = !isPlaying
   updatePlayPauseButton()
 
@@ -425,6 +498,65 @@ function resetProgress() {
   }, 50)
 }
 
+// ---- Fullscreen ----
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log('Fullscreen request failed:', err)
+    })
+  } else {
+    document.exitFullscreen()
+  }
+}
+
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) {
+    fullscreenBtnEl.textContent = '\u26f6 Exit Full'
+  } else {
+    fullscreenBtnEl.textContent = '\u26f6 Full Screen'
+  }
+  // Re-evaluate control hide timer on fullscreen state change
+  resetControlHide()
+})
+
+// ---- Auto-hide controls (TV casting) ----
+
+function resetControlHide() {
+  // Show controls
+  slideshowControlsEl.style.opacity = '1'
+  slideshowTopBarEl.style.opacity = '1'
+  document.body.style.cursor = ''
+
+  // Clear any existing timer
+  if (hideControlsTimer) {
+    clearTimeout(hideControlsTimer)
+    hideControlsTimer = null
+  }
+
+  // Auto-hide only in fullscreen while playing
+  if (document.fullscreenElement && isPlaying) {
+    hideControlsTimer = setTimeout(() => {
+      slideshowControlsEl.style.opacity = '0'
+      slideshowTopBarEl.style.opacity = '0'
+      document.body.style.cursor = 'none'
+    }, 3500)
+  }
+}
+
+document.addEventListener('mousemove', resetControlHide)
+document.addEventListener('click', resetControlHide)
+
+// ---- Navigation helpers ----
+
+function navigateBack() {
+  if (isMultiAlbum) {
+    window.location.href = '/multi-slideshow.html'
+  } else {
+    window.location.href = `/album.html?album=${encodeURIComponent(singleAlbumId || '')}`
+  }
+}
+
 function handleKeyPress(e) {
   if (photos.length === 0) return
 
@@ -439,8 +571,16 @@ function handleKeyPress(e) {
       e.preventDefault()
       togglePlayPause()
       break
+    case 'f':
+    case 'F':
+      toggleFullscreen()
+      break
     case 'Escape':
-      window.location.href = `/album.html?album=${getAlbumId()}`
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      } else {
+        navigateBack()
+      }
       break
   }
 }
@@ -449,8 +589,13 @@ function handleKeyPress(e) {
 prevBtnEl.addEventListener('click', prevPhoto)
 nextBtnEl.addEventListener('click', nextPhoto)
 playPauseBtnEl.addEventListener('click', togglePlayPause)
+fullscreenBtnEl.addEventListener('click', toggleFullscreen)
 exitBtnEl.addEventListener('click', () => {
-  window.location.href = `/album.html?album=${getAlbumId()}`
+  if (document.fullscreenElement) {
+    document.exitFullscreen().then(() => navigateBack())
+  } else {
+    navigateBack()
+  }
 })
 
 document.addEventListener('keydown', handleKeyPress)
@@ -469,6 +614,7 @@ loadPhotos()
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
   clearAutoplay()
+  if (hideControlsTimer) clearTimeout(hideControlsTimer)
   if (audioPlayerEl) {
     audioPlayerEl.pause()
   }

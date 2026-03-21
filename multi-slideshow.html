@@ -1,0 +1,444 @@
+<!doctype html>
+<html data-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Multi-Album Slideshow</title>
+  <link href="/assets/css/styles.css" rel="stylesheet" />
+  <script src="/assets/js/theme.js" defer></script>
+  <style>
+    .page-hero {
+      padding: var(--space-6) var(--space-3) var(--space-4);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+    }
+
+    .page-hero-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      margin-bottom: var(--space-4);
+      transition: color 0.18s ease;
+    }
+
+    .back-link:hover {
+      color: var(--color-primary);
+    }
+
+    .page-hero h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    .page-hero p {
+      font-family: var(--font-body);
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .control-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: color-mix(in srgb, var(--color-dark-900) 95%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      padding: var(--space-3) var(--space-3);
+    }
+
+    .control-bar-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .selected-badge {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+      border-radius: var(--radius-sm);
+      padding: var(--space-2) var(--space-3);
+      color: var(--color-primary);
+      white-space: nowrap;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .control-bar .btn-outline {
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+      color: var(--text-main);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .control-bar .btn-outline:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .btn-start {
+      margin-left: auto;
+      background: var(--color-primary);
+      border: 1px solid var(--color-primary);
+      color: var(--color-dark-900);
+      padding: var(--space-2) var(--space-5);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .btn-start:hover:not(:disabled) {
+      background: #a0fdf9;
+      border-color: #a0fdf9;
+      transform: translateY(-2px);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .albums-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-3);
+    }
+
+    .albums-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .album-card {
+      background: color-mix(in srgb, var(--color-dark-800) 95%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      transition: all 0.18s ease;
+      cursor: pointer;
+      position: relative;
+      animation: fadeInScale 0.6s ease both;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .album-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 60px rgba(99, 245, 239, 0.15);
+      border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+    }
+
+    .album-card.selected {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px var(--color-primary), 0 24px 60px rgba(99, 245, 239, 0.25);
+    }
+
+    .check-badge {
+      position: absolute;
+      top: var(--space-2);
+      left: var(--space-2);
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .album-card.selected .check-badge {
+      display: flex;
+    }
+
+    .album-cover {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: var(--color-dark-900);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .album-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .album-card:hover .album-cover img {
+      transform: scale(1.05);
+    }
+
+    .album-cover-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 10%, var(--color-dark-900)), color-mix(in srgb, var(--color-primary) 5%, var(--color-dark-800)));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 2rem;
+    }
+
+    .album-info {
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .album-info h3 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0;
+      word-break: break-word;
+    }
+
+    .albums-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: var(--space-8) var(--space-3);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+    }
+
+    .albums-empty p {
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a aria-label="Who's to Say ? Foundation Home" class="brand" href="/">
+      <img alt="Who's to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+      <img alt="Who's to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+    </a>
+    <nav aria-label="Primary navigation" class="site-nav">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/programs.html">Programs</a>
+      <a class="nav-link" href="/contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <a class="back-link" href="/albums.html">← Back to Albums</a>
+      <h1>Multi-Album Slideshow</h1>
+      <p>Select albums to combine into one slideshow</p>
+    </div>
+  </div>
+
+  <div class="control-bar">
+    <div class="control-bar-inner">
+      <span class="selected-badge" id="selected-badge">0 selected</span>
+      <button class="btn-outline" id="select-all-btn" type="button">Select All</button>
+      <button class="btn-outline" id="clear-btn" type="button">Clear</button>
+      <button class="btn-start" id="start-btn" type="button" disabled>▶ Start Slideshow</button>
+    </div>
+  </div>
+
+  <div class="albums-container">
+    <div class="albums-grid" id="albums-grid">
+      <div class="albums-empty" id="albums-empty">
+        <p>Loading albums...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  © <span id="year"></span> Who's to Say ? Foundation
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear()
+</script>
+
+<script type="module">
+  import { supabase } from '/js/supabase.js'
+
+  const albumsGridEl = document.getElementById('albums-grid')
+  const emptyEl = document.getElementById('albums-empty')
+  const selectedBadgeEl = document.getElementById('selected-badge')
+  const selectAllBtnEl = document.getElementById('select-all-btn')
+  const clearBtnEl = document.getElementById('clear-btn')
+  const startBtnEl = document.getElementById('start-btn')
+
+  const selectedAlbumIds = new Set()
+  let allAlbumIds = []
+
+  function updateControlBar() {
+    const count = selectedAlbumIds.size
+    selectedBadgeEl.textContent = `${count} selected`
+    startBtnEl.disabled = count === 0
+  }
+
+  function toggleCard(card, albumId) {
+    if (selectedAlbumIds.has(albumId)) {
+      selectedAlbumIds.delete(albumId)
+      card.classList.remove('selected')
+    } else {
+      selectedAlbumIds.add(albumId)
+      card.classList.add('selected')
+    }
+    updateControlBar()
+  }
+
+  selectAllBtnEl.addEventListener('click', () => {
+    allAlbumIds.forEach(id => {
+      selectedAlbumIds.add(id)
+      const card = document.querySelector(`.album-card[data-id="${id}"]`)
+      if (card) card.classList.add('selected')
+    })
+    updateControlBar()
+  })
+
+  clearBtnEl.addEventListener('click', () => {
+    selectedAlbumIds.clear()
+    document.querySelectorAll('.album-card.selected').forEach(c => c.classList.remove('selected'))
+    updateControlBar()
+  })
+
+  startBtnEl.addEventListener('click', () => {
+    if (selectedAlbumIds.size === 0) return
+    const ids = [...selectedAlbumIds].join(',')
+    window.location.href = `/slideshow.html?albums=${encodeURIComponent(ids)}`
+  })
+
+  async function loadAlbums() {
+    try {
+      const { data: albums, error } = await supabase
+        .from('albums')
+        .select('id, name, created_at, cover_photo_id')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      if (!albums || albums.length === 0) {
+        emptyEl.innerHTML = '<p>No albums found.</p>'
+        emptyEl.style.display = 'block'
+        return
+      }
+
+      emptyEl.style.display = 'none'
+      albumsGridEl.innerHTML = ''
+      allAlbumIds = albums.map(a => a.id)
+
+      for (const album of albums) {
+        let coverFilePath = null
+        let coverFocalPoint = '50% 35%'
+
+        if (album.cover_photo_id) {
+          const { data: coverPhoto } = await supabase
+            .from('photos')
+            .select('file_path, focal_point')
+            .eq('id', album.cover_photo_id)
+            .single()
+          coverFilePath = coverPhoto?.file_path || null
+          coverFocalPoint = coverPhoto?.focal_point || '50% 35%'
+        }
+
+        if (!coverFilePath) {
+          const { data: photos } = await supabase
+            .from('photos')
+            .select('file_path, focal_point')
+            .eq('album_id', album.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+          coverFilePath = photos?.[0]?.file_path || null
+          coverFocalPoint = photos?.[0]?.focal_point || '50% 35%'
+        }
+
+        const card = document.createElement('div')
+        card.className = 'album-card'
+        card.dataset.id = album.id
+        card.style.animationDelay = `${albums.indexOf(album) * 0.05}s`
+
+        let coverHtml = ''
+        if (coverFilePath) {
+          const publicUrl = supabase.storage.from('photos').getPublicUrl(coverFilePath).data.publicUrl
+          coverHtml = `<div class="album-cover"><img src="${publicUrl}" alt="Album cover" loading="lazy" style="object-position:${coverFocalPoint}" /></div>`
+        } else {
+          coverHtml = `<div class="album-cover"><div class="album-cover-placeholder">📷</div></div>`
+        }
+
+        const escapedName = album.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+        card.innerHTML = `
+          <div class="check-badge">✓</div>
+          ${coverHtml}
+          <div class="album-info">
+            <h3>${escapedName}</h3>
+          </div>
+        `
+
+        card.addEventListener('click', () => toggleCard(card, album.id))
+        albumsGridEl.appendChild(card)
+      }
+    } catch (err) {
+      console.error('Error loading albums:', err)
+      emptyEl.innerHTML = '<p>Error loading albums. Please try again.</p>'
+      emptyEl.style.display = 'block'
+    }
+  }
+
+  loadAlbums()
+</script>
+</body>
+</html>
