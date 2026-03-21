@@ -32,7 +32,7 @@ let isMultiAlbum = false
 let singleAlbumId = null
 
 const AUTOPLAY_DELAY = 4000 // 4 seconds
-const COLLAGE_INTERVAL = 4 // Show collage every 4th photo
+const COLLAGE_INTERVAL = 2 // Show collage every other slide
 
 // UUID validation
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
