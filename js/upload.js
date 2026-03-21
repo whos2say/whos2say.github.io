@@ -112,11 +112,37 @@ async function handleGooglePhotosClick() {
     statusEl.textContent = 'Opening Google Photos…'
 
     await openGooglePhotosPicker(
-      async (blobs) => {
-        statusEl.textContent = `Importing ${blobs.length} photo(s)…`
-        const fileList = blobs.map(b => new File([b.blob], b.name, { type: b.mimeType || 'image/jpeg' }))
-        await handleFiles(fileList)
+      async (blobs, failedVideos) => {
+        // Upload photos that downloaded successfully
+        if (blobs.length > 0) {
+          statusEl.textContent = `Importing ${blobs.length} photo(s)…`
+          const fileList = blobs.map(b => new File([b.blob], b.name, { type: b.mimeType || 'image/jpeg' }))
+          await handleFiles(fileList)
+        }
         statusEl.style.display = 'none'
+
+        // Show manual download links for videos (browser CORS blocks direct import)
+        if (failedVideos?.length > 0) {
+          const notice = document.createElement('div')
+          notice.style.cssText = 'margin-top:1rem;padding:1rem;border:1px solid #f59e0b;border-radius:6px;background:color-mix(in srgb,#f59e0b 8%,transparent)'
+          notice.innerHTML = `
+            <p style="font-family:var(--font-body);font-weight:700;color:#f59e0b;margin:0 0 0.5rem">
+              ⚠ ${failedVideos.length} video(s) need a manual step
+            </p>
+            <p style="font-family:var(--font-body);font-size:0.82rem;color:var(--text-muted);margin:0 0 0.75rem">
+              Browser security prevents direct video import from Google Photos.
+              Click each link to download, then drag the file into the upload area above.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:0.4rem">
+              ${failedVideos.map(v => `
+                <a href="${v.downloadUrl}" target="_blank" rel="noopener"
+                   style="display:inline-flex;align-items:center;gap:0.4rem;color:#f59e0b;font-family:var(--font-body);font-size:0.85rem;font-weight:600;text-decoration:none">
+                  ⬇ ${v.filename}
+                </a>`).join('')}
+            </div>
+          `
+          uploadStatusEl.appendChild(notice)
+        }
       },
       (msg) => { statusEl.textContent = msg }
     )

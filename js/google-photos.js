@@ -42,14 +42,14 @@ export async function openGooglePhotosPicker(onPhotosSelected, onStatus = () => 
     return onPhotosSelected([])
   }
 
-  onStatus(`Downloading ${mediaItems.length} photo(s)…`)
-  const blobs = await downloadMediaItems(mediaItems, accessToken, onStatus)
+  onStatus(`Downloading ${mediaItems.length} item(s)…`)
+  const { blobs, failedVideos } = await downloadMediaItems(mediaItems, accessToken, onStatus)
 
-  if (blobs.length === 0) {
-    throw new Error('Photos were selected but could not be downloaded. Check the browser console for details.')
+  if (blobs.length === 0 && failedVideos.length === 0) {
+    throw new Error('Items were selected but could not be downloaded. Check the browser console for details.')
   }
 
-  onPhotosSelected(blobs)
+  onPhotosSelected(blobs, failedVideos)
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -165,27 +165,33 @@ function pollSession(sessionId, accessToken, popup, onStatus, maxWaitMs = 300000
 
 async function downloadMediaItems(mediaItems, accessToken, onStatus) {
   const blobs = []
+  const failedVideos = []
 
   for (let i = 0; i < mediaItems.length; i++) {
     const item = mediaItems[i]
-    onStatus(`Downloading photo ${i + 1} of ${mediaItems.length}…`)
+    const filename = item.mediaFile?.filename || item.filename || `photo_${Date.now()}.jpg`
+    const mimeType = item.mediaFile?.mimeType || 'image/jpeg'
+    const baseUrl = item.mediaFile?.baseUrl || item.baseUrl
+    const isVideo = mimeType.startsWith('video/') || item.type === 'VIDEO'
+    const suffix = isVideo ? '=dv' : '=d'
+
+    onStatus(`Downloading ${isVideo ? 'video' : 'photo'} ${i + 1} of ${mediaItems.length}: ${filename}…`)
+
+    if (!baseUrl) {
+      console.warn('[google-photos] no baseUrl for item', item.id)
+      continue
+    }
+
+    if (isVideo) {
+      // Google video CDN blocks cross-origin fetch (CORS). Collect for manual download.
+      console.warn('[google-photos] video CORS limitation — queuing for manual download:', filename)
+      failedVideos.push({ filename, downloadUrl: `${baseUrl}${suffix}`, mimeType })
+      continue
+    }
+
+    console.log('[google-photos] downloading', filename, 'from', baseUrl.slice(0, 80))
 
     try {
-      const baseUrl = item.mediaFile?.baseUrl || item.baseUrl
-      const filename = item.mediaFile?.filename || item.filename || `photo_${Date.now()}.jpg`
-      const mimeType = item.mediaFile?.mimeType || 'image/jpeg'
-
-      // Google Photos uses =d for photos and =dv for videos
-      const isVideo = mimeType.startsWith('video/') || item.type === 'VIDEO'
-      const suffix = isVideo ? '=dv' : '=d'
-
-      if (!baseUrl) {
-        console.warn('[google-photos] no baseUrl for item', item.id)
-        continue
-      }
-
-      console.log('[google-photos] downloading', filename, `(${isVideo ? 'video' : 'photo'})`, 'from', baseUrl.slice(0, 80))
-
       // Attempt 1: fetch with Authorization header
       let blob = await fetch(`${baseUrl}${suffix}`, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -197,7 +203,7 @@ async function downloadMediaItems(mediaItems, accessToken, onStatus) {
         return null
       })
 
-      // Attempt 2: fetch without auth (some CDN URLs are self-authenticated)
+      // Attempt 2: fetch without auth
       if (!blob) {
         blob = await fetch(`${baseUrl}${suffix}`).then(r => {
           if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -208,8 +214,8 @@ async function downloadMediaItems(mediaItems, accessToken, onStatus) {
         })
       }
 
-      // Attempt 3: img crossOrigin + canvas (photos only — doesn't apply to video)
-      if (!blob && !isVideo) {
+      // Attempt 3: img crossOrigin + canvas
+      if (!blob) {
         blob = await imgToBlob(`${baseUrl}${suffix}`).catch(err => {
           console.warn('[google-photos] img+canvas failed:', err.message)
           return null
@@ -227,7 +233,7 @@ async function downloadMediaItems(mediaItems, accessToken, onStatus) {
     }
   }
 
-  return blobs
+  return { blobs, failedVideos }
 }
 
 function imgToBlob(url) {
