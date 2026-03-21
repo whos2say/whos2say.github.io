@@ -30,7 +30,9 @@ const musicCloseBtn = document.getElementById('music-close-btn')
 
 let currentAlbumId = null
 let coverPhotoId = null
+let currentUser = null
 let isAlbumOwner = false
+let currentLightboxPhotoId = null
 let selectedPhotos = new Set()
 let allPhotos = []
 let isDraggingSelect = false
@@ -48,23 +50,157 @@ function getAlbumId() {
 async function checkAlbumOwner() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
+    currentUser = user
     isAlbumOwner = !!user
   } catch (err) {
+    currentUser = null
     isAlbumOwner = false
   }
 }
 
 // --- Lightbox ---
-function openLightbox(url) {
+function openLightbox(url, photoId) {
   lightboxImgEl.src = url
   lightboxEl.classList.add('show')
   document.body.style.overflow = 'hidden'
+  currentLightboxPhotoId = photoId || null
+  if (photoId) loadComments(photoId)
 }
 
 function closeLightbox() {
   lightboxEl.classList.remove('show')
   document.body.style.overflow = ''
   lightboxImgEl.src = ''
+  currentLightboxPhotoId = null
+}
+
+// --- Comments ---
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+function timeAgo(iso) {
+  const d = Math.floor((Date.now() - new Date(iso)) / 1000)
+  if (d < 60) return 'just now'
+  if (d < 3600) return `${Math.floor(d/60)}m ago`
+  if (d < 86400) return `${Math.floor(d/3600)}h ago`
+  return `${Math.floor(d/86400)}d ago`
+}
+
+async function loadComments(photoId) {
+  const listEl  = document.getElementById('lc-list')
+  const countEl = document.getElementById('lc-count')
+  const formEl  = document.getElementById('lc-form')
+  const signinEl= document.getElementById('lc-signin')
+  if (!listEl) return
+
+  // Show/hide input based on login state
+  if (currentUser) {
+    formEl.style.display = 'flex'
+    signinEl.style.display = 'none'
+    // Set sign-in link to return here after login
+    const loginLink = document.getElementById('lc-login-link')
+    if (loginLink) loginLink.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+  } else {
+    formEl.style.display = 'none'
+    signinEl.style.display = 'block'
+  }
+
+  listEl.innerHTML = '<div class="lc-loading">Loading…</div>'
+
+  try {
+    const { data: comments, error } = await supabase
+      .from('photo_comments')
+      .select('id, user_id, user_email, comment, created_at')
+      .eq('photo_id', photoId)
+      .order('created_at', { ascending: true })
+
+    if (error) throw error
+
+    countEl.textContent = comments?.length ? `(${comments.length})` : ''
+    listEl.innerHTML = ''
+
+    if (!comments || comments.length === 0) {
+      listEl.innerHTML = '<div class="lc-empty">No comments yet.</div>'
+      return
+    }
+
+    comments.forEach(c => listEl.appendChild(buildCommentEl(c)))
+    listEl.scrollTop = listEl.scrollHeight
+  } catch (err) {
+    console.error('loadComments error:', err)
+    listEl.innerHTML = '<div class="lc-empty">Could not load comments.</div>'
+  }
+}
+
+function buildCommentEl(c) {
+  const isAdmin = currentUser?.email === 'joe@whostosay.org'
+  const isOwn   = currentUser?.id === c.user_id
+  const canDel  = isAdmin || isOwn
+
+  const item = document.createElement('div')
+  item.className = 'lc-item'
+  item.dataset.commentId = c.id
+
+  const shortName = escHtml(c.user_email.split('@')[0])
+  const timeStr   = escHtml(timeAgo(c.created_at))
+  const text      = escHtml(c.comment)
+
+  item.innerHTML = `
+    <div class="lc-item-meta">
+      <span class="lc-author">${shortName}</span>
+      <span class="lc-time">${timeStr}</span>
+    </div>
+    <p class="lc-text">${text}</p>
+    ${canDel ? `<button class="lc-del" title="Delete comment">✕</button>` : ''}
+  `
+
+  if (canDel) {
+    item.querySelector('.lc-del').addEventListener('click', () => deleteComment(c.id, item))
+  }
+  return item
+}
+
+async function postComment() {
+  if (!currentUser || !currentLightboxPhotoId) return
+  const input     = document.getElementById('lc-input')
+  const submitBtn = document.getElementById('lc-submit')
+  const text = input.value.trim()
+  if (!text) return
+
+  submitBtn.disabled = true
+  try {
+    const { error } = await supabase.from('photo_comments').insert({
+      photo_id:   currentLightboxPhotoId,
+      user_id:    currentUser.id,
+      user_email: currentUser.email,
+      comment:    text
+    })
+    if (error) throw error
+    input.value = ''
+    await loadComments(currentLightboxPhotoId)
+  } catch (err) {
+    showToast('Failed to post comment: ' + err.message, true)
+  } finally {
+    submitBtn.disabled = false
+  }
+}
+
+async function deleteComment(commentId, itemEl) {
+  try {
+    const { error } = await supabase.from('photo_comments').delete().eq('id', commentId)
+    if (error) throw error
+    itemEl.remove()
+    // Update count
+    const listEl  = document.getElementById('lc-list')
+    const countEl = document.getElementById('lc-count')
+    const remaining = listEl.querySelectorAll('.lc-item').length
+    countEl.textContent = remaining ? `(${remaining})` : ''
+    if (remaining === 0) listEl.innerHTML = '<div class="lc-empty">No comments yet.</div>'
+    showToast('Comment deleted')
+  } catch (err) {
+    showToast('Delete failed: ' + err.message, true)
+  }
 }
 
 lightboxCloseEl.addEventListener('click', closeLightbox)
@@ -536,7 +672,7 @@ async function loadAlbum() {
       img.height = 400
       img.style.objectPosition = photo.focal_point || '50% 50%'
       img.style.cursor = 'zoom-in'
-      img.addEventListener('click', () => openLightbox(publicUrl))
+      img.addEventListener('click', () => openLightbox(publicUrl, photo.id))
 
       tile.appendChild(img)
 
@@ -607,7 +743,18 @@ async function loadAlbum() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', loadAlbum)
+document.addEventListener('DOMContentLoaded', () => {
+  loadAlbum()
+
+  const submitBtn = document.getElementById('lc-submit')
+  const inputEl   = document.getElementById('lc-input')
+  if (submitBtn) submitBtn.addEventListener('click', postComment)
+  if (inputEl) {
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postComment() }
+    })
+  }
+})
 
 // Drag-select event listeners
 if (photosGridEl) {
