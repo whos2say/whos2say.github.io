@@ -1,62 +1,54 @@
 /**
- * Google Photos Picker API — Foundation
- * =====================================
- * SETUP REQUIRED (one-time, 5 minutes):
- *
- * 1. Go to https://console.cloud.google.com
- * 2. Create a project (or select existing)
- * 3. Enable "Photos Picker API" (search in API Library)
- * 4. Go to APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID
- * 5. Application type: Web application
- * 6. Add Authorized JavaScript origins: https://whostosay.org (and http://localhost:PORT for dev)
- * 7. Copy the Client ID and paste it below as GOOGLE_CLIENT_ID
- * 8. Go to OAuth consent screen → add test users (your email) while in testing mode
- *
- * Once configured, the "Google Photos" button on the upload page will work.
+ * Google Photos Picker API
+ * ========================
+ * SETUP REQUIRED (one-time):
+ * 1. console.cloud.google.com → APIs & Services → Library → enable "Photos Picker API"
+ * 2. Credentials → Create OAuth 2.0 Client ID (Web application)
+ * 3. Authorized JavaScript origins: https://www.whostosay.org, https://whostosay.org, https://whos2say.github.io
+ * 4. OAuth consent screen → add your email as a test user
+ * 5. Paste the Client ID below
  */
 
 const GOOGLE_CLIENT_ID = '620985968525-665ve2r1oedvvqf9br24ql3g91746poj.apps.googleusercontent.com'
-// ↑ Replace with your actual client ID from Google Cloud Console
-
 const PICKER_SCOPE = 'https://www.googleapis.com/auth/photospicker.mediaitems.readonly'
 const PICKER_API   = 'https://photospicker.googleapis.com/v1'
 
-// ─────────────────────────────────────────────────────────────
-// Public API
-// ─────────────────────────────────────────────────────────────
-
 /**
- * Open the Google Photos picker and return selected photos as Blobs.
- * @param {function({blob: Blob, name: string}[]): void} onPhotosSelected
+ * Open the Google Photos picker.
+ * @param {function} onPhotosSelected  Called with [{blob, name, mimeType}]
+ * @param {function} onStatus          Optional — called with status strings during the flow
  */
-export async function openGooglePhotosPicker(onPhotosSelected) {
-  if (GOOGLE_CLIENT_ID === 'YOUR_CLIENT_ID.apps.googleusercontent.com') {
-    throw new Error('Google Photos not configured — set GOOGLE_CLIENT_ID in js/google-photos.js')
-  }
-
+export async function openGooglePhotosPicker(onPhotosSelected, onStatus = () => {}) {
   await ensureGisLoaded()
 
+  onStatus('Authenticating with Google…')
   const accessToken = await requestAccessToken()
-  const session     = await createPickerSession(accessToken)
 
-  // Open picker in a popup window
+  onStatus('Creating picker session…')
+  const session = await createPickerSession(accessToken)
+
   const popup = window.open(
     session.pickerUri,
     'googlePhotosPicker',
     'width=620,height=700,resizable=yes,scrollbars=yes,status=yes'
   )
+  if (!popup) throw new Error('Popup blocked — please allow popups for this site and try again')
 
-  if (!popup) {
-    throw new Error('Popup blocked — please allow popups for this site and try again')
+  onStatus('Select photos in the Google Photos window, then click Done…')
+  const mediaItems = await pollSession(session.id, accessToken, popup, onStatus)
+
+  if (!mediaItems.length) {
+    onStatus('')
+    return onPhotosSelected([])
   }
 
-  // Poll until user finishes selecting or closes popup
-  const mediaItems = await pollSession(session.id, accessToken, popup)
+  onStatus(`Downloading ${mediaItems.length} photo(s)…`)
+  const blobs = await downloadMediaItems(mediaItems, accessToken, onStatus)
 
-  if (!mediaItems.length) return onPhotosSelected([])
+  if (blobs.length === 0) {
+    throw new Error('Photos were selected but could not be downloaded. Check the browser console for details.')
+  }
 
-  // Download each selected photo and return as Blob
-  const blobs = await downloadMediaItems(mediaItems, accessToken)
   onPhotosSelected(blobs)
 }
 
@@ -67,9 +59,8 @@ export async function openGooglePhotosPicker(onPhotosSelected) {
 function ensureGisLoaded() {
   if (window.google?.accounts?.oauth2) return Promise.resolve()
   return new Promise((resolve, reject) => {
-    if (document.querySelector('script[src*="accounts.google.com/gsi/client"]')) {
-      // Script tag exists but not yet loaded — wait for it
-      const existing = document.querySelector('script[src*="accounts.google.com/gsi/client"]')
+    const existing = document.querySelector('script[src*="accounts.google.com/gsi/client"]')
+    if (existing) {
       existing.addEventListener('load', resolve)
       existing.addEventListener('error', () => reject(new Error('Failed to load Google Identity Services')))
       return
@@ -100,10 +91,7 @@ function requestAccessToken() {
 async function createPickerSession(accessToken) {
   const res = await fetch(`${PICKER_API}/sessions`, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({})
   })
   if (!res.ok) {
@@ -113,10 +101,11 @@ async function createPickerSession(accessToken) {
   return res.json()
 }
 
-function pollSession(sessionId, accessToken, popup, maxWaitMs = 300000) {
+function pollSession(sessionId, accessToken, popup, onStatus, maxWaitMs = 300000) {
   return new Promise((resolve, reject) => {
     const start = Date.now()
     let popupClosedAt = null
+    let dotCount = 0
 
     const interval = setInterval(async () => {
       try {
@@ -126,32 +115,45 @@ function pollSession(sessionId, accessToken, popup, maxWaitMs = 300000) {
           return
         }
 
-        // Always check mediaItemsSet FIRST — Google sets this when user clicks Done
-        // and simultaneously closes the popup, so we must not bail on closed popup
-        // before we've had a chance to see mediaItemsSet = true.
+        // Always check mediaItemsSet FIRST — Google marks this true and closes
+        // the popup simultaneously, so checking popup.closed first would miss it
         const res = await fetch(`${PICKER_API}/sessions/${sessionId}`, {
           headers: { 'Authorization': `Bearer ${accessToken}` }
         })
-        const data = await res.json()
 
-        if (data.mediaItemsSet) {
-          clearInterval(interval)
-          const itemsRes = await fetch(`${PICKER_API}/mediaItems?sessionId=${sessionId}`, {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
-          })
-          const itemsData = await itemsRes.json()
-          resolve(itemsData.mediaItems || [])
-          return
+        if (!res.ok) {
+          console.warn('[google-photos] poll HTTP', res.status)
+        } else {
+          const data = await res.json()
+          console.log('[google-photos] poll:', JSON.stringify(data).slice(0, 200))
+
+          if (data.mediaItemsSet) {
+            clearInterval(interval)
+            onStatus('Selection received, fetching items…')
+            const itemsRes = await fetch(`${PICKER_API}/mediaItems?sessionId=${sessionId}`, {
+              headers: { 'Authorization': `Bearer ${accessToken}` }
+            })
+            const itemsData = await itemsRes.json()
+            console.log('[google-photos] mediaItems response:', JSON.stringify(itemsData).slice(0, 400))
+            resolve(itemsData.mediaItems || [])
+            return
+          }
         }
 
-        // Popup closed without selecting — give a 12s grace period in case
-        // the session update is slightly delayed after the popup closes
+        // Popup closed — give 15s grace for slow API update
         if (popup?.closed) {
-          if (!popupClosedAt) popupClosedAt = Date.now()
-          if (Date.now() - popupClosedAt > 12000) {
+          if (!popupClosedAt) {
+            popupClosedAt = Date.now()
+            onStatus('Photo selection complete, waiting for confirmation…')
+          }
+          if (Date.now() - popupClosedAt > 15000) {
             clearInterval(interval)
             resolve([])
           }
+        } else {
+          // Still open — update dots to show activity
+          dotCount = (dotCount + 1) % 4
+          onStatus('Select photos in the Google Photos window, then click Done' + '.'.repeat(dotCount + 1))
         }
       } catch (err) {
         clearInterval(interval)
@@ -161,25 +163,84 @@ function pollSession(sessionId, accessToken, popup, maxWaitMs = 300000) {
   })
 }
 
-async function downloadMediaItems(mediaItems, accessToken) {
+async function downloadMediaItems(mediaItems, accessToken, onStatus) {
   const blobs = []
-  for (const item of mediaItems) {
+
+  for (let i = 0; i < mediaItems.length; i++) {
+    const item = mediaItems[i]
+    onStatus(`Downloading photo ${i + 1} of ${mediaItems.length}…`)
+
     try {
-      // baseUrl + '=d' downloads the full-resolution photo
       const baseUrl = item.mediaFile?.baseUrl || item.baseUrl
-      if (!baseUrl) continue
+      const filename = item.mediaFile?.filename || item.filename || `photo_${Date.now()}.jpg`
+      const mimeType = item.mediaFile?.mimeType || 'image/jpeg'
 
-      const res = await fetch(`${baseUrl}=d`, {
+      if (!baseUrl) {
+        console.warn('[google-photos] no baseUrl for item', item.id)
+        continue
+      }
+
+      console.log('[google-photos] downloading', filename, 'from', baseUrl.slice(0, 80))
+
+      // Attempt 1: fetch with Authorization header
+      let blob = await fetch(`${baseUrl}=d`, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
+      }).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.blob()
+      }).catch(err => {
+        console.warn('[google-photos] fetch+auth failed:', err.message)
+        return null
       })
-      if (!res.ok) continue
 
-      const blob = await res.blob()
-      const name = (item.filename || item.id || `photo_${Date.now()}`) + '.jpg'
-      blobs.push({ blob, name })
+      // Attempt 2: fetch without auth (some CDN URLs are self-authenticated)
+      if (!blob) {
+        blob = await fetch(`${baseUrl}=d`).then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`)
+          return r.blob()
+        }).catch(err => {
+          console.warn('[google-photos] fetch no-auth failed:', err.message)
+          return null
+        })
+      }
+
+      // Attempt 3: img crossOrigin + canvas (CORS-enabled CDN URLs)
+      if (!blob) {
+        blob = await imgToBlob(`${baseUrl}=d`).catch(err => {
+          console.warn('[google-photos] img+canvas failed:', err.message)
+          return null
+        })
+      }
+
+      if (blob) {
+        blobs.push({ blob, name: filename, mimeType })
+        console.log('[google-photos] downloaded', filename, blob.size, 'bytes')
+      } else {
+        console.error('[google-photos] all download attempts failed for', filename)
+      }
     } catch (err) {
-      console.warn('Failed to download media item:', item.id, err)
+      console.error('[google-photos] item error:', err)
     }
   }
+
   return blobs
+}
+
+function imgToBlob(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width  = img.naturalWidth
+      canvas.height = img.naturalHeight
+      canvas.getContext('2d').drawImage(img, 0, 0)
+      canvas.toBlob(blob => {
+        if (blob) resolve(blob)
+        else reject(new Error('canvas.toBlob returned null'))
+      }, 'image/jpeg', 0.92)
+    }
+    img.onerror = () => reject(new Error('Image load failed'))
+    img.src = url
+  })
 }

@@ -111,12 +111,15 @@ async function handleGooglePhotosClick() {
     statusEl.style.display = 'block'
     statusEl.textContent = 'Opening Google Photos…'
 
-    await openGooglePhotosPicker(async (blobs) => {
-      statusEl.textContent = `Importing ${blobs.length} photo(s)…`
-      const fileList = blobs.map(b => new File([b.blob], b.name, { type: 'image/jpeg' }))
-      await handleFiles(fileList)
-      statusEl.style.display = 'none'
-    })
+    await openGooglePhotosPicker(
+      async (blobs) => {
+        statusEl.textContent = `Importing ${blobs.length} photo(s)…`
+        const fileList = blobs.map(b => new File([b.blob], b.name, { type: b.mimeType || 'image/jpeg' }))
+        await handleFiles(fileList)
+        statusEl.style.display = 'none'
+      },
+      (msg) => { statusEl.textContent = msg }
+    )
   } catch (err) {
     console.error('Google Photos error:', err)
     statusEl.textContent = '⚠ ' + (err.message || 'Google Photos setup required')
