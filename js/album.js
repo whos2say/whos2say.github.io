@@ -35,6 +35,7 @@ let isAlbumOwner = false
 let currentLightboxPhotoId = null
 let selectedPhotos = new Set()
 let allPhotos = []
+let ssSelectedPhotos = new Set()
 let isDraggingSelect = false
 let dragStartX = 0
 let dragStartY = 0
@@ -574,6 +575,80 @@ function updateMusicBadge(hasMusic, url) {
   }
 }
 
+// --- Slideshow selector ---
+function openSlideshowSelector() {
+  if (allPhotos.length === 0) {
+    // Fallback: navigate directly if photos not yet loaded
+    window.location.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
+    return
+  }
+
+  const modal = document.getElementById('ss-selector-modal')
+  const grid = document.getElementById('ss-photo-grid')
+  if (!modal || !grid) return
+
+  // Default: all selected
+  ssSelectedPhotos = new Set(allPhotos.map(p => p.id))
+  grid.innerHTML = ''
+
+  allPhotos.forEach(photo => {
+    const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+
+    const thumb = document.createElement('div')
+    thumb.className = 'ss-thumb selected'
+    thumb.dataset.photoId = photo.id
+
+    const img = document.createElement('img')
+    img.src = publicUrl
+    img.alt = 'Photo thumbnail'
+    img.loading = 'lazy'
+    img.style.objectPosition = photo.focal_point || '50% 35%'
+
+    const check = document.createElement('span')
+    check.className = 'ss-check'
+    check.textContent = '✓'
+
+    thumb.appendChild(img)
+    thumb.appendChild(check)
+    thumb.addEventListener('click', () => {
+      if (ssSelectedPhotos.has(photo.id)) {
+        ssSelectedPhotos.delete(photo.id)
+        thumb.classList.remove('selected')
+      } else {
+        ssSelectedPhotos.add(photo.id)
+        thumb.classList.add('selected')
+      }
+      updateSSCount()
+    })
+    grid.appendChild(thumb)
+  })
+
+  updateSSCount()
+  modal.classList.add('show')
+}
+
+function updateSSCount() {
+  const total = allPhotos.length
+  const selected = ssSelectedPhotos.size
+  const countEl = document.getElementById('ss-selected-count')
+  const startBtn = document.getElementById('ss-start-btn')
+  if (countEl) countEl.textContent = selected === total ? 'All selected' : `${selected} of ${total} selected`
+  if (startBtn) startBtn.disabled = selected === 0
+}
+
+function startSlideshowFromSelector() {
+  if (!currentAlbumId) return
+  const modal = document.getElementById('ss-selector-modal')
+  if (modal) modal.classList.remove('show')
+
+  if (ssSelectedPhotos.size === allPhotos.length) {
+    window.location.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
+  } else {
+    const ids = [...ssSelectedPhotos].join(',')
+    window.location.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}&photos=${encodeURIComponent(ids)}`
+  }
+}
+
 async function loadAlbum() {
   currentAlbumId = getAlbumId()
   
@@ -754,6 +829,37 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postComment() }
     })
   }
+
+  // Intercept slideshow button → open photo selector instead of navigating directly
+  if (slideshowBtnEl) {
+    slideshowBtnEl.addEventListener('click', e => {
+      e.preventDefault()
+      openSlideshowSelector()
+    })
+  }
+
+  // Slideshow selector modal buttons
+  const ssSelectorModal = document.getElementById('ss-selector-modal')
+  document.getElementById('ss-select-all')?.addEventListener('click', () => {
+    ssSelectedPhotos = new Set(allPhotos.map(p => p.id))
+    document.querySelectorAll('.ss-thumb').forEach(t => t.classList.add('selected'))
+    updateSSCount()
+  })
+  document.getElementById('ss-clear-all')?.addEventListener('click', () => {
+    ssSelectedPhotos.clear()
+    document.querySelectorAll('.ss-thumb').forEach(t => t.classList.remove('selected'))
+    updateSSCount()
+  })
+  document.getElementById('ss-selector-close')?.addEventListener('click', () => {
+    ssSelectorModal?.classList.remove('show')
+  })
+  document.getElementById('ss-cancel-btn')?.addEventListener('click', () => {
+    ssSelectorModal?.classList.remove('show')
+  })
+  document.getElementById('ss-start-btn')?.addEventListener('click', startSlideshowFromSelector)
+  ssSelectorModal?.addEventListener('click', e => {
+    if (e.target === ssSelectorModal) ssSelectorModal.classList.remove('show')
+  })
 })
 
 // Drag-select event listeners

@@ -914,6 +914,144 @@
     .lc-signin a { color: var(--color-primary); text-decoration: none; font-weight: 600; }
     .lc-signin a:hover { text-decoration: underline; }
 
+    /* ── Slideshow selector modal ─────────────── */
+    .ss-selector-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+    .ss-selector-modal.show { display: flex; }
+    .ss-selector-content {
+      background: var(--color-dark-800);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      border-radius: var(--radius-md);
+      width: min(96vw, 860px);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0,0,0,0.7);
+    }
+    .ss-selector-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .ss-selector-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0;
+      flex: 1;
+    }
+    .ss-selector-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    #ss-selected-count {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      min-width: 90px;
+    }
+    .ss-photo-grid {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: var(--space-2);
+      min-height: 0;
+    }
+    .ss-thumb {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .ss-thumb.selected {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--color-primary) 45%, transparent);
+    }
+    .ss-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      transition: transform 0.2s ease;
+    }
+    .ss-thumb:hover img { transform: scale(1.05); }
+    .ss-check {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      pointer-events: none;
+    }
+    .ss-thumb.selected .ss-check { display: flex; }
+    .ss-selector-footer {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+    .ss-btn {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .ss-btn-secondary {
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      color: var(--text-muted);
+    }
+    .ss-btn-secondary:hover { border-color: var(--color-primary); color: var(--text-main); }
+    .ss-btn-cancel {
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      color: var(--text-muted);
+    }
+    .ss-btn-cancel:hover { background: color-mix(in srgb, var(--color-primary) 8%, transparent); color: var(--text-main); }
+    .ss-btn-start {
+      background: color-mix(in srgb, #51cf66 20%, transparent);
+      border: 1px solid #51cf66;
+      color: #51cf66;
+    }
+    .ss-btn-start:hover:not(:disabled) { background: #51cf66; color: var(--color-dark-900); }
+    .ss-btn-start:disabled { opacity: 0.4; cursor: not-allowed; }
+
     @media (max-width: 660px) {
       .lightbox-inner { flex-direction: column; max-width: 100vw; max-height: 96vh; border-radius: 0; }
       .lightbox-photo-wrap { max-height: 52vh; }
@@ -1065,6 +1203,26 @@
         <p><a id="lc-login-link" href="/login.html">Sign in</a> to leave a comment</p>
       </div>
     </aside>
+  </div>
+</div>
+
+<!-- Slideshow Photo Selector Modal -->
+<div id="ss-selector-modal" class="ss-selector-modal">
+  <div class="ss-selector-content">
+    <div class="ss-selector-header">
+      <h2>Select Photos for Slideshow</h2>
+      <div class="ss-selector-meta">
+        <span id="ss-selected-count"></span>
+        <button id="ss-select-all" class="ss-btn ss-btn-secondary">Select All</button>
+        <button id="ss-clear-all" class="ss-btn ss-btn-secondary">Clear All</button>
+        <button id="ss-selector-close" class="ss-btn ss-btn-secondary" title="Close">✕</button>
+      </div>
+    </div>
+    <div id="ss-photo-grid" class="ss-photo-grid"></div>
+    <div class="ss-selector-footer">
+      <button id="ss-cancel-btn" class="ss-btn ss-btn-cancel">Cancel</button>
+      <button id="ss-start-btn" class="ss-btn ss-btn-start" disabled>▶ Start Slideshow</button>
+    </div>
   </div>
 </div>
 

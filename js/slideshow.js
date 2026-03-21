@@ -44,6 +44,26 @@ const COLLAGE_INTERVAL = 2 // Show collage every other slide
 // UUID validation
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
+// Parse "43% 28%" focal_point string → [0.43, 0.28]
+function parseFocalPoint(fp) {
+  const m = String(fp || '50% 35%').match(/([\d.]+)%\s+([\d.]+)%/)
+  return m ? [parseFloat(m[1]) / 100, parseFloat(m[2]) / 100] : [0.5, 0.35]
+}
+
+// Compute object-position percentages that MATHEMATICALLY CENTER the focal point
+// within the viewport when using object-fit: cover.
+// Formula: p = 100 * (f * scaledDim - containerDim/2) / (scaledDim - containerDim)
+function computeCenteredObjectPosition(fx, fy, naturalW, naturalH, containerW, containerH) {
+  const s = Math.max(containerW / naturalW, containerH / naturalH)
+  const scaledW = naturalW * s
+  const scaledH = naturalH * s
+  const overflowX = scaledW - containerW
+  const overflowY = scaledH - containerH
+  const px = overflowX > 0.5 ? Math.max(0, Math.min(100, 100 * (fx * scaledW - containerW / 2) / overflowX)) : 50
+  const py = overflowY > 0.5 ? Math.max(0, Math.min(100, 100 * (fy * scaledH - containerH / 2) / overflowY)) : 50
+  return `${px.toFixed(2)}% ${py.toFixed(2)}%`
+}
+
 // Named grid-template-area layouts for collage slides.
 // template: CSS grid-template shorthand (areas + row sizes / col sizes)
 // slots:    area names in order — photo[i] gets slotted into slots[i]
@@ -120,7 +140,55 @@ function shuffle(array) {
   return arr
 }
 
+async function loadSpecificPhotos(photoIds) {
+  const { data, error } = await supabase
+    .from('photos')
+    .select('id, file_path, created_at, focal_point')
+    .in('id', photoIds)
+  if (error) throw error
+  // Preserve caller's order
+  const byId = Object.fromEntries((data || []).map(p => [p.id, p]))
+  return photoIds.map(id => byId[id]).filter(Boolean)
+}
+
+async function loadByPhotoIds(photosParam) {
+  const photoIds = photosParam.split(',').map(s => s.trim()).filter(id => UUID_REGEX.test(id))
+  if (photoIds.length === 0) { showEmptyState('No valid photo IDs provided'); return }
+
+  const params = new URLSearchParams(window.location.search)
+  singleAlbumId = params.get('album') || null
+  isMultiAlbum = false
+
+  try {
+    photos = await loadSpecificPhotos(photoIds)
+    if (photos.length === 0) { showEmptyState('No photos found'); return }
+
+    let albumName = 'Selected Photos'
+    if (singleAlbumId && UUID_REGEX.test(singleAlbumId)) {
+      const { data: albumData } = await supabase
+        .from('albums').select('name, music_url').eq('id', singleAlbumId).single()
+      if (albumData?.name) albumName = albumData.name
+      if (albumData?.music_url) { audioUrl = albumData.music_url; setupAudioPlayer() }
+    }
+
+    slideshowTitleEl.textContent = `${albumName} \u2014 ${photos.length} Photo${photos.length !== 1 ? 's' : ''}`
+    backToAlbumEl.href = singleAlbumId ? `/album.html?album=${encodeURIComponent(singleAlbumId)}` : '/albums.html'
+    backToAlbumEl.textContent = '\u2190 Back'
+
+    currentPhotoIndex = 0
+    displayPhoto()
+    updateUI()
+  } catch (err) {
+    console.error('loadByPhotoIds error:', err)
+    showEmptyState(`Error loading photos: ${err.message}`)
+  }
+}
+
 async function loadPhotos() {
+  const params = new URLSearchParams(window.location.search)
+  const photosParam = params.get('photos')
+  if (photosParam) { await loadByPhotoIds(photosParam); return }
+
   const albumIds = getAlbumIds()
 
   if (albumIds.length === 0) {
@@ -388,15 +456,22 @@ function displayPhoto() {
       .from('photos')
       .getPublicUrl(photo.file_path).data.publicUrl
 
-    // Apply face-detected focal point for cover crop positioning
+    // Set initial object-position from stored focal_point (will be refined on load)
     const fp = photo.focal_point || '50% 35%'
     slideShowImageEl.style.objectPosition = fp
     if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = fp
 
-    // Quality check on load: show blurred bg for images below 1280×720
+    // After image loads: mathematically center the face & check quality
     const checkQuality = () => {
-      const lowRes = slideShowImageEl.naturalWidth < QUALITY_MIN_W ||
-                     slideShowImageEl.naturalHeight < QUALITY_MIN_H
+      const nw = slideShowImageEl.naturalWidth
+      const nh = slideShowImageEl.naturalHeight
+      if (nw && nh) {
+        const [fx, fy] = parseFocalPoint(fp)
+        const centeredPos = computeCenteredObjectPosition(fx, fy, nw, nh, window.innerWidth, window.innerHeight)
+        slideShowImageEl.style.objectPosition = centeredPos
+        if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = centeredPos
+      }
+      const lowRes = nw < QUALITY_MIN_W || nh < QUALITY_MIN_H
       if (slideshowBgEl) {
         if (lowRes) {
           slideshowBgEl.style.backgroundImage = `url("${publicUrl.replace(/"/g, '%22')}")`
