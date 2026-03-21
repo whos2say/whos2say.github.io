@@ -15,7 +15,7 @@
  * Once configured, the "Google Photos" button on the upload page will work.
  */
 
-const GOOGLE_CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com'
+const GOOGLE_CLIENT_ID = '620985968525-k3o97158rp6du1c3633ngnj9c1gm0o75.apps.googleusercontent.com'
 // ↑ Replace with your actual client ID from Google Cloud Console
 
 const PICKER_SCOPE = 'https://www.googleapis.com/auth/photospicker.mediaitems.readonly'
