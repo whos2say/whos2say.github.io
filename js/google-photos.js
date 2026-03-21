@@ -183,9 +183,26 @@ async function downloadMediaItems(mediaItems, accessToken, onStatus) {
     }
 
     if (isVideo) {
-      // Google video CDN blocks cross-origin fetch (CORS). Collect for manual download.
-      console.warn('[google-photos] video CORS limitation — queuing for manual download:', filename)
-      failedVideos.push({ filename, downloadUrl: `${baseUrl}${suffix}`, mimeType })
+      // Videos can't be fetched directly (CORS). Try the Vercel server-side proxy first.
+      let blob = await fetch('/api/proxy-video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: `${baseUrl}${suffix}`, token: accessToken }),
+      }).then(r => {
+        if (!r.ok) throw new Error(`Proxy HTTP ${r.status}`)
+        return r.blob()
+      }).catch(err => {
+        console.warn('[google-photos] proxy failed (not on Vercel?):', err.message)
+        return null
+      })
+
+      if (blob) {
+        blobs.push({ blob, name: filename, mimeType })
+        console.log('[google-photos] proxied video', filename, blob.size, 'bytes')
+      } else {
+        // Proxy unavailable (local dev) — show manual download link
+        failedVideos.push({ filename, downloadUrl: `${baseUrl}${suffix}`, mimeType })
+      }
       continue
     }
 
