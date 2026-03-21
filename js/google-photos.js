@@ -175,15 +175,19 @@ async function downloadMediaItems(mediaItems, accessToken, onStatus) {
       const filename = item.mediaFile?.filename || item.filename || `photo_${Date.now()}.jpg`
       const mimeType = item.mediaFile?.mimeType || 'image/jpeg'
 
+      // Google Photos uses =d for photos and =dv for videos
+      const isVideo = mimeType.startsWith('video/') || item.type === 'VIDEO'
+      const suffix = isVideo ? '=dv' : '=d'
+
       if (!baseUrl) {
         console.warn('[google-photos] no baseUrl for item', item.id)
         continue
       }
 
-      console.log('[google-photos] downloading', filename, 'from', baseUrl.slice(0, 80))
+      console.log('[google-photos] downloading', filename, `(${isVideo ? 'video' : 'photo'})`, 'from', baseUrl.slice(0, 80))
 
       // Attempt 1: fetch with Authorization header
-      let blob = await fetch(`${baseUrl}=d`, {
+      let blob = await fetch(`${baseUrl}${suffix}`, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
       }).then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -195,7 +199,7 @@ async function downloadMediaItems(mediaItems, accessToken, onStatus) {
 
       // Attempt 2: fetch without auth (some CDN URLs are self-authenticated)
       if (!blob) {
-        blob = await fetch(`${baseUrl}=d`).then(r => {
+        blob = await fetch(`${baseUrl}${suffix}`).then(r => {
           if (!r.ok) throw new Error(`HTTP ${r.status}`)
           return r.blob()
         }).catch(err => {
@@ -204,9 +208,9 @@ async function downloadMediaItems(mediaItems, accessToken, onStatus) {
         })
       }
 
-      // Attempt 3: img crossOrigin + canvas (CORS-enabled CDN URLs)
-      if (!blob) {
-        blob = await imgToBlob(`${baseUrl}=d`).catch(err => {
+      // Attempt 3: img crossOrigin + canvas (photos only — doesn't apply to video)
+      if (!blob && !isVideo) {
+        blob = await imgToBlob(`${baseUrl}${suffix}`).catch(err => {
           console.warn('[google-photos] img+canvas failed:', err.message)
           return null
         })
