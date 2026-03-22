@@ -10,6 +10,7 @@ const lightboxEl = document.getElementById('lightbox')
 const lightboxImgEl = document.getElementById('lightbox-img')
 const lightboxVideoEl = document.getElementById('lightbox-video')
 const lightboxCloseEl = document.getElementById('lightbox-close')
+const lightboxDownloadEl = document.getElementById('lightbox-download')
 
 function isVideoPath(path) {
   return /\.(mp4|mov|webm|m4v)$/i.test(path || '')
@@ -23,6 +24,7 @@ const bulkActionsBar = document.querySelector('.bulk-actions-bar')
 const selectionCountEl = document.getElementById('selection-count')
 const bulkDeleteBtn = document.getElementById('bulk-delete-btn')
 const bulkMoveBtn = document.getElementById('bulk-move-btn')
+const bulkDownloadBtn = document.getElementById('bulk-download-btn')
 const bulkCancelBtn = document.getElementById('bulk-cancel-btn')
 const moveModal = document.getElementById('move-modal')
 const albumListEl = document.getElementById('album-list')
@@ -38,6 +40,8 @@ let coverPhotoId = null
 let currentUser = null
 let isAlbumOwner = false
 let currentLightboxPhotoId = null
+let currentLightboxUrl = null
+let currentLightboxFilePath = null
 let selectedPhotos = new Set()
 let allPhotos = []
 let ssSelectedPhotos = new Set()
@@ -82,6 +86,8 @@ function openLightbox(url, photoId, filePath) {
   lightboxEl.classList.add('show')
   document.body.style.overflow = 'hidden'
   currentLightboxPhotoId = photoId || null
+  currentLightboxUrl = url || null
+  currentLightboxFilePath = filePath || null
   if (photoId) loadComments(photoId)
 }
 
@@ -92,6 +98,8 @@ function closeLightbox() {
   lightboxVideoEl.pause()
   lightboxVideoEl.src = ''
   currentLightboxPhotoId = null
+  currentLightboxUrl = null
+  currentLightboxFilePath = null
 }
 
 // --- Comments ---
@@ -225,6 +233,16 @@ async function deleteComment(commentId, itemEl) {
 
 lightboxCloseEl.addEventListener('click', closeLightbox)
 lightboxEl.addEventListener('click', e => { if (e.target === lightboxEl) closeLightbox() })
+
+if (lightboxDownloadEl) {
+  lightboxDownloadEl.addEventListener('click', () => {
+    if (!currentLightboxUrl) return
+    const filename = currentLightboxFilePath
+      ? currentLightboxFilePath.split('/').pop()
+      : 'photo'
+    downloadPhoto(currentLightboxUrl, filename)
+  })
+}
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && lightboxEl.classList.contains('show')) closeLightbox()
 })
@@ -358,8 +376,8 @@ function selectPhotosInRect(startX, startY, endX, endY) {
 }
 
 function startDragSelect(e) {
-  // Only allow drag select when clicking on empty grid space or with modifier key
-  if (e.target.closest('.photo-tile') || !isAlbumOwner) return
+  // Only allow drag select when clicking on empty grid space
+  if (e.target.closest('.photo-tile')) return
   
   isDraggingSelect = true
   dragStartX = e.clientX
@@ -409,12 +427,16 @@ function endDragSelect(e) {
 function updateSelectionUI() {
   const count = selectedPhotos.size
   selectionCountEl.textContent = `${count} photo${count !== 1 ? 's' : ''} selected`
-  
+
   if (count > 0) {
     bulkActionsBar.classList.add('show')
   } else {
     bulkActionsBar.classList.remove('show')
   }
+
+  // Delete and Move are owner-only
+  if (bulkDeleteBtn) bulkDeleteBtn.style.display = isAlbumOwner ? '' : 'none'
+  if (bulkMoveBtn) bulkMoveBtn.style.display = isAlbumOwner ? '' : 'none'
 
   document.querySelectorAll('.photo-checkbox').forEach(checkbox => {
     const photoId = checkbox.closest('.photo-tile')?.dataset.photoId
@@ -517,6 +539,67 @@ async function movePhotos(targetAlbumId, targetAlbumName) {
   } catch (err) {
     console.error('Move error:', err)
     showToast(`Failed to move photos: ${err.message}`, true)
+  }
+}
+
+// --- Download ---
+async function downloadPhoto(url, filename) {
+  showToast('Downloading…')
+  try {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const blob = await res.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = blobUrl
+    a.download = filename || 'photo'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+  } catch (err) {
+    showToast('Download failed: ' + err.message, true)
+  }
+}
+
+async function downloadSelectedPhotos() {
+  if (selectedPhotos.size === 0) return
+
+  const photos = [...selectedPhotos]
+    .map(id => allPhotos.find(p => p.id === id))
+    .filter(Boolean)
+
+  if (photos.length === 1) {
+    const photo = photos[0]
+    const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+    await downloadPhoto(url, photo.file_path.split('/').pop())
+    return
+  }
+
+  // Multiple photos → zip
+  showToast(`Preparing ${photos.length} files…`)
+  try {
+    const zip = new JSZip() // eslint-disable-line no-undef
+    for (const photo of photos) {
+      const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+      const filename = photo.file_path.split('/').pop()
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`Failed to fetch ${filename}`)
+      zip.file(filename, await res.blob())
+    }
+    showToast('Creating zip…')
+    const blob = await zip.generateAsync({ type: 'blob' })
+    const blobUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = blobUrl
+    a.download = 'photos.zip'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 2000)
+    showToast(`Downloaded ${photos.length} files!`)
+  } catch (err) {
+    showToast('Download failed: ' + err.message, true)
   }
 }
 
@@ -793,30 +876,38 @@ async function loadAlbum() {
 
       tile.appendChild(media)
 
-      // Add checkbox for selection
-      if (isAlbumOwner) {
-        const checkbox = document.createElement('input')
-        checkbox.type = 'checkbox'
-        checkbox.className = 'photo-checkbox'
-        checkbox.addEventListener('change', () => togglePhotoSelection(photo.id))
-        
-        // Also allow Ctrl/Cmd+click on tile to toggle selection
-        tile.addEventListener('click', (e) => {
-          if ((e.ctrlKey || e.metaKey) && !e.target.closest('button')) {
-            e.preventDefault()
-            checkbox.checked = !checkbox.checked
-            togglePhotoSelection(photo.id)
-          }
-        })
-        
-        tile.appendChild(checkbox)
-      }
+      // Checkbox for selection — available to all users
+      const checkbox = document.createElement('input')
+      checkbox.type = 'checkbox'
+      checkbox.className = 'photo-checkbox'
+      checkbox.addEventListener('change', () => togglePhotoSelection(photo.id))
 
-      // Add cover and delete controls if user is owner
-      if (isAlbumOwner) {
-        const controls = document.createElement('div')
-        controls.className = 'photo-controls'
+      // Ctrl/Cmd+click to toggle selection
+      tile.addEventListener('click', (e) => {
+        if ((e.ctrlKey || e.metaKey) && !e.target.closest('button')) {
+          e.preventDefault()
+          checkbox.checked = !checkbox.checked
+          togglePhotoSelection(photo.id)
+        }
+      })
 
+      tile.appendChild(checkbox)
+
+      // Photo controls — download for all, cover/delete for owners only
+      const controls = document.createElement('div')
+      controls.className = isAlbumOwner ? 'photo-controls full-width' : 'photo-controls'
+
+      const downloadBtn = document.createElement('button')
+      downloadBtn.className = 'photo-btn download-photo'
+      downloadBtn.textContent = '⬇ Save'
+      downloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const filename = photo.file_path.split('/').pop()
+        downloadPhoto(publicUrl, filename)
+      })
+      controls.appendChild(downloadBtn)
+
+      if (isAlbumOwner) {
         const setCoverBtn = document.createElement('button')
         setCoverBtn.className = 'photo-btn set-cover'
         setCoverBtn.textContent = photo.id === coverPhotoId ? '★ Cover' : 'Set Cover'
@@ -843,8 +934,9 @@ async function loadAlbum() {
 
         controls.appendChild(setCoverBtn)
         controls.appendChild(deleteBtn)
-        tile.appendChild(controls)
       }
+
+      tile.appendChild(controls)
 
       // Mark if this is the cover
       if (photo.id === coverPhotoId) {
@@ -918,6 +1010,10 @@ if (bulkDeleteBtn) {
 
 if (bulkMoveBtn) {
   bulkMoveBtn.addEventListener('click', showMoveModal)
+}
+
+if (bulkDownloadBtn) {
+  bulkDownloadBtn.addEventListener('click', downloadSelectedPhotos)
 }
 
 if (bulkCancelBtn) {
