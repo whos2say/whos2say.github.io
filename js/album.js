@@ -499,21 +499,24 @@ async function showMoveModal() {
 }
 
 async function movePhotos(targetAlbumId, targetAlbumName) {
+  const count = selectedPhotos.size
   try {
     for (const photoId of selectedPhotos) {
-      await supabase
+      const { error } = await supabase
         .from('photos')
         .update({ album_id: targetAlbumId })
         .eq('id', photoId)
+      if (error) throw error
     }
 
     moveModal.classList.remove('show')
     selectedPhotos.clear()
-    alert(`Moved ${selectedPhotos.size} photo(s) to "${targetAlbumName}"`)
+    updateSelectionUI()
+    showToast(`Moved ${count} photo${count !== 1 ? 's' : ''} to "${targetAlbumName}"`)
     loadAlbum()
   } catch (err) {
     console.error('Move error:', err)
-    alert(`Failed to move photos: ${err.message}`)
+    showToast(`Failed to move photos: ${err.message}`, true)
   }
 }
 
@@ -718,6 +721,7 @@ async function loadAlbum() {
 
     if (albumData?.name) {
       albumNameEl.textContent = albumData.name
+      window.fitAlbumTitle?.()
     }
 
     if (albumData?.cover_photo_id) {
