@@ -210,6 +210,72 @@ async function handleCreateAlbum(e) {
   }
 }
 
+// --- Gallery title size (S/M/L) — admin only ---
+// SQL required:
+//   CREATE TABLE IF NOT EXISTS site_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+//   ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+//   CREATE POLICY "settings_read" ON site_settings FOR SELECT USING (true);
+//   CREATE POLICY "settings_write" ON site_settings FOR ALL USING (auth.email() = 'joe@whostosay.org');
+
+const GALLERY_SIZES = { sm: '1.2rem', md: '1.8rem', lg: '2.5rem' }
+
+function applyGalleryTitleSize(size) {
+  const h1 = document.getElementById('gallery-title')
+  if (h1 && GALLERY_SIZES[size]) h1.style.fontSize = GALLERY_SIZES[size]
+  document.querySelectorAll('.title-size-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.size === size)
+  })
+}
+
+async function loadGalleryTitleSize() {
+  try {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'gallery_title_size')
+      .single()
+    if (!error && data?.value) applyGalleryTitleSize(data.value)
+  } catch {
+    // site_settings table may not exist yet — silently ignore
+  }
+}
+
+async function saveGalleryTitleSize(size) {
+  if (!userIsAdmin) return
+  try {
+    const { error } = await supabase
+      .from('site_settings')
+      .upsert({ key: 'gallery_title_size', value: size })
+    if (error) throw error
+    applyGalleryTitleSize(size)
+  } catch (err) {
+    alert('Failed to save title size: ' + err.message)
+  }
+}
+
+function renderGalleryTitleSizePicker() {
+  const h1 = document.getElementById('gallery-title')
+  if (!h1) return
+  const picker = document.createElement('div')
+  picker.className = 'title-size-btns'
+  picker.title = 'Title font size (admin)'
+  picker.style.marginLeft = 'var(--space-2)'
+  ;['sm', 'md', 'lg'].forEach(size => {
+    const btn = document.createElement('button')
+    btn.className = 'title-size-btn'
+    btn.dataset.size = size
+    btn.textContent = size.toUpperCase()[0]
+    btn.title = { sm: 'Small', md: 'Medium', lg: 'Large' }[size]
+    btn.addEventListener('click', () => saveGalleryTitleSize(size))
+    picker.appendChild(btn)
+  })
+  h1.insertAdjacentElement('afterend', picker)
+}
+
 // Initialize — auth must resolve first so userIsAdmin is set before cards render
 createFormEl.addEventListener('submit', handleCreateAlbum)
-checkAuth().then(() => loadAlbums())
+checkAuth().then(() => {
+  loadAlbums()
+  loadGalleryTitleSize()
+  if (userIsAdmin) renderGalleryTitleSizePicker()
+})

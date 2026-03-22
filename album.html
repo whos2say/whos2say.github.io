@@ -706,6 +706,43 @@
 
     .title-action-btn.cancel:hover { background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--text-main); }
 
+    .title-size-btns {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .title-size-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--radius-sm);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .title-size-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+
+    .title-size-btn.active {
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      color: var(--color-primary);
+    }
+
     .lightbox-overlay {
       position: fixed;
       inset: 0;
@@ -1234,6 +1271,11 @@
           <button id="cancel-title-btn" class="title-action-btn cancel">✕</button>
         </div>
         <button id="edit-title-btn" class="edit-title-btn" title="Edit album name" style="display:none">✏</button>
+        <div id="title-size-btns" class="title-size-btns" style="display:none" title="Title font size (admin)">
+          <button class="title-size-btn" data-size="sm" title="Small">S</button>
+          <button class="title-size-btn" data-size="md" title="Medium">M</button>
+          <button class="title-size-btn" data-size="lg" title="Large">L</button>
+        </div>
       </div>
       <div class="album-hero-actions" id="album-actions">
         <a id="back-gallery" href="/albums.html" class="back-gallery-btn">Gallery</a>
@@ -1356,6 +1398,7 @@
   window.fitAlbumTitle = function () {
     const h1 = document.getElementById('album-name')
     if (!h1) return
+    if (h1.dataset.sizeOverride) return  // manual S/M/L size set — skip auto-fit
     const wrapper = h1.closest('.album-name-wrapper')
     if (!wrapper) return
 

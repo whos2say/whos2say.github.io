@@ -39,6 +39,7 @@ let currentAlbumId = null
 let coverPhotoId = null
 let currentUser = null
 let isAlbumOwner = false
+let isAdmin = false
 let currentLightboxPhotoId = null
 let currentLightboxUrl = null
 let currentLightboxFilePath = null
@@ -62,9 +63,44 @@ async function checkAlbumOwner() {
     const { data: { user } } = await supabase.auth.getUser()
     currentUser = user
     isAlbumOwner = !!user
+    isAdmin = user?.email === 'joe@whostosay.org'
   } catch (err) {
     currentUser = null
     isAlbumOwner = false
+    isAdmin = false
+  }
+}
+
+// --- Title size (S/M/L) — admin only ---
+// SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS title_size TEXT;
+const TITLE_SIZES = { sm: '1.2rem', md: '1.8rem', lg: '2.5rem' }
+
+function applyTitleSize(size) {
+  if (size && TITLE_SIZES[size]) {
+    albumNameEl.style.fontSize = TITLE_SIZES[size]
+    albumNameEl.dataset.sizeOverride = size
+  } else {
+    delete albumNameEl.dataset.sizeOverride
+    albumNameEl.style.fontSize = ''
+    window.fitAlbumTitle?.()
+  }
+  document.querySelectorAll('.title-size-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.size === size)
+  })
+}
+
+async function saveTitleSize(size) {
+  if (!isAdmin || !currentAlbumId) return
+  try {
+    const { error } = await supabase
+      .from('albums')
+      .update({ title_size: size })
+      .eq('id', currentAlbumId)
+    if (error) throw error
+    applyTitleSize(size)
+    showToast(`Title size: ${size.toUpperCase()}`)
+  } catch (err) {
+    showToast('Failed to save size: ' + err.message, true)
   }
 }
 
@@ -784,6 +820,10 @@ async function loadAlbum() {
   if (editTitleBtnEl) {
     editTitleBtnEl.style.display = isAlbumOwner ? 'inline-block' : 'none'
   }
+  const sizeBtnsEl = document.getElementById('title-size-btns')
+  if (sizeBtnsEl) {
+    sizeBtnsEl.style.display = isAdmin ? 'flex' : 'none'
+  }
 
   // Set upload link
   uploadBtnEl.href = `/upload.html?album=${encodeURIComponent(currentAlbumId)}`
@@ -792,10 +832,10 @@ async function loadAlbum() {
   slideshowBtnEl.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
 
   try {
-    // Fetch album data including cover_photo_id and music_url
+    // Fetch album data
     const { data: albumData, error: albumError } = await supabase
       .from('albums')
-      .select('name, cover_photo_id, music_url')
+      .select('name, cover_photo_id, music_url, title_size')
       .eq('id', currentAlbumId)
       .limit(1)
       .single()
@@ -804,7 +844,11 @@ async function loadAlbum() {
 
     if (albumData?.name) {
       albumNameEl.textContent = albumData.name
-      window.fitAlbumTitle?.()
+      if (albumData.title_size) {
+        applyTitleSize(albumData.title_size)
+      } else {
+        window.fitAlbumTitle?.()
+      }
     }
 
     if (albumData?.cover_photo_id) {
@@ -954,6 +998,10 @@ async function loadAlbum() {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadAlbum()
+
+  document.querySelectorAll('.title-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => saveTitleSize(btn.dataset.size))
+  })
 
   const submitBtn = document.getElementById('lc-submit')
   const inputEl   = document.getElementById('lc-input')

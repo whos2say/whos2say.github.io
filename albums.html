@@ -237,6 +237,70 @@
       font-size: 1.1rem;
       padding: var(--space-3) var(--space-6);
     }
+
+    .title-size-btns {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .title-size-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--radius-sm);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .title-size-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+
+    .title-size-btn.active {
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      color: var(--color-primary);
+    }
+
+    @media (max-width: 640px) {
+      .albums-header-inner {
+        flex-wrap: wrap;
+        gap: var(--space-3);
+      }
+      .albums-header h1 {
+        font-size: 1.8rem;
+        flex: 0 0 100%;
+      }
+      .albums-header-inner > a.btn,
+      #auth-header-action {
+        flex: 1 1 auto;
+      }
+      #auth-header-action .btn {
+        width: 100%;
+        text-align: center;
+        display: block;
+      }
+      .albums-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: var(--space-3);
+      }
+      .album-cover {
+        height: 120px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -261,7 +325,7 @@
 <main id="main">
   <div class="albums-header">
     <div class="albums-header-inner">
-      <h1>Photo Albums</h1>
+      <h1 id="gallery-title">Photo Albums</h1>
       <a href="/multi-slideshow.html" class="btn btn-primary" style="background: color-mix(in srgb, #a855f7 20%, transparent); border-color: #a855f7; color: #a855f7; white-space: nowrap;">🎬 Multi Slideshow</a>
       <div id="auth-header-action"><a href="/login.html" class="btn btn-primary">Sign In</a></div>
     </div>
