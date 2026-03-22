@@ -315,7 +315,7 @@ async function saveTitleEdit() {
 
 function cancelTitleEdit() {
   albumNameEl.style.display = ''
-  editTitleBtnEl.style.display = 'inline-block'
+  editTitleBtnEl.style.display = ''   // let CSS (.admin-bar-btn) control display
   albumNameEditEl.style.display = 'none'
   titleEditBtnsEl.style.display = 'none'
 }
@@ -578,6 +578,80 @@ async function movePhotos(targetAlbumId, targetAlbumName) {
   }
 }
 
+// --- Drag-to-reorder ---
+let dragSrcId = null
+
+function initDragAndDrop() {
+  document.querySelectorAll('.photo-tile[draggable]').forEach(tile => {
+    tile.addEventListener('dragstart', onDragStart)
+    tile.addEventListener('dragover',  onDragOver)
+    tile.addEventListener('dragleave', onDragLeave)
+    tile.addEventListener('drop',      onDrop)
+    tile.addEventListener('dragend',   onDragEnd)
+  })
+}
+
+function onDragStart(e) {
+  dragSrcId = this.dataset.photoId
+  e.dataTransfer.effectAllowed = 'move'
+  e.dataTransfer.setData('text/plain', dragSrcId)
+  // Slight delay so the ghost image captures the un-dimmed tile
+  requestAnimationFrame(() => this.classList.add('dragging'))
+}
+
+function onDragOver(e) {
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  if (this.dataset.photoId !== dragSrcId) this.classList.add('drag-over')
+}
+
+function onDragLeave() {
+  this.classList.remove('drag-over')
+}
+
+async function onDrop(e) {
+  e.preventDefault()
+  this.classList.remove('drag-over')
+  const targetId = this.dataset.photoId
+  if (!targetId || targetId === dragSrcId) return
+
+  const srcTile = photosGridEl.querySelector(`[data-photo-id="${dragSrcId}"]`)
+  const tgtTile = this
+  if (!srcTile || !tgtTile) return
+
+  const tiles = [...photosGridEl.querySelectorAll('.photo-tile')]
+  const srcIdx = tiles.indexOf(srcTile)
+  const tgtIdx = tiles.indexOf(tgtTile)
+
+  if (srcIdx < tgtIdx) {
+    tgtTile.insertAdjacentElement('afterend', srcTile)
+  } else {
+    tgtTile.insertAdjacentElement('beforebegin', srcTile)
+  }
+
+  await savePhotoOrder()
+}
+
+function onDragEnd() {
+  this.classList.remove('dragging')
+  document.querySelectorAll('.photo-tile').forEach(t => t.classList.remove('drag-over'))
+  dragSrcId = null
+}
+
+async function savePhotoOrder() {
+  const tiles = [...photosGridEl.querySelectorAll('.photo-tile')]
+  try {
+    await Promise.all(
+      tiles.map((tile, idx) =>
+        supabase.from('photos').update({ sort_order: idx }).eq('id', tile.dataset.photoId)
+      )
+    )
+    showToast('✓ Order saved')
+  } catch (err) {
+    showToast('Failed to save order: ' + err.message, true)
+  }
+}
+
 // --- Download ---
 async function downloadPhoto(url, filename) {
   showToast('Downloading…')
@@ -817,12 +891,10 @@ async function loadAlbum() {
   if (musicBtnEl) {
     musicBtnEl.style.display = isAlbumOwner ? 'inline-block' : 'none'
   }
-  if (editTitleBtnEl) {
-    editTitleBtnEl.style.display = isAlbumOwner ? 'inline-block' : 'none'
-  }
-  const sizeBtnsEl = document.getElementById('title-size-btns')
-  if (sizeBtnsEl) {
-    sizeBtnsEl.style.display = isAdmin ? 'flex' : 'none'
+  // Admin bar (rename + font size) — admin only
+  const adminBarEl = document.getElementById('album-admin-bar')
+  if (adminBarEl) {
+    adminBarEl.style.display = isAdmin ? 'flex' : 'none'
   }
 
   // Set upload link
@@ -858,10 +930,12 @@ async function loadAlbum() {
     updateMusicBadge(!!albumData?.music_url, albumData?.music_url)
 
     // Fetch photos for this album
+    // SQL required: ALTER TABLE photos ADD COLUMN IF NOT EXISTS sort_order INTEGER;
     const { data: photos, error: photosError } = await supabase
       .from('photos')
-      .select('id, file_path, created_at, focal_point')
+      .select('id, file_path, created_at, focal_point, sort_order')
       .eq('album_id', currentAlbumId)
+      .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
 
     if (photosError) throw photosError
@@ -982,6 +1056,16 @@ async function loadAlbum() {
 
       tile.appendChild(controls)
 
+      // Drag-to-reorder: owner only
+      if (isAlbumOwner) {
+        tile.draggable = true
+        const handle = document.createElement('div')
+        handle.className = 'drag-handle'
+        handle.title = 'Drag to reorder'
+        handle.textContent = '⠿'
+        tile.appendChild(handle)
+      }
+
       // Mark if this is the cover
       if (photo.id === coverPhotoId) {
         tile.classList.add('is-cover')
@@ -989,6 +1073,9 @@ async function loadAlbum() {
 
       photosGridEl.appendChild(tile)
     })
+
+    if (isAlbumOwner) initDragAndDrop()
+
   } catch (err) {
     console.error('Load album error:', err)
     emptyStateEl.textContent = `Error loading album: ${err.message}`

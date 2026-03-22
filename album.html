@@ -88,6 +88,39 @@
       box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
     }
 
+    /* ── Drag-and-drop reorder ─────────────────── */
+    .photo-tile.dragging {
+      opacity: 0.35;
+      transform: scale(0.96);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .photo-tile.drag-over {
+      border-color: var(--color-primary) !important;
+      box-shadow: 0 0 24px color-mix(in srgb, var(--color-primary) 45%, transparent) !important;
+      transform: scale(1.03);
+    }
+
+    .drag-handle {
+      position: absolute;
+      top: 0.4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.55);
+      font-size: 1rem;
+      cursor: grab;
+      z-index: 16;
+      opacity: 0;
+      transition: opacity 0.15s;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: -1px;
+    }
+
+    .photo-tile:hover .drag-handle {
+      opacity: 1;
+    }
+
     .photo-tile.is-cover::before {
       content: '★';
       position: absolute;
@@ -644,6 +677,61 @@
     .album-name-wrapper h1 {
       flex: none;
       white-space: nowrap;
+    }
+
+    /* ── Admin bar (second row inside hero, admin-only) ─── */
+    .album-admin-bar {
+      max-width: var(--max-width);
+      margin: var(--space-3) auto 0;
+      padding: var(--space-2) var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+    }
+
+    .admin-bar-label {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--color-primary);
+      opacity: 0.65;
+      flex-shrink: 0;
+    }
+
+    .admin-bar-sep {
+      width: 1px;
+      height: 16px;
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      flex-shrink: 0;
+    }
+
+    .admin-bar-btn {
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      color: var(--text-muted);
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: var(--font-body);
+      font-weight: 600;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .admin-bar-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 8%, transparent);
     }
 
     .album-name-edit-input {
@@ -1270,18 +1358,24 @@
           <button id="save-title-btn" class="title-action-btn save">✓</button>
           <button id="cancel-title-btn" class="title-action-btn cancel">✕</button>
         </div>
-        <button id="edit-title-btn" class="edit-title-btn" title="Edit album name" style="display:none">✏</button>
-        <div id="title-size-btns" class="title-size-btns" style="display:none" title="Title font size (admin)">
-          <button class="title-size-btn" data-size="sm" title="Small">S</button>
-          <button class="title-size-btn" data-size="md" title="Medium">M</button>
-          <button class="title-size-btn" data-size="lg" title="Large">L</button>
-        </div>
       </div>
       <div class="album-hero-actions" id="album-actions">
         <a id="back-gallery" href="/albums.html" class="back-gallery-btn">Gallery</a>
         <a id="slideshow-btn" href="#" class="btn btn-primary" style="background: color-mix(in srgb, #51cf66 20%, transparent); border-color: #51cf66; color: #51cf66;">Slideshow</a>
         <button id="music-btn" class="btn btn-primary" type="button" title="Add or edit slideshow music">♪ Music<span id="music-badge" class="music-status-badge" style="display:none;">✓ Set</span></button>
         <a id="upload-btn" href="#" class="btn btn-primary">Upload Photos</a>
+      </div>
+    </div>
+    <!-- Admin bar: title rename + font size — only shown when admin is logged in -->
+    <div id="album-admin-bar" class="album-admin-bar" style="display:none">
+      <span class="admin-bar-label">⚙ Admin</span>
+      <button id="edit-title-btn" class="admin-bar-btn" title="Rename album">✏ Rename</button>
+      <div class="admin-bar-sep"></div>
+      <span class="admin-bar-label">Title size:</span>
+      <div id="title-size-btns" class="title-size-btns">
+        <button class="title-size-btn" data-size="sm" title="Small">S</button>
+        <button class="title-size-btn" data-size="md" title="Medium">M</button>
+        <button class="title-size-btn" data-size="lg" title="Large">L</button>
       </div>
     </div>
   </div>
