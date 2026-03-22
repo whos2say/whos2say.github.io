@@ -1327,6 +1327,41 @@
       background: var(--color-primary);
       color: var(--color-dark-900);
     }
+
+    /* ── Slideshow selector enhancements ─────────── */
+    .ss-excl {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: rgba(255,80,80,0.9);
+      background: rgba(40,0,0,0.4);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .ss-excl::after { content: '✕'; }
+    .ss-thumb.ss-excluded .ss-excl { display: flex; }
+    .ss-thumb.ss-excluded img { opacity: 0.3; filter: grayscale(0.4); }
+    .ss-thumb.ss-excluded { border-color: rgba(255,80,80,0.5) !important; }
+    .ss-thumb.ss-dragging { opacity: 0.22; transform: scale(0.92); }
+    .ss-thumb.ss-drag-over { border-color: #ffd43b !important; box-shadow: 0 0 14px rgba(255,212,59,0.55) !important; }
+    .ss-btn-save {
+      background: color-mix(in srgb, #ffd43b 20%, transparent);
+      border: 1px solid #ffd43b;
+      color: #ffd43b;
+    }
+    .ss-btn-save:hover { background: #ffd43b; color: var(--color-dark-900); }
+    .ss-hint {
+      flex: 0 0 100%;
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin: var(--space-1) 0 0;
+      padding-top: var(--space-2);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
   </style>
 </head>
 <body>
@@ -1475,10 +1510,12 @@
         <button id="ss-clear-all" class="ss-btn ss-btn-secondary">Clear All</button>
         <button id="ss-selector-close" class="ss-btn ss-btn-secondary" title="Close">✕</button>
       </div>
+      <p class="ss-hint" id="ss-config-hint">Click to include/exclude · Shift+click for range · Drag to reorder</p>
     </div>
     <div id="ss-photo-grid" class="ss-photo-grid"></div>
     <div class="ss-selector-footer">
       <button id="ss-cancel-btn" class="ss-btn ss-btn-cancel">Cancel</button>
+      <button id="ss-save-btn" class="ss-btn ss-btn-save">💾 Save</button>
       <button id="ss-start-btn" class="ss-btn ss-btn-start" disabled>▶ Start Slideshow</button>
     </div>
   </div>

@@ -321,6 +321,230 @@
         text-align: center;
       }
     }
+
+    /* ── Master Slideshow (Admin) ─────────────── */
+    .btn-master {
+      background: color-mix(in srgb, #a855f7 20%, transparent);
+      border: 1px solid #a855f7;
+      color: #a855f7;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-master:hover { background: #a855f7; color: #fff; }
+
+    .master-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+    .master-modal.show { display: flex; }
+    .master-modal-content {
+      background: var(--color-dark-800);
+      border: 1px solid #a855f7;
+      border-radius: var(--radius-md);
+      width: min(98vw, 980px);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(168,85,247,0.25);
+    }
+    .master-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .master-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #a855f7;
+      margin: 0;
+      flex: 1;
+    }
+    .master-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    #master-count {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      min-width: 100px;
+    }
+    .master-meta-btn {
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(168,85,247,0.35);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .master-meta-btn:hover { border-color: #a855f7; color: #a855f7; }
+    .master-hint {
+      flex: 0 0 100%;
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin: var(--space-1) 0 0;
+      padding-top: var(--space-2);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .master-albums-list {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: var(--space-4) var(--space-5);
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    .master-album-section {}
+    .master-album-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+    .master-album-title h3 {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0;
+      flex: 1;
+    }
+    .master-album-count {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .master-album-toggle {
+      padding: 0.2rem 0.5rem;
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .master-album-toggle:hover { border-color: #a855f7; color: #a855f7; }
+    .master-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: var(--space-2);
+    }
+    .master-thumb {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .master-thumb.selected {
+      border-color: #a855f7;
+      box-shadow: 0 0 10px rgba(168,85,247,0.5);
+    }
+    .master-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      transition: transform 0.2s ease;
+    }
+    .master-thumb:hover img { transform: scale(1.05); }
+    .master-check {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #a855f7;
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      pointer-events: none;
+    }
+    .master-thumb.selected .master-check { display: flex; }
+    .master-excl {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: rgba(255,80,80,0.9);
+      background: rgba(40,0,0,0.4);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .master-excl::after { content: '✕'; }
+    .master-thumb.master-excluded .master-excl { display: flex; }
+    .master-thumb.master-excluded img { opacity: 0.3; filter: grayscale(0.4); }
+    .master-footer {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      justify-content: flex-end;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .master-footer-btn {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .master-btn-cancel { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); }
+    .master-btn-cancel:hover { border-color: var(--color-primary); color: var(--text-main); }
+    .master-btn-save { background: color-mix(in srgb, #ffd43b 20%, transparent); border: 1px solid #ffd43b; color: #ffd43b; }
+    .master-btn-save:hover { background: #ffd43b; color: var(--color-dark-900); }
+    .master-btn-launch { background: #a855f7; border: 1px solid #a855f7; color: #fff; }
+    .master-btn-launch:hover:not(:disabled) { background: #c084fc; border-color: #c084fc; }
+    .master-btn-launch:disabled { opacity: 0.35; cursor: not-allowed; }
+    @media (max-width: 640px) {
+      .master-photo-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
+      .master-footer { justify-content: center; }
+    }
   </style>
 </head>
 <body>
@@ -375,6 +599,7 @@
       </div>
 
       <button class="btn-start" id="start-btn" type="button" disabled>▶ Start Slideshow</button>
+      <button class="btn-master" id="master-btn" type="button" style="display:none" title="Admin: build a curated master slideshow from any album">🎬 Master</button>
     </div>
   </div>
 
@@ -390,6 +615,30 @@
 <footer class="site-footer">
   © <span id="year"></span> Who's to Say ? Foundation
 </footer>
+
+<!-- Master Slideshow Modal (Admin Only) -->
+<div id="master-modal" class="master-modal">
+  <div class="master-modal-content">
+    <div class="master-header">
+      <h2>🎬 Master Slideshow</h2>
+      <div class="master-meta">
+        <span id="master-count">0 selected</span>
+        <button id="master-select-all" class="master-meta-btn">Select All</button>
+        <button id="master-clear-all" class="master-meta-btn">Clear All</button>
+        <button id="master-close" class="master-meta-btn">✕ Close</button>
+      </div>
+      <p class="master-hint" id="master-hint">Click to include/exclude · Shift+click for range</p>
+    </div>
+    <div id="master-albums-list" class="master-albums-list">
+      <p style="color:var(--text-muted);font-family:var(--font-body);font-size:0.9rem;">Loading albums…</p>
+    </div>
+    <div class="master-footer">
+      <button id="master-cancel" class="master-footer-btn master-btn-cancel">Cancel</button>
+      <button id="master-save" class="master-footer-btn master-btn-save">💾 Save Config</button>
+      <button id="master-launch" class="master-footer-btn master-btn-launch" disabled>🎬 Launch Slideshow</button>
+    </div>
+  </div>
+</div>
 
 <script>
   document.getElementById('year').textContent = new Date().getFullYear()
@@ -541,6 +790,258 @@
   }
 
   loadAlbums()
+
+  // ── Master Slideshow (Admin Only) ──────────────────────────────────────────
+
+  const masterModalEl    = document.getElementById('master-modal')
+  const masterAlbumsEl   = document.getElementById('master-albums-list')
+  const masterCountEl    = document.getElementById('master-count')
+  const masterHintEl     = document.getElementById('master-hint')
+  const masterLaunchBtn  = document.getElementById('master-launch')
+  const masterBtnEl      = document.getElementById('master-btn')
+
+  let masterSelectedIds  = new Set()   // photo IDs selected for master slideshow
+  let masterAllPhotos    = []          // flat ordered list of all photos (across albums)
+  let masterLastClickIdx = -1
+
+  function updateMasterCount() {
+    const total = masterAllPhotos.length
+    const sel   = masterSelectedIds.size
+    masterCountEl.textContent = sel === total ? `All ${total} selected` : `${sel} of ${total} selected`
+    masterLaunchBtn.disabled = sel === 0
+  }
+
+  function buildMasterThumb(photo, albumId) {
+    const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+    const isSelected = masterSelectedIds.has(photo.id)
+
+    const thumb = document.createElement('div')
+    thumb.className = 'master-thumb' + (isSelected ? ' selected' : ' master-excluded')
+    thumb.dataset.photoId = photo.id
+
+    const img = document.createElement('img')
+    img.src = publicUrl
+    img.alt = ''
+    img.loading = 'lazy'
+    img.style.objectPosition = photo.focal_point || '50% 35%'
+
+    const chk = document.createElement('span')
+    chk.className = 'master-check'
+    chk.textContent = '✓'
+
+    const excl = document.createElement('div')
+    excl.className = 'master-excl'
+
+    thumb.appendChild(img)
+    thumb.appendChild(chk)
+    thumb.appendChild(excl)
+
+    thumb.addEventListener('click', (e) => {
+      const allThumbs = [...document.querySelectorAll('.master-thumb')]
+      const thisIdx   = allThumbs.indexOf(thumb)
+
+      if (e.shiftKey && masterLastClickIdx >= 0) {
+        const anchorId = allThumbs[masterLastClickIdx]?.dataset.photoId
+        const targetOn = masterSelectedIds.has(anchorId)
+        const start    = Math.min(masterLastClickIdx, thisIdx)
+        const end      = Math.max(masterLastClickIdx, thisIdx)
+        for (let i = start; i <= end; i++) {
+          const pid = allThumbs[i].dataset.photoId
+          if (targetOn) {
+            masterSelectedIds.add(pid)
+            allThumbs[i].classList.add('selected')
+            allThumbs[i].classList.remove('master-excluded')
+          } else {
+            masterSelectedIds.delete(pid)
+            allThumbs[i].classList.remove('selected')
+            allThumbs[i].classList.add('master-excluded')
+          }
+        }
+      } else {
+        if (masterSelectedIds.has(photo.id)) {
+          masterSelectedIds.delete(photo.id)
+          thumb.classList.remove('selected')
+          thumb.classList.add('master-excluded')
+        } else {
+          masterSelectedIds.add(photo.id)
+          thumb.classList.add('selected')
+          thumb.classList.remove('master-excluded')
+        }
+        masterLastClickIdx = thisIdx
+      }
+      // Update album count label
+      const secEl = thumb.closest('.master-album-section')
+      if (secEl) {
+        const aId    = secEl.dataset.albumId
+        const total  = secEl.querySelectorAll('.master-thumb').length
+        const selCnt = secEl.querySelectorAll('.master-thumb.selected').length
+        const cntEl  = secEl.querySelector('.master-album-count')
+        if (cntEl) cntEl.textContent = `${selCnt} / ${total}`
+      }
+      updateMasterCount()
+    })
+    return thumb
+  }
+
+  async function openMasterModal() {
+    masterModalEl.classList.add('show')
+    masterAlbumsEl.innerHTML = '<p style="color:var(--text-muted);font-family:var(--font-body);font-size:0.9rem;">Loading…</p>'
+
+    try {
+      const { data: albums, error: ae } = await supabase
+        .from('albums')
+        .select('id, name')
+        .order('sort_order', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false })
+      if (ae) throw ae
+
+      // Load saved master config to pre-select
+      masterSelectedIds.clear()
+      masterAllPhotos = []
+      masterLastClickIdx = -1
+      try {
+        const raw = localStorage.getItem('master_ss_config')
+        if (raw) {
+          const { photoIds } = JSON.parse(raw)
+          if (photoIds?.length) photoIds.forEach(id => masterSelectedIds.add(id))
+        }
+      } catch {}
+
+      masterAlbumsEl.innerHTML = ''
+
+      for (const album of (albums || [])) {
+        const { data: photos } = await supabase
+          .from('photos')
+          .select('id, file_path, focal_point, sort_order')
+          .eq('album_id', album.id)
+          .order('sort_order', { ascending: true, nullsFirst: false })
+          .order('created_at', { ascending: false })
+
+        if (!photos?.length) continue
+
+        // If no saved config, default all selected
+        if (masterSelectedIds.size === 0) photos.forEach(p => masterSelectedIds.add(p.id))
+
+        masterAllPhotos = masterAllPhotos.concat(photos)
+
+        const section = document.createElement('div')
+        section.className = 'master-album-section'
+        section.dataset.albumId = album.id
+
+        const selCnt = photos.filter(p => masterSelectedIds.has(p.id)).length
+        section.innerHTML = `
+          <div class="master-album-title">
+            <h3>${album.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</h3>
+            <span class="master-album-count">${selCnt} / ${photos.length}</span>
+            <button class="master-album-toggle" data-action="all">All</button>
+            <button class="master-album-toggle" data-action="none">None</button>
+          </div>
+          <div class="master-photo-grid"></div>
+        `
+        const grid = section.querySelector('.master-photo-grid')
+        photos.forEach(photo => grid.appendChild(buildMasterThumb(photo, album.id)))
+
+        // Album-level All/None toggles
+        section.querySelectorAll('.master-album-toggle').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const addAll = btn.dataset.action === 'all'
+            const thumbs = section.querySelectorAll('.master-thumb')
+            thumbs.forEach(t => {
+              if (addAll) {
+                masterSelectedIds.add(t.dataset.photoId)
+                t.classList.add('selected')
+                t.classList.remove('master-excluded')
+              } else {
+                masterSelectedIds.delete(t.dataset.photoId)
+                t.classList.remove('selected')
+                t.classList.add('master-excluded')
+              }
+            })
+            const cntEl = section.querySelector('.master-album-count')
+            if (cntEl) cntEl.textContent = `${addAll ? thumbs.length : 0} / ${thumbs.length}`
+            masterLastClickIdx = -1
+            updateMasterCount()
+          })
+        })
+
+        masterAlbumsEl.appendChild(section)
+      }
+
+      updateMasterCount()
+      const hasSaved = !!localStorage.getItem('master_ss_config')
+      masterHintEl.textContent = hasSaved
+        ? `✓ Saved config loaded · ${masterSelectedIds.size} selected · Shift+click for range`
+        : 'Click to include/exclude · Shift+click for range'
+
+    } catch (err) {
+      masterAlbumsEl.innerHTML = `<p style="color:#ff6b6b;font-family:var(--font-body)">Error: ${err.message}</p>`
+    }
+  }
+
+  function saveMasterConfig() {
+    const photoIds = masterAllPhotos.filter(p => masterSelectedIds.has(p.id)).map(p => p.id)
+    try {
+      localStorage.setItem('master_ss_config', JSON.stringify({ photoIds }))
+      masterHintEl.textContent = `✓ Saved · ${photoIds.length} photos included · Shift+click for range`
+      // Visual flash
+      const btn = document.getElementById('master-save')
+      const orig = btn.textContent
+      btn.textContent = '✓ Saved!'
+      setTimeout(() => { btn.textContent = orig }, 1500)
+    } catch (e) {
+      alert('Save failed: ' + e.message)
+    }
+  }
+
+  function launchMasterSlideshow() {
+    masterModalEl.classList.remove('show')
+    window.location.href = `/slideshow.html?master=1&order=${selectedOrder}&mode=${selectedMode}`
+  }
+
+  // Wire up master modal controls
+  document.getElementById('master-btn')?.addEventListener('click', openMasterModal)
+  document.getElementById('master-close')?.addEventListener('click', () => masterModalEl.classList.remove('show'))
+  document.getElementById('master-cancel')?.addEventListener('click', () => masterModalEl.classList.remove('show'))
+  masterModalEl?.addEventListener('click', e => { if (e.target === masterModalEl) masterModalEl.classList.remove('show') })
+  document.getElementById('master-select-all')?.addEventListener('click', () => {
+    masterAllPhotos.forEach(p => masterSelectedIds.add(p.id))
+    document.querySelectorAll('.master-thumb').forEach(t => {
+      t.classList.add('selected')
+      t.classList.remove('master-excluded')
+    })
+    document.querySelectorAll('.master-album-count').forEach((el, i) => {
+      const sec = el.closest('.master-album-section')
+      if (sec) { const c = sec.querySelectorAll('.master-thumb').length; el.textContent = `${c} / ${c}` }
+    })
+    masterLastClickIdx = -1
+    updateMasterCount()
+  })
+  document.getElementById('master-clear-all')?.addEventListener('click', () => {
+    masterSelectedIds.clear()
+    document.querySelectorAll('.master-thumb').forEach(t => {
+      t.classList.remove('selected')
+      t.classList.add('master-excluded')
+    })
+    document.querySelectorAll('.master-album-count').forEach(el => {
+      const sec = el.closest('.master-album-section')
+      if (sec) { const c = sec.querySelectorAll('.master-thumb').length; el.textContent = `0 / ${c}` }
+    })
+    masterLastClickIdx = -1
+    updateMasterCount()
+  })
+  document.getElementById('master-save')?.addEventListener('click', saveMasterConfig)
+  masterLaunchBtn?.addEventListener('click', launchMasterSlideshow)
+
+  // Show Master button for admin only
+  async function checkAdminForMaster() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user?.email === 'joe@whostosay.org' && masterBtnEl) {
+        masterBtnEl.style.display = ''
+      }
+    } catch {}
+  }
+  checkAdminForMaster()
 </script>
 </body>
 </html>

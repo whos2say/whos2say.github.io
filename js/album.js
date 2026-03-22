@@ -46,6 +46,9 @@ let currentLightboxFilePath = null
 let selectedPhotos = new Set()
 let allPhotos = []
 let ssSelectedPhotos = new Set()
+let ssSortedPhotos = []       // photos in current selector modal order
+let ssLastClickedIdx = -1     // for shift-click range selection
+let ssDragSrcIdx = null       // for drag-to-reorder within selector
 let isDraggingSelect = false
 let dragStartX = 0
 let dragStartY = 0
@@ -790,10 +793,33 @@ function updateMusicBadge(hasMusic, url) {
   }
 }
 
+// --- Slideshow config persistence (localStorage) ---
+function getSlideshowConfigKey() { return `ss_config_${currentAlbumId}` }
+
+function loadSlideshowConfig() {
+  try {
+    const raw = localStorage.getItem(getSlideshowConfigKey())
+    return raw ? JSON.parse(raw) : null
+  } catch { return null }
+}
+
+function saveSlideshowConfig() {
+  if (!currentAlbumId) return
+  const orderedIds = ssSortedPhotos.map(p => p.id)
+  const excludedIds = ssSortedPhotos.filter(p => !ssSelectedPhotos.has(p.id)).map(p => p.id)
+  try {
+    localStorage.setItem(getSlideshowConfigKey(), JSON.stringify({ orderedIds, excludedIds }))
+    showToast(`💾 Slideshow saved — ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} photos`)
+    const hint = document.getElementById('ss-config-hint')
+    if (hint) hint.textContent = `✓ Saved · ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included · Shift+click range · Drag to reorder`
+  } catch (e) {
+    showToast('Save failed: ' + e.message, true)
+  }
+}
+
 // --- Slideshow selector ---
 function openSlideshowSelector() {
   if (allPhotos.length === 0) {
-    // Fallback: navigate directly if photos not yet loaded
     window.location.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
     return
   }
@@ -802,16 +828,35 @@ function openSlideshowSelector() {
   const grid = document.getElementById('ss-photo-grid')
   if (!modal || !grid) return
 
-  // Default: all selected
-  ssSelectedPhotos = new Set(allPhotos.map(p => p.id))
-  grid.innerHTML = ''
+  // Load saved config, apply ordering + exclusions
+  const savedConfig = loadSlideshowConfig()
+  let orderedPhotos = [...allPhotos]
+  if (savedConfig?.orderedIds?.length) {
+    const byId = Object.fromEntries(allPhotos.map(p => [p.id, p]))
+    const ordered = savedConfig.orderedIds.map(id => byId[id]).filter(Boolean)
+    const savedSet = new Set(savedConfig.orderedIds)
+    const extras = allPhotos.filter(p => !savedSet.has(p.id))
+    orderedPhotos = [...ordered, ...extras]
+  }
+  ssSortedPhotos = orderedPhotos
 
-  allPhotos.forEach(photo => {
+  // Build selection set: start all-included, apply exclusions
+  ssSelectedPhotos = new Set(orderedPhotos.map(p => p.id))
+  if (savedConfig?.excludedIds?.length) {
+    savedConfig.excludedIds.forEach(id => ssSelectedPhotos.delete(id))
+  }
+  ssLastClickedIdx = -1
+  ssDragSrcIdx = null
+
+  grid.innerHTML = ''
+  ssSortedPhotos.forEach(photo => {
     const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+    const isSelected = ssSelectedPhotos.has(photo.id)
 
     const thumb = document.createElement('div')
-    thumb.className = 'ss-thumb selected'
+    thumb.className = 'ss-thumb' + (isSelected ? ' selected' : ' ss-excluded')
     thumb.dataset.photoId = photo.id
+    thumb.draggable = true
 
     const img = document.createElement('img')
     img.src = publicUrl
@@ -823,31 +868,109 @@ function openSlideshowSelector() {
     check.className = 'ss-check'
     check.textContent = '✓'
 
+    const excl = document.createElement('div')
+    excl.className = 'ss-excl'
+
     thumb.appendChild(img)
     thumb.appendChild(check)
-    thumb.addEventListener('click', () => {
-      if (ssSelectedPhotos.has(photo.id)) {
-        ssSelectedPhotos.delete(photo.id)
-        thumb.classList.remove('selected')
+    thumb.appendChild(excl)
+
+    // Click: toggle with shift-click range support
+    thumb.addEventListener('click', (e) => {
+      const thumbs = [...grid.querySelectorAll('.ss-thumb')]
+      const thisIdx = thumbs.indexOf(thumb)
+
+      if (e.shiftKey && ssLastClickedIdx >= 0) {
+        // Apply the state of the anchor item to the whole range
+        const anchorId = thumbs[ssLastClickedIdx]?.dataset.photoId
+        const targetIncluded = ssSelectedPhotos.has(anchorId)
+        const start = Math.min(ssLastClickedIdx, thisIdx)
+        const end   = Math.max(ssLastClickedIdx, thisIdx)
+        for (let i = start; i <= end; i++) {
+          const pid = thumbs[i].dataset.photoId
+          if (targetIncluded) {
+            ssSelectedPhotos.add(pid)
+            thumbs[i].classList.add('selected')
+            thumbs[i].classList.remove('ss-excluded')
+          } else {
+            ssSelectedPhotos.delete(pid)
+            thumbs[i].classList.remove('selected')
+            thumbs[i].classList.add('ss-excluded')
+          }
+        }
       } else {
-        ssSelectedPhotos.add(photo.id)
-        thumb.classList.add('selected')
+        if (ssSelectedPhotos.has(photo.id)) {
+          ssSelectedPhotos.delete(photo.id)
+          thumb.classList.remove('selected')
+          thumb.classList.add('ss-excluded')
+        } else {
+          ssSelectedPhotos.add(photo.id)
+          thumb.classList.add('selected')
+          thumb.classList.remove('ss-excluded')
+        }
+        ssLastClickedIdx = thisIdx
       }
       updateSSCount()
     })
+
+    // Drag-to-reorder
+    thumb.addEventListener('dragstart', (e) => {
+      ssDragSrcIdx = [...grid.querySelectorAll('.ss-thumb')].indexOf(thumb)
+      e.dataTransfer.effectAllowed = 'move'
+      requestAnimationFrame(() => thumb.classList.add('ss-dragging'))
+    })
+    thumb.addEventListener('dragover', (e) => {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'move'
+      if ([...grid.querySelectorAll('.ss-thumb')].indexOf(thumb) !== ssDragSrcIdx) {
+        thumb.classList.add('ss-drag-over')
+      }
+    })
+    thumb.addEventListener('dragleave', () => thumb.classList.remove('ss-drag-over'))
+    thumb.addEventListener('drop', (e) => {
+      e.preventDefault()
+      thumb.classList.remove('ss-drag-over')
+      const thumbs = [...grid.querySelectorAll('.ss-thumb')]
+      const tgtIdx = thumbs.indexOf(thumb)
+      if (ssDragSrcIdx === null || tgtIdx === ssDragSrcIdx) return
+      const srcThumb = thumbs[ssDragSrcIdx]
+      if (ssDragSrcIdx < tgtIdx) thumb.insertAdjacentElement('afterend', srcThumb)
+      else thumb.insertAdjacentElement('beforebegin', srcThumb)
+      // Rebuild ssSortedPhotos from new DOM order
+      const byId = Object.fromEntries(allPhotos.map(p => [p.id, p]))
+      ssSortedPhotos = [...grid.querySelectorAll('.ss-thumb')]
+        .map(t => byId[t.dataset.photoId]).filter(Boolean)
+      ssDragSrcIdx = null
+    })
+    thumb.addEventListener('dragend', () => {
+      thumb.classList.remove('ss-dragging')
+      grid.querySelectorAll('.ss-thumb').forEach(t => t.classList.remove('ss-drag-over'))
+      ssDragSrcIdx = null
+    })
+
     grid.appendChild(thumb)
   })
 
   updateSSCount()
+
+  const hint = document.getElementById('ss-config-hint')
+  if (hint) {
+    if (savedConfig) {
+      hint.textContent = `✓ Saved · ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included · Shift+click range · Drag to reorder`
+    } else {
+      hint.textContent = 'Click to include/exclude · Shift+click for range · Drag to reorder'
+    }
+  }
+
   modal.classList.add('show')
 }
 
 function updateSSCount() {
-  const total = allPhotos.length
+  const total = ssSortedPhotos.length || allPhotos.length
   const selected = ssSelectedPhotos.size
   const countEl = document.getElementById('ss-selected-count')
   const startBtn = document.getElementById('ss-start-btn')
-  if (countEl) countEl.textContent = selected === total ? 'All selected' : `${selected} of ${total} selected`
+  if (countEl) countEl.textContent = selected === total ? `All ${total} selected` : `${selected} of ${total} selected`
   if (startBtn) startBtn.disabled = selected === 0
 }
 
@@ -856,10 +979,18 @@ function startSlideshowFromSelector() {
   const modal = document.getElementById('ss-selector-modal')
   if (modal) modal.classList.remove('show')
 
-  if (ssSelectedPhotos.size === allPhotos.length) {
+  // Use sorted order, filtered to included only
+  const includedInOrder = ssSortedPhotos.filter(p => ssSelectedPhotos.has(p.id))
+  if (includedInOrder.length === 0) { showToast('No photos selected', true); return }
+
+  // Check if it's the full unmodified default
+  const isDefault = includedInOrder.length === allPhotos.length &&
+    ssSortedPhotos.map(p => p.id).join() === allPhotos.map(p => p.id).join()
+
+  if (isDefault) {
     window.location.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
   } else {
-    const ids = [...ssSelectedPhotos].join(',')
+    const ids = includedInOrder.map(p => p.id).join(',')
     window.location.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}&photos=${encodeURIComponent(ids)}`
   }
 }
@@ -1110,15 +1241,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Slideshow selector modal buttons
   const ssSelectorModal = document.getElementById('ss-selector-modal')
   document.getElementById('ss-select-all')?.addEventListener('click', () => {
-    ssSelectedPhotos = new Set(allPhotos.map(p => p.id))
-    document.querySelectorAll('.ss-thumb').forEach(t => t.classList.add('selected'))
+    ssSelectedPhotos = new Set(ssSortedPhotos.map(p => p.id))
+    document.querySelectorAll('.ss-thumb').forEach(t => {
+      t.classList.add('selected')
+      t.classList.remove('ss-excluded')
+    })
+    ssLastClickedIdx = -1
     updateSSCount()
   })
   document.getElementById('ss-clear-all')?.addEventListener('click', () => {
     ssSelectedPhotos.clear()
-    document.querySelectorAll('.ss-thumb').forEach(t => t.classList.remove('selected'))
+    document.querySelectorAll('.ss-thumb').forEach(t => {
+      t.classList.remove('selected')
+      t.classList.add('ss-excluded')
+    })
+    ssLastClickedIdx = -1
     updateSSCount()
   })
+  document.getElementById('ss-save-btn')?.addEventListener('click', saveSlideshowConfig)
   document.getElementById('ss-selector-close')?.addEventListener('click', () => {
     ssSelectorModal?.classList.remove('show')
   })

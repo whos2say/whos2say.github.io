@@ -194,8 +194,61 @@ async function loadByPhotoIds(photosParam) {
   }
 }
 
+// Read per-album slideshow config from localStorage
+function applyAlbumSsConfig(albumId, photosData) {
+  try {
+    const raw = localStorage.getItem(`ss_config_${albumId}`)
+    if (!raw) return photosData
+    const { orderedIds, excludedIds } = JSON.parse(raw)
+    const excludedSet = new Set(excludedIds || [])
+    let included = (photosData || []).filter(p => !excludedSet.has(p.id))
+    if (orderedIds?.length) {
+      const byId = Object.fromEntries(included.map(p => [p.id, p]))
+      const ordered = orderedIds.map(id => byId[id]).filter(Boolean)
+      const orderedSet = new Set(orderedIds)
+      const extras = included.filter(p => !orderedSet.has(p.id))
+      return [...ordered, ...extras]
+    }
+    return included
+  } catch { return photosData }
+}
+
+async function loadMasterSlideshow() {
+  try {
+    const raw = localStorage.getItem('master_ss_config')
+    if (!raw) { showEmptyState('No master slideshow saved. Configure one in Multi-Slideshow.'); return }
+    const { photoIds } = JSON.parse(raw)
+    if (!photoIds?.length) { showEmptyState('Master slideshow is empty.'); return }
+
+    isMultiAlbum = true
+    const { data, error } = await supabase
+      .from('photos')
+      .select('id, file_path, created_at, focal_point, sort_order')
+      .in('id', photoIds)
+    if (error) throw error
+
+    const byId = Object.fromEntries((data || []).map(p => [p.id, p]))
+    photos = photoIds.map(id => byId[id]).filter(Boolean)
+    if (photos.length === 0) { showEmptyState('No photos found for master slideshow.'); return }
+
+    slideshowTitleEl.textContent = `Master Slideshow — ${photos.length} Photos`
+    backToAlbumEl.href = '/multi-slideshow.html'
+    backToAlbumEl.textContent = '← Picker'
+
+    currentPhotoIndex = 0
+    displayPhoto()
+    updateUI()
+  } catch (err) {
+    showEmptyState(`Error loading master slideshow: ${err.message}`)
+  }
+}
+
 async function loadPhotos() {
   const params = new URLSearchParams(window.location.search)
+
+  // Master slideshow mode
+  if (params.get('master') === '1') { await loadMasterSlideshow(); return }
+
   const photosParam = params.get('photos')
   if (photosParam) { await loadByPhotoIds(photosParam); return }
 
@@ -246,7 +299,9 @@ async function loadPhotos() {
       if (photosError) throw photosError
 
       if (photosData && photosData.length > 0) {
-        combinedPhotos = combinedPhotos.concat(photosData)
+        // Respect per-album saved slideshow config (set on album page by any user)
+        const configured = applyAlbumSsConfig(albumId, photosData)
+        combinedPhotos = combinedPhotos.concat(configured)
       }
     }
 
