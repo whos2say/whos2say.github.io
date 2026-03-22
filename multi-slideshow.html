@@ -100,6 +100,55 @@
       color: var(--color-primary);
     }
 
+    .option-group {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .option-group-label {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-right: var(--space-1);
+      white-space: nowrap;
+    }
+
+    .opt-btn {
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .opt-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .opt-btn.active {
+      background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .ctrl-sep {
+      width: 1px;
+      height: 20px;
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      flex-shrink: 0;
+    }
+
     .btn-start {
       margin-left: auto;
       background: var(--color-primary);
@@ -254,6 +303,24 @@
     .albums-empty p {
       font-size: 1.1rem;
     }
+
+    @media (max-width: 640px) {
+      .page-hero h1 {
+        font-size: 1.8rem;
+      }
+      .albums-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: var(--space-3);
+      }
+      .control-bar-inner {
+        gap: var(--space-2);
+      }
+      .btn-start {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -289,6 +356,24 @@
       <span class="selected-badge" id="selected-badge">0 selected</span>
       <button class="btn-outline" id="select-all-btn" type="button">Select All</button>
       <button class="btn-outline" id="clear-btn" type="button">Clear</button>
+
+      <div class="ctrl-sep"></div>
+
+      <div class="option-group">
+        <span class="option-group-label">Order:</span>
+        <button class="opt-btn active" data-order="sequential" type="button">→ In Order</button>
+        <button class="opt-btn" data-order="random" type="button">🔀 Random</button>
+      </div>
+
+      <div class="ctrl-sep"></div>
+
+      <div class="option-group">
+        <span class="option-group-label">View:</span>
+        <button class="opt-btn" data-mode="full" type="button">🖼 Full</button>
+        <button class="opt-btn active" data-mode="mixed" type="button">⚡ Mixed</button>
+        <button class="opt-btn" data-mode="collage" type="button">⊞ Collage</button>
+      </div>
+
       <button class="btn-start" id="start-btn" type="button" disabled>▶ Start Slideshow</button>
     </div>
   </div>
@@ -322,6 +407,22 @@
 
   const selectedAlbumIds = new Set()
   let allAlbumIds = []
+  let selectedOrder = 'sequential'
+  let selectedMode = 'mixed'
+
+  // Option button toggle logic
+  document.querySelectorAll('.opt-btn[data-order]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedOrder = btn.dataset.order
+      document.querySelectorAll('.opt-btn[data-order]').forEach(b => b.classList.toggle('active', b === btn))
+    })
+  })
+  document.querySelectorAll('.opt-btn[data-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedMode = btn.dataset.mode
+      document.querySelectorAll('.opt-btn[data-mode]').forEach(b => b.classList.toggle('active', b === btn))
+    })
+  })
 
   function updateControlBar() {
     const count = selectedAlbumIds.size
@@ -358,7 +459,7 @@
   startBtnEl.addEventListener('click', () => {
     if (selectedAlbumIds.size === 0) return
     const ids = [...selectedAlbumIds].join(',')
-    window.location.href = `/slideshow.html?albums=${encodeURIComponent(ids)}`
+    window.location.href = `/slideshow.html?albums=${encodeURIComponent(ids)}&order=${selectedOrder}&mode=${selectedMode}`
   })
 
   async function loadAlbums() {
@@ -366,6 +467,7 @@
       const { data: albums, error } = await supabase
         .from('albums')
         .select('id, name, created_at, cover_photo_id')
+        .order('sort_order', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false })
 
       if (error) throw error

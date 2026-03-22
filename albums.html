@@ -275,6 +275,39 @@
       color: var(--color-primary);
     }
 
+    /* ── Album drag-to-reorder (admin only) ── */
+    .album-card.dragging {
+      opacity: 0.35;
+      transform: scale(0.96);
+    }
+
+    .album-card.drag-over {
+      border-color: var(--color-primary) !important;
+      box-shadow: 0 0 24px color-mix(in srgb, var(--color-primary) 40%, transparent) !important;
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    .album-drag-handle {
+      position: absolute;
+      bottom: var(--space-2);
+      right: var(--space-2);
+      color: rgba(255,255,255,0.4);
+      font-size: 1rem;
+      cursor: grab;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 0.15s;
+      user-select: none;
+      background: rgba(0,0,0,0.4);
+      border-radius: var(--radius-sm);
+      padding: 2px 5px;
+      letter-spacing: -1px;
+    }
+
+    .album-card:hover .album-drag-handle {
+      opacity: 1;
+    }
+
     @media (max-width: 640px) {
       .albums-header-inner {
         flex-wrap: wrap;

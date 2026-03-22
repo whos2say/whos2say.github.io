@@ -145,6 +145,28 @@
       color: var(--color-dark-900);
     }
 
+    .slide-btn.mode-btn {
+      min-width: 80px;
+      font-size: 0.78rem;
+      padding: var(--space-2) var(--space-3);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.75);
+    }
+
+    .slide-btn.mode-btn:hover {
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: none;
+    }
+
+    .slideshow-mode-bar {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
     .slideshow-top-bar {
       position: absolute;
       top: 0;
@@ -305,6 +327,9 @@
       }
       .slideshow-buttons {
         gap: var(--space-2);
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: center;
       }
       .slide-btn {
         min-width: 52px;
@@ -319,6 +344,19 @@
       }
       .slideshow-title { font-size: 0.85rem; }
       .slideshow-top-bar { padding: var(--space-2) var(--space-2); }
+      .audio-controls {
+        position: static;
+        background: none;
+        padding: 0;
+        width: 100%;
+        justify-content: center;
+      }
+      .audio-player-small {
+        max-width: 100%;
+      }
+      .audio-player-small audio {
+        width: 140px;
+      }
     }
   </style>
 </head>
@@ -364,6 +402,11 @@
       <button class="slide-btn" id="next-btn" title="Next photo (→ arrow)">Next →</button>
       <button class="slide-btn" id="fullscreen-btn" title="Enter fullscreen (F)">⛶ Full Screen</button>
       <button class="slide-btn exit" id="exit-btn" title="Exit slideshow (Esc)">Exit</button>
+    </div>
+
+    <div class="slideshow-mode-bar">
+      <button class="slide-btn mode-btn" id="order-btn" title="Toggle playback order">→ In Order</button>
+      <button class="slide-btn mode-btn" id="mode-btn" title="Toggle view mode">⚡ Mixed</button>
     </div>
   </div>
 </div>

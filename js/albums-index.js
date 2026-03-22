@@ -10,11 +10,90 @@ const createMessageEl = document.getElementById('create-message')
 let userIsAdmin = false
 let userIsLoggedIn = false
 
+// --- Album drag-to-reorder (admin only) ---
+// SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS sort_order INTEGER;
+let dragSrcAlbumId = null
+
+function initAlbumDragAndDrop() {
+  document.querySelectorAll('.album-card[draggable]').forEach(card => {
+    card.addEventListener('dragstart', onAlbumDragStart)
+    card.addEventListener('dragover',  onAlbumDragOver)
+    card.addEventListener('dragleave', onAlbumDragLeave)
+    card.addEventListener('drop',      onAlbumDrop)
+    card.addEventListener('dragend',   onAlbumDragEnd)
+  })
+}
+
+function onAlbumDragStart(e) {
+  dragSrcAlbumId = this.dataset.albumId
+  e.dataTransfer.effectAllowed = 'move'
+  e.dataTransfer.setData('text/plain', dragSrcAlbumId)
+  requestAnimationFrame(() => this.classList.add('dragging'))
+}
+
+function onAlbumDragOver(e) {
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  if (this.dataset.albumId !== dragSrcAlbumId) this.classList.add('drag-over')
+}
+
+function onAlbumDragLeave() {
+  this.classList.remove('drag-over')
+}
+
+async function onAlbumDrop(e) {
+  e.preventDefault()
+  this.classList.remove('drag-over')
+  const targetId = this.dataset.albumId
+  if (!targetId || targetId === dragSrcAlbumId) return
+
+  const grid = document.getElementById('albums-grid')
+  const srcCard = grid.querySelector(`[data-album-id="${dragSrcAlbumId}"]`)
+  const tgtCard = this
+  if (!srcCard || !tgtCard) return
+
+  const cards = [...grid.querySelectorAll('.album-card')]
+  const srcIdx = cards.indexOf(srcCard)
+  const tgtIdx = cards.indexOf(tgtCard)
+
+  if (srcIdx < tgtIdx) tgtCard.insertAdjacentElement('afterend', srcCard)
+  else tgtCard.insertAdjacentElement('beforebegin', srcCard)
+
+  await saveAlbumOrder()
+}
+
+function onAlbumDragEnd() {
+  this.classList.remove('dragging')
+  document.querySelectorAll('.album-card').forEach(c => c.classList.remove('drag-over'))
+  dragSrcAlbumId = null
+}
+
+async function saveAlbumOrder() {
+  const grid = document.getElementById('albums-grid')
+  const cards = [...grid.querySelectorAll('.album-card')]
+  try {
+    await Promise.all(
+      cards.map((card, idx) =>
+        supabase.from('albums').update({ sort_order: idx }).eq('id', card.dataset.albumId)
+      )
+    )
+    // Brief visual confirmation
+    const msg = document.createElement('div')
+    msg.style.cssText = 'position:fixed;top:1rem;right:1rem;background:#51cf66;color:#0a0a0a;padding:.5rem 1rem;border-radius:6px;font-weight:700;z-index:9999;font-family:var(--font-body)'
+    msg.textContent = '✓ Album order saved'
+    document.body.appendChild(msg)
+    setTimeout(() => msg.remove(), 2000)
+  } catch (err) {
+    alert('Failed to save order: ' + err.message)
+  }
+}
+
 async function loadAlbums() {
   try {
     const { data: albums, error } = await supabase
       .from('albums')
       .select('id, name, created_at, cover_photo_id')
+      .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
 
     if (error) throw error
@@ -77,6 +156,8 @@ async function loadAlbums() {
         coverHtml = `<div class="album-cover"><div class="album-cover-placeholder">📷</div></div>`
       }
 
+      card.dataset.albumId = album.id
+
       card.innerHTML = `
         ${coverHtml}
         <div class="album-info">
@@ -87,6 +168,14 @@ async function loadAlbums() {
       `
 
       if (userIsAdmin) {
+        card.draggable = true
+
+        const handle = document.createElement('div')
+        handle.className = 'album-drag-handle'
+        handle.title = 'Drag to reorder'
+        handle.textContent = '⠿'
+        card.appendChild(handle)
+
         const deleteBtn = document.createElement('button')
         deleteBtn.className = 'album-delete-btn'
         deleteBtn.textContent = '🗑 Delete Album'
@@ -100,6 +189,8 @@ async function loadAlbums() {
 
       albumsGridEl.appendChild(card)
     }
+    if (userIsAdmin) initAlbumDragAndDrop()
+
   } catch (err) {
     console.error('Error loading albums:', err)
     emptyStateEl.textContent = 'Error loading albums'

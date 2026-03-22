@@ -233,6 +233,26 @@
       border-radius: var(--radius-sm);
       border: 1px solid rgba(255,255,255,0.08);
     }
+
+    @media (max-width: 640px) {
+      .upload-container h1 {
+        font-size: 1.5rem;
+      }
+      .drop-area {
+        padding: var(--space-6) var(--space-3);
+      }
+      .drop-area p {
+        font-size: 0.95rem;
+      }
+      .import-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .upload-item span:first-child {
+        max-width: none;
+        flex: 1;
+      }
+    }
   </style>
 </head>
 <body>

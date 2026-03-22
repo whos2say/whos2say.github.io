@@ -21,6 +21,8 @@ const audioPlayerEl = document.getElementById('slideshow-audio')
 const audioMuteBtn = document.getElementById('audio-mute-btn')
 const slideshowBgEl = document.getElementById('slideshow-bg')
 const slideshowVideoEl = document.getElementById('slideshow-video')
+const orderBtnEl = document.getElementById('order-btn')
+const modeBtnEl = document.getElementById('mode-btn')
 const QUALITY_MIN_W = 1280
 const QUALITY_MIN_H = 720
 
@@ -38,13 +40,16 @@ let isPlaying = false
 let autoplayTimeout = null
 let audioUrl = null
 let hideControlsTimer = null
-// Track whether we are in multi-album mode
 let isMultiAlbum = false
-// Track the single album ID for back-navigation (single mode only)
 let singleAlbumId = null
 
-const AUTOPLAY_DELAY = 4000 // 4 seconds
-const COLLAGE_INTERVAL = 2 // Show collage every other slide
+// Playback order: 'sequential' | 'random'
+let playOrder = 'sequential'
+// View mode: 'mixed' | 'full' | 'collage'
+let viewMode = 'mixed'
+
+const AUTOPLAY_DELAY = 4000
+const COLLAGE_INTERVAL = 2
 
 // UUID validation
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -233,8 +238,9 @@ async function loadPhotos() {
       // Fetch photos for this album
       const { data: photosData, error: photosError } = await supabase
         .from('photos')
-        .select('id, file_path, created_at, focal_point')
+        .select('id, file_path, created_at, focal_point, sort_order')
         .eq('album_id', albumId)
+        .order('sort_order', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false })
 
       if (photosError) throw photosError
@@ -249,8 +255,8 @@ async function loadPhotos() {
       return
     }
 
-    // Multi-album: shuffle combined photos; single album: keep chronological order
-    photos = isMultiAlbum ? shuffle(combinedPhotos) : combinedPhotos
+    // Apply playback order
+    photos = playOrder === 'random' ? shuffle(combinedPhotos) : combinedPhotos
 
     // Set title
     if (isMultiAlbum) {
@@ -403,7 +409,9 @@ function showEmptyState(message) {
 }
 
 function isCollageSlide() {
-  // Every 4th photo (indices 3, 7, 11, etc.) should be a collage
+  if (viewMode === 'full') return false
+  if (viewMode === 'collage') return true
+  // mixed: every Nth slide is a collage
   return (currentPhotoIndex + 1) % COLLAGE_INTERVAL === 0
 }
 
@@ -739,9 +747,45 @@ exitBtnEl.addEventListener('click', () => {
 
 document.addEventListener('keydown', handleKeyPress)
 
+function updateOrderBtn() {
+  if (!orderBtnEl) return
+  orderBtnEl.textContent = playOrder === 'random' ? '🔀 Random' : '→ In Order'
+}
+
+function updateModeBtn() {
+  if (!modeBtnEl) return
+  const labels = { mixed: '⚡ Mixed', full: '🖼 Full', collage: '⊞ Collage' }
+  modeBtnEl.textContent = labels[viewMode] || '⚡ Mixed'
+}
+
+orderBtnEl?.addEventListener('click', () => {
+  playOrder = playOrder === 'sequential' ? 'random' : 'sequential'
+  updateOrderBtn()
+  if (playOrder === 'random') photos = shuffle(photos)
+  currentPhotoIndex = 0
+  displayPhoto()
+})
+
+modeBtnEl?.addEventListener('click', () => {
+  const modes = ['mixed', 'full', 'collage']
+  viewMode = modes[(modes.indexOf(viewMode) + 1) % modes.length]
+  updateModeBtn()
+  displayPhoto()
+})
+
+function initFromUrlParams() {
+  const params = new URLSearchParams(window.location.search)
+  const orderParam = params.get('order')
+  if (orderParam === 'random' || orderParam === 'sequential') playOrder = orderParam
+  const modeParam = params.get('mode')
+  if (modeParam === 'mixed' || modeParam === 'full' || modeParam === 'collage') viewMode = modeParam
+}
 
 // Load photos on page load — call directly since this is a module script
 // at end of <body>, so DOM is already fully parsed when this runs.
+initFromUrlParams()
+updateOrderBtn()
+updateModeBtn()
 loadPhotos()
 
 // Cleanup on page unload
