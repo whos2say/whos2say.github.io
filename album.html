@@ -314,7 +314,7 @@
 
     .bulk-delete {
       background: #ff6b6b;
-      color: white;
+      color: #0b0b12;
     }
 
     .bulk-delete:hover {
@@ -1204,11 +1204,14 @@
 
     /* ── Touch device fixes ───────────────────── */
 
-    /* Photo controls: always visible on touch (hover doesn't work) */
+    /* Photo controls: hidden by default on touch; appear when photo is selected */
     @media (hover: none) {
       .photo-controls {
-        opacity: 1;
+        opacity: 0;
         background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0) 80%);
+      }
+      .photo-tile.selected .photo-controls {
+        opacity: 1;
       }
       .photo-tile:hover img,
       .photo-tile:hover video {
@@ -1441,6 +1444,135 @@
       padding-top: var(--space-2);
       border-top: 1px solid rgba(255,255,255,0.06);
     }
+
+    /* ── Reposition (focal point) modal ─────────── */
+    .reposition-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 4000;
+    }
+    .reposition-modal.show { display: flex; }
+    .reposition-content {
+      background: var(--color-dark-800);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      border-radius: var(--radius-md);
+      width: min(94vw, 700px);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0,0,0,0.7);
+    }
+    .reposition-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .reposition-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0 0 4px;
+    }
+    .reposition-hint {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .reposition-image-wrap {
+      flex: 1 1 auto;
+      position: relative;
+      cursor: crosshair;
+      overflow: hidden;
+      min-height: 180px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .reposition-img {
+      max-width: 100%;
+      max-height: 58vh;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .reposition-crosshair {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      margin-left: -14px;
+      margin-top: -14px;
+      border: 2px solid var(--color-primary);
+      border-radius: 50%;
+      pointer-events: none;
+      display: none;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(0,0,0,0.55);
+    }
+    .reposition-crosshair::before,
+    .reposition-crosshair::after {
+      content: '';
+      position: absolute;
+      background: var(--color-primary);
+    }
+    .reposition-crosshair::before {
+      width: 1px; height: 100%;
+      left: 50%; top: 0;
+      transform: translateX(-50%);
+    }
+    .reposition-crosshair::after {
+      height: 1px; width: 100%;
+      top: 50%; left: 0;
+      transform: translateY(-50%);
+    }
+    .reposition-footer {
+      display: flex;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+    .reposition-btn {
+      padding: var(--space-2) var(--space-5);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .reposition-cancel {
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      color: var(--text-muted);
+    }
+    .reposition-cancel:hover { border-color: var(--color-primary); color: var(--text-main); }
+    .reposition-save {
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+    }
+    .reposition-save:hover { background: var(--color-primary); color: var(--color-dark-900); }
+    .photo-btn.reposition-photo {
+      background: color-mix(in srgb, #a855f7 15%, transparent);
+      border-color: #a855f7;
+      color: #a855f7;
+    }
+    .photo-btn.reposition-photo:hover {
+      background: #a855f7;
+      color: var(--color-dark-900);
+    }
   </style>
 </head>
 <body>
@@ -1598,6 +1730,24 @@
       <button id="ss-cancel-btn" class="ss-btn ss-btn-cancel">Cancel</button>
       <button id="ss-save-btn" class="ss-btn ss-btn-save">💾 Save</button>
       <button id="ss-start-btn" class="ss-btn ss-btn-start" disabled>▶ Start Slideshow</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reposition (focal point) modal -->
+<div id="reposition-modal" class="reposition-modal">
+  <div class="reposition-content">
+    <div class="reposition-header">
+      <h2>Reposition Photo</h2>
+      <p class="reposition-hint">Click anywhere on the image to set the focal point (used for cover &amp; slideshow cropping)</p>
+    </div>
+    <div class="reposition-image-wrap" id="reposition-image-wrap">
+      <img id="reposition-img" class="reposition-img" alt="Photo focal point editor" />
+      <div id="reposition-crosshair" class="reposition-crosshair"></div>
+    </div>
+    <div class="reposition-footer">
+      <button id="reposition-cancel-btn" class="reposition-btn reposition-cancel">Cancel</button>
+      <button id="reposition-save-btn" class="reposition-btn reposition-save">Save Position</button>
     </div>
   </div>
 </div>

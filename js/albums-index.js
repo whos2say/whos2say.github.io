@@ -9,6 +9,7 @@ const createMessageEl = document.getElementById('create-message')
 
 let userIsAdmin = false
 let userIsLoggedIn = false
+let currentUser = null
 
 // --- Album drag-to-reorder (admin only) ---
 // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS sort_order INTEGER;
@@ -90,11 +91,19 @@ async function saveAlbumOrder() {
 
 async function loadAlbums() {
   try {
-    const { data: albums, error } = await supabase
+    // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES auth.users(id);
+    let query = supabase
       .from('albums')
       .select('id, name, created_at, cover_photo_id')
       .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
+
+    // Non-admin users only see their own albums
+    if (userIsLoggedIn && !userIsAdmin && currentUser) {
+      query = query.eq('owner_id', currentUser.id)
+    }
+
+    const { data: albums, error } = await query
 
     if (error) throw error
 
@@ -208,9 +217,16 @@ async function checkAuth() {
   const authEl = document.getElementById('auth-header-action')
   try {
     const { data: { user } } = await supabase.auth.getUser()
+    currentUser = user || null
     userIsAdmin = user?.email === 'joe@whostosay.org'
     userIsLoggedIn = !!user
     createSectionEl.style.display = user ? 'block' : 'none'
+
+    // Update gallery title
+    const titleEl = document.getElementById('gallery-title')
+    if (titleEl && user && !userIsAdmin) {
+      titleEl.textContent = 'Your Gallery'
+    }
     if (authEl) {
       if (user) {
         authEl.innerHTML = `
@@ -283,7 +299,7 @@ async function handleCreateAlbum(e) {
 
     const { data: newAlbum, error } = await supabase
       .from('albums')
-      .insert([{ name: albumName }])
+      .insert([{ name: albumName, owner_id: user.id }])
       .select()
 
     if (error) throw error
