@@ -311,7 +311,7 @@
     @media (max-width: 640px) {
       .albums-header-inner {
         flex-wrap: wrap;
-        gap: var(--space-3);
+        gap: var(--space-2);
       }
       .albums-header h1 {
         font-size: 1.8rem;
@@ -320,18 +320,27 @@
       .albums-header-inner > a.btn,
       #auth-header-action {
         flex: 1 1 auto;
+        text-align: center;
+        justify-content: center;
+        min-height: 44px;
       }
       #auth-header-action .btn {
         width: 100%;
         text-align: center;
-        display: block;
+        display: flex;
+        justify-content: center;
+        min-height: 44px;
       }
       .albums-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: var(--space-3);
       }
       .album-cover {
         height: 120px;
+      }
+      /* Drag handle hidden on touch */
+      .album-drag-handle {
+        display: none;
       }
     }
   </style>

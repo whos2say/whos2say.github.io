@@ -213,18 +213,18 @@
 
     @media (max-width: 768px) {
       .slideshow-controls {
-        flex-direction: column;
         gap: var(--space-2);
+        padding: var(--space-3) var(--space-3);
       }
 
       .slide-btn {
-        min-width: 80px;
+        min-width: 70px;
         padding: var(--space-2) var(--space-3);
         font-size: 0.8rem;
       }
 
       .slideshow-counter {
-        min-width: 120px;
+        min-width: 80px;
       }
     }
 
@@ -320,42 +320,79 @@
     }
 
     @media (max-width: 640px) {
+      /* 3-row layout: [info row] [main buttons] [secondary] */
       .slideshow-controls {
-        padding: var(--space-3) var(--space-2);
+        padding: var(--space-2) var(--space-2) var(--space-3);
         flex-wrap: wrap;
         gap: var(--space-2);
+        align-items: center;
       }
-      .slideshow-buttons {
-        gap: var(--space-2);
-        flex-wrap: wrap;
+      .slideshow-info {
+        order: 1;
         width: 100%;
         justify-content: center;
       }
+      .slideshow-buttons {
+        order: 2;
+        width: 100%;
+        gap: var(--space-2);
+        justify-content: center;
+        flex-wrap: nowrap;
+      }
+      .slideshow-mode-bar {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: var(--space-2);
+      }
+
+      /* Compact buttons — keep text but shrink */
       .slide-btn {
-        min-width: 52px;
-        padding: 0.45rem 0.6rem;
+        min-width: 0;
+        flex: 1 1 auto;
+        padding: 0.6rem 0.4rem;
         font-size: 0.72rem;
         letter-spacing: 0;
       }
-      .slide-btn.play-pause { min-width: 68px; }
+      .slide-btn.play-pause { flex: 1.4 1 auto; }
+      .slide-btn.mode-btn {
+        flex: 1 1 auto;
+        font-size: 0.68rem;
+        padding: 0.4rem 0.3rem;
+      }
+
       .slideshow-counter {
         font-size: 0.78rem;
-        padding: var(--space-1) var(--space-2);
+        padding: var(--space-1) var(--space-3);
+        min-width: 0;
       }
-      .slideshow-title { font-size: 0.85rem; }
-      .slideshow-top-bar { padding: var(--space-2) var(--space-2); }
+      .slideshow-title { font-size: 0.8rem; }
+      .slideshow-top-bar {
+        padding: var(--space-2) var(--space-2);
+        gap: var(--space-2);
+      }
+      /* Back button in top bar — smaller */
+      .slideshow-top-bar .slide-btn {
+        min-width: 60px;
+        font-size: 0.72rem;
+        padding: 0.4rem 0.6rem;
+        flex: none;
+      }
+
+      /* Audio: move inline below buttons */
       .audio-controls {
         position: static;
         background: none;
         padding: 0;
         width: 100%;
         justify-content: center;
+        order: 4;
       }
       .audio-player-small {
         max-width: 100%;
       }
       .audio-player-small audio {
-        width: 140px;
+        width: 130px;
       }
     }
   </style>

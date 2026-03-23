@@ -308,16 +308,43 @@
       .page-hero h1 {
         font-size: 1.8rem;
       }
+      .page-hero p {
+        font-size: 0.9rem;
+      }
       .albums-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: var(--space-3);
       }
       .control-bar-inner {
         gap: var(--space-2);
+        flex-wrap: wrap;
+      }
+      /* Option groups wrap to their own row, start button full-width below */
+      .option-group {
+        flex: 1 1 auto;
+      }
+      .ctrl-sep {
+        display: none;
+      }
+      .selected-badge {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+      .control-bar .btn-outline {
+        flex: 1 1 auto;
+        text-align: center;
+        padding: var(--space-2) var(--space-2);
+        font-size: 0.82rem;
       }
       .btn-start {
         margin-left: 0;
         width: 100%;
+        text-align: center;
+        order: 99;
+        min-height: 44px;
+      }
+      .btn-master {
+        flex: 1 1 auto;
         text-align: center;
       }
     }

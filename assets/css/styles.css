@@ -288,6 +288,115 @@ html[data-theme="light"] .logo-light { display: block; }
 }
 
 /* =========================================================
+   Mobile Navigation (hamburger + panel)
+   ========================================================= */
+
+.mobile-menu-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: color-mix(in srgb, var(--text-main) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.hamburger-icon span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+  transform-origin: center;
+}
+
+.mobile-menu-btn.is-open .hamburger-icon span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.mobile-menu-btn.is-open .hamburger-icon span:nth-child(2) {
+  opacity: 0;
+}
+.mobile-menu-btn.is-open .hamburger-icon span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+@media (max-width: 900px) {
+  .mobile-menu-btn { display: inline-flex; }
+}
+
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: color-mix(in srgb, var(--bg-main) 96%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 49;
+  padding: 80px 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  transform: translateY(-110%);
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0s linear 0.3s;
+}
+
+.mobile-menu-panel.is-open {
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: all;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0s;
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 0.9rem 1rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--text-main) 80%, transparent);
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease, color 0.15s ease;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-nav-link:last-child { border-bottom: none; }
+
+.mobile-nav-link:hover,
+.mobile-nav-link:active {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
+.mobile-nav-link.active {
+  color: var(--color-primary);
+}
+
+/* =========================================================
    Buttons
    ========================================================= */
 
@@ -1567,3 +1676,30 @@ html[data-theme="light"] .programs-hero--image::before{
   color: var(--text-muted);
   font-size: 0.92rem;
 }
+
+/* =========================================================
+   Global Mobile / Touch Improvements
+   ========================================================= */
+
+/* Prevent iOS from zooming into inputs with font-size < 16px */
+@media (max-width: 900px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Ensure all interactive elements meet 44px minimum touch target */
+@media (hover: none) {
+  .btn {
+    min-height: 44px;
+  }
+  /* Disable hover-only transform lifts on touch (removes sticky hover on iOS) */
+  .btn:hover { transform: none; }
+  .album-card:hover { transform: none; }
+  .program-card:hover { transform: none; }
+}
+
+/* Tap highlight color */
+* { -webkit-tap-highlight-color: rgba(99, 245, 239, 0.12); }

@@ -43,6 +43,7 @@ let isAdmin = false
 let currentLightboxPhotoId = null
 let currentLightboxUrl = null
 let currentLightboxFilePath = null
+let currentLightboxIndex = -1
 let selectedPhotos = new Set()
 let allPhotos = []
 let ssSelectedPhotos = new Set()
@@ -108,7 +109,7 @@ async function saveTitleSize(size) {
 }
 
 // --- Lightbox ---
-function openLightbox(url, photoId, filePath) {
+function openLightbox(url, photoId, filePath, index) {
   const isVideo = isVideoPath(filePath || url)
   if (isVideo) {
     lightboxImgEl.style.display = 'none'
@@ -127,6 +128,8 @@ function openLightbox(url, photoId, filePath) {
   currentLightboxPhotoId = photoId || null
   currentLightboxUrl = url || null
   currentLightboxFilePath = filePath || null
+  currentLightboxIndex = (index !== undefined) ? index : allPhotos.findIndex(p => p.id === photoId)
+  updateLightboxNavVisibility()
   if (photoId) loadComments(photoId)
 }
 
@@ -139,6 +142,24 @@ function closeLightbox() {
   currentLightboxPhotoId = null
   currentLightboxUrl = null
   currentLightboxFilePath = null
+  currentLightboxIndex = -1
+}
+
+function updateLightboxNavVisibility() {
+  const prevBtn = document.getElementById('lightbox-prev')
+  const nextBtn = document.getElementById('lightbox-next')
+  if (!prevBtn || !nextBtn) return
+  prevBtn.style.display = (currentLightboxIndex > 0) ? '' : 'none'
+  nextBtn.style.display = (currentLightboxIndex < allPhotos.length - 1) ? '' : 'none'
+}
+
+function navigateLightbox(delta) {
+  if (!lightboxEl.classList.contains('show') || allPhotos.length === 0) return
+  const next = currentLightboxIndex + delta
+  if (next < 0 || next >= allPhotos.length) return
+  const photo = allPhotos[next]
+  const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+  openLightbox(publicUrl, photo.id, photo.file_path, next)
 }
 
 // --- Comments ---
@@ -283,8 +304,27 @@ if (lightboxDownloadEl) {
   })
 }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && lightboxEl.classList.contains('show')) closeLightbox()
+  if (!lightboxEl.classList.contains('show')) return
+  if (e.key === 'Escape') closeLightbox()
+  if (e.key === 'ArrowLeft') navigateLightbox(-1)
+  if (e.key === 'ArrowRight') navigateLightbox(1)
 })
+
+// Swipe gestures in lightbox
+let lbTouchStartX = 0
+lightboxEl.addEventListener('touchstart', e => {
+  lbTouchStartX = e.changedTouches[0].clientX
+}, { passive: true })
+lightboxEl.addEventListener('touchend', e => {
+  const dx = lbTouchStartX - e.changedTouches[0].clientX
+  if (Math.abs(dx) > 48) navigateLightbox(dx > 0 ? 1 : -1)
+}, { passive: true })
+
+// Lightbox prev/next buttons
+const lightboxPrevBtn = document.getElementById('lightbox-prev')
+const lightboxNextBtn = document.getElementById('lightbox-next')
+if (lightboxPrevBtn) lightboxPrevBtn.addEventListener('click', e => { e.stopPropagation(); navigateLightbox(-1) })
+if (lightboxNextBtn) lightboxNextBtn.addEventListener('click', e => { e.stopPropagation(); navigateLightbox(1) })
 
 // --- Title edit ---
 function startTitleEdit() {
@@ -1104,8 +1144,13 @@ async function loadAlbum() {
         media.loop = true
         media.preload = 'metadata'
         media.style.cursor = 'pointer'
-        media.addEventListener('mouseenter', () => media.play())
-        media.addEventListener('mouseleave', () => { media.pause(); media.currentTime = 0 })
+        // Touch devices: autoplay in grid; pointer devices: hover to play
+        if (window.matchMedia('(hover: none)').matches) {
+          media.autoplay = true
+        } else {
+          media.addEventListener('mouseenter', () => media.play())
+          media.addEventListener('mouseleave', () => { media.pause(); media.currentTime = 0 })
+        }
 
         const badge = document.createElement('span')
         badge.className = 'video-badge'
@@ -1121,7 +1166,7 @@ async function loadAlbum() {
         media.style.objectPosition = photo.focal_point || '50% 50%'
         media.style.cursor = 'zoom-in'
       }
-      media.addEventListener('click', () => openLightbox(publicUrl, photo.id, photo.file_path))
+      media.addEventListener('click', () => openLightbox(publicUrl, photo.id, photo.file_path, idx))
 
       tile.appendChild(media)
 

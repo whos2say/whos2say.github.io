@@ -1202,6 +1202,44 @@
       .lightbox-comments { width: 100%; max-height: 40vh; }
     }
 
+    /* ── Touch device fixes ───────────────────── */
+
+    /* Photo controls: always visible on touch (hover doesn't work) */
+    @media (hover: none) {
+      .photo-controls {
+        opacity: 1;
+        background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0) 80%);
+      }
+      .photo-tile:hover img,
+      .photo-tile:hover video {
+        transform: none;
+      }
+      /* Drag handles are desktop-only */
+      .drag-handle {
+        display: none;
+      }
+      /* Admin bar buttons: bigger touch targets */
+      .admin-bar-btn {
+        padding: 0.5rem 0.9rem;
+        min-height: 36px;
+      }
+    }
+
+    /* Toast notifications: stay within screen on mobile */
+    @media (max-width: 640px) {
+      .toast-notification {
+        right: var(--space-3);
+        left: var(--space-3);
+        max-width: none;
+        width: auto;
+      }
+    }
+
+    /* Move modal: ensure it doesn't overflow on small screens */
+    .move-modal-content {
+      width: min(90vw, 400px);
+    }
+
     @media (max-width: 640px) {
       .album-hero-inner {
         flex-wrap: wrap;
@@ -1245,12 +1283,21 @@
       }
       .ss-photo-grid {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: var(--space-2);
       }
       .ss-selector-header {
         padding: var(--space-3) var(--space-3);
+        gap: var(--space-2);
       }
       .ss-selector-footer {
         padding: var(--space-3) var(--space-3);
+        gap: var(--space-2);
+      }
+      .ss-btn {
+        min-height: 44px;
+        flex: 1 1 auto;
+        text-align: center;
+        justify-content: center;
       }
     }
 
@@ -1277,6 +1324,38 @@
     .lightbox-close:hover {
       background: rgba(255,255,255,0.25);
       transform: scale(1.1);
+    }
+
+    /* Lightbox prev / next nav arrows */
+    .lightbox-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.28);
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s ease, transform 0.18s ease;
+      z-index: 2001;
+      line-height: 1;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .lightbox-nav:hover { background: rgba(255,255,255,0.28); }
+    .lightbox-nav:active { transform: translateY(-50%) scale(0.93); }
+    .lightbox-prev { left: var(--space-3); }
+    .lightbox-next { right: var(--space-3); }
+    @media (max-width: 660px) {
+      .lightbox-prev { left: var(--space-2); }
+      .lightbox-next { right: var(--space-2); }
+      .lightbox-nav { width: 40px; height: 40px; font-size: 1.3rem; top: 26vh; }
     }
 
     .lightbox-download {
@@ -1477,6 +1556,8 @@
 <div id="lightbox" class="lightbox-overlay">
   <button id="lightbox-close" class="lightbox-close" title="Close (Esc)">×</button>
   <button id="lightbox-download" class="lightbox-download" title="Download">⬇</button>
+  <button id="lightbox-prev" class="lightbox-nav lightbox-prev" title="Previous photo (←)">‹</button>
+  <button id="lightbox-next" class="lightbox-nav lightbox-next" title="Next photo (→)">›</button>
   <div class="lightbox-inner">
     <div class="lightbox-photo-wrap">
       <img id="lightbox-img" class="lightbox-img" alt="Full size photo" />

@@ -211,6 +211,84 @@
 
   
   // -------------------------
+  // Mobile hamburger menu
+  // -------------------------
+  function buildMobileMenu() {
+    const siteNav = document.querySelector('.site-nav');
+    const headerActions = document.querySelector('.header-actions');
+    if (!siteNav || !headerActions) return;
+
+    // Create hamburger button
+    const hamburger = document.createElement('button');
+    hamburger.className = 'mobile-menu-btn';
+    hamburger.setAttribute('aria-label', 'Open navigation menu');
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('type', 'button');
+    hamburger.innerHTML =
+      '<span class="hamburger-icon" aria-hidden="true">' +
+      '<span></span><span></span><span></span>' +
+      '</span>';
+    headerActions.insertBefore(hamburger, headerActions.firstChild);
+
+    // Build mobile panel
+    const panel = document.createElement('nav');
+    panel.className = 'mobile-menu-panel';
+    panel.setAttribute('aria-label', 'Mobile navigation');
+    panel.setAttribute('aria-hidden', 'true');
+
+    const here = window.location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '');
+
+    siteNav.querySelectorAll('.nav-link').forEach(function (link) {
+      const a = document.createElement('a');
+      a.href = link.href;
+      a.textContent = link.textContent;
+      a.className = 'mobile-nav-link';
+      const hrefRaw = (link.getAttribute('href') || '').split('#')[0]
+        .replace(/\/index\.html$/, '/').replace(/\/+$/, '');
+      const isHome = (here === '' || here === '/');
+      const targetIsHome = (hrefRaw === '' || hrefRaw === '/');
+      const active = targetIsHome ? isHome : (hrefRaw && hrefRaw === here);
+      if (active) { a.classList.add('active'); a.setAttribute('aria-current', 'page'); }
+      panel.appendChild(a);
+    });
+
+    document.body.appendChild(panel);
+
+    function closeMenu() {
+      hamburger.classList.remove('is-open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      panel.classList.remove('is-open');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+
+    function openMenu() {
+      hamburger.classList.add('is-open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      panel.classList.add('is-open');
+      panel.setAttribute('aria-hidden', 'false');
+    }
+
+    hamburger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      hamburger.classList.contains('is-open') ? closeMenu() : openMenu();
+    });
+
+    document.addEventListener('click', closeMenu);
+    panel.addEventListener('click', function (e) { e.stopPropagation(); });
+    panel.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth >= 900) closeMenu();
+    });
+  }
+
+  // -------------------------
   // Active nav link (no per-page markup needed)
   // -------------------------
   function markActiveNav() {
@@ -255,6 +333,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     initThemeEarly();
     bindThemeToggle();
+    buildMobileMenu();
     bindSystemListener();    // Programs dropdown (disabled on ribbon pages)
     const hasRibbon = document.body && document.body.dataset && document.body.dataset.hasRibbon === "true";
     if (!hasRibbon) bindDropdowns();
