@@ -11,6 +11,40 @@ let userIsAdmin = false
 let userIsLoggedIn = false
 let currentUser = null
 
+// --- Admin: album assignment & contributors ---
+// SQL required:
+//   CREATE TABLE IF NOT EXISTS album_contributors (
+//     album_id UUID REFERENCES albums(id) ON DELETE CASCADE,
+//     user_id  UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+//     added_at TIMESTAMPTZ DEFAULT NOW(),
+//     PRIMARY KEY (album_id, user_id)
+//   );
+//   ALTER TABLE album_contributors ENABLE ROW LEVEL SECURITY;
+//   CREATE POLICY "contrib_admin_all" ON album_contributors USING (auth.email() = 'joe@whostosay.org');
+//   CREATE POLICY "contrib_self_read" ON album_contributors FOR SELECT USING (auth.uid() = user_id);
+//
+//   -- Look up user UUID by email (SECURITY DEFINER to access auth.users)
+//   CREATE OR REPLACE FUNCTION get_user_id_by_email(lookup_email TEXT)
+//   RETURNS UUID LANGUAGE plpgsql SECURITY DEFINER AS $$
+//   DECLARE uid UUID;
+//   BEGIN SELECT id INTO uid FROM auth.users WHERE email = lookup_email; RETURN uid; END; $$;
+//
+//   -- Get owner emails for a set of album IDs
+//   CREATE OR REPLACE FUNCTION get_album_owner_emails(album_ids UUID[])
+//   RETURNS TABLE(album_id UUID, owner_email TEXT) LANGUAGE plpgsql SECURITY DEFINER AS $$
+//   BEGIN RETURN QUERY SELECT a.id, u.email::TEXT FROM albums a
+//     LEFT JOIN auth.users u ON a.owner_id = u.id WHERE a.id = ANY(album_ids); END; $$;
+//
+//   -- Get contributors with emails for one album
+//   CREATE OR REPLACE FUNCTION get_album_contributors(p_album_id UUID)
+//   RETURNS TABLE(user_id UUID, user_email TEXT, added_at TIMESTAMPTZ) LANGUAGE plpgsql SECURITY DEFINER AS $$
+//   BEGIN RETURN QUERY SELECT ac.user_id, u.email::TEXT, ac.added_at FROM album_contributors ac
+//     JOIN auth.users u ON ac.user_id = u.id WHERE ac.album_id = p_album_id; END; $$;
+
+let ownerEmailMap = {}    // albumId → owner email
+let contribCountMap = {}  // albumId → contributor count
+let activeModalAlbumId = null
+
 // --- Album drag-to-reorder (admin only) ---
 // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS sort_order INTEGER;
 let dragSrcAlbumId = null
@@ -92,20 +126,40 @@ async function saveAlbumOrder() {
 async function loadAlbums() {
   try {
     // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES auth.users(id);
+
+    // Non-admin: fetch album IDs where user is a contributor (for access filter below)
+    let contribIds = []
+    if (userIsLoggedIn && !userIsAdmin && currentUser) {
+      try {
+        const { data } = await supabase
+          .from('album_contributors')
+          .select('album_id')
+          .eq('user_id', currentUser.id)
+        contribIds = data?.map(r => r.album_id) || []
+      } catch { /* table may not exist yet */ }
+    }
+
     let query = supabase
       .from('albums')
       .select('id, name, created_at, cover_photo_id')
       .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
 
-    // Non-admin users only see their own albums
+    // Non-admin users see their own albums, unassigned (legacy), and contributed albums
     if (userIsLoggedIn && !userIsAdmin && currentUser) {
-      query = query.eq('owner_id', currentUser.id)
+      const orParts = [`owner_id.eq.${currentUser.id}`, `owner_id.is.null`]
+      if (contribIds.length > 0) orParts.push(`id.in.(${contribIds.join(',')})`)
+      query = query.or(orParts.join(','))
     }
 
     const { data: albums, error } = await query
 
     if (error) throw error
+
+    // Admin: pre-fetch owner emails and contributor counts for all albums
+    if (userIsAdmin && albums?.length > 0) {
+      await fetchAdminAlbumData(albums.map(a => a.id))
+    }
 
     if (!albums || albums.length === 0) {
       if (userIsLoggedIn) {
@@ -185,6 +239,8 @@ async function loadAlbums() {
         handle.textContent = '⠿'
         card.appendChild(handle)
 
+        renderAdminAlbumControls(card, album.id, album.name)
+
         const deleteBtn = document.createElement('button')
         deleteBtn.className = 'album-delete-btn'
         deleteBtn.textContent = '🗑 Delete Album'
@@ -205,6 +261,220 @@ async function loadAlbums() {
     emptyStateEl.textContent = 'Error loading albums'
     emptyStateEl.style.display = 'block'
   }
+}
+
+// --- Admin: album assignment & contributors ---
+
+async function fetchAdminAlbumData(albumIds) {
+  try {
+    const [ownerRes, contribRes] = await Promise.all([
+      supabase.rpc('get_album_owner_emails', { album_ids: albumIds }),
+      supabase.from('album_contributors').select('album_id').in('album_id', albumIds)
+    ])
+    ownerEmailMap = {}
+    ownerRes.data?.forEach(r => { ownerEmailMap[r.album_id] = r.owner_email })
+    contribCountMap = {}
+    contribRes.data?.forEach(r => {
+      contribCountMap[r.album_id] = (contribCountMap[r.album_id] || 0) + 1
+    })
+  } catch { /* RPC or table may not exist yet */ }
+}
+
+function renderAdminAlbumControls(card, albumId, albumName) {
+  const ownerEmail = ownerEmailMap[albumId] || null
+  const count = contribCountMap[albumId] || 0
+  const section = document.createElement('div')
+  section.className = 'admin-assignment'
+  section.innerHTML = `
+    <div class="owner-row">
+      <span class="owner-label">Owner:</span>
+      <span class="owner-email-display" id="owner-email-${albumId}">${
+        ownerEmail ? escapeHtml(ownerEmail) : '<em style="opacity:.45">Unassigned</em>'
+      }</span>
+      <button class="assign-btn">Assign</button>
+    </div>
+    <div class="contrib-row">
+      <span class="contrib-label">Contributors:</span>
+      <span class="contrib-count-display" id="contrib-count-${albumId}">${count || 'None'}</span>
+      <button class="contrib-btn">Manage</button>
+    </div>
+  `
+  section.querySelector('.assign-btn').addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation()
+    openAssignOwnerModal(albumId, albumName)
+  })
+  section.querySelector('.contrib-btn').addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation()
+    openContributorsModal(albumId, albumName)
+  })
+  card.querySelector('.album-info').appendChild(section)
+}
+
+// -- Assign Owner Modal --
+
+function openAssignOwnerModal(albumId, albumName) {
+  activeModalAlbumId = albumId
+  document.getElementById('ao-subtitle').textContent = albumName
+  const email = ownerEmailMap[albumId] || null
+  document.getElementById('ao-current').textContent = email || 'Unassigned'
+  document.getElementById('ao-email').value = email || ''
+  setModalMsg('ao-msg', '')
+  document.getElementById('assign-owner-modal').classList.add('show')
+  document.getElementById('ao-email').focus()
+}
+
+function closeAssignOwnerModal() {
+  document.getElementById('assign-owner-modal').classList.remove('show')
+  activeModalAlbumId = null
+}
+
+async function doAssignOwner() {
+  const albumId = activeModalAlbumId
+  const email = document.getElementById('ao-email').value.trim()
+  if (!email) { setModalMsg('ao-msg', 'Enter an email address', true); return }
+  setModalMsg('ao-msg', 'Looking up user…')
+  try {
+    const { data: uid, error: e1 } = await supabase.rpc('get_user_id_by_email', { lookup_email: email })
+    if (e1) throw e1
+    if (!uid) { setModalMsg('ao-msg', 'No account found for that email', true); return }
+    const { error: e2 } = await supabase.from('albums').update({ owner_id: uid }).eq('id', albumId)
+    if (e2) throw e2
+    ownerEmailMap[albumId] = email
+    updateOwnerDisplay(albumId, email)
+    document.getElementById('ao-current').textContent = email
+    setModalMsg('ao-msg', '✓ Owner assigned', false, '#51cf66')
+  } catch (err) {
+    setModalMsg('ao-msg', err.message || 'Failed', true)
+  }
+}
+
+async function doRemoveOwner() {
+  const albumId = activeModalAlbumId
+  setModalMsg('ao-msg', 'Removing…')
+  try {
+    const { error } = await supabase.from('albums').update({ owner_id: null }).eq('id', albumId)
+    if (error) throw error
+    delete ownerEmailMap[albumId]
+    updateOwnerDisplay(albumId, null)
+    document.getElementById('ao-current').textContent = 'Unassigned'
+    document.getElementById('ao-email').value = ''
+    setModalMsg('ao-msg', '✓ Owner removed', false, '#51cf66')
+  } catch (err) {
+    setModalMsg('ao-msg', err.message || 'Failed', true)
+  }
+}
+
+function updateOwnerDisplay(albumId, email) {
+  const el = document.getElementById(`owner-email-${albumId}`)
+  if (el) el.innerHTML = email ? escapeHtml(email) : '<em style="opacity:.45">Unassigned</em>'
+}
+
+// -- Contributors Modal --
+
+async function openContributorsModal(albumId, albumName) {
+  activeModalAlbumId = albumId
+  document.getElementById('cm-subtitle').textContent = albumName
+  document.getElementById('cm-email').value = ''
+  setModalMsg('cm-msg', '')
+  document.getElementById('contributors-modal').classList.add('show')
+  await loadContributors(albumId)
+}
+
+function closeContributorsModal() {
+  document.getElementById('contributors-modal').classList.remove('show')
+  activeModalAlbumId = null
+}
+
+async function loadContributors(albumId) {
+  const listEl = document.getElementById('cm-list')
+  listEl.innerHTML = '<div class="cm-empty">Loading…</div>'
+  try {
+    const { data, error } = await supabase.rpc('get_album_contributors', { p_album_id: albumId })
+    if (error) throw error
+    if (!data?.length) {
+      listEl.innerHTML = '<div class="cm-empty">No contributors yet</div>'
+      return
+    }
+    listEl.innerHTML = ''
+    data.forEach(c => {
+      const item = document.createElement('div')
+      item.className = 'cm-item'
+      item.innerHTML = `<span class="cm-item-email">${escapeHtml(c.user_email)}</span><button class="cm-item-remove">Remove</button>`
+      item.querySelector('.cm-item-remove').addEventListener('click', () => doRemoveContributor(albumId, c.user_id, item))
+      listEl.appendChild(item)
+    })
+    contribCountMap[albumId] = data.length
+    updateContribCount(albumId)
+  } catch (err) {
+    listEl.innerHTML = `<div class="cm-empty" style="color:#ff6b6b">${err.message}</div>`
+  }
+}
+
+async function doAddContributor() {
+  const albumId = activeModalAlbumId
+  const email = document.getElementById('cm-email').value.trim()
+  if (!email) { setModalMsg('cm-msg', 'Enter an email address', true); return }
+  setModalMsg('cm-msg', 'Adding…')
+  try {
+    const { data: uid, error: e1 } = await supabase.rpc('get_user_id_by_email', { lookup_email: email })
+    if (e1) throw e1
+    if (!uid) { setModalMsg('cm-msg', 'No account found for that email', true); return }
+    const { error: e2 } = await supabase.from('album_contributors').insert({ album_id: albumId, user_id: uid })
+    if (e2) {
+      if (e2.code === '23505') { setModalMsg('cm-msg', 'Already a contributor', true); return }
+      throw e2
+    }
+    document.getElementById('cm-email').value = ''
+    setModalMsg('cm-msg', '✓ Contributor added', false, '#51cf66')
+    await loadContributors(albumId)
+  } catch (err) {
+    setModalMsg('cm-msg', err.message || 'Failed', true)
+  }
+}
+
+async function doRemoveContributor(albumId, userId, itemEl) {
+  try {
+    const { error } = await supabase.from('album_contributors').delete()
+      .eq('album_id', albumId).eq('user_id', userId)
+    if (error) throw error
+    itemEl.remove()
+    contribCountMap[albumId] = Math.max(0, (contribCountMap[albumId] || 1) - 1)
+    updateContribCount(albumId)
+    const listEl = document.getElementById('cm-list')
+    if (!listEl.querySelector('.cm-item')) listEl.innerHTML = '<div class="cm-empty">No contributors yet</div>'
+    setModalMsg('cm-msg', '✓ Removed', false, '#51cf66')
+  } catch (err) {
+    setModalMsg('cm-msg', err.message || 'Failed', true)
+  }
+}
+
+function updateContribCount(albumId) {
+  const el = document.getElementById(`contrib-count-${albumId}`)
+  if (el) el.textContent = contribCountMap[albumId] || 'None'
+}
+
+function setModalMsg(id, text, isError = false, color = null) {
+  const el = document.getElementById(id)
+  if (!el) return
+  el.textContent = text
+  el.style.color = color || (isError ? '#ff6b6b' : 'var(--text-muted)')
+}
+
+function initAssignmentModals() {
+  document.getElementById('ao-close').addEventListener('click', closeAssignOwnerModal)
+  document.getElementById('ao-assign-btn').addEventListener('click', doAssignOwner)
+  document.getElementById('ao-remove-btn').addEventListener('click', doRemoveOwner)
+  document.getElementById('ao-email').addEventListener('keydown', e => { if (e.key === 'Enter') doAssignOwner() })
+  document.getElementById('assign-owner-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeAssignOwnerModal()
+  })
+
+  document.getElementById('cm-close').addEventListener('click', closeContributorsModal)
+  document.getElementById('cm-add-btn').addEventListener('click', doAddContributor)
+  document.getElementById('cm-email').addEventListener('keydown', e => { if (e.key === 'Enter') doAddContributor() })
+  document.getElementById('contributors-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeContributorsModal()
+  })
 }
 
 function escapeHtml(text) {
@@ -297,10 +567,9 @@ async function handleCreateAlbum(e) {
     createMessageEl.textContent = 'Creating album...'
     createMessageEl.style.color = 'var(--text-muted)'
 
-    const { data: newAlbum, error } = await supabase
+    const { error } = await supabase
       .from('albums')
       .insert([{ name: albumName, owner_id: user.id }])
-      .select()
 
     if (error) throw error
 
@@ -384,5 +653,8 @@ createFormEl.addEventListener('submit', handleCreateAlbum)
 checkAuth().then(() => {
   loadAlbums()
   loadGalleryTitleSize()
-  if (userIsAdmin) renderGalleryTitleSizePicker()
+  if (userIsAdmin) {
+    renderGalleryTitleSizePicker()
+    initAssignmentModals()
+  }
 })

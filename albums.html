@@ -308,6 +308,224 @@
       opacity: 1;
     }
 
+    /* Admin: album assignment section on cards */
+    .admin-assignment {
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .owner-row, .contrib-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 0.8rem;
+      font-family: var(--font-body);
+    }
+
+    .owner-label, .contrib-label {
+      color: var(--text-muted);
+      flex-shrink: 0;
+      min-width: 5.5rem;
+    }
+
+    .owner-email-display, .contrib-count-display {
+      flex: 1;
+      color: var(--color-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.78rem;
+    }
+
+    .assign-btn, .contrib-btn {
+      flex-shrink: 0;
+      padding: 2px 8px;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-primary);
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .assign-btn:hover, .contrib-btn:hover {
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border-color: var(--color-primary);
+    }
+
+    /* Assignment modals */
+    .assign-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .assign-modal.show { display: flex; }
+
+    .assign-modal-inner {
+      background: var(--color-dark-800);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      max-width: 440px;
+      width: calc(100% - 2rem);
+      position: relative;
+    }
+
+    .assign-modal-inner h2 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0 0 var(--space-1) 0;
+    }
+
+    .assign-modal-subtitle {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0 0 var(--space-4) 0;
+    }
+
+    .assign-modal-close {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .assign-modal-close:hover { color: var(--text-main); }
+
+    .assign-info-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-primary) 5%, var(--color-dark-900));
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-4);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+    }
+
+    .assign-info-label { color: var(--text-muted); flex-shrink: 0; }
+    .assign-info-value { color: var(--color-primary); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .assign-input-row {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .assign-input-row input[type="email"] {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+      border-radius: var(--radius-sm);
+      background: var(--color-dark-900);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+    }
+
+    .assign-input-row input[type="email"]:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+
+    .assign-modal-msg {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      min-height: 1.2em;
+      margin-top: var(--space-2);
+    }
+
+    .assign-remove-btn {
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid #ff6b6b;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: #ff6b6b;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .assign-remove-btn:hover { background: color-mix(in srgb, #ff6b6b 15%, transparent); }
+
+    /* Contributors list */
+    .cm-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      margin-bottom: var(--space-3);
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .cm-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-primary) 5%, var(--color-dark-900));
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+    }
+
+    .cm-item-email { flex: 1; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .cm-item-remove {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid #ff6b6b;
+      border-radius: var(--radius-sm);
+      color: #ff6b6b;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.15s;
+    }
+
+    .cm-item-remove:hover { background: #ff6b6b; color: var(--color-dark-900); }
+
+    .cm-empty {
+      text-align: center;
+      padding: var(--space-3);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-style: italic;
+    }
+
     @media (max-width: 640px) {
       .albums-header-inner {
         flex-wrap: wrap;
@@ -370,6 +588,40 @@
       <h1 id="gallery-title">Photo Albums</h1>
       <a href="/multi-slideshow.html" class="btn btn-primary" style="background: color-mix(in srgb, #a855f7 20%, transparent); border-color: #a855f7; color: #a855f7; white-space: nowrap;">🎬 Multi Slideshow</a>
       <div id="auth-header-action"><a href="/login.html" class="btn btn-primary">Sign In</a></div>
+    </div>
+  </div>
+
+  <!-- Assign Owner Modal (admin only) -->
+  <div id="assign-owner-modal" class="assign-modal" role="dialog" aria-modal="true">
+    <div class="assign-modal-inner">
+      <button class="assign-modal-close" id="ao-close" aria-label="Close">&times;</button>
+      <h2>Assign Owner</h2>
+      <p class="assign-modal-subtitle" id="ao-subtitle"></p>
+      <div class="assign-info-row">
+        <span class="assign-info-label">Current:</span>
+        <span class="assign-info-value" id="ao-current">Unassigned</span>
+        <button class="assign-remove-btn" id="ao-remove-btn">Remove</button>
+      </div>
+      <div class="assign-input-row">
+        <input type="email" id="ao-email" placeholder="user@example.com" />
+        <button class="btn btn-primary" id="ao-assign-btn" style="white-space:nowrap">Assign</button>
+      </div>
+      <p class="assign-modal-msg" id="ao-msg"></p>
+    </div>
+  </div>
+
+  <!-- Manage Contributors Modal (admin only) -->
+  <div id="contributors-modal" class="assign-modal" role="dialog" aria-modal="true">
+    <div class="assign-modal-inner">
+      <button class="assign-modal-close" id="cm-close" aria-label="Close">&times;</button>
+      <h2>Contributors</h2>
+      <p class="assign-modal-subtitle" id="cm-subtitle"></p>
+      <div id="cm-list" class="cm-list"></div>
+      <div class="assign-input-row">
+        <input type="email" id="cm-email" placeholder="Add contributor by email" />
+        <button class="btn btn-primary" id="cm-add-btn" style="white-space:nowrap">Add</button>
+      </div>
+      <p class="assign-modal-msg" id="cm-msg"></p>
     </div>
   </div>
 
