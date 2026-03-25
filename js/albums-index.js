@@ -40,10 +40,18 @@ let currentUser = null
 //   RETURNS TABLE(user_id UUID, user_email TEXT, added_at TIMESTAMPTZ) LANGUAGE plpgsql SECURITY DEFINER AS $$
 //   BEGIN RETURN QUERY SELECT ac.user_id, u.email::TEXT, ac.added_at FROM album_contributors ac
 //     JOIN auth.users u ON ac.user_id = u.id WHERE ac.album_id = p_album_id; END; $$;
+//
+//   -- Get all users who own at least one album (for admin users panel + dropdown)
+//   CREATE OR REPLACE FUNCTION get_album_users()
+//   RETURNS TABLE(user_id UUID, user_email TEXT, album_count BIGINT) LANGUAGE plpgsql SECURITY DEFINER AS $$
+//   BEGIN RETURN QUERY SELECT u.id, u.email::TEXT, COUNT(a.id)::BIGINT
+//     FROM auth.users u JOIN albums a ON a.owner_id = u.id
+//     GROUP BY u.id, u.email ORDER BY u.email; END; $$;
 
 let ownerEmailMap = {}    // albumId → owner email
 let contribCountMap = {}  // albumId → contributor count
 let activeModalAlbumId = null
+let knownUsers = []       // { user_id, user_email, album_count } — for dropdown + users panel
 
 // --- Album drag-to-reorder (admin only) ---
 // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS sort_order INTEGER;
@@ -460,6 +468,45 @@ function setModalMsg(id, text, isError = false, color = null) {
   el.style.color = color || (isError ? '#ff6b6b' : 'var(--text-muted)')
 }
 
+// --- Admin: registered users panel & dropdown ---
+
+async function loadAdminUsers() {
+  const panel = document.getElementById('admin-users-panel')
+  if (!panel) return
+  panel.style.display = 'block'
+  const listEl = document.getElementById('admin-users-list')
+  try {
+    const { data, error } = await supabase.rpc('get_album_users')
+    if (error) throw error
+    knownUsers = data || []
+    populateUserDropdown()
+    if (!knownUsers.length) {
+      listEl.innerHTML = '<p class="users-empty">No users with albums yet.</p>'
+      return
+    }
+    const table = document.createElement('table')
+    table.className = 'users-table'
+    table.innerHTML = `<thead><tr><th>Email</th><th>Albums</th></tr></thead>`
+    const tbody = document.createElement('tbody')
+    knownUsers.forEach(u => {
+      const tr = document.createElement('tr')
+      tr.innerHTML = `<td>${escapeHtml(u.user_email)}</td><td>${u.album_count}</td>`
+      tbody.appendChild(tr)
+    })
+    table.appendChild(tbody)
+    listEl.innerHTML = ''
+    listEl.appendChild(table)
+  } catch (err) {
+    listEl.innerHTML = `<p class="users-empty" style="color:#ff6b6b">${err.message}</p>`
+  }
+}
+
+function populateUserDropdown() {
+  const dl = document.getElementById('known-users-datalist')
+  if (!dl) return
+  dl.innerHTML = knownUsers.map(u => `<option value="${escapeHtml(u.user_email)}">`).join('')
+}
+
 function initAssignmentModals() {
   document.getElementById('ao-close').addEventListener('click', closeAssignOwnerModal)
   document.getElementById('ao-assign-btn').addEventListener('click', doAssignOwner)
@@ -656,5 +703,6 @@ checkAuth().then(() => {
   if (userIsAdmin) {
     renderGalleryTitleSizePicker()
     initAssignmentModals()
+    loadAdminUsers()
   }
 })

@@ -517,6 +517,66 @@
 
     .cm-item-remove:hover { background: #ff6b6b; color: var(--color-dark-900); }
 
+    /* Admin: registered users panel */
+    .admin-users-panel {
+      margin-top: var(--space-6);
+      padding: var(--space-5) var(--space-6);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--color-primary) 3%, var(--color-dark-900));
+    }
+
+    .admin-users-panel h2 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 var(--space-4) 0;
+      letter-spacing: 0.06em;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+    }
+
+    .users-table th {
+      text-align: left;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0 var(--space-3) var(--space-2);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+    }
+
+    .users-table th:last-child { text-align: right; }
+
+    .users-table td {
+      padding: var(--space-2) var(--space-3);
+      color: var(--text-main);
+      border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 8%, transparent);
+    }
+
+    .users-table td:last-child {
+      color: var(--color-primary);
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .users-table tr:last-child td { border-bottom: none; }
+
+    .users-empty {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
     .cm-empty {
       text-align: center;
       padding: var(--space-3);
@@ -603,7 +663,7 @@
         <button class="assign-remove-btn" id="ao-remove-btn">Remove</button>
       </div>
       <div class="assign-input-row">
-        <input type="email" id="ao-email" placeholder="user@example.com" />
+        <input type="email" id="ao-email" list="known-users-datalist" placeholder="user@example.com" />
         <button class="btn btn-primary" id="ao-assign-btn" style="white-space:nowrap">Assign</button>
       </div>
       <p class="assign-modal-msg" id="ao-msg"></p>
@@ -618,12 +678,14 @@
       <p class="assign-modal-subtitle" id="cm-subtitle"></p>
       <div id="cm-list" class="cm-list"></div>
       <div class="assign-input-row">
-        <input type="email" id="cm-email" placeholder="Add contributor by email" />
+        <input type="email" id="cm-email" list="known-users-datalist" placeholder="Add contributor by email" />
         <button class="btn btn-primary" id="cm-add-btn" style="white-space:nowrap">Add</button>
       </div>
       <p class="assign-modal-msg" id="cm-msg"></p>
     </div>
   </div>
+
+  <datalist id="known-users-datalist"></datalist>
 
   <div class="albums-container">
     <div class="albums-grid" id="albums-grid">
@@ -640,6 +702,11 @@
         <button type="submit" class="btn btn-primary">Create Album</button>
       </form>
       <div id="create-message"></div>
+    </div>
+
+    <div id="admin-users-panel" class="admin-users-panel" style="display:none">
+      <h2>Registered Users</h2>
+      <div id="admin-users-list"><p class="users-empty">Loading…</p></div>
     </div>
   </div>
 </main>
