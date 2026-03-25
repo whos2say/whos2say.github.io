@@ -52,6 +52,7 @@ let ownerEmailMap = {}    // albumId → owner email
 let contribCountMap = {}  // albumId → contributor count
 let activeModalAlbumId = null
 let knownUsers = []       // { user_id, user_email, album_count } — for dropdown + users panel
+let adminPreviewMode = false // admin sees page as a regular authenticated user
 
 // --- Album drag-to-reorder (admin only) ---
 // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS sort_order INTEGER;
@@ -135,9 +136,9 @@ async function loadAlbums() {
   try {
     // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS owner_id UUID REFERENCES auth.users(id);
 
-    // Non-admin: fetch album IDs where user is a contributor (for access filter below)
+    // Non-admin (or admin in preview mode): fetch album IDs where user is a contributor
     let contribIds = []
-    if (userIsLoggedIn && !userIsAdmin && currentUser) {
+    if (userIsLoggedIn && (!userIsAdmin || adminPreviewMode) && currentUser) {
       try {
         const { data } = await supabase
           .from('album_contributors')
@@ -153,8 +154,8 @@ async function loadAlbums() {
       .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
 
-    // Non-admin users see their own albums, unassigned (legacy), and contributed albums
-    if (userIsLoggedIn && !userIsAdmin && currentUser) {
+    // Non-admin users (or admin in preview mode) see filtered albums
+    if (userIsLoggedIn && (!userIsAdmin || adminPreviewMode) && currentUser) {
       const orParts = [`owner_id.eq.${currentUser.id}`, `owner_id.is.null`]
       if (contribIds.length > 0) orParts.push(`id.in.(${contribIds.join(',')})`)
       query = query.or(orParts.join(','))
@@ -164,8 +165,8 @@ async function loadAlbums() {
 
     if (error) throw error
 
-    // Admin: pre-fetch owner emails and contributor counts for all albums
-    if (userIsAdmin && albums?.length > 0) {
+    // Admin (not in preview): pre-fetch owner emails and contributor counts
+    if (userIsAdmin && !adminPreviewMode && albums?.length > 0) {
       await fetchAdminAlbumData(albums.map(a => a.id))
     }
 
@@ -238,7 +239,7 @@ async function loadAlbums() {
         </div>
       `
 
-      if (userIsAdmin) {
+      if (userIsAdmin && !adminPreviewMode) {
         card.draggable = true
 
         const handle = document.createElement('div')
@@ -262,7 +263,7 @@ async function loadAlbums() {
 
       albumsGridEl.appendChild(card)
     }
-    if (userIsAdmin) initAlbumDragAndDrop()
+    if (userIsAdmin && !adminPreviewMode) initAlbumDragAndDrop()
 
   } catch (err) {
     console.error('Error loading albums:', err)
@@ -548,7 +549,9 @@ async function checkAuth() {
       if (user) {
         authEl.innerHTML = `
           <span style="font-family:var(--font-body);font-size:0.85rem;color:var(--text-muted);margin-right:var(--space-2)">${escapeHtml(user.email)}</span>
+          ${userIsAdmin ? `<button id="preview-mode-btn" class="btn btn-primary" style="background:transparent;border-color:var(--color-primary);color:var(--color-primary);margin-right:var(--space-1)">View as User</button>` : ''}
           <button id="sign-out-btn" class="btn btn-primary" style="background:transparent;border-color:#ff6b6b;color:#ff6b6b">Sign Out</button>`
+        if (userIsAdmin) document.getElementById('preview-mode-btn').addEventListener('click', toggleAdminPreview)
         document.getElementById('sign-out-btn').addEventListener('click', signOut)
       } else {
         authEl.innerHTML = `<a href="/login.html" class="btn btn-primary">Sign In</a>`
@@ -558,6 +561,24 @@ async function checkAuth() {
     console.error('Auth check error:', err)
     createSectionEl.style.display = 'none'
   }
+}
+
+function toggleAdminPreview() {
+  adminPreviewMode = !adminPreviewMode
+  const btn = document.getElementById('preview-mode-btn')
+  if (btn) {
+    btn.textContent = adminPreviewMode ? '← Admin View' : 'View as User'
+    btn.style.background = adminPreviewMode
+      ? 'color-mix(in srgb, var(--color-primary) 20%, transparent)'
+      : 'transparent'
+  }
+  const titleEl = document.getElementById('gallery-title')
+  if (titleEl) titleEl.textContent = adminPreviewMode ? 'Your Gallery' : 'Photo Albums'
+  const usersPanel = document.getElementById('admin-users-panel')
+  if (usersPanel) usersPanel.style.display = adminPreviewMode ? 'none' : 'block'
+  const sizePicker = document.querySelector('.title-size-btns')
+  if (sizePicker) sizePicker.style.display = adminPreviewMode ? 'none' : ''
+  loadAlbums()
 }
 
 async function signOut() {
