@@ -138,7 +138,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1.25rem;
   }
   .wdsd-celebrate-emoji {
     font-size: 3rem;
@@ -154,6 +154,63 @@
     background-clip: text;
     margin: 0;
     animation: pulse .9s ease-in-out infinite alternate;
+  }
+  .wdsd-video-card {
+    position: relative;
+    width: min(560px, 92vw);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 0 3px rgba(99,245,239,.4), 0 16px 56px rgba(0,0,0,.6);
+    aspect-ratio: 16 / 9;
+    cursor: pointer;
+    background: #000;
+  }
+  .wdsd-video-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease, opacity .35s;
+  }
+  .wdsd-video-card:hover img { transform: scale(1.03); opacity: .85; }
+  .wdsd-play-btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .wdsd-play-btn span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.92);
+    box-shadow: 0 4px 24px rgba(0,0,0,.45);
+    transition: transform .2s, background .2s;
+  }
+  .wdsd-video-card:hover .wdsd-play-btn span {
+    transform: scale(1.12);
+    background: #fff;
+  }
+  .wdsd-play-btn svg { width: 28px; height: 28px; fill: #1e64f0; margin-left: 4px; }
+  .wdsd-video-card iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .wdsd-video-label {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.45);
   }
   @keyframes pulse {
     from { opacity: .75; transform: scale(.98); }
@@ -279,6 +336,15 @@
       <div class="wdsd-celebrate-emoji">🎉</div>
       <p class="wdsd-celebrate-text">The Celebration Is Happening NOW!</p>
       <p class="wdsd-socks">🧦🧦🧦 Wear Your Crazy Socks! 🧦🧦🧦</p>
+      <p class="wdsd-video-label">Watch Our Celebration</p>
+      <div class="wdsd-video-card" id="wdsd-yt-card" onclick="wdsdLoadVideo()" role="button" tabindex="0" aria-label="Play celebration video: This was Everything">
+        <img src="https://img.youtube.com/vi/NEtdTOlp0Ns/maxresdefault.jpg" alt="WDSD celebration – This was Everything" loading="lazy" id="wdsd-yt-thumb"/>
+        <div class="wdsd-play-btn" id="wdsd-yt-play">
+          <span>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -314,6 +380,23 @@
 
     tick();
     setInterval(tick, 1000);
+
+    // ── Click-to-play ──────────────────────────────────────
+    window.wdsdLoadVideo = function () {
+      var card = document.getElementById('wdsd-yt-card');
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/NEtdTOlp0Ns?autoplay=1&rel=0';
+      iframe.title = 'Who\'s to Say Foundation – World Down Syndrome Day Celebration';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      card.innerHTML = '';
+      card.appendChild(iframe);
+      card.onclick = null;
+      card.style.cursor = 'default';
+    };
+    document.getElementById('wdsd-yt-card').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.wdsdLoadVideo(); }
+    });
 
     // ── Confetti ───────────────────────────────────────────
     function startConfetti() {
