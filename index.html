@@ -20,15 +20,15 @@
 
 <script src="/assets/js/theme.js"></script><link href="/assets/css/styles.css" rel="stylesheet"/>
 <style>
-  /* ── WDSD Countdown ──────────────────────────────── */
-  .wdsd-countdown {
-    padding: clamp(2.5rem, 6vw, 5rem) 1.25rem;
+  /* ── WDSD Recap Section ──────────────────────────────── */
+  .wdsd-recap {
+    padding: clamp(3rem, 7vw, 6rem) 1.25rem;
     background: linear-gradient(150deg, #050d1f 0%, #0a1628 45%, #0d1c10 100%);
     position: relative;
     overflow: hidden;
     text-align: center;
   }
-  .wdsd-countdown::before {
+  .wdsd-recap::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -37,6 +37,25 @@
       radial-gradient(ellipse at 85% 40%, rgba(245,158,11,.14) 0%, transparent 55%),
       radial-gradient(ellipse at 50% 100%, rgba(99,245,239,.08) 0%, transparent 50%);
     pointer-events: none;
+  }
+  .wdsd-hearts-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .wdsd-heart {
+    position: absolute;
+    bottom: -2rem;
+    opacity: 0;
+    animation: floatHeart linear infinite;
+    user-select: none;
+  }
+  @keyframes floatHeart {
+    0%   { transform: translateY(0) scale(0.85) rotate(-8deg); opacity: 0; }
+    12%  { opacity: 0.5; }
+    88%  { opacity: 0.2; }
+    100% { transform: translateY(-110vh) scale(1.05) rotate(8deg); opacity: 0; }
   }
   .wdsd-inner {
     position: relative;
@@ -77,83 +96,35 @@
   }
   .wdsd-subtitle {
     font-family: var(--font-body);
-    font-size: 0.9rem;
-    color: rgba(255,255,255,.55);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.8);
     margin: 0;
     letter-spacing: 0.02em;
   }
-  .wdsd-timer {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 0.5rem 0;
+  .wdsd-body-copy {
+    font-family: var(--font-body);
+    font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+    color: rgba(255,255,255,.58);
+    line-height: 1.8;
+    margin: 0;
+    max-width: 600px;
   }
-  .wdsd-unit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.45rem;
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 18px;
-    padding: 1.25rem 1.6rem;
-    min-width: 94px;
-    backdrop-filter: blur(10px);
-    transition: border-color .3s;
-  }
-  .wdsd-unit:hover { border-color: rgba(99,245,239,.35); }
-  .wdsd-num {
+  .wdsd-video-heading {
     font-family: var(--font-heading);
-    font-size: clamp(2.4rem, 6vw, 3.75rem);
+    font-size: clamp(1.3rem, 3.5vw, 2rem);
     font-weight: 800;
     color: #fff;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-    transition: color .5s;
+    margin: 0.5rem 0 0;
   }
-  .wdsd-unit--days  .wdsd-num { color: #63f5ef; }
-  .wdsd-unit--hours .wdsd-num { color: #f59e0b; }
-  .wdsd-unit--mins  .wdsd-num { color: #63f5ef; }
-  .wdsd-unit--secs  .wdsd-num { color: #f59e0b; }
-  .wdsd-label {
+  .wdsd-video-label {
     font-family: var(--font-body);
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(255,255,255,.4);
-  }
-  .wdsd-sep {
-    font-family: var(--font-heading);
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 800;
-    color: rgba(255,255,255,.2);
-    margin-bottom: 1.6rem;
-    user-select: none;
-  }
-  .wdsd-celebrate {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-  }
-  .wdsd-celebrate-emoji {
-    font-size: 3rem;
-    animation: bounce 0.6s ease-in-out infinite alternate;
-  }
-  .wdsd-celebrate-text {
-    font-family: var(--font-heading);
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    font-weight: 800;
-    background: linear-gradient(90deg, #f59e0b, #63f5ef);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
     margin: 0;
-    animation: pulse .9s ease-in-out infinite alternate;
   }
   .wdsd-video-card {
     position: relative;
@@ -204,26 +175,19 @@
     height: 100%;
     border: 0;
   }
-  .wdsd-video-label {
+  .wdsd-video-caption {
     font-family: var(--font-body);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.45);
+    font-size: 0.88rem;
+    color: rgba(255,255,255,.42);
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0;
   }
-  @keyframes pulse {
-    from { opacity: .75; transform: scale(.98); }
-    to   { opacity: 1;   transform: scale(1.02); }
-  }
-  @keyframes bounce {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-8px); }
-  }
-  .wdsd-socks {
-    font-size: 1.4rem;
-    letter-spacing: 0.15em;
-    opacity: .8;
+  .wdsd-socks-note {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: rgba(255,255,255,.5);
+    margin: 0;
   }
   .btn-wdsd {
     display: inline-flex;
@@ -244,18 +208,6 @@
     opacity: .9;
     transform: translateY(-2px);
     box-shadow: 0 8px 32px rgba(30,100,240,.5);
-  }
-  .wdsd-confetti-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    display: none;
-  }
-  @media (max-width: 500px) {
-    .wdsd-unit { min-width: 76px; padding: 1rem 1.1rem; }
-    .wdsd-sep  { display: none; }
   }
 </style>
 </head>
@@ -303,90 +255,41 @@
 <p class="home-note">EIN: 33-3826585  <br> Status: 501(c)(3) Public Charity · United States .</p></div>
 </section>
 
-<section class="wdsd-countdown" aria-label="World Down Syndrome Day countdown">
-  <canvas id="wdsd-confetti" class="wdsd-confetti-canvas" aria-hidden="true"></canvas>
+<section class="wdsd-recap" aria-label="World Down Syndrome Day 2026 Recap">
+  <div class="wdsd-hearts-bg" aria-hidden="true"></div>
   <div class="wdsd-inner">
-    <div class="wdsd-badge">🌟 World Down Syndrome Day · March 21, 2026</div>
-    <h2 class="wdsd-title">Join Us for a Celebration of<br><span class="wdsd-accent">that little something extra</span></h2>
-    <p class="wdsd-subtitle">3 copies of chromosome 21 — celebrated at 3:21 on 3/21</p>
+    <div class="wdsd-badge">❤️ World Down Syndrome Day · March 21, 2026</div>
+    <h2 class="wdsd-title">We Celebrated That Little<br><span class="wdsd-accent">Something Extra</span></h2>
+    <p class="wdsd-subtitle">Now let's keep going.</p>
+    <p class="wdsd-body-copy">March 21 was the day. But kindness doesn't need a calendar.<br><br>
+      Every day is a chance to celebrate what makes us unique, to show up for each other, and to choose inclusion — not just on World Down Syndrome Day, but always. Three copies of chromosome 21 are worth celebrating loudly, proudly, and with full hearts.</p>
 
-    <div class="wdsd-timer" id="wdsd-timer">
-      <div class="wdsd-unit wdsd-unit--days">
-        <span class="wdsd-num" id="ct-days">--</span>
-        <span class="wdsd-label">Days</span>
-      </div>
-      <div class="wdsd-sep" aria-hidden="true">:</div>
-      <div class="wdsd-unit wdsd-unit--hours">
-        <span class="wdsd-num" id="ct-hours">--</span>
-        <span class="wdsd-label">Hours</span>
-      </div>
-      <div class="wdsd-sep" aria-hidden="true">:</div>
-      <div class="wdsd-unit wdsd-unit--mins">
-        <span class="wdsd-num" id="ct-mins">--</span>
-        <span class="wdsd-label">Minutes</span>
-      </div>
-      <div class="wdsd-sep" aria-hidden="true">:</div>
-      <div class="wdsd-unit wdsd-unit--secs">
-        <span class="wdsd-num" id="ct-secs">--</span>
-        <span class="wdsd-label">Seconds</span>
+    <p class="wdsd-video-heading">This Was Everything ❤️</p>
+    <p class="wdsd-video-label">Watch Our WDSD 2026 Celebration</p>
+    <div class="wdsd-video-card" id="wdsd-yt-card" onclick="wdsdLoadVideo()" role="button" tabindex="0" aria-label="Play celebration video: This was Everything">
+      <img src="https://img.youtube.com/vi/NEtdTOlp0Ns/maxresdefault.jpg" alt="WDSD 2026 – This was Everything group photo" loading="lazy"/>
+      <div class="wdsd-play-btn">
+        <span>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+        </span>
       </div>
     </div>
+    <p class="wdsd-video-caption">Our community came together on March 21, 2026 to celebrate World Down Syndrome Day — and it was everything. Watch the full celebration and feel the love.</p>
 
-    <div class="wdsd-celebrate" id="wdsd-celebrate" style="display:none" aria-live="assertive">
-      <div class="wdsd-celebrate-emoji">🎉</div>
-      <p class="wdsd-celebrate-text">The Celebration Is Happening NOW!</p>
-      <p class="wdsd-socks">🧦🧦🧦 Wear Your Crazy Socks! 🧦🧦🧦</p>
-      <p class="wdsd-video-label">Watch Our Celebration</p>
-      <div class="wdsd-video-card" id="wdsd-yt-card" onclick="wdsdLoadVideo()" role="button" tabindex="0" aria-label="Play celebration video: This was Everything">
-        <img src="https://img.youtube.com/vi/NEtdTOlp0Ns/maxresdefault.jpg" alt="WDSD celebration – This was Everything" loading="lazy" id="wdsd-yt-thumb"/>
-        <div class="wdsd-play-btn" id="wdsd-yt-play">
-          <span>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
-          </span>
-        </div>
-      </div>
-    </div>
+    <p class="wdsd-socks-note">We rocked our crazy socks — and we're not done yet. 🧦</p>
+    <a class="btn-wdsd" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Spread Kindness Today ❤️</a>
   </div>
 </section>
 </main>
 
 <script>
   (function () {
-    // ── Countdown ──────────────────────────────────────────
-    var target     = new Date(2026, 2, 21, 15, 21, 0); // 3:21 PM local
-    var timerEl    = document.getElementById('wdsd-timer');
-    var celebrateEl= document.getElementById('wdsd-celebrate');
-    var elDays     = document.getElementById('ct-days');
-    var elHours    = document.getElementById('ct-hours');
-    var elMins     = document.getElementById('ct-mins');
-    var elSecs     = document.getElementById('ct-secs');
-    var started    = false;
-
-    function pad(n) { return String(n).padStart(2, '0'); }
-
-    function tick() {
-      var diff = target - Date.now();
-      if (diff <= 0) {
-        timerEl.style.display = 'none';
-        celebrateEl.style.display = 'flex';
-        if (!started) { started = true; startConfetti(); }
-        return;
-      }
-      elDays.textContent  = Math.floor(diff / 86400000);
-      elHours.textContent = pad(Math.floor(diff % 86400000 / 3600000));
-      elMins.textContent  = pad(Math.floor(diff % 3600000  /   60000));
-      elSecs.textContent  = pad(Math.floor(diff % 60000    /    1000));
-    }
-
-    tick();
-    setInterval(tick, 1000);
-
     // ── Click-to-play ──────────────────────────────────────
     window.wdsdLoadVideo = function () {
       var card = document.getElementById('wdsd-yt-card');
       var iframe = document.createElement('iframe');
       iframe.src = 'https://www.youtube.com/embed/NEtdTOlp0Ns?autoplay=1&rel=0';
-      iframe.title = 'Who\'s to Say Foundation – World Down Syndrome Day Celebration';
+      iframe.title = 'Who\'s to Say Foundation – World Down Syndrome Day 2026 Celebration';
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
       iframe.allowFullscreen = true;
       card.innerHTML = '';
@@ -398,96 +301,18 @@
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.wdsdLoadVideo(); }
     });
 
-    // ── Confetti ───────────────────────────────────────────
-    function startConfetti() {
-      var canvas = document.getElementById('wdsd-confetti');
-      canvas.style.display = 'block';
-      var ctx = canvas.getContext('2d');
-      var W, H;
-
-      var COLORS = ['#63f5ef','#f59e0b','#1e64f0','#ffffff','#f43f5e','#a855f7','#22c55e'];
-      var SHAPES = ['circle','rect','diamond','sock'];
-      var particles = [];
-
-      function resize() {
-        var s = canvas.parentElement.getBoundingClientRect();
-        W = canvas.width  = s.width;
-        H = canvas.height = s.height;
-      }
-      window.addEventListener('resize', resize);
-      resize();
-
-      for (var i = 0; i < 110; i++) {
-        particles.push(makeParticle(true));
-      }
-
-      function makeParticle(scatter) {
-        var r = Math.random() * 9 + 4;
-        return {
-          x:      Math.random() * W,
-          y:      scatter ? Math.random() * H : -r * 2,
-          r:      r,
-          color:  COLORS[Math.floor(Math.random() * COLORS.length)],
-          shape:  SHAPES[Math.floor(Math.random() * SHAPES.length)],
-          speed:  Math.random() * 2.2 + 0.8,
-          drift:  (Math.random() - 0.5) * 1.4,
-          spin:   (Math.random() - 0.5) * 0.12,
-          angle:  Math.random() * Math.PI * 2,
-          wobble: Math.random() * Math.PI * 2,
-          wobbleSpeed: Math.random() * 0.06 + 0.02,
-          alpha:  Math.random() * 0.4 + 0.6
-        };
-      }
-
-      function drawParticle(p) {
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.angle);
-        ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = p.color;
-
-        if (p.shape === 'circle') {
-          ctx.beginPath();
-          ctx.arc(0, 0, p.r, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (p.shape === 'rect') {
-          ctx.fillRect(-p.r, -p.r * 0.5, p.r * 2, p.r);
-        } else if (p.shape === 'diamond') {
-          ctx.beginPath();
-          ctx.moveTo(0, -p.r);
-          ctx.lineTo(p.r, 0);
-          ctx.lineTo(0, p.r);
-          ctx.lineTo(-p.r, 0);
-          ctx.closePath();
-          ctx.fill();
-        } else { // sock — draw a tiny rounded sock shape
-          ctx.beginPath();
-          ctx.arc(0, -p.r * 0.4, p.r * 0.55, Math.PI, 0);          // leg top
-          ctx.lineTo(p.r * 0.55, p.r * 0.6);
-          ctx.arc(p.r * 0.1, p.r * 0.6, p.r * 0.45, 0, Math.PI);   // foot
-          ctx.lineTo(-p.r * 0.55, -p.r * 0.4);
-          ctx.closePath();
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-
-      function loop() {
-        ctx.clearRect(0, 0, W, H);
-        for (var i = 0; i < particles.length; i++) {
-          var p = particles[i];
-          drawParticle(p);
-          p.y += p.speed;
-          p.wobble += p.wobbleSpeed;
-          p.x += p.drift + Math.sin(p.wobble) * 0.6;
-          p.angle += p.spin;
-          if (p.y > H + p.r * 2) {
-            particles[i] = makeParticle(false); // recycle from top
-          }
-        }
-        requestAnimationFrame(loop);
-      }
-      loop();
+    // ── Floating hearts ────────────────────────────────────
+    var bg = document.querySelector('.wdsd-hearts-bg');
+    var HEARTS = ['💙','🤍','💛','🩵','❤️'];
+    for (var i = 0; i < 22; i++) {
+      var h = document.createElement('span');
+      h.className = 'wdsd-heart';
+      h.textContent = HEARTS[i % HEARTS.length];
+      h.style.left            = (Math.random() * 96 + 1) + '%';
+      h.style.fontSize        = (Math.random() * 1.1 + 0.6) + 'rem';
+      h.style.animationDuration  = (Math.random() * 10 + 8) + 's';
+      h.style.animationDelay     = -(Math.random() * 14) + 's';
+      bg.appendChild(h);
     }
   }());
 </script>
