@@ -473,8 +473,10 @@
       border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
       border-radius: var(--radius-md);
       padding: var(--space-6);
-      max-width: 500px;
-      width: 90%;
+      max-width: 540px;
+      width: 92%;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .music-modal-content h2 {
@@ -614,6 +616,216 @@
       font-weight: 600;
       text-transform: uppercase;
       margin-left: var(--space-2);
+    }
+
+    /* Music modal — current track strip */
+    .music-current {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: color-mix(in srgb, #51cf66 8%, transparent);
+      border: 1px solid color-mix(in srgb, #51cf66 30%, transparent);
+      border-radius: var(--radius-sm);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-4);
+      font-family: var(--font-body);
+    }
+    .music-current-label {
+      flex: 1;
+      font-size: 0.82rem;
+      color: #51cf66;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .music-remove-btn {
+      flex-shrink: 0;
+      padding: 0.2rem 0.5rem;
+      background: transparent;
+      border: 1px solid color-mix(in srgb, #ff6b6b 40%, transparent);
+      border-radius: var(--radius-sm);
+      color: #ff6b6b;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .music-remove-btn:hover {
+      background: #ff6b6b;
+      color: var(--color-dark-900);
+    }
+
+    /* Music modal — tabs */
+    .music-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      margin-bottom: var(--space-4);
+    }
+    .music-tab {
+      flex: 1;
+      padding: var(--space-2) var(--space-3);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      transition: all 0.15s ease;
+      margin-bottom: -1px;
+    }
+    .music-tab:hover { color: var(--text-main); }
+    .music-tab.active {
+      color: #ffd43b;
+      border-bottom-color: #ffd43b;
+    }
+
+    /* Music modal — tab panels */
+    .music-tab-panel { display: none; }
+    .music-tab-panel.active { display: block; }
+
+    /* Music modal — library list */
+    .music-library-list {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .music-library-loading,
+    .music-library-empty,
+    .music-library-error {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: var(--space-5) 0;
+    }
+    .music-library-error { color: #ff6b6b; }
+    .music-track-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      transition: border-color 0.15s ease;
+    }
+    .music-track-item.active {
+      border-color: #ffd43b;
+      background: color-mix(in srgb, #ffd43b 6%, transparent);
+    }
+    .music-track-item:hover { border-color: var(--color-primary); }
+    .music-track-select {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      cursor: pointer;
+      text-align: left;
+      min-width: 0;
+    }
+    .music-track-select:hover { color: #ffd43b; }
+    .music-track-item.active .music-track-select { color: #ffd43b; font-weight: 600; }
+    .music-track-icon { flex-shrink: 0; font-size: 0.9rem; opacity: 0.7; }
+    .music-track-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .music-track-delete {
+      flex-shrink: 0;
+      padding: var(--space-2) var(--space-2);
+      background: transparent;
+      border: none;
+      border-left: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .music-track-delete:hover { color: #ff6b6b; }
+
+    /* Music modal — upload zone */
+    .music-upload-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-6) var(--space-4);
+      border: 2px dashed color-mix(in srgb, var(--color-primary) 30%, transparent);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+    }
+    .music-upload-zone:hover,
+    .music-upload-zone.drag-over {
+      border-color: #ffd43b;
+      background: color-mix(in srgb, #ffd43b 5%, transparent);
+    }
+    .music-upload-icon { font-size: 2rem; opacity: 0.5; }
+    .music-upload-label {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--text-main);
+      margin: 0;
+    }
+    .music-upload-click {
+      color: #ffd43b;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .music-upload-hint {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* Music modal — upload progress */
+    .music-progress-wrap {
+      padding: var(--space-4) 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .music-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .music-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #ffd43b;
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+    .music-progress-label {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Music modal — footer */
+    .music-modal-footer {
+      margin-top: var(--space-4);
+      display: flex;
+      justify-content: flex-end;
     }
 
     .toast-notification {
@@ -1660,26 +1872,68 @@
 <div id="music-modal" class="music-modal">
   <div class="music-modal-content">
     <h2>Slideshow Music</h2>
-    <div class="music-info">
-      <p>Add a background music URL to your slideshow.</p>
-      <ul style="margin-left: var(--space-4); margin-top: var(--space-2);">
-        <li><strong>Direct MP3 URL</strong> — best option, plays automatically</li>
-        <li>Spotify / YouTube embed — shows player, requires manual play</li>
-      </ul>
-      <p style="margin-top: var(--space-2); font-size: 0.8rem; color: var(--text-muted);">💡 Tip: Music starts when you press ▶ Play in the slideshow. Use a direct .mp3 link for the smoothest experience.</p>
+
+    <!-- Current track strip -->
+    <div id="music-current" class="music-current" style="display:none">
+      <span id="music-current-label" class="music-current-label"></span>
+      <button id="music-remove-btn" class="music-remove-btn">✕ Remove</button>
     </div>
-    <div class="music-input-group">
-      <label for="music-url-input">Music URL:</label>
-      <input 
-        id="music-url-input" 
-        type="text" 
-        placeholder="https://example.com/song.mp3 or paste Spotify/YouTube link"
-        autocomplete="off"
-      />
+
+    <!-- Tabs -->
+    <div class="music-tabs" role="tablist">
+      <button class="music-tab active" data-tab="library" role="tab" aria-selected="true">♪ Library</button>
+      <button class="music-tab" data-tab="upload" role="tab" aria-selected="false">⬆ Upload MP3</button>
+      <button class="music-tab" data-tab="url" role="tab" aria-selected="false">🔗 URL</button>
     </div>
-    <div class="music-modal-buttons">
-      <button id="music-save-btn" class="music-btn-save">Save</button>
-      <button id="music-clear-btn" class="music-btn-clear">Clear</button>
+
+    <!-- Library tab -->
+    <div id="music-tab-library" class="music-tab-panel active" role="tabpanel">
+      <div id="music-library-list" class="music-library-list">
+        <p class="music-library-loading">Loading library…</p>
+      </div>
+    </div>
+
+    <!-- Upload tab -->
+    <div id="music-tab-upload" class="music-tab-panel" role="tabpanel">
+      <div id="music-upload-zone" class="music-upload-zone" tabindex="0" role="button" aria-label="Upload MP3 file">
+        <div class="music-upload-icon">♪</div>
+        <p class="music-upload-label">Drop an MP3 here or <span class="music-upload-click">click to browse</span></p>
+        <p class="music-upload-hint">MP3, M4A, WAV, OGG — max 20 MB</p>
+        <input id="music-file-input" type="file" accept=".mp3,.m4a,.wav,.ogg,audio/mpeg,audio/mp4,audio/wav,audio/ogg" style="display:none" aria-hidden="true" />
+      </div>
+      <div id="music-upload-progress" class="music-progress-wrap" style="display:none">
+        <div class="music-progress-bar"><div id="music-progress-fill" class="music-progress-fill"></div></div>
+        <span id="music-progress-label" class="music-progress-label">Uploading…</span>
+      </div>
+    </div>
+
+    <!-- URL tab -->
+    <div id="music-tab-url" class="music-tab-panel" role="tabpanel">
+      <div class="music-info">
+        <p>Paste a music URL for your slideshow.</p>
+        <ul style="margin-left: var(--space-4); margin-top: var(--space-2);">
+          <li><strong>Direct MP3 URL</strong> — plays automatically</li>
+          <li>Spotify / YouTube — shows embedded player</li>
+        </ul>
+        <p style="margin-top: var(--space-2); font-size: 0.8rem; color: var(--text-muted);">💡 Use the Library tab to pick from your uploaded MP3s for the best experience.</p>
+      </div>
+      <div class="music-input-group">
+        <label for="music-url-input">Music URL:</label>
+        <input
+          id="music-url-input"
+          type="text"
+          placeholder="https://example.com/song.mp3 or Spotify/YouTube link"
+          autocomplete="off"
+        />
+      </div>
+      <div class="music-modal-buttons">
+        <button id="music-save-btn" class="music-btn-save">Save URL</button>
+        <button id="music-clear-btn" class="music-btn-clear">Clear</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="music-modal-footer">
       <button id="music-close-btn" class="music-btn-close">Close</button>
     </div>
   </div>

@@ -34,6 +34,11 @@ const musicUrlInput = document.getElementById('music-url-input')
 const musicSaveBtn = document.getElementById('music-save-btn')
 const musicClearBtn = document.getElementById('music-clear-btn')
 const musicCloseBtn = document.getElementById('music-close-btn')
+const musicFileInput = document.getElementById('music-file-input')
+const musicUploadZone = document.getElementById('music-upload-zone')
+const musicUploadProgress = document.getElementById('music-upload-progress')
+const musicProgressFill = document.getElementById('music-progress-fill')
+const musicProgressLabel = document.getElementById('music-progress-label')
 
 let currentAlbumId = null
 let coverPhotoId = null
@@ -826,6 +831,14 @@ async function downloadSelectedPhotos() {
   }
 }
 
+function escapeHtmlMusic(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 async function loadMusicUrl() {
   try {
     const { data: albumData, error } = await supabase
@@ -835,21 +848,30 @@ async function loadMusicUrl() {
       .single()
 
     if (error && error.code !== 'PGRST116') throw error
-    
-    const savedUrl = albumData?.music_url || ''
-    musicUrlInput.value = savedUrl
 
-    // Show/hide the saved URL preview in modal
-    let urlPreview = document.getElementById('music-url-preview')
-    if (!urlPreview) {
-      urlPreview = document.createElement('div')
-      urlPreview.id = 'music-url-preview'
-      urlPreview.style.cssText = 'margin-top:8px;font-size:0.8rem;color:var(--text-muted);word-break:break-all;'
-      musicUrlInput.parentElement.appendChild(urlPreview)
-    }
-    urlPreview.textContent = savedUrl ? `Saved: ${savedUrl}` : ''
+    const savedUrl = albumData?.music_url || ''
+    if (musicUrlInput) musicUrlInput.value = savedUrl
+    updateCurrentMusicStrip(savedUrl)
   } catch (err) {
     console.error('Load music URL error:', err)
+  }
+}
+
+function updateCurrentMusicStrip(url) {
+  const stripEl = document.getElementById('music-current')
+  const labelEl = document.getElementById('music-current-label')
+  if (!stripEl || !labelEl) return
+  if (url) {
+    let displayName = url
+    // Try to show a readable name: last path segment without extension
+    try {
+      const seg = new URL(url).pathname.split('/').pop()
+      if (seg) displayName = decodeURIComponent(seg).replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
+    } catch (_) { /* url may not be absolute */ }
+    labelEl.textContent = `♪ Now set: ${displayName}`
+    stripEl.style.display = 'flex'
+  } else {
+    stripEl.style.display = 'none'
   }
 }
 
@@ -859,7 +881,7 @@ async function saveMusicUrl() {
     return
   }
 
-  const musicUrl = musicUrlInput.value.trim()
+  const musicUrl = musicUrlInput ? musicUrlInput.value.trim() : ''
 
   try {
     const { data, error } = await supabase
@@ -883,8 +905,199 @@ async function saveMusicUrl() {
   }
 }
 
+async function removeMusicFromAlbum() {
+  if (!isAlbumOwner) return
+  try {
+    const { data, error } = await supabase
+      .from('albums')
+      .update({ music_url: null })
+      .eq('id', currentAlbumId)
+      .select('music_url')
+    if (error) throw error
+    if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
+    showToast('✓ Music removed.')
+    updateMusicBadge(false, null)
+    updateCurrentMusicStrip('')
+    if (musicUrlInput) musicUrlInput.value = ''
+  } catch (err) {
+    showToast(`Failed to remove music: ${err.message}`, true)
+  }
+}
+
+async function selectMusicTrack(url, title) {
+  if (!isAlbumOwner) {
+    showToast('You must be the album owner to change music', true)
+    return
+  }
+  try {
+    const { data, error } = await supabase
+      .from('albums')
+      .update({ music_url: url })
+      .eq('id', currentAlbumId)
+      .select('music_url')
+    if (error) throw error
+    if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
+    showToast(`✓ Music set: ${title}`)
+    updateMusicBadge(true, url)
+    musicModal.classList.remove('show')
+  } catch (err) {
+    console.error('Select music track error:', err)
+    showToast(`Failed to set music: ${err.message}`, true)
+  }
+}
+
+async function loadMusicLibrary() {
+  const listEl = document.getElementById('music-library-list')
+  if (!listEl) return
+  listEl.innerHTML = '<p class="music-library-loading">Loading library…</p>'
+
+  try {
+    const [tracksResult, albumResult] = await Promise.all([
+      supabase.from('music_tracks').select('*').order('created_at', { ascending: false }),
+      supabase.from('albums').select('music_url').eq('id', currentAlbumId).single()
+    ])
+
+    if (tracksResult.error) throw tracksResult.error
+
+    const tracks = tracksResult.data || []
+    const currentUrl = albumResult.data?.music_url || ''
+
+    if (tracks.length === 0) {
+      listEl.innerHTML = '<p class="music-library-empty">No tracks yet — upload one using the ⬆ Upload tab.</p>'
+      return
+    }
+
+    listEl.innerHTML = ''
+    tracks.forEach(track => {
+      const publicUrl = supabase.storage.from('music').getPublicUrl(track.file_path).data.publicUrl
+      const isActive = currentUrl === publicUrl
+      const canDelete = currentUser?.id === track.uploaded_by || isAdmin
+
+      const item = document.createElement('div')
+      item.className = 'music-track-item' + (isActive ? ' active' : '')
+
+      const selectBtn = document.createElement('button')
+      selectBtn.className = 'music-track-select'
+      selectBtn.title = isActive ? 'Currently selected' : 'Use this track'
+      selectBtn.innerHTML = `<span class="music-track-icon">${isActive ? '▶' : '♪'}</span><span class="music-track-title">${escapeHtmlMusic(track.title)}</span>`
+      selectBtn.addEventListener('click', () => selectMusicTrack(publicUrl, track.title))
+      item.appendChild(selectBtn)
+
+      if (canDelete) {
+        const delBtn = document.createElement('button')
+        delBtn.className = 'music-track-delete'
+        delBtn.title = 'Delete from library'
+        delBtn.textContent = '✕'
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation()
+          deleteMusicTrack(track.id, track.file_path, item)
+        })
+        item.appendChild(delBtn)
+      }
+
+      listEl.appendChild(item)
+    })
+  } catch (err) {
+    console.error('Load music library error:', err)
+    listEl.innerHTML = '<p class="music-library-error">Failed to load library.</p>'
+  }
+}
+
+async function uploadMusicFile(file) {
+  if (!currentUser) {
+    showToast('You must be logged in to upload music', true)
+    return
+  }
+
+  const allowedExts = /\.(mp3|m4a|wav|ogg)$/i
+  const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/x-m4a', 'audio/wav', 'audio/ogg', 'audio/vorbis']
+  if (!allowedExts.test(file.name) && !allowedTypes.includes(file.type)) {
+    showToast('Only audio files are allowed (MP3, M4A, WAV, OGG)', true)
+    return
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    showToast('File too large — maximum 20 MB', true)
+    return
+  }
+
+  const sanitized = file.name
+    .replace(/[^a-zA-Z0-9.\-_]/g, '-')
+    .replace(/-{2,}/g, '-')
+    .toLowerCase()
+  const filePath = `${currentUser.id}/${Date.now()}-${sanitized}`
+  const title = file.name.replace(/\.[^.]+$/, '')
+
+  // Show progress, hide upload zone
+  if (musicUploadZone) musicUploadZone.style.display = 'none'
+  if (musicUploadProgress) musicUploadProgress.style.display = 'flex'
+  if (musicProgressFill) musicProgressFill.style.width = '20%'
+  if (musicProgressLabel) musicProgressLabel.textContent = 'Uploading…'
+
+  try {
+    const { error: uploadError } = await supabase.storage
+      .from('music')
+      .upload(filePath, file, { contentType: file.type, upsert: false })
+    if (uploadError) throw uploadError
+
+    if (musicProgressFill) musicProgressFill.style.width = '65%'
+    if (musicProgressLabel) musicProgressLabel.textContent = 'Saving to library…'
+
+    const { error: dbError } = await supabase
+      .from('music_tracks')
+      .insert({ file_path: filePath, title, uploaded_by: currentUser.id })
+    if (dbError) throw dbError
+
+    if (musicProgressFill) musicProgressFill.style.width = '100%'
+    if (musicProgressLabel) musicProgressLabel.textContent = 'Done!'
+
+    const publicUrl = supabase.storage.from('music').getPublicUrl(filePath).data.publicUrl
+
+    setTimeout(async () => {
+      if (musicUploadProgress) musicUploadProgress.style.display = 'none'
+      if (musicUploadZone) musicUploadZone.style.display = 'flex'
+      if (musicProgressFill) musicProgressFill.style.width = '0%'
+      if (musicFileInput) musicFileInput.value = ''
+      await selectMusicTrack(publicUrl, title)
+      showToast(`✓ "${title}" uploaded and set as album music!`)
+    }, 700)
+  } catch (err) {
+    console.error('Music upload error:', err)
+    showToast(`Upload failed: ${err.message}`, true)
+    if (musicUploadProgress) musicUploadProgress.style.display = 'none'
+    if (musicUploadZone) musicUploadZone.style.display = 'flex'
+    if (musicProgressFill) musicProgressFill.style.width = '0%'
+  }
+}
+
+async function deleteMusicTrack(trackId, filePath, itemEl) {
+  if (!confirm('Delete this track from the library? This cannot be undone.')) return
+  try {
+    await supabase.storage.from('music').remove([filePath])
+    const { error } = await supabase.from('music_tracks').delete().eq('id', trackId)
+    if (error) throw error
+    itemEl.remove()
+    showToast('Track deleted from library.')
+  } catch (err) {
+    console.error('Delete track error:', err)
+    showToast(`Failed to delete: ${err.message}`, true)
+  }
+}
+
+function switchMusicTab(tabName) {
+  document.querySelectorAll('.music-tab').forEach(btn => {
+    const active = btn.dataset.tab === tabName
+    btn.classList.toggle('active', active)
+    btn.setAttribute('aria-selected', active ? 'true' : 'false')
+  })
+  document.querySelectorAll('.music-tab-panel').forEach(panel => {
+    panel.classList.remove('active')
+  })
+  const activePanel = document.getElementById(`music-tab-${tabName}`)
+  if (activePanel) activePanel.classList.add('active')
+}
+
 function clearMusicUrl() {
-  musicUrlInput.value = ''
+  if (musicUrlInput) musicUrlInput.value = ''
 }
 
 function closeMusicModal() {
@@ -1453,35 +1666,67 @@ if (modalCancelBtn) {
   })
 }
 
-// Music button event listeners
+// Music button — open modal
 if (musicBtnEl) {
   musicBtnEl.addEventListener('click', () => {
     if (!isAlbumOwner) {
-      alert('Only album owners can manage music')
+      showToast('Only album owners can manage music', true)
       return
     }
     loadMusicUrl()
+    switchMusicTab('library')
+    loadMusicLibrary()
     musicModal.classList.add('show')
   })
 }
 
-if (musicSaveBtn) {
-  musicSaveBtn.addEventListener('click', saveMusicUrl)
+// Music modal — URL tab buttons
+if (musicSaveBtn) musicSaveBtn.addEventListener('click', saveMusicUrl)
+if (musicClearBtn) musicClearBtn.addEventListener('click', clearMusicUrl)
+if (musicCloseBtn) musicCloseBtn.addEventListener('click', closeMusicModal)
+
+// Music modal — remove current music
+document.getElementById('music-remove-btn')?.addEventListener('click', removeMusicFromAlbum)
+
+// Music modal — tab switching
+document.querySelectorAll('.music-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab
+    switchMusicTab(tab)
+    if (tab === 'library') loadMusicLibrary()
+  })
+})
+
+// Music modal — upload zone click
+if (musicUploadZone) {
+  musicUploadZone.addEventListener('click', () => musicFileInput?.click())
+  musicUploadZone.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); musicFileInput?.click() }
+  })
+  musicUploadZone.addEventListener('dragover', e => {
+    e.preventDefault()
+    musicUploadZone.classList.add('drag-over')
+  })
+  musicUploadZone.addEventListener('dragleave', () => musicUploadZone.classList.remove('drag-over'))
+  musicUploadZone.addEventListener('drop', e => {
+    e.preventDefault()
+    musicUploadZone.classList.remove('drag-over')
+    const file = e.dataTransfer?.files?.[0]
+    if (file) uploadMusicFile(file)
+  })
 }
 
-if (musicClearBtn) {
-  musicClearBtn.addEventListener('click', clearMusicUrl)
-}
-
-if (musicCloseBtn) {
-  musicCloseBtn.addEventListener('click', closeMusicModal)
+// Music modal — file input change
+if (musicFileInput) {
+  musicFileInput.addEventListener('change', () => {
+    const file = musicFileInput.files?.[0]
+    if (file) uploadMusicFile(file)
+  })
 }
 
 // Close music modal when clicking outside
 if (musicModal) {
   musicModal.addEventListener('click', (e) => {
-    if (e.target === musicModal) {
-      closeMusicModal()
-    }
+    if (e.target === musicModal) closeMusicModal()
   })
 }
