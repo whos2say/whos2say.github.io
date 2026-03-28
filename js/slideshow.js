@@ -35,7 +35,8 @@ function isPortraitMobile() {
 }
 
 let photos = []
-let currentPhotoIndex = 0
+let slides = []           // pre-built sequence: each photo appears in exactly one slide
+let currentPhotoIndex = 0 // index into slides[], not photos[]
 let isPlaying = false
 let autoplayTimeout = null
 let audioUrl = null
@@ -122,6 +123,57 @@ const COLLAGE_LAYOUTS = [
   },
 ]
 
+// Build a slide sequence where every photo appears exactly once.
+// Collage slides consume multiple photos from the queue so no photo repeats.
+function buildSlides(photosArr, mode) {
+  const maxSlots = isPortraitMobile() ? 3 : 99
+  const queue = [...photosArr]
+  const result = []
+
+  if (mode === 'full') {
+    queue.forEach(p => result.push({ type: 'single', photo: p }))
+    return result
+  }
+
+  if (mode === 'collage') {
+    while (queue.length > 0) {
+      const validLayouts = COLLAGE_LAYOUTS.filter(l => l.count <= queue.length && l.count <= maxSlots)
+      if (validLayouts.length === 0) {
+        // Too few remaining photos for any collage layout — show as singles
+        queue.forEach(p => result.push({ type: 'single', photo: p }))
+        break
+      }
+      const layout = validLayouts[Math.floor(Math.random() * validLayouts.length)]
+      result.push({ type: 'collage', photos: queue.splice(0, layout.count), layout })
+    }
+    return result
+  }
+
+  // mixed: alternate single → collage → single → collage…
+  // Each collage consumes its layout's photo count from the queue.
+  let wantCollage = false
+  while (queue.length > 0) {
+    if (wantCollage && queue.length >= 2) {
+      const validLayouts = COLLAGE_LAYOUTS.filter(l => l.count <= queue.length && l.count <= maxSlots)
+      if (validLayouts.length > 0) {
+        const layout = validLayouts[Math.floor(Math.random() * validLayouts.length)]
+        result.push({ type: 'collage', photos: queue.splice(0, layout.count), layout })
+        wantCollage = false
+        continue
+      }
+    }
+    // Either wanted a single, or couldn't form a collage with remaining photos
+    result.push({ type: 'single', photo: queue.shift() })
+    wantCollage = true
+  }
+  return result
+}
+
+function rebuildSlides() {
+  slides = buildSlides(photos, viewMode)
+  currentPhotoIndex = 0
+}
+
 function getAlbumIds() {
   const params = new URLSearchParams(window.location.search)
 
@@ -185,7 +237,7 @@ async function loadByPhotoIds(photosParam) {
     backToAlbumEl.href = singleAlbumId ? `/album.html?album=${encodeURIComponent(singleAlbumId)}` : '/albums.html'
     backToAlbumEl.textContent = '\u2190 Back'
 
-    currentPhotoIndex = 0
+    rebuildSlides()
     displayPhoto()
     updateUI()
   } catch (err) {
@@ -235,7 +287,7 @@ async function loadMasterSlideshow() {
     backToAlbumEl.href = '/multi-slideshow.html'
     backToAlbumEl.textContent = '← Picker'
 
-    currentPhotoIndex = 0
+    rebuildSlides()
     displayPhoto()
     updateUI()
   } catch (err) {
@@ -336,7 +388,7 @@ async function loadPhotos() {
       setupAudioPlayer()
     }
 
-    currentPhotoIndex = 0
+    rebuildSlides()
     displayPhoto()
     updateUI()
   } catch (err) {
@@ -464,24 +516,12 @@ function showEmptyState(message) {
 }
 
 function isCollageSlide() {
-  if (viewMode === 'full') return false
-  if (viewMode === 'collage') return true
-  // mixed: every Nth slide is a collage
-  return (currentPhotoIndex + 1) % COLLAGE_INTERVAL === 0
+  return slides[currentPhotoIndex]?.type === 'collage'
 }
 
-function generateCollage() {
-  // Pick a layout whose slot count fits the number of available photos
-  // On portrait mobile, only use simple layouts (duo/trio) to avoid tiny cells
-  const maxSlots = isPortraitMobile() ? 3 : 99
-  const validLayouts = COLLAGE_LAYOUTS.filter(l => l.count <= photos.length && l.count <= maxSlots)
-  const layout = validLayouts[Math.floor(Math.random() * validLayouts.length)]
+function generateCollage(slide) {
+  const { layout, photos: collagePhotos } = slide
 
-  // Shuffle photos and take as many as the layout needs
-  const shuffled = [...photos].sort(() => Math.random() - 0.5)
-  const collagePhotos = shuffled.slice(0, layout.count)
-
-  // Apply the grid template
   collageGridEl.style.gridTemplate = layout.template
   collageGridEl.innerHTML = ''
 
@@ -507,18 +547,21 @@ function generateCollage() {
 }
 
 function displayPhoto() {
-  if (photos.length === 0) return
+  if (slides.length === 0) return
 
-  if (isCollageSlide()) {
-    // Show collage instead of single photo
+  const slide = slides[currentPhotoIndex]
+  if (!slide) return
+
+  if (slide.type === 'collage') {
+    // Show collage — photos are pre-assigned, no repeats possible
     slideShowImageEl.style.display = 'none'
     collageViewerEl.style.display = 'block'
-    generateCollage()
+    generateCollage(slide)
   } else {
     // Show single photo or video — full-screen
     collageViewerEl.style.display = 'none'
 
-    const photo = photos[currentPhotoIndex]
+    const photo = slide.photo
     const publicUrl = supabase.storage
       .from('photos')
       .getPublicUrl(photo.file_path).data.publicUrl
@@ -582,7 +625,7 @@ function displayPhoto() {
       }
       slideShowImageEl.onload = checkQuality
       slideShowImageEl.src = publicUrl
-      slideShowImageEl.alt = `Photo ${currentPhotoIndex + 1} of ${photos.length}`
+      slideShowImageEl.alt = `Photo ${currentPhotoIndex + 1} of ${slides.length}`
       // Handle cached images (onload may not fire)
       if (slideShowImageEl.complete && slideShowImageEl.naturalWidth > 0) checkQuality()
     }
@@ -595,24 +638,24 @@ function displayPhoto() {
 
 function updateCounter() {
   if (isCollageSlide()) {
-    photoCounterEl.textContent = `Collage / ${photos.length}`
+    photoCounterEl.textContent = `Collage / ${slides.length}`
   } else {
-    photoCounterEl.textContent = `${currentPhotoIndex + 1} / ${photos.length}`
+    photoCounterEl.textContent = `${currentPhotoIndex + 1} / ${slides.length}`
   }
 }
 
 function nextPhoto() {
-  if (photos.length === 0) return
+  if (slides.length === 0) return
   resetControlHide()
-  currentPhotoIndex = (currentPhotoIndex + 1) % photos.length
+  currentPhotoIndex = (currentPhotoIndex + 1) % slides.length
   displayPhoto()
   resetAutoplay()
 }
 
 function prevPhoto() {
-  if (photos.length === 0) return
+  if (slides.length === 0) return
   resetControlHide()
-  currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length
+  currentPhotoIndex = (currentPhotoIndex - 1 + slides.length) % slides.length
   displayPhoto()
   resetAutoplay()
 }
@@ -645,7 +688,7 @@ function togglePlayPause() {
 }
 
 function scheduleAutoplay() {
-  if (!isPlaying || photos.length === 0) return
+  if (!isPlaying || slides.length === 0) return
 
   autoplayTimeout = setTimeout(() => {
     nextPhoto()
@@ -672,8 +715,8 @@ function updatePlayPauseButton() {
 }
 
 function updateUI() {
-  prevBtnEl.disabled = photos.length <= 1
-  nextBtnEl.disabled = photos.length <= 1
+  prevBtnEl.disabled = slides.length <= 1
+  nextBtnEl.disabled = slides.length <= 1
   updatePlayPauseButton()
 }
 
@@ -760,7 +803,7 @@ function navigateBack() {
 }
 
 function handleKeyPress(e) {
-  if (photos.length === 0) return
+  if (slides.length === 0) return
 
   switch (e.key) {
     case 'ArrowRight':
@@ -817,7 +860,7 @@ orderBtnEl?.addEventListener('click', () => {
   playOrder = playOrder === 'sequential' ? 'random' : 'sequential'
   updateOrderBtn()
   if (playOrder === 'random') photos = shuffle(photos)
-  currentPhotoIndex = 0
+  rebuildSlides()
   displayPhoto()
 })
 
@@ -825,6 +868,7 @@ modeBtnEl?.addEventListener('click', () => {
   const modes = ['mixed', 'full', 'collage']
   viewMode = modes[(modes.indexOf(viewMode) + 1) % modes.length]
   updateModeBtn()
+  rebuildSlides()
   displayPhoto()
 })
 
