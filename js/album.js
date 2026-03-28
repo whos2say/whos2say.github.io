@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
 
 const albumNameEl = document.getElementById('album-name')
 const albumNameEditEl = document.getElementById('album-name-edit')
@@ -136,6 +137,7 @@ function openLightbox(url, photoId, filePath, index) {
   currentLightboxIndex = (index !== undefined) ? index : allPhotos.findIndex(p => p.id === photoId)
   updateLightboxNavVisibility()
   if (photoId) loadComments(photoId)
+  trackPhotoView(currentAlbumId, currentLightboxIndex, allPhotos.length)
 }
 
 function closeLightbox() {
@@ -1310,6 +1312,8 @@ function startSlideshowFromSelector() {
   const isDefault = includedInOrder.length === allPhotos.length &&
     ssSortedPhotos.map(p => p.id).join() === allPhotos.map(p => p.id).join()
 
+  trackSlideshowStart(currentAlbumId, albumNameEl.textContent, includedInOrder.length)
+
   if (isDefault) {
     window.location.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
   } else {
@@ -1375,6 +1379,7 @@ async function loadAlbum() {
       } else {
         window.fitAlbumTitle?.()
       }
+      trackAlbumView(currentAlbumId, albumData.name)
     }
 
     if (albumData?.cover_photo_id) {
