@@ -1,4 +1,11 @@
 import { supabase } from './supabase.js'
+import {
+  trackEvent,
+  trackSlideshowStart,
+  trackPhotoView,
+  trackSlideshowModeChange,
+  trackMusicPlay,
+} from './analytics.js'
 
 const slideShowImageEl = document.getElementById('slideshow-image')
 const collageViewerEl = document.getElementById('collage-viewer')
@@ -48,6 +55,15 @@ let singleAlbumId = null
 let playOrder = 'sequential'
 // View mode: 'mixed' | 'full' | 'collage'
 let viewMode = 'mixed'
+
+// ── Analytics session state ───────────────────────────────────────────────────
+let _trackAlbumId        = null   // album ID sent on every event
+let _trackAlbumName      = ''     // album display name
+let _sessionStart        = null   // Date.now() when session initialised
+let _viewedSlides        = new Set() // set of slide indices seen this session
+let _lastTrackedSlideIdx = -1     // dedup guard for photo_view
+let _autoplayUsed        = false  // whether autoplay advanced at least one slide
+let _musicPlayTracked    = false  // fire music_play only once per session
 
 const AUTOPLAY_DELAY = 4000
 const COLLAGE_INTERVAL = 2
@@ -240,6 +256,7 @@ async function loadByPhotoIds(photosParam) {
     rebuildSlides()
     displayPhoto()
     updateUI()
+    _initTracking(singleAlbumId, albumName)
   } catch (err) {
     console.error('loadByPhotoIds error:', err)
     showEmptyState(`Error loading photos: ${err.message}`)
@@ -290,6 +307,7 @@ async function loadMasterSlideshow() {
     rebuildSlides()
     displayPhoto()
     updateUI()
+    _initTracking(null, 'Master Slideshow')
   } catch (err) {
     showEmptyState(`Error loading master slideshow: ${err.message}`)
   }
@@ -391,6 +409,10 @@ async function loadPhotos() {
     rebuildSlides()
     displayPhoto()
     updateUI()
+    _initTracking(
+      isMultiAlbum ? null : singleAlbumId,
+      isMultiAlbum ? `${albumIds.length} Albums` : (albumNames[0] || 'Album')
+    )
   } catch (err) {
     console.error('Load photos error:', err)
     showEmptyState(`Error loading photos: ${err.message}`)
@@ -633,6 +655,13 @@ function displayPhoto() {
 
   updateCounter()
   resetProgress()
+
+  // photo_view — only when the displayed slide actually changes
+  if (_sessionStart && currentPhotoIndex !== _lastTrackedSlideIdx) {
+    _lastTrackedSlideIdx = currentPhotoIndex
+    _viewedSlides.add(currentPhotoIndex)
+    trackPhotoView(_trackAlbumId, currentPhotoIndex, slides.length)
+  }
 }
 
 
@@ -691,6 +720,7 @@ function scheduleAutoplay() {
   if (!isPlaying || slides.length === 0) return
 
   autoplayTimeout = setTimeout(() => {
+    _autoplayUsed = true
     nextPhoto()
     scheduleAutoplay()
   }, AUTOPLAY_DELAY)
@@ -718,6 +748,44 @@ function updateUI() {
   prevBtnEl.disabled = slides.length <= 1
   nextBtnEl.disabled = slides.length <= 1
   updatePlayPauseButton()
+}
+
+// ── Analytics helpers ─────────────────────────────────────────────────────────
+
+function _getMusicTrackName() {
+  if (!audioUrl) return 'Unknown'
+  if (audioUrl.includes('youtube.com') || audioUrl.includes('youtu.be')) return 'YouTube'
+  if (audioUrl.includes('spotify.com')) return 'Spotify'
+  try {
+    const seg = new URL(audioUrl).pathname.split('/').pop()
+    return decodeURIComponent(seg || '').replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ') || 'Unknown'
+  } catch { return 'Unknown' }
+}
+
+function _initTracking(albumId, albumName) {
+  _trackAlbumId        = albumId || null
+  _trackAlbumName      = albumName || ''
+  _sessionStart        = Date.now()
+  _viewedSlides        = new Set()
+  _lastTrackedSlideIdx = -1
+  _autoplayUsed        = false
+  _musicPlayTracked    = false
+  trackSlideshowStart(_trackAlbumId, _trackAlbumName, slides.length)
+}
+
+function _fireSlideshowComplete() {
+  if (!_sessionStart) return
+  const durationSeconds = (Date.now() - _sessionStart) / 1000
+  _sessionStart = null  // prevent double-fire on rapid clicks
+  trackEvent('slideshow_complete', {
+    album_id:         _trackAlbumId,
+    album_name:       _trackAlbumName,
+    photos_viewed:    _viewedSlides.size,
+    total_photos:     slides.length,
+    duration_seconds: Math.round(durationSeconds),
+    autoplay_used:    _autoplayUsed,
+    view_mode:        viewMode,
+  })
 }
 
 function resetProgress() {
@@ -795,6 +863,7 @@ document.addEventListener('touchend', e => {
 // ---- Navigation helpers ----
 
 function navigateBack() {
+  _fireSlideshowComplete()
   if (isMultiAlbum) {
     window.location.href = '/multi-slideshow.html'
   } else {
@@ -860,6 +929,7 @@ orderBtnEl?.addEventListener('click', () => {
   playOrder = playOrder === 'sequential' ? 'random' : 'sequential'
   updateOrderBtn()
   if (playOrder === 'random') photos = shuffle(photos)
+  trackSlideshowModeChange(playOrder)
   rebuildSlides()
   displayPhoto()
 })
@@ -868,6 +938,7 @@ modeBtnEl?.addEventListener('click', () => {
   const modes = ['mixed', 'full', 'collage']
   viewMode = modes[(modes.indexOf(viewMode) + 1) % modes.length]
   updateModeBtn()
+  trackSlideshowModeChange(viewMode)
   rebuildSlides()
   displayPhoto()
 })
@@ -886,6 +957,20 @@ initFromUrlParams()
 updateOrderBtn()
 updateModeBtn()
 loadPhotos()
+
+// Analytics: music_play — fires once per session on first successful audio start.
+// Uses the native 'play' DOM event so it covers both autoplay and manual resume.
+// YouTube / Spotify iframes don't emit a catchable play event here.
+audioPlayerEl?.addEventListener('play', () => {
+  if (!_musicPlayTracked && _sessionStart) {
+    _musicPlayTracked = true
+    trackMusicPlay(_trackAlbumId, _getMusicTrackName())
+  }
+})
+
+// TODO trackSlideshowShare — no share UI exists on this page yet.
+// When a share button is added, call:
+//   trackSlideshowShare(_trackAlbumId, 'copy_link' | 'short_link', url)
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
