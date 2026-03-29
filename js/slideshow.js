@@ -416,6 +416,8 @@ async function loadPhotos() {
       isMultiAlbum ? null : singleAlbumId,
       isMultiAlbum ? `${albumIds.length} Albums` : (albumNames[0] || 'Album')
     )
+    // If autoplay=1 was in the URL (set by social share links), start the timer now
+    if (isPlaying) scheduleAutoplay()
   } catch (err) {
     console.error('Load photos error:', err)
     showEmptyState(`Error loading photos: ${err.message}`)
@@ -996,6 +998,11 @@ function initFromUrlParams() {
   if (orderParam === 'random' || orderParam === 'sequential') playOrder = orderParam
   const modeParam = params.get('mode')
   if (modeParam === 'mixed' || modeParam === 'full' || modeParam === 'collage') viewMode = modeParam
+  // autoplay=1 is added by the /share/slideshow serverless shim for social share links
+  if (params.get('autoplay') === '1') {
+    isPlaying = true
+    playPauseBtnEl.textContent = '⏸ Pause'
+  }
 }
 
 // Load photos on page load — call directly since this is a module script
