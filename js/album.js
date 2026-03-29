@@ -1,5 +1,6 @@
 import { supabase } from './supabase.js'
 import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
+import { initSharePanel } from './share-panel.js'
 
 const albumNameEl = document.getElementById('album-name')
 const albumNameEditEl = document.getElementById('album-name-edit')
@@ -46,6 +47,7 @@ let coverPhotoId = null
 let currentUser = null
 let isAlbumOwner = false
 let isAdmin = false
+let _sharePanelBound = false
 let currentLightboxPhotoId = null
 let currentLightboxUrl = null
 let currentLightboxFilePath = null
@@ -1380,6 +1382,19 @@ async function loadAlbum() {
         window.fitAlbumTitle?.()
       }
       trackAlbumView(currentAlbumId, albumData.name)
+
+      const panel = initSharePanel({
+        shareUrl:     `${window.location.origin}/share/album?album=${encodeURIComponent(currentAlbumId)}`,
+        title:        albumData.name,
+        contentLabel: 'album',
+        albumId:      currentAlbumId,
+        targetType:   'album',
+        targetId:     currentAlbumId,
+      })
+      if (!_sharePanelBound) {
+        _sharePanelBound = true
+        document.getElementById('share-btn')?.addEventListener('click', () => panel.open())
+      }
     }
 
     if (albumData?.cover_photo_id) {

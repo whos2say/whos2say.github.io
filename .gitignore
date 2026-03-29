@@ -2,3 +2,5 @@
 js/credentials.js
 .env
 .env.local
+.vercel
+.env*.local

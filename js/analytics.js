@@ -178,3 +178,13 @@ export function trackMusicPlay(albumId, trackName) {
     track_name: trackName,
   })
 }
+
+/**
+ * Fired when the share panel opens.
+ * @param {string} albumId
+ */
+export function trackShareModalOpen(albumId) {
+  trackEvent('share_modal_open', {
+    album_id: albumId,
+  })
+}

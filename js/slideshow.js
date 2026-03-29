@@ -6,6 +6,7 @@ import {
   trackSlideshowModeChange,
   trackMusicPlay,
 } from './analytics.js'
+import { initSharePanel } from './share-panel.js'
 
 const slideShowImageEl = document.getElementById('slideshow-image')
 const collageViewerEl = document.getElementById('collage-viewer')
@@ -30,6 +31,7 @@ const slideshowBgEl = document.getElementById('slideshow-bg')
 const slideshowVideoEl = document.getElementById('slideshow-video')
 const orderBtnEl = document.getElementById('order-btn')
 const modeBtnEl = document.getElementById('mode-btn')
+const shareBtnEl         = document.getElementById('share-btn')
 const QUALITY_MIN_W = 1280
 const QUALITY_MIN_H = 720
 
@@ -53,6 +55,7 @@ let singleAlbumId = null
 
 // Playback order: 'sequential' | 'random'
 let playOrder = 'sequential'
+let _sharePanel = null
 // View mode: 'mixed' | 'full' | 'collage'
 let viewMode = 'mixed'
 
@@ -762,6 +765,30 @@ function _getMusicTrackName() {
   } catch { return 'Unknown' }
 }
 
+// ── Open Graph helpers ────────────────────────────────────────────────────────
+
+function _setMetaProperty(property, value) {
+  const el = document.querySelector(`meta[property="${property}"]`)
+  if (el && value) el.setAttribute('content', value)
+}
+
+function _updateOgTags() {
+  const title = _trackAlbumName
+    ? `${_trackAlbumName} Slideshow — Who's 2 Say Foundation`
+    : "Photo Slideshow — Who's 2 Say Foundation"
+  document.title = title
+  _setMetaProperty('og:title', title)
+  _setMetaProperty('og:description', "Photo slideshow from Who's 2 Say Foundation")
+  _setMetaProperty('og:url', window.location.href)
+
+  if (photos.length > 0) {
+    const coverUrl = supabase.storage
+      .from('photos')
+      .getPublicUrl(photos[0].file_path).data.publicUrl
+    _setMetaProperty('og:image', coverUrl)
+  }
+}
+
 function _initTracking(albumId, albumName) {
   _trackAlbumId        = albumId || null
   _trackAlbumName      = albumName || ''
@@ -770,7 +797,22 @@ function _initTracking(albumId, albumName) {
   _lastTrackedSlideIdx = -1
   _autoplayUsed        = false
   _musicPlayTracked    = false
+  _updateOgTags()
   trackSlideshowStart(_trackAlbumId, _trackAlbumName, slides.length)
+
+  const params = new URLSearchParams(window.location.search)
+  _sharePanel = initSharePanel({
+    shareUrl:     (!isMultiAlbum && albumId)
+      ? `${window.location.origin}/share/slideshow?album=${encodeURIComponent(albumId)}`
+      : window.location.href,
+    title:        albumName || '',
+    contentLabel: 'slideshow',
+    albumId:      albumId || null,
+    targetType:   isMultiAlbum ? 'multi-slideshow' : 'slideshow',
+    targetId:     isMultiAlbum
+      ? (params.get('albums') || '')
+      : (albumId || params.get('album') || ''),
+  })
 }
 
 function _fireSlideshowComplete() {
@@ -968,9 +1010,8 @@ audioPlayerEl?.addEventListener('play', () => {
   }
 })
 
-// TODO trackSlideshowShare — no share UI exists on this page yet.
-// When a share button is added, call:
-//   trackSlideshowShare(_trackAlbumId, 'copy_link' | 'short_link', url)
+shareBtnEl?.addEventListener('click', () => _sharePanel?.open())
+
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {

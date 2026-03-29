@@ -4,6 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Photo Slideshow</title>
+  <!-- Open Graph — values injected dynamically by slideshow.js after album loads -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="Who's 2 Say Foundation" />
+  <meta property="og:title"       content="Photo Slideshow — Who's 2 Say Foundation" />
+  <meta property="og:description" content="Photo slideshow from Who's 2 Say Foundation" />
+  <meta property="og:image"       content="" />
+  <meta property="og:url"         content="" />
   <link href="/assets/css/styles.css" rel="stylesheet" />
   <script src="/assets/js/theme.js" defer></script>
   <style>
@@ -319,6 +326,416 @@
       color: var(--color-dark-900);
     }
 
+    /* ── Share button ─────────────────────────────────────────── */
+    .slide-btn.share-btn {
+      background: color-mix(in srgb, #74c0fc 20%, transparent);
+      border-color: #74c0fc;
+      color: #74c0fc;
+    }
+    .slide-btn.share-btn:hover {
+      background: #74c0fc;
+      color: var(--color-dark-900);
+    }
+
+    /* ── Share modal ─────────────────────────────────────────── */
+    .share-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 1000;
+      overflow-y: auto;
+      padding: var(--space-8) var(--space-4);
+    }
+    .share-modal.show { display: flex; }
+
+    .share-modal-content {
+      background: var(--color-dark-800);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      max-width: 560px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+      margin: auto;
+    }
+
+    .share-modal-content h2 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .share-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .share-label {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .share-optional {
+      font-weight: 400;
+      opacity: 0.55;
+    }
+
+    .share-divider {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border-top: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      padding-top: var(--space-3);
+    }
+
+    /* ── Platform buttons ──────────────────────────────────────── */
+    .share-platform-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .share-platform-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 1 1 calc(33% - var(--space-2));
+      min-width: 105px;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.15s ease;
+    }
+
+    .share-platform-icon {
+      font-style: normal;
+      font-size: 1rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .share-platform-btn.fb {
+      background: color-mix(in srgb, #1877F2 20%, transparent);
+      border-color: #1877F2;
+      color: #93bbff;
+    }
+    .share-platform-btn.fb:hover { background: #1877F2; color: #fff; }
+
+    .share-platform-btn.tw {
+      background: color-mix(in srgb, #fff 8%, transparent);
+      border-color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.75);
+    }
+    .share-platform-btn.tw:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .share-platform-btn.li {
+      background: color-mix(in srgb, #0A66C2 20%, transparent);
+      border-color: #0A66C2;
+      color: #7ab8f5;
+    }
+    .share-platform-btn.li:hover { background: #0A66C2; color: #fff; }
+
+    .share-platform-btn.copy {
+      background: color-mix(in srgb, #74c0fc 18%, transparent);
+      border-color: #74c0fc;
+      color: #74c0fc;
+    }
+    .share-platform-btn.copy:hover,
+    .share-platform-btn.copy.copied { background: #74c0fc; color: var(--color-dark-900); }
+
+    .share-platform-btn.email {
+      background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .share-platform-btn.email:hover { background: var(--color-primary); color: var(--color-dark-900); }
+
+    .share-platform-btn.ig {
+      background: color-mix(in srgb, #dc2743 15%, transparent);
+      border-color: #dc2743;
+      color: #ff8fb0;
+    }
+    .share-platform-btn.ig:hover {
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      border-color: #bc1888;
+      color: #fff;
+    }
+
+    .share-platform-btn.tt {
+      background: color-mix(in srgb, #69C9D0 12%, transparent);
+      border-color: #69C9D0;
+      color: #69C9D0;
+    }
+    .share-platform-btn.tt:hover { background: #69C9D0; color: #010101; }
+
+    /* ── Post text tabs ────────────────────────────────────────── */
+    .share-post-tabs {
+      display: flex;
+      gap: var(--space-1);
+    }
+
+    .share-post-tab {
+      padding: 5px var(--space-3);
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .share-post-tab.active {
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .share-post-tab:hover:not(.active) {
+      border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+      color: var(--text-main);
+    }
+
+    .share-platform-tip {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+      border-radius: var(--radius-sm);
+    }
+
+    /* ── Post text ─────────────────────────────────────────────── */
+    .share-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+    }
+
+    .share-post-textarea {
+      width: 100%;
+      padding: var(--space-3);
+      background: color-mix(in srgb, var(--color-dark-900) 60%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      line-height: 1.55;
+      resize: vertical;
+      min-height: 86px;
+      transition: border-color 0.15s ease;
+      box-sizing: border-box;
+    }
+    .share-post-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    .share-copy-text-btn {
+      flex-shrink: 0;
+      padding: var(--space-1) var(--space-3);
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .share-copy-text-btn:hover,
+    .share-copy-text-btn.copied {
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+    }
+
+    /* ── Admin: campaign creator ───────────────────────────────── */
+    .share-campaign-section {
+      background: color-mix(in srgb, var(--color-primary) 4%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      gap: var(--space-3);
+    }
+
+    .share-field-row {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .share-field {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .share-input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-dark-900) 70%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      transition: border-color 0.15s ease;
+      box-sizing: border-box;
+    }
+    .share-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+    .share-input::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+    .share-generate-btn {
+      width: 100%;
+      margin-top: var(--space-1);
+      padding: var(--space-2) var(--space-4);
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border: 1px solid var(--color-primary);
+      border-radius: var(--radius-sm);
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .share-generate-btn:hover:not(:disabled) {
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+    }
+    .share-generate-btn:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── Short link result ─────────────────────────────────────── */
+    .share-short-result {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: color-mix(in srgb, #51cf66 6%, transparent);
+      border: 1px solid color-mix(in srgb, #51cf66 30%, transparent);
+      border-radius: var(--radius-sm);
+    }
+    .share-short-result .share-label { color: #51cf66; }
+
+    .share-url-row {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .share-url-input {
+      flex: 1;
+      min-width: 0;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-dark-900) 60%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      cursor: default;
+      user-select: all;
+    }
+
+    .share-btn-copy {
+      flex-shrink: 0;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, #74c0fc 20%, transparent);
+      border: 1px solid #74c0fc;
+      border-radius: var(--radius-sm);
+      color: #74c0fc;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .share-btn-copy:hover,
+    .share-btn-copy.copied { background: #74c0fc; color: var(--color-dark-900); }
+
+    /* ── Error ─────────────────────────────────────────────────── */
+    .share-error {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: #ff6b6b;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, #ff6b6b 8%, transparent);
+      border: 1px solid color-mix(in srgb, #ff6b6b 25%, transparent);
+      border-radius: var(--radius-sm);
+    }
+
+    /* ── Footer ────────────────────────────────────────────────── */
+    .share-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      border-top: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+      padding-top: var(--space-3);
+    }
+
+    .share-btn-close {
+      padding: var(--space-2) var(--space-4);
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.15s ease;
+    }
+    .share-btn-close:hover {
+      border-color: var(--color-primary);
+      color: var(--text-main);
+    }
+
+    @media (max-width: 480px) {
+      .share-modal-content { padding: var(--space-4); gap: var(--space-4); }
+      .share-platform-btn  { flex: 1 1 calc(50% - var(--space-2)); font-size: 0.76rem; }
+      .share-field-row     { flex-direction: column; gap: var(--space-2); }
+    }
+
     @media (max-width: 640px) {
       /* 3-row layout: [info row] [main buttons] [secondary] */
       .slideshow-controls {
@@ -438,6 +855,7 @@
       <button class="slide-btn play-pause" id="play-pause-btn" title="Play/Pause (spacebar)">▶ Play</button>
       <button class="slide-btn" id="next-btn" title="Next photo (→ arrow)">Next →</button>
       <button class="slide-btn" id="fullscreen-btn" title="Enter fullscreen (F)">⛶ Full Screen</button>
+      <button class="slide-btn share-btn" id="share-btn" title="Share slideshow">🔗 Share</button>
       <button class="slide-btn exit" id="exit-btn" title="Exit slideshow (Esc)">Exit</button>
     </div>
 
@@ -449,6 +867,137 @@
 </div>
 
 <script type="module" src="/js/slideshow.js"></script>
+
+<!-- ── Share Panel ─────────────────────────────────────────────────────────── -->
+<div id="share-modal" class="share-modal" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
+  <div class="share-modal-content">
+    <h2 id="share-modal-title">🔗 Share Slideshow</h2>
+
+    <!-- Quick share row — all users -->
+    <div class="share-section">
+      <div class="share-label">Share on</div>
+      <div class="share-platform-row">
+        <button class="share-platform-btn fb" id="share-fb-btn" title="Share on Facebook">
+          <span class="share-platform-icon">f</span>
+          <span>Facebook</span>
+        </button>
+        <button class="share-platform-btn tw" id="share-tw-btn" title="Share on X / Twitter">
+          <span class="share-platform-icon">X</span>
+          <span>X / Twitter</span>
+        </button>
+        <button class="share-platform-btn li" id="share-li-btn" title="Share on LinkedIn">
+          <span class="share-platform-icon">in</span>
+          <span>LinkedIn</span>
+        </button>
+        <button class="share-platform-btn ig" id="share-ig-btn" title="Share on Instagram">
+          <span class="share-platform-icon">📷</span>
+          <span>Instagram</span>
+        </button>
+        <button class="share-platform-btn tt" id="share-tt-btn" title="Share on TikTok">
+          <span class="share-platform-icon">♪</span>
+          <span>TikTok</span>
+        </button>
+        <button class="share-platform-btn copy" id="share-copy-link-btn" title="Copy link to clipboard">
+          <span class="share-platform-icon">🔗</span>
+          <span>Copy Link</span>
+        </button>
+        <button class="share-platform-btn email" id="share-email-btn" title="Share via email">
+          <span class="share-platform-icon">✉</span>
+          <span>Email</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Platform-specific post text with tabs -->
+    <div class="share-section">
+      <div class="share-post-tabs">
+        <button class="share-post-tab active" id="share-tab-btn-social">Social</button>
+        <button class="share-post-tab" id="share-tab-btn-instagram">Instagram</button>
+        <button class="share-post-tab" id="share-tab-btn-tiktok">TikTok</button>
+      </div>
+
+      <!-- Social tab -->
+      <div id="share-tab-social" class="share-tab-panel">
+        <div class="share-section-header">
+          <label class="share-label" for="share-post-social">Suggested post text</label>
+          <button class="share-copy-text-btn" id="share-copy-social-btn">Copy text</button>
+        </div>
+        <textarea id="share-post-social" class="share-post-textarea" rows="3" spellcheck="true"></textarea>
+      </div>
+
+      <!-- Instagram tab -->
+      <div id="share-tab-instagram" class="share-tab-panel" style="display:none">
+        <div class="share-section-header">
+          <label class="share-label" for="share-post-instagram">Instagram caption</label>
+          <button class="share-copy-text-btn" id="share-copy-instagram-btn">Copy caption</button>
+        </div>
+        <textarea id="share-post-instagram" class="share-post-textarea" rows="7" spellcheck="true"></textarea>
+        <div class="share-platform-tip">
+          📱 Save a photo from the slideshow, then paste this caption when creating your Instagram post. Reference the link in your bio.
+        </div>
+      </div>
+
+      <!-- TikTok tab -->
+      <div id="share-tab-tiktok" class="share-tab-panel" style="display:none">
+        <div class="share-section-header">
+          <label class="share-label" for="share-post-tiktok">TikTok caption</label>
+          <button class="share-copy-text-btn" id="share-copy-tiktok-btn">Copy caption</button>
+        </div>
+        <textarea id="share-post-tiktok" class="share-post-textarea" rows="3" spellcheck="true"></textarea>
+        <div class="share-platform-tip">
+          🎵 Paste this caption in your TikTok video description.
+        </div>
+      </div>
+    </div>
+
+    <!-- Campaign link creator — admin only -->
+    <div class="share-section share-campaign-section" id="share-admin-section" style="display:none">
+      <div class="share-divider">Campaign Link Creator</div>
+
+      <div class="share-field-row">
+        <div class="share-field">
+          <label class="share-label" for="share-admin-slug">Custom slug</label>
+          <input type="text" id="share-admin-slug" class="share-input"
+            placeholder="e.g. wdsd-2026" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="share-field">
+          <label class="share-label" for="share-admin-campaign">Campaign name</label>
+          <input type="text" id="share-admin-campaign" class="share-input"
+            placeholder="e.g. WDSD 2026" autocomplete="off" />
+        </div>
+      </div>
+
+      <label class="share-label" for="share-admin-og-title">
+        Custom OG title <span class="share-optional">(optional)</span>
+      </label>
+      <input type="text" id="share-admin-og-title" class="share-input"
+        placeholder="e.g. WDSD 2026 Photo Slideshow" />
+
+      <label class="share-label" for="share-admin-og-desc">
+        Custom OG description <span class="share-optional">(optional)</span>
+      </label>
+      <input type="text" id="share-admin-og-desc" class="share-input"
+        placeholder="e.g. Celebrating World Down Syndrome Day 2026" />
+
+      <button class="share-generate-btn" id="share-generate-btn">Generate Short Link</button>
+
+      <div id="share-error" class="share-error" style="display:none"></div>
+
+      <!-- Result — shown after successful generation -->
+      <div id="share-short-result" class="share-short-result" style="display:none">
+        <label class="share-label" for="share-short-url">Short link ready</label>
+        <div class="share-url-row">
+          <input type="text" id="share-short-url" class="share-url-input" readonly />
+          <button class="share-btn-copy" id="share-copy-short-btn">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="share-modal-footer">
+      <button class="share-btn-close" id="share-close-btn">Close</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
