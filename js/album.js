@@ -1426,6 +1426,12 @@ async function loadAlbum() {
     // Store all photos for bulk operations
     allPhotos = photos
 
+    // Update share panel with cover photo URL now that photos are loaded
+    if (photos.length > 0) {
+      const firstUrl = supabase.storage.from('photos').getPublicUrl(photos[0].file_path).data.publicUrl
+      initSharePanel({ coverUrl: firstUrl })
+    }
+
     // Render photos with staggered animation and cover buttons
     photos.forEach((photo, idx) => {
       const publicUrl = supabase.storage

@@ -2190,12 +2190,170 @@
       color: var(--text-main);
     }
 
+    /* ── Social tools section (Instagram / TikTok / Snapchat) ── */
+    .share-tools-section { gap: 0; }
+
+    .share-tools-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #share-tools-toggle-btn {
+      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color 0.15s ease, color 0.15s ease, transform 0.2s ease;
+    }
+    #share-tools-toggle-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    #share-tools-toggle-btn[aria-expanded="true"] { transform: rotate(180deg); }
+
+    .share-tools-highlight {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 4px;
+      border-radius: var(--radius-sm);
+    }
+
+    .share-tools-body {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      padding-top: var(--space-3);
+    }
+
+    .share-tool-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: color-mix(in srgb, var(--color-dark-900) 50%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+      border-radius: var(--radius-sm);
+    }
+
+    .share-tool-title {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .share-tool-hint {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .share-tool-btn {
+      width: 100%;
+      min-height: 44px;
+      padding: var(--space-2) var(--space-4);
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+      border-radius: var(--radius-sm);
+      color: var(--color-primary);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      transition: all 0.15s ease;
+    }
+    .share-tool-btn:hover:not(:disabled),
+    .share-tool-btn.copied {
+      background: var(--color-primary);
+      color: var(--color-dark-900);
+    }
+    .share-tool-btn:disabled { opacity: 0.5; cursor: default; }
+
+    .share-tool-btn.ig {
+      background: color-mix(in srgb, #dc2743 12%, transparent);
+      border-color: color-mix(in srgb, #dc2743 50%, transparent);
+      color: #ff8fb0;
+    }
+    .share-tool-btn.ig:hover:not(:disabled),
+    .share-tool-btn.ig.copied {
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      border-color: #bc1888;
+      color: #fff;
+    }
+
+    .share-tool-btn.tt {
+      background: color-mix(in srgb, #69C9D0 10%, transparent);
+      border-color: color-mix(in srgb, #69C9D0 45%, transparent);
+      color: #69C9D0;
+    }
+    .share-tool-btn.tt:hover:not(:disabled),
+    .share-tool-btn.tt.copied { background: #69C9D0; color: #010101; }
+
+    .share-caption-preview {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      white-space: pre-line;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      padding: var(--space-2) var(--space-3);
+      background: color-mix(in srgb, var(--color-dark-900) 60%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
+      border-radius: var(--radius-sm);
+    }
+
+    .share-qr-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: var(--space-3) 0;
+      min-height: 150px;
+    }
+    .share-qr-container img {
+      width: 150px;
+      height: 150px;
+      image-rendering: pixelated;
+      border-radius: 4px;
+      background: #fff;
+      padding: 8px;
+    }
+    .share-qr-unavail {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .share-tool-fallback {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: var(--space-2);
+    }
+
     @media (max-width: 480px) {
       .share-modal-content { padding: var(--space-4); gap: var(--space-4); }
       .share-platform-btn  { flex: 1 1 calc(50% - var(--space-2)); font-size: 0.76rem; }
       .share-field-row     { flex-direction: column; gap: var(--space-2); }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -2536,6 +2694,48 @@
         <div class="share-platform-tip">
           🎵 Paste this caption in your TikTok video description.
         </div>
+      </div>
+    </div>
+
+    <!-- Instagram, TikTok & Snapchat inline tools -->
+    <div id="share-social-tools" class="share-section share-tools-section">
+      <div class="share-divider share-tools-header">
+        <span>For Instagram, TikTok &amp; Snapchat</span>
+        <button id="share-tools-toggle-btn" aria-expanded="false" aria-controls="share-tools-body">▼</button>
+      </div>
+      <div id="share-tools-body" style="display:none" class="share-tools-body">
+
+        <!-- Share Image -->
+        <div class="share-tool-block">
+          <div class="share-tool-title">📷 Download Share Image</div>
+          <div class="share-tool-hint">1080×1080 PNG — album cover, name, and your link</div>
+          <button class="share-tool-btn" id="share-download-graphic-btn">⬇ Download Share Image</button>
+          <div id="share-graphic-fallback" class="share-tool-fallback" style="display:none">
+            📸 Take a screenshot to share!
+          </div>
+        </div>
+
+        <!-- Instagram Caption -->
+        <div class="share-tool-block">
+          <div class="share-tool-title">📷 Instagram Caption</div>
+          <div class="share-caption-preview" id="share-ig-caption-preview" aria-hidden="true"></div>
+          <button class="share-tool-btn ig" id="share-copy-ig-caption-btn">Copy Instagram Caption</button>
+        </div>
+
+        <!-- TikTok Caption -->
+        <div class="share-tool-block">
+          <div class="share-tool-title">♪ TikTok Caption</div>
+          <div class="share-caption-preview" id="share-tt-caption-preview" aria-hidden="true"></div>
+          <button class="share-tool-btn tt" id="share-copy-tt-caption-btn">Copy TikTok Caption</button>
+        </div>
+
+        <!-- QR Code -->
+        <div class="share-tool-block">
+          <div class="share-tool-title">QR Code</div>
+          <div id="share-qr-container" class="share-qr-container"></div>
+          <button class="share-tool-btn" id="share-download-qr-btn">⬇ Download QR Code</button>
+        </div>
+
       </div>
     </div>
 

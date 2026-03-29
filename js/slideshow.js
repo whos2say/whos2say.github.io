@@ -800,7 +800,11 @@ function _initTracking(albumId, albumName) {
   _updateOgTags()
   trackSlideshowStart(_trackAlbumId, _trackAlbumName, slides.length)
 
-  const params = new URLSearchParams(window.location.search)
+  const params    = new URLSearchParams(window.location.search)
+  const coverUrl  = photos.length > 0
+    ? supabase.storage.from('photos').getPublicUrl(photos[0].file_path).data.publicUrl
+    : null
+
   _sharePanel = initSharePanel({
     shareUrl:     (!isMultiAlbum && albumId)
       ? `${window.location.origin}/share/slideshow?album=${encodeURIComponent(albumId)}`
@@ -812,6 +816,7 @@ function _initTracking(albumId, albumName) {
     targetId:     isMultiAlbum
       ? (params.get('albums') || '')
       : (albumId || params.get('album') || ''),
+    coverUrl,
   })
 }
 
