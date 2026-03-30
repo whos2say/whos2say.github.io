@@ -38,7 +38,6 @@ const mobileSheetEl      = document.getElementById('mobile-sheet')
 const mobileSheetBackdropEl = document.getElementById('mobile-sheet-backdrop')
 const sheetShareBtn      = document.getElementById('sheet-share-btn')
 const sheetOrderBtn      = document.getElementById('sheet-order-btn')
-const sheetModeBtn       = document.getElementById('sheet-mode-btn')
 const sheetBackBtn       = document.getElementById('sheet-back-btn')
 const sheetExitBtn       = document.getElementById('sheet-exit-btn')
 const sheetCloseBtn      = document.getElementById('sheet-close-btn')
@@ -158,7 +157,11 @@ const COLLAGE_LAYOUTS = [
 // Build a slide sequence where every photo appears exactly once.
 // Collage slides consume multiple photos from the queue so no photo repeats.
 function buildSlides(photosArr, mode) {
-  const maxSlots = isPortraitMobile() ? 3 : 99
+  // Portrait mobile always shows single images — no collages
+  if (isPortraitMobile()) {
+    return photosArr.map(p => ({ type: 'single', photo: p }))
+  }
+  const maxSlots = 99
   const queue = [...photosArr]
   const result = []
 
@@ -997,6 +1000,18 @@ slideshowViewer.addEventListener('touchend', e => {
   }
 }, { passive: true })
 
+// Rebuild slide deck on orientation change (portrait ↔ landscape toggles collage mode)
+let _orientationTimer = null
+window.addEventListener('orientationchange', () => {
+  clearTimeout(_orientationTimer)
+  _orientationTimer = setTimeout(() => {
+    if (photos.length > 0) {
+      rebuildSlides()
+      displayPhoto()
+    }
+  }, 300)
+})
+
 // ---- Mobile overflow sheet ----
 
 function openSheet() {
@@ -1024,7 +1039,6 @@ sheetCloseBtn?.addEventListener('click', closeSheet)
 
 sheetShareBtn?.addEventListener('click', () => { closeSheet(); shareBtnEl?.click() })
 sheetOrderBtn?.addEventListener('click', () => { closeSheet(); orderBtnEl?.click() })
-sheetModeBtn?.addEventListener('click',  () => { closeSheet(); modeBtnEl?.click() })
 sheetExitBtn?.addEventListener('click',  () => { closeSheet(); exitBtnEl?.click() })
 sheetBackBtn?.addEventListener('click',  () => { closeSheet(); window.location.href = backToAlbumEl?.href || '/' })
 
@@ -1092,7 +1106,6 @@ function updateModeBtn() {
   const labels = { mixed: '⚡ Mixed', full: '🖼 Full', collage: '⊞ Collage' }
   const label = labels[viewMode] || '⚡ Mixed'
   if (modeBtnEl) modeBtnEl.textContent = label
-  if (sheetModeBtn) sheetModeBtn.textContent = label
 }
 
 orderBtnEl?.addEventListener('click', () => {
