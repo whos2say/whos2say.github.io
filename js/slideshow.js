@@ -107,6 +107,57 @@ function computeCenteredObjectPosition(fx, fy, naturalW, naturalH, containerW, c
   return `${px.toFixed(2)}% ${py.toFixed(2)}%`
 }
 
+// Apply the best object-fit strategy for the current photo and viewport.
+// Landscape photo on portrait viewport → contain + blurred ambient background.
+// All other combos → cover + focal-point centering.
+// Low-res always falls back to contain + blur regardless of orientation.
+function applyImageFit(nw, nh, publicUrl, fp) {
+  if (!nw || !nh) return
+  const vw = window.visualViewport?.width  || window.innerWidth
+  const vh = window.visualViewport?.height || window.innerHeight
+  const isPortraitViewport = vh > vw
+  const isLandscapePhoto   = nw > nh
+  const lowRes = nw < QUALITY_MIN_W || nh < QUALITY_MIN_H
+  const useContain = lowRes || (isLandscapePhoto && isPortraitViewport)
+
+  if (useContain) {
+    slideShowImageEl.style.objectFit      = 'contain'
+    slideShowImageEl.style.objectPosition = '50% 50%'
+    slideShowImageEl.classList.add('low-res')
+    if (slideshowBgEl) {
+      slideshowBgEl.style.backgroundImage    = `url("${publicUrl.replace(/"/g, '%22')}")`
+      slideshowBgEl.style.backgroundPosition = '50% 50%'
+      slideshowBgEl.style.display            = 'block'
+    }
+  } else {
+    slideShowImageEl.style.objectFit = 'cover'
+    const [fx, fy] = parseFocalPoint(fp)
+    const centeredPos = computeCenteredObjectPosition(fx, fy, nw, nh, vw, vh)
+    slideShowImageEl.style.objectPosition = centeredPos
+    slideShowImageEl.classList.remove('low-res')
+    if (slideshowBgEl) {
+      slideshowBgEl.style.backgroundImage    = ''
+      slideshowBgEl.style.backgroundPosition = centeredPos
+      slideshowBgEl.style.display            = 'none'
+    }
+  }
+}
+
+// Re-run applyImageFit for the currently displayed single image
+// (used by resize handler — no slide advance, no src change).
+function reapplyCurrentImageFit() {
+  if (slideShowImageEl.style.display === 'none') return
+  if (!slideShowImageEl.naturalWidth) return
+  const slide = slides[currentPhotoIndex]
+  if (!slide || slide.type !== 'single') return
+  applyImageFit(
+    slideShowImageEl.naturalWidth,
+    slideShowImageEl.naturalHeight,
+    slideShowImageEl.src,
+    slide.photo.focal_point || '50% 35%'
+  )
+}
+
 // Named grid-template-area layouts for collage slides.
 // template: CSS grid-template shorthand (areas + row sizes / col sizes)
 // slots:    area names in order — photo[i] gets slotted into slots[i]
@@ -687,28 +738,11 @@ function displayPhoto() {
       slideShowImageEl.style.objectPosition = fp
       if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = fp
 
-      // After image loads: mathematically center the face & check quality
+      // After image loads: choose cover vs contain based on orientation, apply focal-point
       const checkQuality = () => {
         const nw = slideShowImageEl.naturalWidth
         const nh = slideShowImageEl.naturalHeight
-        if (nw && nh) {
-          const [fx, fy] = parseFocalPoint(fp)
-          const centeredPos = computeCenteredObjectPosition(fx, fy, nw, nh, window.innerWidth, window.innerHeight)
-          slideShowImageEl.style.objectPosition = centeredPos
-          if (slideshowBgEl) slideshowBgEl.style.backgroundPosition = centeredPos
-        }
-        const lowRes = nw < QUALITY_MIN_W || nh < QUALITY_MIN_H
-        if (slideshowBgEl) {
-          if (lowRes) {
-            slideshowBgEl.style.backgroundImage = `url("${publicUrl.replace(/"/g, '%22')}")`
-            slideshowBgEl.style.display = 'block'
-            slideShowImageEl.classList.add('low-res')
-          } else {
-            slideshowBgEl.style.backgroundImage = ''
-            slideshowBgEl.style.display = 'none'
-            slideShowImageEl.classList.remove('low-res')
-          }
-        }
+        if (nw && nh) applyImageFit(nw, nh, publicUrl, fp)
       }
       slideShowImageEl.onload = checkQuality
       slideShowImageEl.src = publicUrl
@@ -1036,6 +1070,14 @@ window.addEventListener('orientationchange', () => {
       displayPhoto()
     }
   }, 300)
+})
+
+// Refit current image on viewport resize (browser chrome show/hide, soft keyboard, etc.)
+// Uses a separate timer so it never conflicts with the orientation rebuild above.
+let _resizeTimer = null
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer)
+  _resizeTimer = setTimeout(reapplyCurrentImageFit, 200)
 })
 
 // ---- Mobile overflow sheet ----
