@@ -23,6 +23,7 @@
     body {
       background: var(--color-dark-900);
       overflow: hidden;
+      overscroll-behavior: none;
     }
 
     .slideshow-container {
@@ -87,7 +88,7 @@
       align-items: center;
       justify-content: space-between;
       gap: var(--space-4);
-      transition: opacity 0.5s ease;
+      transition: opacity 0.3s ease;
       z-index: 10;
     }
 
@@ -185,7 +186,7 @@
       justify-content: space-between;
       align-items: center;
       z-index: 10;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.3s ease;
     }
 
     .slideshow-title {
@@ -887,6 +888,78 @@
       padding: var(--space-2);
     }
 
+    /* Overflow button — hidden on desktop, revealed in mobile media query */
+    .overflow-btn { display: none; }
+
+    /* Mobile bottom sheet */
+    .mobile-sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .mobile-sheet-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .mobile-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--color-dark-800);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px 16px 0 0;
+      z-index: 201;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+      padding-bottom: env(safe-area-inset-bottom, 8px);
+    }
+    .mobile-sheet.open { transform: translateY(0); }
+    .mobile-sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      margin: 12px auto 4px;
+    }
+    .mobile-sheet-item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 56px;
+      padding: 0 var(--space-6);
+      background: none;
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      text-decoration: none;
+      letter-spacing: 0;
+      transition: background 0.15s ease;
+    }
+    .mobile-sheet-item:first-child { border-top: none; }
+    .mobile-sheet-item:active { background: rgba(255,255,255,0.07); }
+    .mobile-sheet-item--danger { color: #ff6b6b; }
+    .mobile-sheet-item--close {
+      color: var(--text-muted);
+      justify-content: center;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    /* Completely hide sheet on desktop — no z-index bleed, no animation artifacts */
+    @media (min-width: 641px) {
+      .mobile-sheet-backdrop,
+      .mobile-sheet { display: none !important; }
+    }
+
     @media (max-width: 480px) {
       .share-modal-content { padding: var(--space-4); gap: var(--space-4); }
       .share-platform-btn  { flex: 1 1 calc(50% - var(--space-2)); font-size: 0.76rem; }
@@ -894,66 +967,57 @@
     }
 
     @media (max-width: 640px) {
-      /* 3-row layout: [info row] [main buttons] [secondary] */
+      /* Primary controls: counter + play/pause + overflow button only */
       .slideshow-controls {
-        padding: var(--space-2) var(--space-2) var(--space-3);
-        flex-wrap: wrap;
-        gap: var(--space-2);
-        align-items: center;
-      }
-      .slideshow-info {
-        order: 1;
-        width: 100%;
+        padding: var(--space-3) var(--space-4);
         justify-content: center;
-      }
-      .slideshow-buttons {
-        order: 2;
-        width: 100%;
-        gap: var(--space-2);
-        justify-content: center;
+        gap: var(--space-3);
         flex-wrap: nowrap;
       }
-      .slideshow-mode-bar {
-        order: 3;
-        width: 100%;
+      .slideshow-info { flex: none; }
+      .slideshow-buttons { gap: var(--space-3); justify-content: center; flex: none; }
+
+      /* Hide secondary controls — swipe navigates, sheet holds the rest */
+      #prev-btn, #next-btn, #fullscreen-btn, #exit-btn, #share-btn { display: none; }
+      .slideshow-mode-bar { display: none; }
+      /* Back button lives in the overflow sheet on mobile */
+      #back-to-album { display: none; }
+
+      /* Show overflow ⋯ button */
+      .overflow-btn {
+        display: flex;
+        align-items: center;
         justify-content: center;
-        gap: var(--space-2);
-      }
-
-      /* Compact buttons — keep text but shrink */
-      .slide-btn {
-        min-width: 0;
-        flex: 1 1 auto;
-        padding: 0.6rem 0.4rem;
-        font-size: 0.72rem;
+        min-width: 48px;
+        min-height: 48px;
+        font-size: 1.4rem;
+        padding: 0;
         letter-spacing: 0;
-      }
-      .slide-btn.play-pause { flex: 1.4 1 auto; }
-      .slide-btn.mode-btn {
-        flex: 1 1 auto;
-        font-size: 0.68rem;
-        padding: 0.4rem 0.3rem;
-      }
-
-      .slideshow-counter {
-        font-size: 0.78rem;
-        padding: var(--space-1) var(--space-3);
-        min-width: 0;
-      }
-      .slideshow-title { font-size: 0.8rem; }
-      .slideshow-top-bar {
-        padding: var(--space-2) var(--space-2);
-        gap: var(--space-2);
-      }
-      /* Back button in top bar — smaller */
-      .slideshow-top-bar .slide-btn {
-        min-width: 60px;
-        font-size: 0.72rem;
-        padding: 0.4rem 0.6rem;
+        border-radius: var(--radius-sm);
         flex: none;
       }
 
-      /* Audio: move inline below buttons */
+      /* Large, comfortable tap targets */
+      .slide-btn.play-pause {
+        min-height: 48px;
+        min-width: 120px;
+        font-size: 1rem;
+        padding: 0 var(--space-5);
+        flex: none;
+      }
+      .slideshow-counter {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        padding: 0 var(--space-4);
+        font-size: 1rem;
+        min-width: 0;
+      }
+
+      .slideshow-title { font-size: 0.9rem; }
+      .slideshow-top-bar { padding: var(--space-2) var(--space-3); gap: var(--space-2); }
+
+      /* Audio: stack below controls */
       .audio-controls {
         position: static;
         background: none;
@@ -962,12 +1026,8 @@
         justify-content: center;
         order: 4;
       }
-      .audio-player-small {
-        max-width: 100%;
-      }
-      .audio-player-small audio {
-        width: 130px;
-      }
+      .audio-player-small { max-width: 100%; }
+      .audio-player-small audio { width: 130px; }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -1015,6 +1075,7 @@
       <button class="slide-btn" id="fullscreen-btn" title="Enter fullscreen (F)">⛶ Full Screen</button>
       <button class="slide-btn share-btn" id="share-btn" title="Share slideshow">🔗 Share</button>
       <button class="slide-btn exit" id="exit-btn" title="Exit slideshow (Esc)">Exit</button>
+      <button class="slide-btn overflow-btn" id="overflow-btn" title="More options">⋯</button>
     </div>
 
     <div class="slideshow-mode-bar">
@@ -1022,6 +1083,18 @@
       <button class="slide-btn mode-btn" id="mode-btn" title="Toggle view mode">⚡ Mixed</button>
     </div>
   </div>
+</div>
+
+<!-- Mobile overflow bottom sheet -->
+<div id="mobile-sheet-backdrop" class="mobile-sheet-backdrop" aria-hidden="true"></div>
+<div id="mobile-sheet" class="mobile-sheet" role="dialog" aria-label="More options">
+  <div class="mobile-sheet-handle"></div>
+  <button class="mobile-sheet-item" id="sheet-share-btn">🔗 Share Slideshow</button>
+  <button class="mobile-sheet-item" id="sheet-order-btn">→ In Order</button>
+  <button class="mobile-sheet-item" id="sheet-mode-btn">⚡ Mixed</button>
+  <button id="sheet-back-btn" class="mobile-sheet-item">← Back</button>
+  <button class="mobile-sheet-item mobile-sheet-item--danger" id="sheet-exit-btn">Exit Slideshow</button>
+  <button class="mobile-sheet-item mobile-sheet-item--close" id="sheet-close-btn">Close</button>
 </div>
 
 <script type="module" src="/js/slideshow.js"></script>

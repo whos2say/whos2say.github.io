@@ -32,6 +32,15 @@ const slideshowVideoEl = document.getElementById('slideshow-video')
 const orderBtnEl = document.getElementById('order-btn')
 const modeBtnEl = document.getElementById('mode-btn')
 const shareBtnEl         = document.getElementById('share-btn')
+const overflowBtnEl      = document.getElementById('overflow-btn')
+const mobileSheetEl      = document.getElementById('mobile-sheet')
+const mobileSheetBackdropEl = document.getElementById('mobile-sheet-backdrop')
+const sheetShareBtn      = document.getElementById('sheet-share-btn')
+const sheetOrderBtn      = document.getElementById('sheet-order-btn')
+const sheetModeBtn       = document.getElementById('sheet-mode-btn')
+const sheetBackBtn       = document.getElementById('sheet-back-btn')
+const sheetExitBtn       = document.getElementById('sheet-exit-btn')
+const sheetCloseBtn      = document.getElementById('sheet-close-btn')
 const QUALITY_MIN_W = 1280
 const QUALITY_MIN_H = 720
 
@@ -867,27 +876,40 @@ document.addEventListener('fullscreenchange', () => {
   resetControlHide()
 })
 
-// ---- Auto-hide controls (TV casting) ----
+// ---- Auto-hide controls (TV casting / mobile tap-to-toggle) ----
+
+let _controlsVisible = true
+const _isMobileTouch = window.matchMedia('(max-width: 768px) and (pointer: coarse)')
+
+function showControls() {
+  _controlsVisible = true
+  slideshowControlsEl.style.opacity = '1'
+  slideshowControlsEl.style.pointerEvents = 'auto'
+  slideshowTopBarEl.style.opacity = '1'
+  slideshowTopBarEl.style.pointerEvents = 'auto'
+  document.body.style.cursor = ''
+}
+
+function hideControls() {
+  _controlsVisible = false
+  slideshowControlsEl.style.opacity = '0'
+  slideshowControlsEl.style.pointerEvents = 'none'
+  slideshowTopBarEl.style.opacity = '0'
+  slideshowTopBarEl.style.pointerEvents = 'none'
+  document.body.style.cursor = 'none'
+}
 
 function resetControlHide() {
-  // Show controls
-  slideshowControlsEl.style.opacity = '1'
-  slideshowTopBarEl.style.opacity = '1'
-  document.body.style.cursor = ''
+  showControls()
 
-  // Clear any existing timer
   if (hideControlsTimer) {
     clearTimeout(hideControlsTimer)
     hideControlsTimer = null
   }
 
-  // Auto-hide only in fullscreen while playing
-  if (document.fullscreenElement && isPlaying) {
-    hideControlsTimer = setTimeout(() => {
-      slideshowControlsEl.style.opacity = '0'
-      slideshowTopBarEl.style.opacity = '0'
-      document.body.style.cursor = 'none'
-    }, 3500)
+  // Auto-hide in fullscreen (desktop) or on mobile touch devices while playing
+  if ((document.fullscreenElement || _isMobileTouch.matches) && isPlaying) {
+    hideControlsTimer = setTimeout(hideControls, 3500)
   }
 }
 
@@ -895,11 +917,11 @@ document.addEventListener('mousemove', resetControlHide)
 document.addEventListener('click', resetControlHide)
 
 // Touch / swipe navigation (mobile)
-let _touchX = 0, _touchY = 0
+let _touchX = 0, _touchY = 0, _touchStartTime = 0
 document.addEventListener('touchstart', e => {
   _touchX = e.touches[0].clientX
   _touchY = e.touches[0].clientY
-  resetControlHide()
+  _touchStartTime = Date.now()
 }, { passive: true })
 document.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - _touchX
@@ -908,6 +930,56 @@ document.addEventListener('touchend', e => {
     if (dx > 0) prevPhoto(); else nextPhoto()
   }
 }, { passive: true })
+
+// Tap-to-toggle controls on mobile (YouTube-style)
+slideshowViewer.addEventListener('touchend', e => {
+  if (!_isMobileTouch.matches) return
+  const dx = e.changedTouches[0].clientX - _touchX
+  const dy = e.changedTouches[0].clientY - _touchY
+  const dt = Date.now() - _touchStartTime
+  if (Math.abs(dx) >= 10 || Math.abs(dy) >= 10 || dt >= 300) return
+  // It's a tap — toggle controls
+  if (_controlsVisible) {
+    hideControls()
+    if (hideControlsTimer) {
+      clearTimeout(hideControlsTimer)
+      hideControlsTimer = null
+    }
+  } else {
+    resetControlHide()
+  }
+}, { passive: true })
+
+// ---- Mobile overflow sheet ----
+
+function openSheet() {
+  mobileSheetEl.classList.add('open')
+  mobileSheetBackdropEl.classList.add('open')
+  // Keep controls visible while sheet is open
+  if (hideControlsTimer) {
+    clearTimeout(hideControlsTimer)
+    hideControlsTimer = null
+  }
+}
+
+function closeSheet() {
+  mobileSheetEl.classList.remove('open')
+  mobileSheetBackdropEl.classList.remove('open')
+  // Restart auto-hide timer if still playing
+  if (_isMobileTouch.matches && isPlaying) {
+    hideControlsTimer = setTimeout(hideControls, 3500)
+  }
+}
+
+overflowBtnEl?.addEventListener('click', openSheet)
+mobileSheetBackdropEl?.addEventListener('click', closeSheet)
+sheetCloseBtn?.addEventListener('click', closeSheet)
+
+sheetShareBtn?.addEventListener('click', () => { closeSheet(); shareBtnEl?.click() })
+sheetOrderBtn?.addEventListener('click', () => { closeSheet(); orderBtnEl?.click() })
+sheetModeBtn?.addEventListener('click',  () => { closeSheet(); modeBtnEl?.click() })
+sheetExitBtn?.addEventListener('click',  () => { closeSheet(); exitBtnEl?.click() })
+sheetBackBtn?.addEventListener('click',  () => { closeSheet(); window.location.href = backToAlbumEl?.href || '/' })
 
 // ---- Navigation helpers ----
 
@@ -964,14 +1036,16 @@ exitBtnEl.addEventListener('click', () => {
 document.addEventListener('keydown', handleKeyPress)
 
 function updateOrderBtn() {
-  if (!orderBtnEl) return
-  orderBtnEl.textContent = playOrder === 'random' ? '🔀 Random' : '→ In Order'
+  const label = playOrder === 'random' ? '🔀 Random' : '→ In Order'
+  if (orderBtnEl) orderBtnEl.textContent = label
+  if (sheetOrderBtn) sheetOrderBtn.textContent = label
 }
 
 function updateModeBtn() {
-  if (!modeBtnEl) return
   const labels = { mixed: '⚡ Mixed', full: '🖼 Full', collage: '⊞ Collage' }
-  modeBtnEl.textContent = labels[viewMode] || '⚡ Mixed'
+  const label = labels[viewMode] || '⚡ Mixed'
+  if (modeBtnEl) modeBtnEl.textContent = label
+  if (sheetModeBtn) sheetModeBtn.textContent = label
 }
 
 orderBtnEl?.addEventListener('click', () => {
