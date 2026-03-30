@@ -327,6 +327,19 @@
       color: var(--color-dark-900);
     }
 
+    /* Mobile music icon button — sized here so display:flex from JS renders correctly */
+    .audio-icon-btn {
+      display: none;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
+      font-size: 1.3rem;
+      letter-spacing: 0;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* ── Share button ─────────────────────────────────────────── */
     .slide-btn.share-btn {
       background: color-mix(in srgb, #74c0fc 20%, transparent);
@@ -1014,20 +1027,16 @@
         min-width: 0;
       }
 
-      .slideshow-title { font-size: 0.9rem; }
-      .slideshow-top-bar { padding: var(--space-2) var(--space-3); gap: var(--space-2); }
-
-      /* Audio: stack below controls */
-      .audio-controls {
-        position: static;
-        background: none;
-        padding: 0;
-        width: 100%;
-        justify-content: center;
-        order: 4;
+      /* Title truncates to give the audio icon room */
+      .slideshow-title {
+        font-size: 0.9rem;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
-      .audio-player-small { max-width: 100%; }
-      .audio-player-small audio { width: 130px; }
+      .slideshow-top-bar { padding: var(--space-2) var(--space-3); gap: var(--space-2); }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -1045,6 +1054,7 @@
         <button id="audio-mute-btn" title="Mute audio">🔇</button>
       </div>
     </div>
+    <button id="audio-icon-btn" class="slide-btn audio-icon-btn" title="Music">🎵</button>
     <a href="#" id="back-to-album" class="slide-btn" style="background: color-mix(in srgb, #51cf66 20%, transparent); border-color: #51cf66; color: #51cf66; min-width: 100px;">← Back</a>
   </div>
 

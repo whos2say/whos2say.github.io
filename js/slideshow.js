@@ -27,6 +27,7 @@ const slideshowTopBarEl = document.querySelector('.slideshow-top-bar')
 const audioControlsEl = document.getElementById('audio-controls')
 const audioPlayerEl = document.getElementById('slideshow-audio')
 const audioMuteBtn = document.getElementById('audio-mute-btn')
+const audioIconBtnEl = document.getElementById('audio-icon-btn')
 const slideshowBgEl = document.getElementById('slideshow-bg')
 const slideshowVideoEl = document.getElementById('slideshow-video')
 const orderBtnEl = document.getElementById('order-btn')
@@ -58,6 +59,9 @@ let currentPhotoIndex = 0 // index into slides[], not photos[]
 let isPlaying = false
 let autoplayTimeout = null
 let audioUrl = null
+let _audioType = null          // 'mp3' | 'youtube' | 'spotify'
+let _audioIframe = null        // the hidden iframe on mobile (YouTube/Spotify)
+let _audioIframePlaying = false
 let hideControlsTimer = null
 let isMultiAlbum = false
 let singleAlbumId = null
@@ -434,49 +438,76 @@ async function loadPhotos() {
 }
 
 function setupAudioPlayer() {
-  audioControlsEl.style.display = 'flex'
+  const isMobile = window.matchMedia('(max-width: 640px)').matches
   const playerContainer = audioPlayerEl.parentElement // .audio-player-small
 
-  // Handle different audio source types
+  if (isMobile) {
+    audioIconBtnEl.style.display = 'flex'
+    audioIconBtnEl.addEventListener('click', handleAudioIconTap)
+  } else {
+    audioControlsEl.style.display = 'flex'
+  }
+
   if (audioUrl.includes('youtube.com') || audioUrl.includes('youtu.be')) {
     const videoId = extractYouTubeId(audioUrl)
     if (videoId) {
+      _audioType = 'youtube'
       audioPlayerEl.style.display = 'none'
       audioMuteBtn.style.display = 'none'
       const iframe = document.createElement('iframe')
-      iframe.style.cssText = 'width:220px;height:80px;border:1px solid var(--color-primary);border-radius:4px'
-      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1`
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-      playerContainer.appendChild(iframe)
+      if (isMobile) {
+        iframe.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none'
+        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1&controls=0&modestbranding=1`
+        document.body.appendChild(iframe)
+        _audioIframe = iframe
+        _audioIframePlaying = true
+        audioIconBtnEl.textContent = '🔊'
+      } else {
+        iframe.style.cssText = 'width:220px;height:80px;border:1px solid var(--color-primary);border-radius:4px'
+        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&controls=1&modestbranding=1`
+        playerContainer.appendChild(iframe)
+      }
     }
   } else if (audioUrl.includes('spotify.com')) {
     const trackId = extractSpotifyId(audioUrl)
     if (trackId) {
+      _audioType = 'spotify'
       audioPlayerEl.style.display = 'none'
       audioMuteBtn.style.display = 'none'
       const iframe = document.createElement('iframe')
-      iframe.style.cssText = 'border-radius:6px;width:220px;height:80px;border:1px solid var(--color-primary)'
-      iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&autoplay=1`
       iframe.allow = 'clipboard-write; encrypted-media; fullscreen; picture-in-picture; autoplay'
       iframe.loading = 'lazy'
-      playerContainer.appendChild(iframe)
+      if (isMobile) {
+        iframe.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none'
+        iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&autoplay=1`
+        document.body.appendChild(iframe)
+        _audioIframe = iframe
+        _audioIframePlaying = true
+        audioIconBtnEl.textContent = '🔊'
+      } else {
+        iframe.style.cssText = 'border-radius:6px;width:220px;height:80px;border:1px solid var(--color-primary)'
+        iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&autoplay=1`
+        playerContainer.appendChild(iframe)
+      }
     }
   } else {
-    // Assume it's a direct MP3 URL
+    // Assume direct MP3
+    _audioType = 'mp3'
     audioPlayerEl.type = 'audio/mpeg'
     audioPlayerEl.src = audioUrl
-    audioPlayerEl.controls = true
     audioPlayerEl.loop = true
-    audioPlayerEl.style.display = 'block'
     audioPlayerEl.muted = false
-    audioMuteBtn.textContent = '🔊'
-    audioMuteBtn.addEventListener('click', toggleAudioMute)
+    if (isMobile) {
+      audioIconBtnEl.textContent = '🎵'
+    } else {
+      audioPlayerEl.controls = true
+      audioPlayerEl.style.display = 'block'
+      audioMuteBtn.textContent = '🔊'
+      audioMuteBtn.addEventListener('click', toggleAudioMute)
+    }
+    setTimeout(() => playAudioIfPossible(), 500)
   }
-
-  // Try to autoplay after a short delay (may be blocked by browser until user gesture)
-  setTimeout(() => {
-    playAudioIfPossible()
-  }, 500)
 }
 
 function playAudioIfPossible() {
@@ -487,12 +518,28 @@ function playAudioIfPossible() {
     if (playPromise !== undefined) {
       playPromise.then(() => {
         audioMuteBtn.textContent = '🔊'
+        if (audioIconBtnEl) audioIconBtnEl.textContent = '🔊'
       }).catch(err => {
         console.log('Audio autoplay blocked, user interaction required:', err)
         audioMuteBtn.textContent = '🔊 (Click)'
+        if (audioIconBtnEl) audioIconBtnEl.textContent = '🎵'
       })
     }
   }
+}
+
+function handleAudioIconTap() {
+  if (_audioType === 'mp3') {
+    toggleAudioMute()
+    audioIconBtnEl.textContent = audioPlayerEl.paused ? '🔇' : '🔊'
+  } else if (_audioType === 'youtube' && _audioIframe) {
+    _audioIframePlaying = !_audioIframePlaying
+    _audioIframe.contentWindow.postMessage(
+      JSON.stringify({ event: 'command', func: _audioIframePlaying ? 'playVideo' : 'pauseVideo', args: '' }), '*'
+    )
+    audioIconBtnEl.textContent = _audioIframePlaying ? '🔊' : '🔇'
+  }
+  // Spotify: no reliable programmatic control — icon stays as visual indicator
 }
 
 function extractYouTubeId(url) {
