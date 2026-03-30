@@ -82,6 +82,7 @@ let currentLightboxPhotoId = null
 let currentLightboxUrl = null
 let currentLightboxFilePath = null
 let currentLightboxIndex = -1
+let _lightboxEnhanceFilter = 'brightness(1.5) contrast(1.15) saturate(1.05)'
 let selectedPhotos = new Set()
 let allPhotos = []
 let ssSelectedPhotos = new Set()
@@ -163,12 +164,23 @@ function openLightbox(url, photoId, filePath, index) {
     lightboxImgEl.style.display = 'block'
     lightboxImgEl.src = url
   }
-  // Enhance button — show only for dark photos, reset state
+  // Enhance button — show only for dark/dim photos, pick correct filter strength
   if (lightboxEnhanceBtnEl) {
     lightboxEnhanceBtnEl.classList.remove('active')
-    lightboxEnhanceBtnEl.textContent = '✨ Enhance'
-    const tile = photosGridEl?.querySelector(`[data-photo-id="${photoId}"]`)
-    lightboxEnhanceBtnEl.style.display = (!isVideo && tile?.dataset.isDark === 'true') ? 'block' : 'none'
+    const sourceTile = photosGridEl?.querySelector(`[data-photo-id="${photoId}"]`)
+    const tileIsDark = !isVideo && sourceTile?.dataset.isDark === 'true'
+    lightboxEnhanceBtnEl.style.display = tileIsDark ? 'block' : 'none'
+    if (tileIsDark) {
+      const bv = parseInt(sourceTile.dataset.brightness || '128', 10)
+      const isMobile = window.matchMedia('(pointer: coarse)').matches
+      const darkThreshold = isMobile ? 85 : 60
+      _lightboxEnhanceFilter = bv < darkThreshold
+        ? 'brightness(1.5) contrast(1.15) saturate(1.05)'
+        : 'brightness(1.25) contrast(1.08)'
+      const offLabel = bv < darkThreshold ? '✨ Enhance' : '☀ Brighten'
+      lightboxEnhanceBtnEl.textContent = offLabel
+      lightboxEnhanceBtnEl.dataset.label = offLabel
+    }
   }
   lightboxEl.classList.add('show')
   document.body.style.overflow = 'hidden'
@@ -345,8 +357,8 @@ lightboxEl.addEventListener('click', e => { if (e.target === lightboxEl) closeLi
 if (lightboxEnhanceBtnEl) {
   lightboxEnhanceBtnEl.addEventListener('click', () => {
     const isActive = lightboxEnhanceBtnEl.classList.toggle('active')
-    lightboxImgEl.style.filter = isActive ? 'brightness(1.45) contrast(1.15) saturate(1.05)' : ''
-    lightboxEnhanceBtnEl.textContent = isActive ? '↩ Original' : '✨ Enhance'
+    lightboxImgEl.style.filter = isActive ? _lightboxEnhanceFilter : ''
+    lightboxEnhanceBtnEl.textContent = isActive ? '↩ Original' : lightboxEnhanceBtnEl.dataset.label || '✨ Enhance'
   })
 }
 
@@ -1543,27 +1555,61 @@ async function loadAlbum() {
         tile.appendChild(enhancedBadge)
 
         analyzeImageBrightness(media).then(brightness => {
-          if (brightness < 60) {
-            darkBadge.style.display = 'flex'
+          const isMobile = window.matchMedia('(pointer: coarse)').matches
+          const darkThreshold = isMobile ? 85 : 60
+          const dimThreshold  = isMobile ? 110 : 85
+
+          // Debug: log brightness values so thresholds can be tuned. Remove after tuning.
+          console.log(
+            `[brightness] Photo ${idx + 1}: ${Math.round(brightness)}/255` +
+            ` | thresholds: dark<${darkThreshold} dim<${dimThreshold}` +
+            ` | ${isMobile ? 'mobile' : 'desktop'}` +
+            (brightness < darkThreshold ? ' → DARK' : brightness < dimThreshold ? ' → DIM' : ' → OK')
+          )
+
+          tile.dataset.brightness = Math.round(brightness)
+
+          if (brightness < dimThreshold) {
+            const isDark = brightness < darkThreshold
             tile.dataset.isDark = 'true'
-            tile.dataset.brightness = Math.round(brightness)
+
+            darkBadge.innerHTML = isDark ? '🌙 Dark' : '🌤 Dim'
+            darkBadge.style.display = 'flex'
+            if (!isDark) {
+              darkBadge.style.color = '#ffa94d'
+              darkBadge.style.borderColor = 'rgba(255, 169, 77, 0.3)'
+            }
+
+            const enhanceFilter = isDark
+              ? 'brightness(1.5) contrast(1.15) saturate(1.05)'
+              : 'brightness(1.25) contrast(1.08)'
 
             const enhanceBtn = document.createElement('button')
             enhanceBtn.className = 'photo-btn enhance-photo'
-            enhanceBtn.textContent = '✨ Enhance'
+            enhanceBtn.textContent = isDark ? '✨ Enhance' : '☀ Brighten'
             enhanceBtn.addEventListener('click', (e) => {
               e.stopPropagation()
               if (tile.classList.contains('enhanced')) {
                 tile.classList.remove('enhanced')
-                enhanceBtn.textContent = '✨ Enhance'
+                media.style.filter = ''
+                enhanceBtn.textContent = isDark ? '✨ Enhance' : '☀ Brighten'
                 enhanceBtn.className = 'photo-btn enhance-photo'
               } else {
                 tile.classList.add('enhanced')
+                media.style.filter = enhanceFilter
                 enhanceBtn.textContent = '↩ Original'
                 enhanceBtn.className = 'photo-btn unenhance-photo'
               }
             })
             controls.appendChild(enhanceBtn)
+
+            // On mobile, auto-enhance dark photos so they're visible
+            if (isMobile && isDark) {
+              tile.classList.add('enhanced')
+              media.style.filter = enhanceFilter
+              enhanceBtn.textContent = '↩ Original'
+              enhanceBtn.className = 'photo-btn unenhance-photo'
+            }
           }
         })
       }
