@@ -56,6 +56,7 @@ let photos = []
 let slides = []           // pre-built sequence: each photo appears in exactly one slide
 let currentPhotoIndex = 0 // index into slides[], not photos[]
 let isPlaying = false
+let isExpanded = false
 let autoplayTimeout = null
 let audioUrl = null
 let wakeLock = null
@@ -142,6 +143,7 @@ function applyImageFit(nw, nh, publicUrl, fp) {
       slideshowBgEl.style.display            = 'none'
     }
   }
+  updateExpandIcon()
 }
 
 // Re-run applyImageFit for the currently displayed single image
@@ -157,6 +159,48 @@ function reapplyCurrentImageFit() {
     slideShowImageEl.src,
     slide.photo.focal_point || '50% 35%'
   )
+}
+
+function updateExpandIcon() {
+  const btn = document.getElementById('expand-toggle-btn')
+  if (!btn) return
+  const isContainMode = slideShowImageEl.classList.contains('low-res') ||
+    (slideshowBgEl && slideshowBgEl.style.display === 'block')
+  btn.style.display = (isContainMode || isExpanded) ? 'flex' : 'none'
+  btn.textContent = isExpanded ? '⊡ Fit' : '⊞ Fill'
+  btn.classList.toggle('active', isExpanded)
+}
+
+function toggleExpandedView() {
+  if (slideShowImageEl.style.display === 'none') return
+  const slide = slides[currentPhotoIndex]
+  if (!slide || slide.type !== 'single') return
+
+  isExpanded = !isExpanded
+
+  if (isExpanded) {
+    const fp = slide.photo.focal_point || '50% 35%'
+    const [fx, fy] = parseFocalPoint(fp)
+    const nw = slideShowImageEl.naturalWidth
+    const nh = slideShowImageEl.naturalHeight
+    const vw = window.visualViewport?.width  || window.innerWidth
+    const vh = window.visualViewport?.height || window.innerHeight
+    slideShowImageEl.style.objectFit = 'cover'
+    slideShowImageEl.style.objectPosition = computeCenteredObjectPosition(fx, fy, nw, nh, vw, vh)
+    slideShowImageEl.classList.remove('low-res')
+    if (slideshowBgEl) slideshowBgEl.style.display = 'none'
+    slideshowViewer.classList.add('expanded-mode')
+  } else {
+    applyImageFit(
+      slideShowImageEl.naturalWidth,
+      slideShowImageEl.naturalHeight,
+      slideShowImageEl.src,
+      slide.photo.focal_point || '50% 35%'
+    )
+    slideshowViewer.classList.remove('expanded-mode')
+  }
+
+  updateExpandIcon()
 }
 
 // Named grid-template-area layouts for collage slides.
@@ -688,6 +732,10 @@ function generateCollage(slide) {
 function displayPhoto() {
   if (slides.length === 0) return
 
+  // Reset expand state on every photo change
+  isExpanded = false
+  slideshowViewer.classList.remove('expanded-mode')
+
   const slide = slides[currentPhotoIndex]
   if (!slide) return
 
@@ -1084,6 +1132,32 @@ slideshowViewer.addEventListener('touchend', e => {
     resetControlHide()
   }
 }, { passive: true })
+
+// Expand/fill toggle button
+const expandToggleBtn = document.getElementById('expand-toggle-btn')
+if (expandToggleBtn) {
+  expandToggleBtn.addEventListener('click', e => {
+    e.stopPropagation()
+    toggleExpandedView()
+  })
+}
+
+// Double-tap on .slideshow-viewer to expand/collapse (mobile convenience)
+let _lastTapTime = 0, _lastTapX = 0, _lastTapY = 0
+slideshowViewer.addEventListener('touchend', e => {
+  const touch = e.changedTouches[0]
+  const now = Date.now()
+  const dist = Math.hypot(touch.clientX - _lastTapX, touch.clientY - _lastTapY)
+  if (now - _lastTapTime < 350 && dist < 30) {
+    e.preventDefault()
+    toggleExpandedView()
+    _lastTapTime = 0
+  } else {
+    _lastTapTime = now
+    _lastTapX = touch.clientX
+    _lastTapY = touch.clientY
+  }
+}, { passive: false })
 
 // Rebuild slide deck on orientation change (portrait ↔ landscape toggles collage mode)
 let _orientationTimer = null

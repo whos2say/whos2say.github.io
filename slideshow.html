@@ -214,6 +214,51 @@
       z-index: 5;
     }
 
+    .expand-toggle-btn {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.8);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 8;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .expand-toggle-btn:hover {
+      background: rgba(0, 0, 0, 0.85);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .expand-toggle-btn.active {
+      background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    @media (max-width: 768px) and (pointer: coarse) {
+      .expand-toggle-btn {
+        right: 0.75rem;
+        bottom: 5rem;
+        top: auto;
+        transform: none;
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+      }
+    }
+
     .empty-state {
       color: var(--text-main);
       text-align: center;
@@ -1074,6 +1119,7 @@
   <div class="slideshow-viewer">
     <div id="slideshow-bg" class="slideshow-bg"></div>
     <img id="slideshow-image" class="slideshow-image" alt="Slideshow photo" />
+    <button id="expand-toggle-btn" class="expand-toggle-btn" title="Toggle full width" style="display:none">⊞ Fill</button>
     <video id="slideshow-video" class="slideshow-video" playsinline style="display:none"></video>
     <div id="collage-viewer" style="display: none;">
       <div id="collage-grid" class="collage-grid"></div>
