@@ -126,7 +126,7 @@ export default async function handler(req, res) {
   if (isSocialCrawler(ua)) {
     const html = buildOgHtml({ albumId, albumName, coverUrl })
     res.setHeader('Content-Type', 'text/html; charset=utf-8')
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60')
+    res.setHeader('Cache-Control', 'no-store')
     return res.status(200).end(html)
   }
 
