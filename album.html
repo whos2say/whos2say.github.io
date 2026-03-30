@@ -2352,6 +2352,109 @@
       .share-platform-btn  { flex: 1 1 calc(50% - var(--space-2)); font-size: 0.76rem; }
       .share-field-row     { flex-direction: column; gap: var(--space-2); }
     }
+
+    /* ── Dark photo detection ─────────────────────────────────── */
+    .dark-badge {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 0.5rem;
+      background: rgba(0, 0, 0, 0.75);
+      color: #ffd43b;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 212, 59, 0.3);
+      z-index: 12;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .photo-tile.enhanced img {
+      filter: brightness(1.45) contrast(1.15) saturate(1.05);
+    }
+
+    .photo-tile.enhanced .dark-badge {
+      display: none;
+    }
+
+    .enhanced-badge {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 0.5rem;
+      background: rgba(0, 0, 0, 0.75);
+      color: #51cf66;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(81, 207, 102, 0.3);
+      z-index: 12;
+      pointer-events: none;
+      display: none;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .photo-tile.enhanced .enhanced-badge {
+      display: flex;
+    }
+
+    .photo-btn.enhance-photo {
+      background: color-mix(in srgb, #ffd43b 20%, transparent);
+      border-color: #ffd43b;
+      color: #ffd43b;
+    }
+
+    .photo-btn.enhance-photo:hover {
+      background: #ffd43b;
+      color: var(--color-dark-900);
+    }
+
+    .photo-btn.unenhance-photo {
+      background: color-mix(in srgb, #51cf66 20%, transparent);
+      border-color: #51cf66;
+      color: #51cf66;
+    }
+
+    .photo-btn.unenhance-photo:hover {
+      background: #51cf66;
+      color: var(--color-dark-900);
+    }
+
+    /* ── Lightbox enhance button ──────────────────────────────── */
+    .lightbox-enhance-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #ffd43b;
+      color: #ffd43b;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 2010;
+      transition: all 0.18s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lightbox-enhance-btn:hover {
+      background: #ffd43b;
+      color: #000;
+    }
+
+    .lightbox-enhance-btn.active {
+      background: rgba(81, 207, 102, 0.2);
+      border-color: #51cf66;
+      color: #51cf66;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 </head>
@@ -2511,6 +2614,7 @@
 <div id="lightbox" class="lightbox-overlay">
   <button id="lightbox-close" class="lightbox-close" title="Close (Esc)">×</button>
   <button id="lightbox-download" class="lightbox-download" title="Download">⬇</button>
+  <button id="lightbox-enhance-btn" class="lightbox-enhance-btn" style="display:none">✨ Enhance</button>
   <button id="lightbox-prev" class="lightbox-nav lightbox-prev" title="Previous photo (←)">‹</button>
   <button id="lightbox-next" class="lightbox-nav lightbox-next" title="Next photo (→)">›</button>
   <div class="lightbox-inner">

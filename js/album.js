@@ -2,6 +2,35 @@ import { supabase } from './supabase.js'
 import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
 import { initSharePanel } from './share-panel.js'
 
+// Analyze average brightness of an image (0–255).
+// Resizes to 100px wide on an offscreen canvas for speed.
+function analyzeImageBrightness(imgEl) {
+  return new Promise((resolve) => {
+    const onReady = () => {
+      try {
+        const canvas = document.createElement('canvas')
+        const scale = 100 / Math.max(imgEl.naturalWidth, 1)
+        canvas.width = Math.round(imgEl.naturalWidth * scale)
+        canvas.height = Math.round(imgEl.naturalHeight * scale)
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })
+        ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height)
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data
+        let totalBrightness = 0
+        const pixelCount = data.length / 4
+        for (let i = 0; i < data.length; i += 4) {
+          // Perceived brightness (ITU-R BT.601)
+          totalBrightness += (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114)
+        }
+        resolve(totalBrightness / pixelCount)
+      } catch (e) {
+        resolve(128) // CORS or other failure — treat as normal brightness
+      }
+    }
+    if (imgEl.complete && imgEl.naturalWidth > 0) onReady()
+    else imgEl.addEventListener('load', onReady, { once: true })
+  })
+}
+
 const albumNameEl = document.getElementById('album-name')
 const albumNameEditEl = document.getElementById('album-name-edit')
 const editTitleBtnEl = document.getElementById('edit-title-btn')
@@ -13,6 +42,7 @@ const lightboxImgEl = document.getElementById('lightbox-img')
 const lightboxVideoEl = document.getElementById('lightbox-video')
 const lightboxCloseEl = document.getElementById('lightbox-close')
 const lightboxDownloadEl = document.getElementById('lightbox-download')
+const lightboxEnhanceBtnEl = document.getElementById('lightbox-enhance-btn')
 
 function isVideoPath(path) {
   return /\.(mp4|mov|webm|m4v)$/i.test(path || '')
@@ -128,8 +158,17 @@ function openLightbox(url, photoId, filePath, index) {
   } else {
     lightboxVideoEl.style.display = 'none'
     lightboxVideoEl.src = ''
+    lightboxImgEl.style.filter = ''
+    lightboxImgEl.crossOrigin = 'anonymous'
     lightboxImgEl.style.display = 'block'
     lightboxImgEl.src = url
+  }
+  // Enhance button — show only for dark photos, reset state
+  if (lightboxEnhanceBtnEl) {
+    lightboxEnhanceBtnEl.classList.remove('active')
+    lightboxEnhanceBtnEl.textContent = '✨ Enhance'
+    const tile = photosGridEl?.querySelector(`[data-photo-id="${photoId}"]`)
+    lightboxEnhanceBtnEl.style.display = (!isVideo && tile?.dataset.isDark === 'true') ? 'block' : 'none'
   }
   lightboxEl.classList.add('show')
   document.body.style.overflow = 'hidden'
@@ -302,6 +341,14 @@ async function deleteComment(commentId, itemEl) {
 
 lightboxCloseEl.addEventListener('click', closeLightbox)
 lightboxEl.addEventListener('click', e => { if (e.target === lightboxEl) closeLightbox() })
+
+if (lightboxEnhanceBtnEl) {
+  lightboxEnhanceBtnEl.addEventListener('click', () => {
+    const isActive = lightboxEnhanceBtnEl.classList.toggle('active')
+    lightboxImgEl.style.filter = isActive ? 'brightness(1.45) contrast(1.15) saturate(1.05)' : ''
+    lightboxEnhanceBtnEl.textContent = isActive ? '↩ Original' : '✨ Enhance'
+  })
+}
 
 if (lightboxDownloadEl) {
   lightboxDownloadEl.addEventListener('click', () => {
@@ -1467,6 +1514,7 @@ async function loadAlbum() {
         tile.appendChild(badge)
       } else {
         media = document.createElement('img')
+        media.crossOrigin = 'anonymous'
         media.src = publicUrl
         media.alt = 'Photo from album'
         media.loading = 'lazy'
@@ -1480,6 +1528,45 @@ async function loadAlbum() {
       media.addEventListener('click', () => openLightbox(publicUrl, photo.id, photo.file_path, idx))
 
       tile.appendChild(media)
+
+      // Dark photo detection — images only
+      if (!isVid) {
+        const darkBadge = document.createElement('div')
+        darkBadge.className = 'dark-badge'
+        darkBadge.innerHTML = '🌙 Dark'
+        darkBadge.style.display = 'none'
+        tile.appendChild(darkBadge)
+
+        const enhancedBadge = document.createElement('div')
+        enhancedBadge.className = 'enhanced-badge'
+        enhancedBadge.innerHTML = '✨ Enhanced'
+        tile.appendChild(enhancedBadge)
+
+        analyzeImageBrightness(media).then(brightness => {
+          if (brightness < 60) {
+            darkBadge.style.display = 'flex'
+            tile.dataset.isDark = 'true'
+            tile.dataset.brightness = Math.round(brightness)
+
+            const enhanceBtn = document.createElement('button')
+            enhanceBtn.className = 'photo-btn enhance-photo'
+            enhanceBtn.textContent = '✨ Enhance'
+            enhanceBtn.addEventListener('click', (e) => {
+              e.stopPropagation()
+              if (tile.classList.contains('enhanced')) {
+                tile.classList.remove('enhanced')
+                enhanceBtn.textContent = '✨ Enhance'
+                enhanceBtn.className = 'photo-btn enhance-photo'
+              } else {
+                tile.classList.add('enhanced')
+                enhanceBtn.textContent = '↩ Original'
+                enhanceBtn.className = 'photo-btn unenhance-photo'
+              }
+            })
+            controls.appendChild(enhanceBtn)
+          }
+        })
+      }
 
       // Checkbox for selection — available to all users
       const checkbox = document.createElement('input')
