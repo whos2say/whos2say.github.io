@@ -59,6 +59,7 @@ let isPlaying = false
 let autoplayTimeout = null
 let audioUrl = null
 let wakeLock = null
+let _preloadImgs = []  // in-flight preload Image objects
 let _audioType = null          // 'mp3' | 'youtube' | 'spotify'
 let _audioIframe = null        // the hidden iframe on mobile (YouTube/Spotify)
 let _audioIframePlaying = false
@@ -752,6 +753,7 @@ function displayPhoto() {
     }
   }
 
+  preloadAhead()
   updateCounter()
   resetProgress()
 
@@ -763,6 +765,29 @@ function displayPhoto() {
   }
 }
 
+
+function preloadAhead() {
+  // Abort previous in-flight preloads — prevents accumulating requests on rapid swipes
+  _preloadImgs.forEach(img => { img.src = '' })
+  _preloadImgs = []
+
+  if (slides.length <= 1) return
+
+  // 1 image ahead on touch/mobile, 3 on desktop
+  const lookahead = window.matchMedia('(pointer: coarse)').matches ? 1 : 3
+
+  for (let i = 1; i <= lookahead; i++) {
+    const idx = (currentPhotoIndex + i) % slides.length
+    const slide = slides[idx]
+    // Skip collages (heavy) and video slides
+    if (!slide || slide.type !== 'single') continue
+    if (isVideoPath(slide.photo.file_path)) continue
+    const url = supabase.storage.from('photos').getPublicUrl(slide.photo.file_path).data.publicUrl
+    const img = new Image()
+    img.src = url
+    _preloadImgs.push(img)
+  }
+}
 
 function updateCounter() {
   if (isCollageSlide()) {
