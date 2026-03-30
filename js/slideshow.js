@@ -58,6 +58,7 @@ let currentPhotoIndex = 0 // index into slides[], not photos[]
 let isPlaying = false
 let autoplayTimeout = null
 let audioUrl = null
+let wakeLock = null
 let _audioType = null          // 'mp3' | 'youtube' | 'spotify'
 let _audioIframe = null        // the hidden iframe on mobile (YouTube/Spotify)
 let _audioIframePlaying = false
@@ -753,6 +754,29 @@ function prevPhoto() {
   resetAutoplay()
 }
 
+async function acquireWakeLock() {
+  if (!('wakeLock' in navigator)) return
+  try {
+    wakeLock = await navigator.wakeLock.request('screen')
+  } catch (err) {
+    console.log('Wake lock request failed:', err)
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().catch(() => {})
+    wakeLock = null
+  }
+}
+
+// Re-acquire wake lock when tab returns to foreground during autoplay
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && isPlaying) {
+    acquireWakeLock()
+  }
+})
+
 function togglePlayPause() {
   resetControlHide()
   isPlaying = !isPlaying
@@ -770,12 +794,14 @@ function togglePlayPause() {
         })
       }
     }
+    acquireWakeLock()
     scheduleAutoplay()
   } else {
     // Pause audio if playing
     if (audioUrl && audioPlayerEl && !audioPlayerEl.paused) {
       audioPlayerEl.pause()
     }
+    releaseWakeLock()
     clearAutoplay()
   }
 }

@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <title>Photo Slideshow</title>
   <!-- Open Graph — values injected dynamically by slideshow.js after album loads -->
   <meta property="og:type"        content="website" />
@@ -24,6 +27,8 @@
       background: var(--color-dark-900);
       overflow: hidden;
       overscroll-behavior: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .slideshow-container {
@@ -371,6 +376,8 @@
       background: var(--color-dark-800);
       border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
       border-radius: var(--radius-md);
+      -webkit-user-select: text;
+      user-select: text;
       padding: var(--space-6);
       max-width: 560px;
       width: 100%;
