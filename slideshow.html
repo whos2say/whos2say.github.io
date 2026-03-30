@@ -130,6 +130,8 @@
       font-size: 0.9rem;
       text-transform: uppercase;
       min-width: 100px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .slide-btn:hover {
@@ -943,8 +945,8 @@
       display: flex;
       align-items: center;
       width: 100%;
-      min-height: 56px;
-      padding: 0 var(--space-6);
+      min-height: 48px;
+      padding: 12px 20px;
       background: none;
       border: none;
       border-top: 1px solid rgba(255,255,255,0.07);
@@ -957,6 +959,8 @@
       text-decoration: none;
       letter-spacing: 0;
       transition: background 0.15s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .mobile-sheet-item:first-child { border-top: none; }
     .mobile-sheet-item:active { background: rgba(255,255,255,0.07); }
@@ -1012,20 +1016,20 @@
         flex: none;
       }
 
-      /* Large, comfortable tap targets */
+      /* Large tap targets for interactive elements */
       .slide-btn.play-pause {
         min-height: 48px;
         min-width: 120px;
-        font-size: 1rem;
+        font-size: 0.9rem;
         padding: 0 var(--space-5);
         flex: none;
       }
+      /* Counter is not interactive — readable but no forced touch height */
       .slideshow-counter {
-        min-height: 48px;
         display: flex;
         align-items: center;
-        padding: 0 var(--space-4);
-        font-size: 1rem;
+        padding: var(--space-2) var(--space-3);
+        font-size: 0.85rem;
         min-width: 0;
       }
 
