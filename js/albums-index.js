@@ -150,7 +150,7 @@ async function loadAlbums() {
 
     let query = supabase
       .from('albums')
-      .select('id, name, created_at, cover_photo_id')
+      .select('id, name, created_at, cover_photo_id, is_private')
       .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
 
@@ -159,6 +159,11 @@ async function loadAlbums() {
       const orParts = [`owner_id.eq.${currentUser.id}`, `owner_id.is.null`]
       if (contribIds.length > 0) orParts.push(`id.in.(${contribIds.join(',')})`)
       query = query.or(orParts.join(','))
+    }
+
+    // Public (unauthenticated) visitors never see private albums
+    if (!userIsLoggedIn) {
+      query = query.eq('is_private', false)
     }
 
     const { data: albums, error } = await query
@@ -230,9 +235,14 @@ async function loadAlbums() {
 
       card.dataset.albumId = album.id
 
+      const privateBadge = album.is_private
+        ? `<div class="album-private-badge">🔒 Private</div>`
+        : ''
+
       card.innerHTML = `
         ${coverHtml}
         <div class="album-info">
+          ${privateBadge}
           <h3>${escapeHtml(album.name)}</h3>
           <p>Created ${createdDate}</p>
           <a href="/album.html?album=${encodeURIComponent(album.id)}">View Album</a>
@@ -248,7 +258,7 @@ async function loadAlbums() {
         handle.textContent = '⠿'
         card.appendChild(handle)
 
-        renderAdminAlbumControls(card, album.id, album.name)
+        renderAdminAlbumControls(card, album.id, album.name, album.is_private)
 
         const deleteBtn = document.createElement('button')
         deleteBtn.className = 'album-delete-btn'
@@ -289,7 +299,7 @@ async function fetchAdminAlbumData(albumIds) {
   } catch { /* RPC or table may not exist yet */ }
 }
 
-function renderAdminAlbumControls(card, albumId, albumName) {
+function renderAdminAlbumControls(card, albumId, albumName, isPrivate) {
   const ownerEmail = ownerEmailMap[albumId] || null
   const count = contribCountMap[albumId] || 0
   const section = document.createElement('div')
@@ -307,6 +317,15 @@ function renderAdminAlbumControls(card, albumId, albumName) {
       <span class="contrib-count-display" id="contrib-count-${albumId}">${count || 'None'}</span>
       <button class="contrib-btn">Manage</button>
     </div>
+    <div class="owner-row">
+      <span class="owner-label">Visibility:</span>
+      <span class="owner-email-display" id="privacy-label-${albumId}" style="color:${isPrivate ? '#f59e0b' : 'var(--text-muted)'}">
+        ${isPrivate ? '🔒 Private' : '🌐 Public'}
+      </span>
+      <button class="privacy-toggle-btn ${isPrivate ? 'is-private' : 'is-public'}" id="privacy-btn-${albumId}">
+        ${isPrivate ? 'Make Public' : 'Make Private'}
+      </button>
+    </div>
   `
   section.querySelector('.assign-btn').addEventListener('click', e => {
     e.preventDefault(); e.stopPropagation()
@@ -316,7 +335,58 @@ function renderAdminAlbumControls(card, albumId, albumName) {
     e.preventDefault(); e.stopPropagation()
     openContributorsModal(albumId, albumName)
   })
+  section.querySelector(`#privacy-btn-${albumId}`).addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation()
+    toggleAlbumPrivacy(albumId, isPrivate, card)
+  })
   card.querySelector('.album-info').appendChild(section)
+}
+
+async function toggleAlbumPrivacy(albumId, currentlyPrivate, card) {
+  const newPrivate = !currentlyPrivate
+  const btn = document.getElementById(`privacy-btn-${albumId}`)
+  const label = document.getElementById(`privacy-label-${albumId}`)
+  if (btn) { btn.disabled = true; btn.textContent = '…' }
+
+  const { error } = await supabase.from('albums').update({ is_private: newPrivate }).eq('id', albumId)
+
+  if (error) {
+    alert('Failed to update visibility: ' + error.message)
+    if (btn) { btn.disabled = false; btn.textContent = currentlyPrivate ? 'Make Public' : 'Make Private' }
+    return
+  }
+
+  // Update badge on card
+  const badgeEl = card.querySelector('.album-private-badge')
+  if (newPrivate) {
+    if (!badgeEl) {
+      const h3 = card.querySelector('h3')
+      const badge = document.createElement('div')
+      badge.className = 'album-private-badge'
+      badge.textContent = '🔒 Private'
+      h3.before(badge)
+    }
+  } else {
+    badgeEl?.remove()
+  }
+
+  // Update label + button
+  if (label) {
+    label.style.color = newPrivate ? '#f59e0b' : 'var(--text-muted)'
+    label.textContent = newPrivate ? '🔒 Private' : '🌐 Public'
+  }
+  if (btn) {
+    btn.disabled = false
+    btn.textContent = newPrivate ? 'Make Public' : 'Make Private'
+    btn.className = `privacy-toggle-btn ${newPrivate ? 'is-private' : 'is-public'}`
+    // Update the closure reference for next click
+    btn.replaceWith(btn.cloneNode(true))
+    const newBtn = document.getElementById(`privacy-btn-${albumId}`)
+    newBtn.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation()
+      toggleAlbumPrivacy(albumId, newPrivate, card)
+    })
+  }
 }
 
 // -- Assign Owner Modal --
@@ -635,9 +705,11 @@ async function handleCreateAlbum(e) {
     createMessageEl.textContent = 'Creating album...'
     createMessageEl.style.color = 'var(--text-muted)'
 
+    const isPrivate = document.getElementById('album-private-checkbox')?.checked ?? false
+
     const { error } = await supabase
       .from('albums')
-      .insert([{ name: albumName, owner_id: user.id }])
+      .insert([{ name: albumName, owner_id: user.id, is_private: isPrivate }])
 
     if (error) throw error
 

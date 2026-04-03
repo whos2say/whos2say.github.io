@@ -596,6 +596,93 @@
       font-style: italic;
     }
 
+    /* ── Private album: form toggle ── */
+    .album-privacy-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      border-radius: var(--radius-sm);
+      background: color-mix(in srgb, var(--color-primary) 3%, var(--color-dark-900));
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--text-main);
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .album-privacy-toggle:hover {
+      border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+      background: color-mix(in srgb, var(--color-primary) 6%, var(--color-dark-900));
+    }
+
+    .album-privacy-toggle input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .privacy-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Private album: badge on card ── */
+    .album-private-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: var(--font-body);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-bottom: var(--space-2);
+    }
+
+    /* ── Privacy toggle button on admin card ── */
+    .privacy-toggle-btn {
+      flex-shrink: 0;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .privacy-toggle-btn.is-public {
+      border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+      background: transparent;
+      color: var(--color-primary);
+    }
+
+    .privacy-toggle-btn.is-public:hover {
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+    }
+
+    .privacy-toggle-btn.is-private {
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+    }
+
+    .privacy-toggle-btn.is-private:hover {
+      background: rgba(245, 158, 11, 0.2);
+    }
+
     @media (max-width: 640px) {
       .albums-header-inner {
         flex-wrap: wrap;
@@ -709,6 +796,13 @@
       <p>Start a new collection of photos</p>
       <form id="create-album-form" class="album-form">
         <input id="album-name-input" type="text" placeholder="Album name" required />
+        <label class="album-privacy-toggle" title="Private albums are only visible to signed-in members">
+          <input type="checkbox" id="album-private-checkbox" />
+          <span class="album-privacy-label">
+            <span class="lock-icon">🔒</span> Private album
+            <span class="privacy-hint">— hidden from public visitors</span>
+          </span>
+        </label>
         <button type="submit" class="btn btn-primary">Create Album</button>
       </form>
       <div id="create-message"></div>
