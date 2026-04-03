@@ -20,195 +20,134 @@
 
 <script src="/assets/js/theme.js"></script><link href="/assets/css/styles.css" rel="stylesheet"/>
 <style>
-  /* ── WDSD Recap Section ──────────────────────────────── */
-  .wdsd-recap {
+  /* ── Autism Acceptance Month Section ── */
+  .autism-month {
     padding: clamp(3rem, 7vw, 6rem) 1.25rem;
-    background: linear-gradient(150deg, #050d1f 0%, #0a1628 45%, #0d1c10 100%);
+    background: linear-gradient(150deg, #090e24 0%, #0f1628 50%, #0a0e20 100%);
     position: relative;
     overflow: hidden;
     text-align: center;
   }
-  .wdsd-recap::before {
+  .autism-month::before {
     content: '';
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse at 15% 60%, rgba(30,100,240,.18) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 40%, rgba(245,158,11,.14) 0%, transparent 55%),
-      radial-gradient(ellipse at 50% 100%, rgba(99,245,239,.08) 0%, transparent 50%);
+      radial-gradient(ellipse at 20% 55%, rgba(212,151,23,.13) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 45%, rgba(212,151,23,.09) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 100%, rgba(139,92,246,.07) 0%, transparent 50%);
     pointer-events: none;
   }
-  .wdsd-hearts-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .wdsd-heart {
-    position: absolute;
-    bottom: -2rem;
-    opacity: 0;
-    animation: floatHeart linear infinite;
-    user-select: none;
-  }
-  @keyframes floatHeart {
-    0%   { transform: translateY(0) scale(0.85) rotate(-8deg); opacity: 0; }
-    12%  { opacity: 0.5; }
-    88%  { opacity: 0.2; }
-    100% { transform: translateY(-110vh) scale(1.05) rotate(8deg); opacity: 0; }
-  }
-  .wdsd-inner {
+  .autism-inner {
     position: relative;
-    max-width: 820px;
+    max-width: 760px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.4rem;
+    gap: 1.3rem;
   }
-  .wdsd-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(90deg, #1e64f0, #63f5ef 60%, #f59e0b);
-    color: #fff;
+  .autism-infinity {
+    font-size: clamp(5rem, 14vw, 9rem);
+    line-height: 1;
+    background: linear-gradient(90deg,
+      #ef4444, #f97316, #eab308, #22c55e,
+      #3b82f6, #8b5cf6, #ec4899, #ef4444);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbowInfinity 5s linear infinite;
+    display: block;
+    user-select: none;
+  }
+  @keyframes rainbowInfinity {
+    0%   { background-position: 0% center; }
+    100% { background-position: 300% center; }
+  }
+  .autism-eyebrow {
     font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 0.35rem 1.1rem;
-    border-radius: 100px;
-  }
-  .wdsd-title {
-    font-family: var(--font-heading);
-    font-size: clamp(1.75rem, 4.5vw, 3rem);
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.15;
+    color: #d97706;
     margin: 0;
   }
-  .wdsd-accent {
-    background: linear-gradient(90deg, #63f5ef 10%, #f59e0b 90%);
+  .autism-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.75rem, 4.5vw, 2.9rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.12;
+    margin: 0;
+  }
+  .autism-gold {
+    background: linear-gradient(90deg, #d97706 10%, #fbbf24 90%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .wdsd-subtitle {
-    font-family: var(--font-body);
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: rgba(255,255,255,.8);
-    margin: 0;
-    letter-spacing: 0.02em;
-  }
-  .wdsd-body-copy {
+  .autism-body {
     font-family: var(--font-body);
     font-size: clamp(0.9rem, 2.2vw, 1.05rem);
     color: rgba(255,255,255,.58);
-    line-height: 1.8;
+    line-height: 1.85;
     margin: 0;
-    max-width: 600px;
+    max-width: 580px;
   }
-  .wdsd-video-heading {
-    font-family: var(--font-heading);
-    font-size: clamp(1.3rem, 3.5vw, 2rem);
-    font-weight: 800;
-    color: #fff;
-    margin: 0.5rem 0 0;
-  }
-  .wdsd-video-label {
-    font-family: var(--font-body);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.4);
-    margin: 0;
-  }
-  .wdsd-video-card {
-    position: relative;
-    width: min(560px, 92vw);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 0 0 3px rgba(99,245,239,.4), 0 16px 56px rgba(0,0,0,.6);
-    aspect-ratio: 16 / 9;
-    cursor: pointer;
-    background: #000;
-  }
-  .wdsd-video-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform .35s ease, opacity .35s;
-  }
-  .wdsd-video-card:hover img { transform: scale(1.03); opacity: .85; }
-  .wdsd-play-btn {
-    position: absolute;
-    inset: 0;
+  .autism-actions {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     justify-content: center;
-    pointer-events: none;
+    margin-top: 0.25rem;
   }
-  .wdsd-play-btn span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.92);
-    box-shadow: 0 4px 24px rgba(0,0,0,.45);
-    transition: transform .2s, background .2s;
-  }
-  .wdsd-video-card:hover .wdsd-play-btn span {
-    transform: scale(1.12);
-    background: #fff;
-  }
-  .wdsd-play-btn svg { width: 28px; height: 28px; fill: #1e64f0; margin-left: 4px; }
-  .wdsd-video-card iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-  .wdsd-video-caption {
-    font-family: var(--font-body);
-    font-size: 0.88rem;
-    color: rgba(255,255,255,.42);
-    line-height: 1.7;
-    max-width: 520px;
-    margin: 0;
-  }
-  .wdsd-socks-note {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    color: rgba(255,255,255,.5);
-    margin: 0;
-  }
-  .btn-wdsd {
+  .btn-autism-primary {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #1e64f0, #63f5ef);
-    color: #fff;
+    background: linear-gradient(135deg, #d97706, #fbbf24);
+    color: #0a0f1e;
     font-family: var(--font-body);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.92rem;
-    padding: 0.7rem 1.7rem;
+    padding: 0.72rem 1.75rem;
     border-radius: 100px;
     text-decoration: none;
     transition: opacity .2s, transform .2s, box-shadow .2s;
-    box-shadow: 0 4px 24px rgba(30,100,240,.4);
+    box-shadow: 0 4px 24px rgba(217,119,6,.35);
   }
-  .btn-wdsd:hover {
+  .btn-autism-primary:hover {
     opacity: .9;
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(30,100,240,.5);
+    box-shadow: 0 8px 32px rgba(217,119,6,.5);
   }
+  .btn-autism-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: rgba(255,255,255,.75);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0.72rem 1.75rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,.22);
+    text-decoration: none;
+    transition: border-color .2s, color .2s, transform .2s;
+  }
+  .btn-autism-ghost:hover { border-color: rgba(255,255,255,.48); color: #fff; transform: translateY(-2px); }
+  .autism-wdsd-link {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: rgba(255,255,255,.3);
+    text-decoration: none;
+    transition: color .2s;
+    margin-top: 0.25rem;
+  }
+  .autism-wdsd-link:hover { color: rgba(255,255,255,.6); }
 </style>
 </head>
 <body><a class="skip-link" href="#main">Skip to content</a><header class="site-header">
@@ -255,66 +194,21 @@
 <p class="home-note">EIN: 33-3826585  <br> Status: 501(c)(3) Public Charity · United States .</p></div>
 </section>
 
-<section class="wdsd-recap" aria-label="World Down Syndrome Day 2026 Recap">
-  <div class="wdsd-hearts-bg" aria-hidden="true"></div>
-  <div class="wdsd-inner">
-    <div class="wdsd-badge">❤️ World Down Syndrome Day · March 21, 2026</div>
-    <h2 class="wdsd-title">We Celebrated That Little<br><span class="wdsd-accent">Something Extra</span></h2>
-    <p class="wdsd-subtitle">Now let's keep going.</p>
-    <p class="wdsd-body-copy">March 21 was the day. But kindness doesn't need a calendar.<br><br>
-      Every day is a chance to celebrate what makes us unique, to show up for each other, and to choose inclusion — not just on World Down Syndrome Day, but always. Three copies of chromosome 21 are worth celebrating loudly, proudly, and with full hearts.</p>
-
-    <p class="wdsd-video-heading">This Was Everything ❤️</p>
-    <p class="wdsd-video-label">Watch Our WDSD 2026 Celebration</p>
-    <div class="wdsd-video-card" id="wdsd-yt-card" onclick="wdsdLoadVideo()" role="button" tabindex="0" aria-label="Play celebration video: This was Everything">
-      <img src="https://img.youtube.com/vi/NEtdTOlp0Ns/maxresdefault.jpg" alt="WDSD 2026 – This was Everything group photo" loading="lazy"/>
-      <div class="wdsd-play-btn">
-        <span>
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
-        </span>
-      </div>
+<section class="autism-month" aria-label="Autism Acceptance Month April 2026">
+  <div class="autism-inner">
+    <span class="autism-infinity" aria-hidden="true">∞</span>
+    <p class="autism-eyebrow">Autism Acceptance Month · April 2026</p>
+    <h2 class="autism-title">Every Mind Is a World<br><span class="autism-gold">Worth Exploring</span></h2>
+    <p class="autism-body">April is Autism Acceptance Month — a time to celebrate neurodiversity, embrace different ways of thinking, and champion inclusion for all.<br><br>
+    At the Who's to Say? Foundation, we believe every person brings something extraordinary to the table. Acceptance isn't just a word — it's how we show up, every single day.</p>
+    <div class="autism-actions">
+      <a class="btn-autism-primary" href="/programs.html">Learn About Our Programs</a>
+      <a class="btn-autism-ghost" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate to Support Inclusion</a>
     </div>
-    <p class="wdsd-video-caption">Our community came together on March 21, 2026 to celebrate World Down Syndrome Day — and it was everything. Watch the full celebration and feel the love.</p>
-
-    <p class="wdsd-socks-note">We rocked our crazy socks — and we're not done yet. 🧦</p>
-    <a class="btn-wdsd" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Spread Kindness Today ❤️</a>
+    <a class="autism-wdsd-link" href="/wdsd-2026.html">See our World Down Syndrome Day 2026 celebration →</a>
   </div>
 </section>
 </main>
 
-<script>
-  (function () {
-    // ── Click-to-play ──────────────────────────────────────
-    window.wdsdLoadVideo = function () {
-      var card = document.getElementById('wdsd-yt-card');
-      var iframe = document.createElement('iframe');
-      iframe.src = 'https://www.youtube.com/embed/NEtdTOlp0Ns?autoplay=1&rel=0';
-      iframe.title = 'Who\'s to Say Foundation – World Down Syndrome Day 2026 Celebration';
-      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-      iframe.allowFullscreen = true;
-      card.innerHTML = '';
-      card.appendChild(iframe);
-      card.onclick = null;
-      card.style.cursor = 'default';
-    };
-    document.getElementById('wdsd-yt-card').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.wdsdLoadVideo(); }
-    });
-
-    // ── Floating hearts ────────────────────────────────────
-    var bg = document.querySelector('.wdsd-hearts-bg');
-    var HEARTS = ['💙','🤍','💛','🩵','❤️'];
-    for (var i = 0; i < 22; i++) {
-      var h = document.createElement('span');
-      h.className = 'wdsd-heart';
-      h.textContent = HEARTS[i % HEARTS.length];
-      h.style.left            = (Math.random() * 96 + 1) + '%';
-      h.style.fontSize        = (Math.random() * 1.1 + 0.6) + 'rem';
-      h.style.animationDuration  = (Math.random() * 10 + 8) + 's';
-      h.style.animationDelay     = -(Math.random() * 14) + 's';
-      bg.appendChild(h);
-    }
-  }());
-</script>
 </body>
 </html>
