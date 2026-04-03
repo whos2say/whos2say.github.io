@@ -38,6 +38,7 @@ project-root/
 CREATE TABLE albums (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
+  is_private BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -49,6 +50,18 @@ CREATE TABLE photos (
   uploaded_by UUID REFERENCES auth.users(id),
   created_at TIMESTAMP DEFAULT NOW()
 );
+```
+
+### Migration: Add is_private column (run once in Supabase SQL editor)
+```sql
+ALTER TABLE albums ADD COLUMN IF NOT EXISTS is_private BOOLEAN DEFAULT false NOT NULL;
+
+-- Update RLS: public albums visible to all; private albums only to authenticated users
+DROP POLICY IF EXISTS "Albums are viewable by everyone" ON albums;
+CREATE POLICY "Albums viewable based on privacy" ON albums
+  FOR SELECT USING (
+    NOT is_private OR auth.uid() IS NOT NULL
+  );
 ```
 
 ---
@@ -75,7 +88,8 @@ const supabase = createClient(https://oiiluqrpzhujbvrblsko.supabase.co, sb_publi
 
 ### RLS — Row Level Security is ENABLED
 These policies are already set. Never write code that assumes RLS is off:
-- Albums: anyone can SELECT and INSERT
+- Albums: public albums are SELECT-able by everyone; private albums (`is_private = true`) only by `authenticated` users
+- Albums INSERT: only `authenticated` role
 - Photos: anyone can SELECT, only `authenticated` role can INSERT
 - Storage objects: anyone can SELECT from `photos` bucket, only `authenticated` can INSERT
 
