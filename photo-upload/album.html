@@ -158,7 +158,257 @@
 
     .load-all-link:hover { color: var(--text); }
 
+    /* ── Slideshow Selector ── */
+    .ss-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .ss-panel {
+      background: var(--surface);
+      border-radius: 16px 16px 0 0;
+      width: 100%;
+      max-width: 900px;
+      height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ss-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 0.75rem;
+    }
+    .ss-title { font-family: var(--font-display); font-size: 1.125rem; font-weight: 400; margin: 0; }
+    .ss-header-right { display: flex; align-items: center; gap: 0.625rem; flex-shrink: 0; }
+    .ss-start-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #111;
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background 200ms ease-out;
+      white-space: nowrap;
+    }
+    .ss-start-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .ss-start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .ss-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 200ms ease-out, color 200ms ease-out;
+      flex-shrink: 0;
+    }
+    .ss-close-btn:hover { background: var(--surface-hover); color: var(--text); }
 
+    .ss-toolbar {
+      padding: 0.625rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ss-presets { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+    .ss-preset {
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: border-color 200ms ease-out, color 200ms ease-out, background 200ms ease-out;
+    }
+    .ss-preset:hover { border-color: var(--accent); color: var(--accent); background: rgba(201, 168, 108, 0.08); }
+    .ss-hint { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
+
+    .ss-load-notice {
+      padding: 0.4rem 1.25rem;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      background: rgba(201, 168, 108, 0.05);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ss-load-notice a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+    .ss-photo-grid {
+      overflow-y: auto;
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+      padding: 0.75rem;
+      align-content: start;
+    }
+    .ss-thumb {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      border: 2px solid transparent;
+      transition: border-color 150ms ease-out;
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .ss-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 150ms ease-out, filter 150ms ease-out;
+      pointer-events: none;
+    }
+    .ss-thumb.ss-selected { border-color: var(--accent); }
+    .ss-thumb.ss-excluded img { opacity: 0.35; filter: grayscale(0.6) brightness(0.7); }
+    .ss-thumb.ss-excluded { border-color: rgba(255, 255, 255, 0.12) !important; box-shadow: none !important; }
+    .ss-check {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #111;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .ss-thumb.ss-selected .ss-check { display: flex; }
+    .ss-excl {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 3;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .ss-thumb.ss-excluded .ss-excl { display: flex; }
+
+    .ss-show-more {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 0.875rem;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: color 200ms ease-out, border-color 200ms ease-out;
+    }
+    .ss-show-more:hover { color: var(--accent); border-color: var(--accent); }
+
+    .ss-sticky-count {
+      grid-column: 1 / -1;
+      position: sticky;
+      bottom: 0;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+      z-index: 5;
+    }
+
+    @media (min-width: 641px) {
+      .ss-overlay { align-items: center; }
+      .ss-panel { border-radius: 12px; height: 82vh; }
+    }
+    @media (max-width: 640px) {
+      .ss-photo-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .ss-check { width: 28px; height: 28px; font-size: 0.8rem; }
+      .ss-preset { flex: 1 1 auto; min-width: 0; text-align: center; }
+    }
+
+    /* ── Slideshow Player ── */
+    .ss-player {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ss-player-img { max-width: 100vw; max-height: 100vh; object-fit: contain; display: block; }
+    .ss-player-close, .ss-player-nav {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 200ms ease-out;
+      z-index: 2;
+    }
+    .ss-player-close:hover, .ss-player-nav:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
+    .ss-player-nav:disabled { opacity: 0.25; cursor: default; }
+    .ss-player-close { top: 1.25rem; right: 1.25rem; width: 44px; height: 44px; }
+    .ss-player-nav { top: 50%; transform: translateY(-50%); width: 52px; height: 52px; }
+    .ss-player-prev { left: 1.25rem; }
+    .ss-player-next { right: 1.25rem; }
+    .ss-player-controls {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 2;
+    }
+    .ss-player-playpause {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 200ms ease-out;
+    }
+    .ss-player-playpause:hover { background: rgba(255, 255, 255, 0.2); }
+    .ss-player-counter { color: rgba(255, 255, 255, 0.7); font-family: var(--font-body); font-size: 0.875rem; white-space: nowrap; }
+    @media (max-width: 640px) { .ss-player-nav { display: none; } }
 
     /* ── Lightbox ── */
     .lightbox {
@@ -243,6 +493,10 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Upload
       </a>
+      <button class="btn-ghost" id="slideshow-btn" style="display:none">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+        Slideshow
+      </button>
       <button class="btn-ghost" id="auth-btn">Sign In</button>
     </div>
   </header>
@@ -285,6 +539,57 @@
     <button class="lightbox-nav lightbox-next" id="lb-next" aria-label="Next photo">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
+  </div>
+
+  <!-- Slideshow Selector -->
+  <div class="ss-overlay" id="ss-overlay" role="dialog" aria-modal="true" aria-label="Slideshow photo selector" style="display:none">
+    <div class="ss-panel">
+      <div class="ss-header">
+        <h2 class="ss-title">Choose Photos</h2>
+        <div class="ss-header-right">
+          <button class="ss-start-btn" id="ss-start-btn">Start Slideshow</button>
+          <button class="ss-close-btn" id="ss-close-btn" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="ss-toolbar">
+        <div class="ss-presets" id="ss-presets">
+          <button class="ss-preset" data-preset="newest20">Newest 20</button>
+          <button class="ss-preset" data-preset="newest50">Newest 50</button>
+          <button class="ss-preset" data-preset="all">All</button>
+          <button class="ss-preset" data-preset="invert">Invert</button>
+        </div>
+        <p class="ss-hint">Tap to exclude · Shift+click to select a range</p>
+      </div>
+      <div class="ss-load-notice" id="ss-load-notice" style="display:none">
+        Showing <span id="ss-loaded-of">0</span> of <span id="ss-total-of">0</span> photos ·
+        <a href="#" id="ss-load-all-link">Load all</a>
+      </div>
+      <div class="ss-photo-grid" id="ss-photo-grid">
+        <div class="ss-sticky-count">
+          <span id="ss-count-text">0 selected</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slideshow Player -->
+  <div class="ss-player" id="ss-player" role="dialog" aria-modal="true" aria-label="Slideshow" style="display:none">
+    <button class="ss-player-close" id="ss-player-close" aria-label="Exit slideshow">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="ss-player-nav ss-player-prev" id="ss-player-prev" aria-label="Previous photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img class="ss-player-img" id="ss-player-img" src="" alt="" />
+    <button class="ss-player-nav ss-player-next" id="ss-player-next" aria-label="Next photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="ss-player-controls">
+      <button class="ss-player-playpause" id="ss-player-playpause" aria-label="Pause slideshow"></button>
+      <span class="ss-player-counter" id="ss-player-counter">1 / 1</span>
+    </div>
   </div>
 
   <script type="module" src="js/album.js"></script>
