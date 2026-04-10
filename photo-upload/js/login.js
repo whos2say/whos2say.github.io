@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { redirectIfAuth } from './auth.js'
 
 const form = document.getElementById('auth-form')
 const emailInput = document.getElementById('email')
@@ -9,12 +10,7 @@ const tabs = document.querySelectorAll('.tab-btn')
 
 let mode = 'login' // 'login' | 'signup'
 
-// Redirect if already signed in
-const { data: { session } } = await supabase.auth.getSession()
-if (session) {
-  const params = new URLSearchParams(window.location.search)
-  window.location.href = params.get('next') || 'index.html'
-}
+redirectIfAuth()
 
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {

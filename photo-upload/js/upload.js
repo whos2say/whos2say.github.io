@@ -1,4 +1,9 @@
 import { supabase } from './supabase.js'
+import { requireAuth, getUser, signOut, onAuthChange } from './auth.js'
+import { escapeHtml, formatSize } from './utils.js'
+
+requireAuth()
+const user = getUser()
 
 const mainContent = document.getElementById('main-content')
 const loadingMsg = document.getElementById('loading-msg')
@@ -15,25 +20,16 @@ const fileList = document.getElementById('file-list')
 const uploadBtn = document.getElementById('upload-btn')
 const uploadMessage = document.getElementById('upload-message')
 
-// ── Auth guard ───────────────────────────────────────────────────
-const { data: { session } } = await supabase.auth.getSession()
-let user = session?.user ?? null
-
-if (!user) {
-  window.location.href = `login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`
-  throw new Error('Not authenticated')
-}
-
 loadingMsg.style.display = 'none'
 mainContent.style.display = 'block'
 
 authBtn.addEventListener('click', async () => {
-  await supabase.auth.signOut()
+  await signOut()
   window.location.href = 'login.html'
 })
 
-supabase.auth.onAuthStateChange((_event, s) => {
-  if (!s?.user) window.location.href = 'login.html'
+onAuthChange((newUser) => {
+  if (!newUser) window.location.href = 'login.html'
 })
 
 // ── Load albums ──────────────────────────────────────────────────
@@ -189,11 +185,7 @@ async function uploadFiles() {
   uploadBtn.textContent = 'Uploading…'
   hideMessage()
 
-  let successCount = 0
-  let errorCount = 0
-
-  for (let i = 0; i < selectedFiles.length; i++) {
-    const file = selectedFiles[i]
+  const uploadPromises = selectedFiles.map(async (file, i) => {
     const statusEl = document.getElementById(`file-status-${i}`)
     if (statusEl) { statusEl.textContent = 'Uploading…'; statusEl.className = 'file-item-status uploading' }
 
@@ -206,8 +198,7 @@ async function uploadFiles() {
 
     if (uploadError) {
       if (statusEl) { statusEl.textContent = 'Failed'; statusEl.className = 'file-item-status error' }
-      errorCount++
-      continue
+      return false
     }
 
     const { error: dbError } = await supabase
@@ -216,13 +207,16 @@ async function uploadFiles() {
 
     if (dbError) {
       if (statusEl) { statusEl.textContent = 'DB error'; statusEl.className = 'file-item-status error' }
-      errorCount++
-      continue
+      return false
     }
 
     if (statusEl) { statusEl.textContent = '✓ Done'; statusEl.className = 'file-item-status done' }
-    successCount++
-  }
+    return true
+  })
+
+  const results = await Promise.all(uploadPromises)
+  const successCount = results.filter(Boolean).length
+  const errorCount = results.length - successCount
 
   uploadBtn.textContent = 'Upload Photos'
 
@@ -249,12 +243,4 @@ function hideMessage() {
   uploadMessage.style.display = 'none'
 }
 
-function formatSize(bytes) {
-  if (bytes < 1024) return bytes + ' B'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB'
-  return (bytes / 1024 / 1024).toFixed(1) + ' MB'
-}
 
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-}

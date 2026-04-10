@@ -7,103 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
   <style>
-    :root {
-      --bg: #111111;
-      --surface: #1c1c1c;
-      --border: #2f2f2f;
-      --text: #ede8df;
-      --text-muted: #8a8580;
-      --accent: #c9a86c;
-      --accent-hover: #d9bc82;
-      --error: #e05c5c;
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-body: 'DM Sans', system-ui, sans-serif;
-      --radius: 8px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-weight: 300;
-      min-height: 100vh;
-    }
-
-    /* ── Header ── */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(17, 17, 17, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 2rem;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-    }
-
-    .logo {
-      font-family: var(--font-display);
-      font-size: 1.375rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      color: var(--text);
-      text-decoration: none;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .btn-ghost {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text-muted);
-      font-family: var(--font-body);
-      font-size: 0.875rem;
-      font-weight: 400;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      text-decoration: none;
-      transition: color 200ms ease-out, border-color 200ms ease-out;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
-
-    .btn-primary {
-      background: var(--accent);
-      border: none;
-      border-radius: var(--radius);
-      color: #111111;
-      font-family: var(--font-body);
-      font-size: 0.875rem;
-      font-weight: 500;
-      padding: 0.5rem 1.125rem;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 200ms ease-out;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-primary:hover { background: var(--accent-hover); }
 
     /* ── Main ── */
     main {
@@ -209,45 +114,51 @@
     .photo-item:nth-child(12) { animation-delay: 440ms; }
     .photo-item:nth-child(n+13) { animation-delay: 480ms; }
 
-    /* ── Pagination ── */
-    .pagination {
+    /* ── Photo Count ── */
+    .photo-count {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ── Load More ── */
+    .load-more-area {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 0.75rem;
-      margin-top: 2.5rem;
+      margin-top: 2rem;
     }
 
-    .page-btn {
+    .load-more-btn {
+      width: 100%;
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--accent);
       border-radius: var(--radius);
-      color: var(--text-muted);
+      color: var(--accent);
       font-family: var(--font-body);
-      font-size: 0.875rem;
-      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.875rem 1rem;
       cursor: pointer;
-      transition: color 200ms ease-out, border-color 200ms ease-out;
+      transition: background 200ms ease-out;
     }
 
-    .page-btn:hover:not(:disabled) { color: var(--text); border-color: var(--text-muted); }
-    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .page-info { color: var(--text-muted); font-size: 0.8125rem; min-width: 80px; text-align: center; }
+    .load-more-btn:hover:not(:disabled) { background: rgba(201, 168, 108, 0.08); }
+    .load-more-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ── States ── */
-    .status-msg {
-      text-align: center;
-      padding: 5rem 1rem;
+    .load-all-link {
+      font-size: 0.8125rem;
       color: var(--text-muted);
-      font-size: 0.9375rem;
+      text-underline-offset: 3px;
+      transition: color 200ms ease-out;
     }
 
-    .error-msg {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--error);
-      font-size: 0.9375rem;
-    }
+    .load-all-link:hover { color: var(--text); }
+
+
 
     /* ── Lightbox ── */
     .lightbox {
@@ -347,6 +258,7 @@
           </span>
         </div>
         <p class="album-meta" id="album-meta"></p>
+        <p class="photo-count" id="photo-count"></p>
       </div>
     </div>
 
@@ -355,10 +267,9 @@
     <div class="status-msg" id="empty-msg" style="display:none">No photos in this album yet.</div>
     <div class="error-msg" id="error-msg" style="display:none"></div>
 
-    <div class="pagination" id="pagination" style="display:none">
-      <button class="page-btn" id="prev-btn" disabled>← Prev</button>
-      <span class="page-info" id="page-info"></span>
-      <button class="page-btn" id="next-btn">Next →</button>
+    <div class="load-more-area" id="load-more-area" style="display:none">
+      <button class="load-more-btn" id="load-more-btn">Load More</button>
+      <a class="load-all-link" id="load-all-link" href="#">or load all</a>
     </div>
   </main>
 
