@@ -1959,31 +1959,52 @@ function openCropModal(index) {
   cropModalEl.classList.add('show')
   document.body.style.overflow = 'hidden'
 
-  cropImgEl.onload = () => {
-    if (typeof Cropper === 'undefined') {
-      setCropStatus('Cropper library failed to load. Check your connection and reload.', true)
-      return
-    }
-    if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
-    cropperInstance = new Cropper(cropImgEl, {
-      viewMode: 1,
-      autoCropArea: 0.85,
-      responsive: true,
-      restore: false,
-      guides: true,
-      center: true,
-      highlight: false,
-      toggleDragModeOnDblclick: false,
+  // Fetch image as blob to avoid CORS canvas-tainting issues.
+  // This ensures getCroppedCanvas() works regardless of storage CORS config.
+  fetch(cropPhotoUrl)
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch image: ' + res.status)
+      return res.blob()
     })
-  }
-  cropImgEl.src = cropPhotoUrl
+    .then(blob => {
+      const blobUrl = URL.createObjectURL(blob)
+      cropImgEl.onload = () => {
+        if (typeof Cropper === 'undefined') {
+          setCropStatus('Cropper library failed to load. Check your connection and reload.', true)
+          return
+        }
+        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
+        cropperInstance = new Cropper(cropImgEl, {
+          viewMode: 1,
+          autoCropArea: 0.85,
+          responsive: true,
+          restore: false,
+          guides: true,
+          center: true,
+          highlight: false,
+          toggleDragModeOnDblclick: false,
+          checkCrossOrigin: false,
+        })
+      }
+      cropImgEl.src = blobUrl
+    })
+    .catch(err => {
+      console.error('Crop image fetch error:', err)
+      setCropStatus('Could not load image for cropping. Try again.', true)
+    })
 }
 
 function closeCropModal() {
   if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
   if (cropModalEl) cropModalEl.classList.remove('show')
   document.body.style.overflow = ''
-  if (cropImgEl) cropImgEl.src = ''
+  if (cropImgEl) {
+    // Revoke blob URL if one was created
+    if (cropImgEl.src && cropImgEl.src.startsWith('blob:')) {
+      URL.revokeObjectURL(cropImgEl.src)
+    }
+    cropImgEl.src = ''
+  }
 }
 
 // Re-open the lightbox at the given index after canceling a crop
