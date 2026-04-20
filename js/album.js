@@ -1968,24 +1968,36 @@ function openCropModal(index) {
     })
     .then(blob => {
       const blobUrl = URL.createObjectURL(blob)
-      cropImgEl.onload = () => {
+      // Blob URLs are same-origin; crossorigin attribute is unnecessary and can
+      // cause Cropper.js canvas operations to fail in some browsers.
+      cropImgEl.removeAttribute('crossorigin')
+      const initCropper = () => {
         if (typeof Cropper === 'undefined') {
           setCropStatus('Cropper library failed to load. Check your connection and reload.', true)
           return
         }
         if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
-        cropperInstance = new Cropper(cropImgEl, {
-          viewMode: 1,
-          autoCropArea: 0.85,
-          responsive: true,
-          restore: false,
-          guides: true,
-          center: true,
-          highlight: false,
-          toggleDragModeOnDblclick: false,
-          checkCrossOrigin: false,
-        })
+        try {
+          cropperInstance = new Cropper(cropImgEl, {
+            viewMode: 1,
+            autoCropArea: 0.85,
+            responsive: true,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            toggleDragModeOnDblclick: false,
+            checkCrossOrigin: false,
+          })
+        } catch (err) {
+          console.error('Cropper init error:', err)
+          setCropStatus('Failed to initialize cropper. Try reloading the page.', true)
+        }
       }
+      cropImgEl.addEventListener('load', initCropper, { once: true })
+      cropImgEl.addEventListener('error', () => {
+        setCropStatus('Could not load image for cropping.', true)
+      }, { once: true })
       cropImgEl.src = blobUrl
     })
     .catch(err => {
