@@ -85,6 +85,13 @@ let currentLightboxIndex = -1
 let _lightboxEnhanceFilter = 'brightness(1.5) contrast(1.15) saturate(1.05)'
 let selectedPhotos = new Set()
 let allPhotos = []
+
+// Crop state
+let cropperInstance = null
+let cropPhotoIndex = -1
+let cropPhotoId = null
+let cropPhotoFilePath = null
+let cropPhotoUrl = null
 let ssSelectedPhotos = new Set()
 let ssSortedPhotos = []       // photos in current selector modal order
 let ssLastClickedIdx = -1     // for shift-click range selection
@@ -189,6 +196,11 @@ function openLightbox(url, photoId, filePath, index) {
   currentLightboxFilePath = filePath || null
   currentLightboxIndex = (index !== undefined) ? index : allPhotos.findIndex(p => p.id === photoId)
   updateLightboxNavVisibility()
+  // Crop button: only for signed-in users viewing an image (not a video)
+  const lbCropBtn = document.getElementById('lightbox-crop-btn')
+  if (lbCropBtn) {
+    lbCropBtn.style.display = (currentUser && !isVideo) ? 'inline-flex' : 'none'
+  }
   if (photoId) loadComments(photoId)
   trackPhotoView(currentAlbumId, currentLightboxIndex, allPhotos.length)
 }
@@ -203,6 +215,8 @@ function closeLightbox() {
   currentLightboxUrl = null
   currentLightboxFilePath = null
   currentLightboxIndex = -1
+  const lbCropBtn = document.getElementById('lightbox-crop-btn')
+  if (lbCropBtn) lbCropBtn.style.display = 'none'
 }
 
 function updateLightboxNavVisibility() {
@@ -372,6 +386,16 @@ if (lightboxDownloadEl) {
   })
 }
 document.addEventListener('keydown', e => {
+  // Crop modal takes priority when open
+  const cropModalEl = document.getElementById('crop-modal')
+  if (cropModalEl && cropModalEl.classList.contains('show')) {
+    if (e.key === 'Escape') {
+      const idx = cropPhotoIndex
+      closeCropModal()
+      if (idx >= 0) reopenLightboxAfterCrop(idx)
+    }
+    return
+  }
   if (!lightboxEl.classList.contains('show')) return
   if (e.key === 'Escape') closeLightbox()
   if (e.key === 'ArrowLeft') navigateLightbox(-1)
@@ -1887,5 +1911,193 @@ if (musicFileInput) {
 if (musicModal) {
   musicModal.addEventListener('click', (e) => {
     if (e.target === musicModal) closeMusicModal()
+  })
+}
+
+// ── Crop feature ──────────────────────────────────────────────────
+// Opens a Cropper.js modal for the current lightbox photo, crops to selected
+// aspect ratio, and saves the cropped result as a NEW photo row (original kept).
+// Requires CropperJS (loaded via CDN in album.html) and a signed-in user.
+
+const cropModalEl  = document.getElementById('crop-modal')
+const cropImgEl    = document.getElementById('crop-img')
+const cropSaveBtn  = document.getElementById('crop-save-btn')
+const cropCancelBtn = document.getElementById('crop-cancel-btn')
+const cropStatusEl = document.getElementById('crop-status')
+const cropRatiosEl = document.getElementById('crop-ratios')
+const lightboxCropBtn = document.getElementById('lightbox-crop-btn')
+
+function setCropStatus(msg, isError = false) {
+  if (!cropStatusEl) return
+  if (!msg) { cropStatusEl.style.display = 'none'; return }
+  cropStatusEl.textContent = msg
+  cropStatusEl.className = 'crop-status' + (isError ? ' crop-status-error' : ' crop-status-success')
+  cropStatusEl.style.display = 'block'
+}
+
+function openCropModal(index) {
+  if (!cropModalEl || !cropImgEl) return
+  const photo = allPhotos[index]
+  if (!photo) return
+  cropPhotoIndex = index
+  cropPhotoId = photo.id
+  cropPhotoFilePath = photo.file_path
+  cropPhotoUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
+  setCropStatus('')
+  if (cropSaveBtn) { cropSaveBtn.disabled = false; cropSaveBtn.textContent = 'Save Copy' }
+
+  // Reset ratio buttons to Free
+  if (cropRatiosEl) {
+    cropRatiosEl.querySelectorAll('.crop-ratio-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.ratio === 'free')
+    })
+  }
+
+  cropImgEl.src = ''
+  cropModalEl.classList.add('show')
+  document.body.style.overflow = 'hidden'
+
+  cropImgEl.onload = () => {
+    if (typeof Cropper === 'undefined') {
+      setCropStatus('Cropper library failed to load. Check your connection and reload.', true)
+      return
+    }
+    if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
+    cropperInstance = new Cropper(cropImgEl, {
+      viewMode: 1,
+      autoCropArea: 0.85,
+      responsive: true,
+      restore: false,
+      guides: true,
+      center: true,
+      highlight: false,
+      toggleDragModeOnDblclick: false,
+    })
+  }
+  cropImgEl.src = cropPhotoUrl
+}
+
+function closeCropModal() {
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
+  if (cropModalEl) cropModalEl.classList.remove('show')
+  document.body.style.overflow = ''
+  if (cropImgEl) cropImgEl.src = ''
+}
+
+// Re-open the lightbox at the given index after canceling a crop
+function reopenLightboxAfterCrop(index) {
+  const photo = allPhotos[index]
+  if (!photo) return
+  const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+  openLightbox(url, photo.id, photo.file_path, index)
+}
+
+// Lightbox "Crop" button → close lightbox and open crop modal
+if (lightboxCropBtn) {
+  lightboxCropBtn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    if (!currentUser) { showToast('Sign in to crop photos.'); return }
+    const idx = currentLightboxIndex
+    if (idx < 0) return
+    closeLightbox()
+    openCropModal(idx)
+  })
+}
+
+if (cropCancelBtn) {
+  cropCancelBtn.addEventListener('click', () => {
+    const idx = cropPhotoIndex
+    closeCropModal()
+    if (idx >= 0) reopenLightboxAfterCrop(idx)
+  })
+}
+
+if (cropModalEl) {
+  cropModalEl.addEventListener('click', (e) => {
+    if (e.target === cropModalEl) {
+      const idx = cropPhotoIndex
+      closeCropModal()
+      if (idx >= 0) reopenLightboxAfterCrop(idx)
+    }
+  })
+}
+
+if (cropRatiosEl) {
+  cropRatiosEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.crop-ratio-btn')
+    if (!btn || !cropperInstance) return
+    cropRatiosEl.querySelectorAll('.crop-ratio-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    const parts = btn.dataset.ratio.split(':')
+    const ratio = parts.length === 2 ? parseInt(parts[0]) / parseInt(parts[1]) : NaN
+    cropperInstance.setAspectRatio(ratio)
+  })
+}
+
+if (cropSaveBtn) {
+  cropSaveBtn.addEventListener('click', async () => {
+    if (!cropperInstance || !currentUser) return
+    cropSaveBtn.disabled = true
+    cropSaveBtn.textContent = 'Saving…'
+    setCropStatus('')
+
+    const filePath = cropPhotoFilePath || ''
+    const extMatch = filePath.match(/\.([^.]+)$/)
+    const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg'
+    const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg'
+    const quality = mimeType === 'image/jpeg' ? 0.92 : undefined
+
+    const canvas = cropperInstance.getCroppedCanvas({ maxWidth: 4096, maxHeight: 4096, fillColor: '#fff' })
+    if (!canvas) {
+      setCropStatus('Failed to get cropped image.', true)
+      cropSaveBtn.disabled = false
+      cropSaveBtn.textContent = 'Save Copy'
+      return
+    }
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        setCropStatus('Failed to create image file.', true)
+        cropSaveBtn.disabled = false
+        cropSaveBtn.textContent = 'Save Copy'
+        return
+      }
+
+      const baseName = filePath.split('/').pop().replace(/\.[^.]+$/, '')
+      const saveExt = mimeType === 'image/png' ? 'png' : 'jpg'
+      const croppedPath = `${currentAlbumId}/${Date.now()}-crop-${baseName}.${saveExt}`
+
+      const { error: uploadError } = await supabase.storage.from('photos').upload(croppedPath, blob, {
+        contentType: mimeType,
+        upsert: false,
+      })
+      if (uploadError) {
+        setCropStatus('Upload failed: ' + uploadError.message, true)
+        cropSaveBtn.disabled = false
+        cropSaveBtn.textContent = 'Save Copy'
+        return
+      }
+
+      const { error: dbError } = await supabase.from('photos').insert({
+        album_id: currentAlbumId,
+        file_path: croppedPath,
+        uploaded_by: currentUser.id,
+      })
+      if (dbError) {
+        // Roll back the storage upload so we don't leave an orphan file
+        await supabase.storage.from('photos').remove([croppedPath])
+        setCropStatus('Failed to save photo record: ' + dbError.message, true)
+        cropSaveBtn.disabled = false
+        cropSaveBtn.textContent = 'Save Copy'
+        return
+      }
+
+      closeCropModal()
+      showToast('Cropped copy saved.')
+      // Refresh the album to pick up the new photo
+      if (typeof loadAlbum === 'function') await loadAlbum()
+    }, mimeType, quality)
   })
 }

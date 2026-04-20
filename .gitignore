@@ -4,3 +4,10 @@ js/credentials.js
 .env.local
 .vercel
 .env*.local
+
+# Claude Code worktree + agent scratch
+.claude/
+**/.claude/
+
+# Cowork scratch files
+.cowork-test*
