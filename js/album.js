@@ -1991,7 +1991,7 @@ function openCropModal(index) {
           })
         } catch (err) {
           console.error('Cropper init error:', err)
-          setCropStatus('Failed to initialize cropper. Try reloading the page.', true)
+          setCropStatus('Failed to initialize cropper: ' + (err.message || String(err)), true)
         }
       }
       cropImgEl.addEventListener('load', initCropper, { once: true })
