@@ -1,4 +1,4 @@
-﻿import { supabase } from './supabase.js'
+import { supabase } from './supabase.js'
 import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
 import { initSharePanel } from './share-panel.js'
 import { getCurrentUser } from './photo-album/services/authService.js'
@@ -17,7 +17,7 @@ import { createPhotoGridController } from './photo-album/features/album/photoGri
 import { createSelectionController } from './photo-album/features/album/selection.js'
 import { showToast } from './photo-album/features/album/toast.js'
 
-// Analyze average brightness of an image (0â€“255).
+// Analyze average brightness of an image (0–255).
 // Resizes to 100px wide on an offscreen canvas for speed.
 function analyzeImageBrightness(imgEl) {
   return new Promise((resolve) => {
@@ -38,7 +38,7 @@ function analyzeImageBrightness(imgEl) {
         }
         resolve(totalBrightness / pixelCount)
       } catch (e) {
-        resolve(128) // CORS or other failure â€” treat as normal brightness
+        resolve(128) // CORS or other failure — treat as normal brightness
       }
     }
     if (imgEl.complete && imgEl.naturalWidth > 0) onReady()
@@ -126,7 +126,7 @@ async function checkAlbumOwner() {
   setAlbumState({ currentUser, isAlbumOwner, isAdmin })
 }
 
-// --- Title size (S/M/L) â€” admin only ---
+// --- Title size (S/M/L) — admin only ---
 // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS title_size TEXT;
 const TITLE_SIZES = { sm: '1.2rem', md: '1.8rem', lg: '2.5rem' }
 
@@ -207,9 +207,9 @@ async function saveTitleEdit() {
   try {
     const { data, error } = await updateAlbum(currentAlbumId, { name }).select('name')
     if (error) throw error
-    if (!data || !data.length) throw new Error('Update blocked â€” check Supabase RLS UPDATE policy for albums')
+    if (!data || !data.length) throw new Error('Update blocked — check Supabase RLS UPDATE policy for albums')
     albumNameEl.textContent = name
-    showToast('âœ“ Album name updated')
+    showToast('✓ Album name updated')
   } catch (err) {
     showToast(err.message, true)
   }
@@ -307,7 +307,7 @@ async function setCoverPhoto(photoId) {
 
 // --- Download ---
 async function downloadPhoto(url, filename) {
-  showToast('Downloadingâ€¦')
+  showToast('Downloading…')
   try {
     const res = await fetch(url)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -362,7 +362,7 @@ function updateCurrentMusicStrip(url) {
       const seg = new URL(url).pathname.split('/').pop()
       if (seg) displayName = decodeURIComponent(seg).replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
     } catch (_) { /* url may not be absolute */ }
-    labelEl.textContent = `â™ª Now set: ${displayName}`
+    labelEl.textContent = `♪ Now set: ${displayName}`
     stripEl.style.display = 'flex'
   } else {
     stripEl.style.display = 'none'
@@ -387,10 +387,10 @@ async function saveMusicUrl() {
     if (error) throw error
 
     if (!data || data.length === 0) {
-      throw new Error('Update blocked â€” check Supabase RLS policy for albums table (need UPDATE policy for authenticated users)')
+      throw new Error('Update blocked — check Supabase RLS policy for albums table (need UPDATE policy for authenticated users)')
     }
 
-    showToast(musicUrl ? 'âœ“ Music URL saved!' : 'âœ“ Music removed.')
+    showToast(musicUrl ? '✓ Music URL saved!' : '✓ Music removed.')
     updateMusicBadge(!!musicUrl, musicUrl)
     musicModal.classList.remove('show')
   } catch (err) {
@@ -408,8 +408,8 @@ async function removeMusicFromAlbum() {
       .eq('id', currentAlbumId)
       .select('music_url')
     if (error) throw error
-    if (!data || data.length === 0) throw new Error('Update blocked â€” check RLS policy')
-    showToast('âœ“ Music removed.')
+    if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
+    showToast('✓ Music removed.')
     updateMusicBadge(false, null)
     updateCurrentMusicStrip('')
     if (musicUrlInput) musicUrlInput.value = ''
@@ -430,8 +430,8 @@ async function selectMusicTrack(url, title) {
       .eq('id', currentAlbumId)
       .select('music_url')
     if (error) throw error
-    if (!data || data.length === 0) throw new Error('Update blocked â€” check RLS policy')
-    showToast(`âœ“ Music set: ${title}`)
+    if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
+    showToast(`✓ Music set: ${title}`)
     updateMusicBadge(true, url)
     musicModal.classList.remove('show')
   } catch (err) {
@@ -443,7 +443,7 @@ async function selectMusicTrack(url, title) {
 async function loadMusicLibrary() {
   const listEl = document.getElementById('music-library-list')
   if (!listEl) return
-  listEl.innerHTML = '<p class="music-library-loading">Loading libraryâ€¦</p>'
+  listEl.innerHTML = '<p class="music-library-loading">Loading library…</p>'
 
   try {
     const [tracksResult, albumResult] = await Promise.all([
@@ -457,7 +457,7 @@ async function loadMusicLibrary() {
     const currentUrl = albumResult.data?.music_url || ''
 
     if (tracks.length === 0) {
-      listEl.innerHTML = '<p class="music-library-empty">No tracks yet â€” upload one using the â¬† Upload tab.</p>'
+      listEl.innerHTML = '<p class="music-library-empty">No tracks yet — upload one using the ⬆ Upload tab.</p>'
       return
     }
 
@@ -473,7 +473,7 @@ async function loadMusicLibrary() {
       const selectBtn = document.createElement('button')
       selectBtn.className = 'music-track-select'
       selectBtn.title = isActive ? 'Currently selected' : 'Use this track'
-      selectBtn.innerHTML = `<span class="music-track-icon">${isActive ? 'â–¶' : 'â™ª'}</span><span class="music-track-title">${escapeHtmlMusic(track.title)}</span>`
+      selectBtn.innerHTML = `<span class="music-track-icon">${isActive ? '▶' : '♪'}</span><span class="music-track-title">${escapeHtmlMusic(track.title)}</span>`
       selectBtn.addEventListener('click', () => selectMusicTrack(publicUrl, track.title))
       item.appendChild(selectBtn)
 
@@ -481,7 +481,7 @@ async function loadMusicLibrary() {
         const delBtn = document.createElement('button')
         delBtn.className = 'music-track-delete'
         delBtn.title = 'Delete from library'
-        delBtn.textContent = 'âœ•'
+        delBtn.textContent = '✕'
         delBtn.addEventListener('click', (e) => {
           e.stopPropagation()
           deleteMusicTrack(track.id, track.file_path, item)
@@ -510,7 +510,7 @@ async function uploadMusicFile(file) {
     return
   }
   if (file.size > 20 * 1024 * 1024) {
-    showToast('File too large â€” maximum 20 MB', true)
+    showToast('File too large — maximum 20 MB', true)
     return
   }
 
@@ -525,7 +525,7 @@ async function uploadMusicFile(file) {
   if (musicUploadZone) musicUploadZone.style.display = 'none'
   if (musicUploadProgress) musicUploadProgress.style.display = 'flex'
   if (musicProgressFill) musicProgressFill.style.width = '20%'
-  if (musicProgressLabel) musicProgressLabel.textContent = 'Uploadingâ€¦'
+  if (musicProgressLabel) musicProgressLabel.textContent = 'Uploading…'
 
   try {
     const { error: uploadError } = await supabase.storage
@@ -534,7 +534,7 @@ async function uploadMusicFile(file) {
     if (uploadError) throw uploadError
 
     if (musicProgressFill) musicProgressFill.style.width = '65%'
-    if (musicProgressLabel) musicProgressLabel.textContent = 'Saving to libraryâ€¦'
+    if (musicProgressLabel) musicProgressLabel.textContent = 'Saving to library…'
 
     const { error: dbError } = await supabase
       .from('music_tracks')
@@ -552,7 +552,7 @@ async function uploadMusicFile(file) {
       if (musicProgressFill) musicProgressFill.style.width = '0%'
       if (musicFileInput) musicFileInput.value = ''
       await selectMusicTrack(publicUrl, title)
-      showToast(`âœ“ "${title}" uploaded and set as album music!`)
+      showToast(`✓ "${title}" uploaded and set as album music!`)
     }, 700)
   } catch (err) {
     console.error('Music upload error:', err)
@@ -626,9 +626,9 @@ function saveSlideshowConfig() {
   const excludedIds = ssSortedPhotos.filter(p => !ssSelectedPhotos.has(p.id)).map(p => p.id)
   try {
     localStorage.setItem(getSlideshowConfigKey(), JSON.stringify({ orderedIds, excludedIds }))
-    showToast(`ðŸ’¾ Slideshow saved â€” ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} photos`)
+    showToast(`💾 Slideshow saved — ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} photos`)
     const hint = document.getElementById('ss-config-hint')
-    if (hint) hint.textContent = `âœ“ Saved Â· ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included Â· Shift+click range Â· Drag to reorder`
+    if (hint) hint.textContent = `✓ Saved · ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included · Shift+click range · Drag to reorder`
   } catch (e) {
     showToast('Save failed: ' + e.message, true)
   }
@@ -683,7 +683,7 @@ function openSlideshowSelector() {
 
     const check = document.createElement('span')
     check.className = 'ss-check'
-    check.textContent = 'âœ“'
+    check.textContent = '✓'
 
     const excl = document.createElement('div')
     excl.className = 'ss-excl'
@@ -773,9 +773,9 @@ function openSlideshowSelector() {
   const hint = document.getElementById('ss-config-hint')
   if (hint) {
     if (savedConfig) {
-      hint.textContent = `âœ“ Saved Â· ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included Â· Shift+click range Â· Drag to reorder`
+      hint.textContent = `✓ Saved · ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included · Shift+click range · Drag to reorder`
     } else {
-      hint.textContent = 'Click to include/exclude Â· Shift+click for range Â· Drag to reorder'
+      hint.textContent = 'Click to include/exclude · Shift+click for range · Drag to reorder'
     }
   }
 
@@ -842,7 +842,7 @@ async function loadAlbum() {
   if (musicBtnEl) {
     musicBtnEl.style.display = isAlbumOwner ? 'inline-block' : 'none'
   }
-  // Admin bar (rename + font size) â€” admin only
+  // Admin bar (rename + font size) — admin only
   const adminBarEl = document.getElementById('album-admin-bar')
   if (adminBarEl) {
     adminBarEl.style.display = isAdmin ? 'flex' : 'none'
@@ -945,7 +945,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   commentsController.bindCommentForm()
 
-  // Intercept slideshow button â†’ open photo selector instead of navigating directly
+  // Intercept slideshow button → open photo selector instead of navigating directly
   if (slideshowBtnEl) {
     slideshowBtnEl.addEventListener('click', e => {
       e.preventDefault()
@@ -1026,7 +1026,7 @@ if (modalCancelBtn) {
   })
 }
 
-// Music button â€” open modal
+// Music button — open modal
 if (musicBtnEl) {
   musicBtnEl.addEventListener('click', () => {
     if (!isAlbumOwner) {
@@ -1040,15 +1040,15 @@ if (musicBtnEl) {
   })
 }
 
-// Music modal â€” URL tab buttons
+// Music modal — URL tab buttons
 if (musicSaveBtn) musicSaveBtn.addEventListener('click', saveMusicUrl)
 if (musicClearBtn) musicClearBtn.addEventListener('click', clearMusicUrl)
 if (musicCloseBtn) musicCloseBtn.addEventListener('click', closeMusicModal)
 
-// Music modal â€” remove current music
+// Music modal — remove current music
 document.getElementById('music-remove-btn')?.addEventListener('click', removeMusicFromAlbum)
 
-// Music modal â€” tab switching
+// Music modal — tab switching
 document.querySelectorAll('.music-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.dataset.tab
@@ -1057,7 +1057,7 @@ document.querySelectorAll('.music-tab').forEach(btn => {
   })
 })
 
-// Music modal â€” upload zone click
+// Music modal — upload zone click
 if (musicUploadZone) {
   musicUploadZone.addEventListener('click', () => musicFileInput?.click())
   musicUploadZone.addEventListener('keydown', e => {
@@ -1076,7 +1076,7 @@ if (musicUploadZone) {
   })
 }
 
-// Music modal â€” file input change
+// Music modal — file input change
 if (musicFileInput) {
   musicFileInput.addEventListener('change', () => {
     const file = musicFileInput.files?.[0]
@@ -1091,7 +1091,7 @@ if (musicModal) {
   })
 }
 
-// â”€â”€ Crop feature â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Crop feature ─────────────────────────────────────────────────
 // Opens a Cropper.js modal for the current lightbox photo, crops to selected
 // aspect ratio, and saves the cropped result as a NEW photo row (original kept).
 // Requires CropperJS (loaded via CDN in album.html) and a signed-in user.
@@ -1204,7 +1204,7 @@ function reopenLightboxAfterCrop(index) {
   openLightbox(url, photo.id, photo.file_path, index)
 }
 
-// Lightbox "Crop" button â†’ close lightbox and open crop modal
+// Lightbox "Crop" button → close lightbox and open crop modal
 if (lightboxCropBtn) {
   lightboxCropBtn.addEventListener('click', (e) => {
     e.stopPropagation()
@@ -1250,7 +1250,7 @@ if (cropSaveBtn) {
   cropSaveBtn.addEventListener('click', async () => {
     if (!cropperInstance || !currentUser) return
     cropSaveBtn.disabled = true
-    cropSaveBtn.textContent = 'Savingâ€¦'
+    cropSaveBtn.textContent = 'Saving…'
     setCropStatus('')
 
     const filePath = cropPhotoFilePath || ''
