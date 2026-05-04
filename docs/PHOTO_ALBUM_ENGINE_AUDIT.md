@@ -91,3 +91,25 @@ Date: 2026-05-03
 4. Phase 4: move permission checks into reusable capability helpers backed by RLS assumptions.
 5. Phase 5: add focused static/browser smoke tests for album list, album load, upload validation, comments, and owner controls.
 6. Phase 6: create adapters for static GitHub Pages and Next.js without changing the core services.
+
+## Phase 2 Update
+
+Extracted low-risk album-page behavior into `js/photo-album/features/album/`:
+
+- `toast.js`: owns the existing toast DOM creation, CSS classes, timing, and removal behavior.
+- `permissions.js`: centralizes the current client-side admin/comment checks and documents that these checks are UX only; Supabase RLS remains authoritative.
+- `albumState.js`: introduces shared mutable album-page state for `currentAlbumId`, `coverPhotoId`, `currentUser`, `isAlbumOwner`, `isAdmin`, `selectedPhotos`, and `allPhotos`.
+- `comments.js`: owns comment loading, rendering, posting, deletion, sign-in link behavior, and comment form binding while continuing to use `commentService`.
+- `lightbox.js`: owns image/video lightbox open/close/navigation state, enhance button behavior, download button wiring, keyboard navigation, swipe gestures, and comment loading callback.
+
+`js/album.js` remains the page-level controller. It now wires feature modules together and still owns album loading, photo grid rendering, title editing, cover handling, selection/bulk actions, move modal, drag reorder, focal point editing, downloads, music tools, slideshow selector, crop flow, share-panel integration, and analytics entry points.
+
+Recommended next extraction order:
+
+1. `photoGrid.js`: render photo/video tiles, dark-photo enhancement controls, cover/delete/reposition buttons.
+2. `selection.js`: checkbox state, drag-select rectangle, bulk action bar, selected-photo counts.
+3. `movePhotos.js`: move modal and album list loading.
+4. `focalPoint.js`: reposition modal and focal-point persistence.
+5. `crop.js`: Cropper.js modal, cropped copy upload, rollback handling.
+6. `music.js`: music URL, music library, `music_tracks`, and `music` bucket behavior.
+7. `slideshowSelector.js`: slideshow selection state, persistence, drag ordering, and start URL construction.
