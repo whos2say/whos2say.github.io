@@ -1,6 +1,13 @@
 import { supabase } from './supabase.js'
 import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
 import { initSharePanel } from './share-panel.js'
+import { getCurrentUser, isAdminUser } from './photo-album/services/authService.js'
+import { updateAlbum } from './photo-album/services/albumService.js'
+import { createPhoto, deletePhotoRecord, updatePhoto } from './photo-album/services/photoService.js'
+import { createPhotoComment, deletePhotoComment, getPhotoComments } from './photo-album/services/commentService.js'
+import { getPublicUrl, removeFiles, uploadFile } from './photo-album/services/storageService.js'
+import { getAlbumIdFromUrl } from './photo-album/utils/dom.js'
+import { isVideoPath } from './photo-album/utils/media.js'
 
 // Analyze average brightness of an image (0–255).
 // Resizes to 100px wide on an offscreen canvas for speed.
@@ -44,9 +51,6 @@ const lightboxCloseEl = document.getElementById('lightbox-close')
 const lightboxDownloadEl = document.getElementById('lightbox-download')
 const lightboxEnhanceBtnEl = document.getElementById('lightbox-enhance-btn')
 
-function isVideoPath(path) {
-  return /\.(mp4|mov|webm|m4v)$/i.test(path || '')
-}
 const photosGridEl = document.getElementById('photos-grid')
 const emptyStateEl = document.getElementById('empty-state')
 const uploadBtnEl = document.getElementById('upload-btn')
@@ -104,16 +108,15 @@ dragSelectArea.className = 'drag-select-area'
 document.body.appendChild(dragSelectArea)
 
 function getAlbumId() {
-  return new URLSearchParams(window.location.search).get('album') || 
-         new URLSearchParams(window.location.search).get('id')
+  return getAlbumIdFromUrl()
 }
 
 async function checkAlbumOwner() {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
     currentUser = user
     isAlbumOwner = !!user
-    isAdmin = user?.email === 'joe@whostosay.org'
+    isAdmin = isAdminUser(user)
   } catch (err) {
     currentUser = null
     isAlbumOwner = false
@@ -142,10 +145,7 @@ function applyTitleSize(size) {
 async function saveTitleSize(size) {
   if (!isAdmin || !currentAlbumId) return
   try {
-    const { error } = await supabase
-      .from('albums')
-      .update({ title_size: size })
-      .eq('id', currentAlbumId)
+    const { error } = await updateAlbum(currentAlbumId, { title_size: size })
     if (error) throw error
     applyTitleSize(size)
     showToast(`Title size: ${size.toUpperCase()}`)
@@ -232,7 +232,7 @@ function navigateLightbox(delta) {
   const next = currentLightboxIndex + delta
   if (next < 0 || next >= allPhotos.length) return
   const photo = allPhotos[next]
-  const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+  const publicUrl = getPublicUrl(photo.file_path)
   openLightbox(publicUrl, photo.id, photo.file_path, next)
 }
 
@@ -271,11 +271,7 @@ async function loadComments(photoId) {
   listEl.innerHTML = '<div class="lc-loading">Loading…</div>'
 
   try {
-    const { data: comments, error } = await supabase
-      .from('photo_comments')
-      .select('id, user_id, user_email, comment, created_at')
-      .eq('photo_id', photoId)
-      .order('created_at', { ascending: true })
+    const { data: comments, error } = await getPhotoComments(photoId)
 
     if (error) throw error
 
@@ -332,11 +328,11 @@ async function postComment() {
 
   submitBtn.disabled = true
   try {
-    const { error } = await supabase.from('photo_comments').insert({
-      photo_id:   currentLightboxPhotoId,
-      user_id:    currentUser.id,
-      user_email: currentUser.email,
-      comment:    text
+    const { error } = await createPhotoComment({
+      photoId: currentLightboxPhotoId,
+      userId: currentUser.id,
+      userEmail: currentUser.email,
+      comment: text,
     })
     if (error) throw error
     input.value = ''
@@ -350,7 +346,7 @@ async function postComment() {
 
 async function deleteComment(commentId, itemEl) {
   try {
-    const { error } = await supabase.from('photo_comments').delete().eq('id', commentId)
+    const { error } = await deletePhotoComment(commentId)
     if (error) throw error
     itemEl.remove()
     // Update count
@@ -433,11 +429,7 @@ async function saveTitleEdit() {
   const name = albumNameEditEl.value.trim()
   if (!name) return
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .update({ name })
-      .eq('id', currentAlbumId)
-      .select('name')
+    const { data, error } = await updateAlbum(currentAlbumId, { name }).select('name')
     if (error) throw error
     if (!data || !data.length) throw new Error('Update blocked — check Supabase RLS UPDATE policy for albums')
     albumNameEl.textContent = name
@@ -484,11 +476,7 @@ async function setCoverPhoto(photoId) {
   if (!isAlbumOwner || !currentAlbumId) return
 
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .update({ cover_photo_id: photoId })
-      .eq('id', currentAlbumId)
-      .select('cover_photo_id')
+    const { data, error } = await updateAlbum(currentAlbumId, { cover_photo_id: photoId }).select('cover_photo_id')
 
     if (error) throw error
     if (!data || data.length === 0) throw new Error('Cover update blocked — check Supabase RLS UPDATE policy for albums table')
@@ -629,10 +617,10 @@ function updateSelectionUI() {
 }
 
 async function deletePhoto(photoId, filePath) {
-  const { error: storageError } = await supabase.storage.from('photos').remove([filePath])
+  const { error: storageError } = await removeFiles([filePath])
   if (storageError) throw new Error(`Storage delete failed: ${storageError.message}`)
 
-  const { data, error: dbError } = await supabase.from('photos').delete().eq('id', photoId).select('id')
+  const { data, error: dbError } = await deletePhotoRecord(photoId)
   if (dbError) throw new Error(`DB delete failed: ${dbError.message}`)
   if (!data || data.length === 0) throw new Error('Delete blocked — add a DELETE policy for the photos table in Supabase (Authentication → Policies)')
 }
@@ -778,7 +766,7 @@ async function savePhotoOrder() {
   try {
     await Promise.all(
       tiles.map((tile, idx) =>
-        supabase.from('photos').update({ sort_order: idx }).eq('id', tile.dataset.photoId)
+        updatePhoto(tile.dataset.photoId, { sort_order: idx })
       )
     )
     showToast('✓ Order saved')
@@ -886,7 +874,7 @@ async function downloadSelectedPhotos() {
 
   if (photos.length === 1) {
     const photo = photos[0]
-    const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+    const url = getPublicUrl(photo.file_path)
     await downloadPhoto(url, photo.file_path.split('/').pop())
     return
   }
@@ -896,7 +884,7 @@ async function downloadSelectedPhotos() {
   try {
     const zip = new JSZip() // eslint-disable-line no-undef
     for (const photo of photos) {
-      const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+      const url = getPublicUrl(photo.file_path)
       const filename = photo.file_path.split('/').pop()
       const res = await fetch(url)
       if (!res.ok) throw new Error(`Failed to fetch ${filename}`)
@@ -1260,7 +1248,7 @@ function openSlideshowSelector() {
 
   grid.innerHTML = ''
   ssSortedPhotos.forEach(photo => {
-    const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+    const publicUrl = getPublicUrl(photo.file_path)
     const isSelected = ssSelectedPhotos.has(photo.id)
 
     const thumb = document.createElement('div')
@@ -1511,7 +1499,7 @@ async function loadAlbum() {
 
     // Update share panel with cover photo URL now that photos are loaded
     if (photos.length > 0) {
-      const firstUrl = supabase.storage.from('photos').getPublicUrl(photos[0].file_path).data.publicUrl
+      const firstUrl = getPublicUrl(photos[0].file_path)
       initSharePanel({ coverUrl: firstUrl })
     }
 
@@ -1942,7 +1930,7 @@ function openCropModal(index) {
   cropPhotoIndex = index
   cropPhotoId = photo.id
   cropPhotoFilePath = photo.file_path
-  cropPhotoUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+  cropPhotoUrl = getPublicUrl(photo.file_path)
 
   if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
   setCropStatus('')
@@ -2023,7 +2011,7 @@ function closeCropModal() {
 function reopenLightboxAfterCrop(index) {
   const photo = allPhotos[index]
   if (!photo) return
-  const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+  const url = getPublicUrl(photo.file_path)
   openLightbox(url, photo.id, photo.file_path, index)
 }
 
@@ -2102,7 +2090,7 @@ if (cropSaveBtn) {
       const saveExt = mimeType === 'image/png' ? 'png' : 'jpg'
       const croppedPath = `${currentAlbumId}/${Date.now()}-crop-${baseName}.${saveExt}`
 
-      const { error: uploadError } = await supabase.storage.from('photos').upload(croppedPath, blob, {
+      const { error: uploadError } = await uploadFile(croppedPath, blob, {
         contentType: mimeType,
         upsert: false,
       })
@@ -2113,14 +2101,14 @@ if (cropSaveBtn) {
         return
       }
 
-      const { error: dbError } = await supabase.from('photos').insert({
+      const { error: dbError } = await createPhoto({
         album_id: currentAlbumId,
         file_path: croppedPath,
         uploaded_by: currentUser.id,
       })
       if (dbError) {
         // Roll back the storage upload so we don't leave an orphan file
-        await supabase.storage.from('photos').remove([croppedPath])
+        await removeFiles([croppedPath])
         setCropStatus('Failed to save photo record: ' + dbError.message, true)
         cropSaveBtn.disabled = false
         cropSaveBtn.textContent = 'Save Copy'
