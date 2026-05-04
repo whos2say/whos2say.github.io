@@ -18,6 +18,7 @@ import { createMusicController } from './photo-album/features/album/music.js'
 import { isAlbumAdmin } from './photo-album/features/album/permissions.js'
 import { createPhotoGridController } from './photo-album/features/album/photoGrid.js'
 import { createSelectionController } from './photo-album/features/album/selection.js'
+import { createAlbumShareController } from './photo-album/features/album/share.js'
 import { createSlideshowSelectorController } from './photo-album/features/album/slideshowSelector.js'
 import { showToast } from './photo-album/features/album/toast.js'
 import { createTitleControlsController } from './photo-album/features/album/titleControls.js'
@@ -68,6 +69,7 @@ const lightboxEnhanceBtnEl = document.getElementById('lightbox-enhance-btn')
 const photosGridEl = document.getElementById('photos-grid')
 const emptyStateEl = document.getElementById('empty-state')
 const uploadBtnEl = document.getElementById('upload-btn')
+const shareBtnEl = document.getElementById('share-btn')
 const slideshowBtnEl = document.getElementById('slideshow-btn')
 const musicBtnEl = document.getElementById('music-btn')
 const bulkActionsBar = document.querySelector('.bulk-actions-bar')
@@ -118,7 +120,6 @@ let coverPhotoId = null
 let currentUser = null
 let isAlbumOwner = false
 let isAdmin = false
-let _sharePanelBound = false
 let selectedPhotos = new Set()
 let allPhotos = []
 setAlbumState({ selectedPhotos, allPhotos })
@@ -220,6 +221,17 @@ const titleControlsController = createTitleControlsController({
 })
 
 const { applyTitleSize } = titleControlsController
+
+const shareController = createAlbumShareController({
+  getCurrentAlbumId: () => currentAlbumId,
+  getAlbumName: () => albumNameEl.textContent,
+  getPhotos: () => allPhotos,
+  getPublicUrl,
+  initSharePanel,
+  elements: {
+    shareBtn: shareBtnEl,
+  },
+})
 
 const slideshowSelectorController = createSlideshowSelectorController({
   getCurrentAlbumId: () => currentAlbumId,
@@ -402,18 +414,7 @@ async function loadAlbum() {
       }
       trackAlbumView(currentAlbumId, albumData.name)
 
-      const panel = initSharePanel({
-        shareUrl:     `${window.location.origin}/share/album?album=${encodeURIComponent(currentAlbumId)}`,
-        title:        albumData.name,
-        contentLabel: 'album',
-        albumId:      currentAlbumId,
-        targetType:   'album',
-        targetId:     currentAlbumId,
-      })
-      if (!_sharePanelBound) {
-        _sharePanelBound = true
-        document.getElementById('share-btn')?.addEventListener('click', () => panel.open())
-      }
+      shareController.configureAlbumShare(albumData)
     }
 
     if (loadedCoverPhotoId) {
@@ -437,10 +438,7 @@ async function loadAlbum() {
     setAlbumState({ allPhotos })
 
     // Update share panel with cover photo URL now that photos are loaded
-    if (photos.length > 0) {
-      const firstUrl = getPublicUrl(photos[0].file_path)
-      initSharePanel({ coverUrl: firstUrl })
-    }
+    shareController.updateCoverUrl(photos)
 
     // Render photos with staggered animation and cover buttons
     photoGridController.renderPhotos(photos)
