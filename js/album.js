@@ -1,8 +1,18 @@
-import { supabase } from './supabase.js'
 import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
 import { initSharePanel } from './share-panel.js'
 import { getCurrentUser } from './photo-album/services/authService.js'
 import { updateAlbum } from './photo-album/services/albumService.js'
+import {
+  getAlbumMusicUrl,
+  setAlbumMusicUrl,
+  clearAlbumMusicUrl,
+  getMusicTracks,
+  getMusicPublicUrl,
+  uploadMusicFile as uploadMusicStorage,
+  createMusicTrack,
+  deleteMusicFile,
+  deleteMusicTrack as deleteMusicTrackRow,
+} from './photo-album/services/musicService.js'
 import { createPhoto } from './photo-album/services/photoService.js'
 import { getPublicUrl, removeFiles, uploadFile } from './photo-album/services/storageService.js'
 import { getAlbumIdFromUrl } from './photo-album/utils/dom.js'
@@ -321,11 +331,7 @@ function escapeHtmlMusic(str) {
 
 async function loadMusicUrl() {
   try {
-    const { data: albumData, error } = await supabase
-      .from('albums')
-      .select('music_url')
-      .eq('id', currentAlbumId)
-      .single()
+    const { data: albumData, error } = await getAlbumMusicUrl(currentAlbumId)
 
     if (error && error.code !== 'PGRST116') throw error
 
@@ -364,11 +370,7 @@ async function saveMusicUrl() {
   const musicUrl = musicUrlInput ? musicUrlInput.value.trim() : ''
 
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .update({ music_url: musicUrl || null })
-      .eq('id', currentAlbumId)
-      .select('music_url')
+    const { data, error } = await setAlbumMusicUrl(currentAlbumId, musicUrl || null)
 
     if (error) throw error
 
@@ -388,11 +390,7 @@ async function saveMusicUrl() {
 async function removeMusicFromAlbum() {
   if (!isAlbumOwner) return
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .update({ music_url: null })
-      .eq('id', currentAlbumId)
-      .select('music_url')
+    const { data, error } = await clearAlbumMusicUrl(currentAlbumId)
     if (error) throw error
     if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
     showToast('✓ Music removed.')
@@ -410,11 +408,7 @@ async function selectMusicTrack(url, title) {
     return
   }
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .update({ music_url: url })
-      .eq('id', currentAlbumId)
-      .select('music_url')
+    const { data, error } = await setAlbumMusicUrl(currentAlbumId, url)
     if (error) throw error
     if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
     showToast(`✓ Music set: ${title}`)
@@ -433,8 +427,8 @@ async function loadMusicLibrary() {
 
   try {
     const [tracksResult, albumResult] = await Promise.all([
-      supabase.from('music_tracks').select('*').order('created_at', { ascending: false }),
-      supabase.from('albums').select('music_url').eq('id', currentAlbumId).single()
+      getMusicTracks(),
+      getAlbumMusicUrl(currentAlbumId),
     ])
 
     if (tracksResult.error) throw tracksResult.error
@@ -449,7 +443,7 @@ async function loadMusicLibrary() {
 
     listEl.innerHTML = ''
     tracks.forEach(track => {
-      const publicUrl = supabase.storage.from('music').getPublicUrl(track.file_path).data.publicUrl
+      const publicUrl = getMusicPublicUrl(track.file_path)
       const isActive = currentUrl === publicUrl
       const canDelete = currentUser?.id === track.uploaded_by || isAdmin
 
@@ -514,23 +508,26 @@ async function uploadMusicFile(file) {
   if (musicProgressLabel) musicProgressLabel.textContent = 'Uploading…'
 
   try {
-    const { error: uploadError } = await supabase.storage
-      .from('music')
-      .upload(filePath, file, { contentType: file.type, upsert: false })
+    const { error: uploadError } = await uploadMusicStorage(filePath, file, {
+      contentType: file.type,
+      upsert: false,
+    })
     if (uploadError) throw uploadError
 
     if (musicProgressFill) musicProgressFill.style.width = '65%'
     if (musicProgressLabel) musicProgressLabel.textContent = 'Saving to library…'
 
-    const { error: dbError } = await supabase
-      .from('music_tracks')
-      .insert({ file_path: filePath, title, uploaded_by: currentUser.id })
+    const { error: dbError } = await createMusicTrack({
+      file_path: filePath,
+      title,
+      uploaded_by: currentUser.id,
+    })
     if (dbError) throw dbError
 
     if (musicProgressFill) musicProgressFill.style.width = '100%'
     if (musicProgressLabel) musicProgressLabel.textContent = 'Done!'
 
-    const publicUrl = supabase.storage.from('music').getPublicUrl(filePath).data.publicUrl
+    const publicUrl = getMusicPublicUrl(filePath)
 
     setTimeout(async () => {
       if (musicUploadProgress) musicUploadProgress.style.display = 'none'
@@ -552,8 +549,8 @@ async function uploadMusicFile(file) {
 async function deleteMusicTrack(trackId, filePath, itemEl) {
   if (!confirm('Delete this track from the library? This cannot be undone.')) return
   try {
-    await supabase.storage.from('music').remove([filePath])
-    const { error } = await supabase.from('music_tracks').delete().eq('id', trackId)
+    await deleteMusicFile(filePath)
+    const { error } = await deleteMusicTrackRow(trackId)
     if (error) throw error
     itemEl.remove()
     showToast('Track deleted from library.')
