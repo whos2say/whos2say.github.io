@@ -28,6 +28,7 @@ import { isAlbumAdmin } from './photo-album/features/album/permissions.js'
 import { createPhotoGridController } from './photo-album/features/album/photoGrid.js'
 import { createSelectionController } from './photo-album/features/album/selection.js'
 import { showToast } from './photo-album/features/album/toast.js'
+import { createTitleControlsController } from './photo-album/features/album/titleControls.js'
 
 // Analyze average brightness of an image (0–255).
 // Resizes to 100px wide on an offscreen canvas for speed.
@@ -64,6 +65,7 @@ const editTitleBtnEl = document.getElementById('edit-title-btn')
 const saveTitleBtnEl = document.getElementById('save-title-btn')
 const cancelTitleBtnEl = document.getElementById('cancel-title-btn')
 const titleEditBtnsEl = document.getElementById('title-edit-btns')
+const titleSizeButtons = document.querySelectorAll('.title-size-btn')
 const lightboxEl = document.getElementById('lightbox')
 const lightboxImgEl = document.getElementById('lightbox-img')
 const lightboxVideoEl = document.getElementById('lightbox-video')
@@ -138,36 +140,6 @@ async function checkAlbumOwner() {
   setAlbumState({ currentUser, isAlbumOwner, isAdmin })
 }
 
-// --- Title size (S/M/L) — admin only ---
-// SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS title_size TEXT;
-const TITLE_SIZES = { sm: '1.2rem', md: '1.8rem', lg: '2.5rem' }
-
-function applyTitleSize(size) {
-  if (size && TITLE_SIZES[size]) {
-    albumNameEl.style.fontSize = TITLE_SIZES[size]
-    albumNameEl.dataset.sizeOverride = size
-  } else {
-    delete albumNameEl.dataset.sizeOverride
-    albumNameEl.style.fontSize = ''
-    window.fitAlbumTitle?.()
-  }
-  document.querySelectorAll('.title-size-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.size === size)
-  })
-}
-
-async function saveTitleSize(size) {
-  if (!isAdmin || !currentAlbumId) return
-  try {
-    const { error } = await updateAlbum(currentAlbumId, { title_size: size })
-    if (error) throw error
-    applyTitleSize(size)
-    showToast(`Title size: ${size.toUpperCase()}`)
-  } catch (err) {
-    showToast('Failed to save size: ' + err.message, true)
-  }
-}
-
 // --- Lightbox + comments ---
 let lightboxController
 const commentsController = createCommentsController({
@@ -202,46 +174,23 @@ lightboxController = createLightboxController({
 const { openLightbox, closeLightbox } = lightboxController
 lightboxController.bindLightboxEvents()
 
-// --- Title edit ---
-function startTitleEdit() {
-  albumNameEditEl.value = albumNameEl.textContent
-  albumNameEl.style.display = 'none'
-  editTitleBtnEl.style.display = 'none'
-  albumNameEditEl.style.display = ''
-  titleEditBtnsEl.style.display = 'flex'
-  albumNameEditEl.focus()
-  albumNameEditEl.select()
-}
-
-async function saveTitleEdit() {
-  const name = albumNameEditEl.value.trim()
-  if (!name) return
-  try {
-    const { data, error } = await updateAlbum(currentAlbumId, { name }).select('name')
-    if (error) throw error
-    if (!data || !data.length) throw new Error('Update blocked — check Supabase RLS UPDATE policy for albums')
-    albumNameEl.textContent = name
-    showToast('✓ Album name updated')
-  } catch (err) {
-    showToast(err.message, true)
-  }
-  cancelTitleEdit()
-}
-
-function cancelTitleEdit() {
-  albumNameEl.style.display = ''
-  editTitleBtnEl.style.display = ''   // let CSS (.admin-bar-btn) control display
-  albumNameEditEl.style.display = 'none'
-  titleEditBtnsEl.style.display = 'none'
-}
-
-editTitleBtnEl.addEventListener('click', startTitleEdit)
-saveTitleBtnEl.addEventListener('click', saveTitleEdit)
-cancelTitleBtnEl.addEventListener('click', cancelTitleEdit)
-albumNameEditEl.addEventListener('keydown', e => {
-  if (e.key === 'Enter') saveTitleEdit()
-  if (e.key === 'Escape') cancelTitleEdit()
+const titleControlsController = createTitleControlsController({
+  elements: {
+    albumName: albumNameEl,
+    albumNameEdit: albumNameEditEl,
+    editTitleBtn: editTitleBtnEl,
+    saveTitleBtn: saveTitleBtnEl,
+    cancelTitleBtn: cancelTitleBtnEl,
+    titleEditBtns: titleEditBtnsEl,
+    titleSizeButtons,
+  },
+  getCurrentAlbumId: () => currentAlbumId,
+  getIsAdmin: () => isAdmin,
+  updateAlbum,
+  showToast,
 })
+
+const { applyTitleSize } = titleControlsController
 
 const selectionController = createSelectionController({
   state: albumState,
@@ -903,9 +852,8 @@ async function loadAlbum() {
 document.addEventListener('DOMContentLoaded', () => {
   loadAlbum()
 
-  document.querySelectorAll('.title-size-btn').forEach(btn => {
-    btn.addEventListener('click', () => saveTitleSize(btn.dataset.size))
-  })
+  titleControlsController.bindTitleEditEvents()
+  titleControlsController.bindTitleSizeEvents()
 
   commentsController.bindCommentForm()
 
