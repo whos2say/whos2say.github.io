@@ -113,3 +113,15 @@ Recommended next extraction order:
 5. `crop.js`: Cropper.js modal, cropped copy upload, rollback handling.
 6. `music.js`: music URL, music library, `music_tracks`, and `music` bucket behavior.
 7. `slideshowSelector.js`: slideshow selection state, persistence, drag ordering, and start URL construction.
+
+## PR Review Cleanup
+
+The Phase 1 inline CSS extraction moved styles from `albums.html`, `album.html`, and `upload.html` into one shared `assets/css/photo-album.css` file. Because those styles were previously page-local, generic selectors such as `.album-info`, `.modal-buttons`, `.modal-btn`, `.modal-cancel`, `.album-option`, `.music-info`, `.upload-item`, and `.quality-warn` could leak across photo album pages after extraction.
+
+Cleanup added page body classes:
+
+- `albums.html`: `photo-album-page albums-page`
+- `album.html`: `photo-album-page album-detail-page`
+- `upload.html`: `photo-album-page upload-page`
+
+The extracted CSS is now scoped by page section under `.albums-page`, `.album-detail-page`, or `.upload-page` so the static pages keep their original page-specific styling while still sharing one stylesheet.
