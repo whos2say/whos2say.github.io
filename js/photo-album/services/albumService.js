@@ -26,6 +26,15 @@ export function getAlbumById(albumId, columns = '*') {
   return supabase.from('albums').select(columns).eq('id', albumId).single()
 }
 
+export function getAlbumForDetailPage(albumId) {
+  return supabase
+    .from('albums')
+    .select('name, cover_photo_id, music_url, title_size')
+    .eq('id', albumId)
+    .limit(1)
+    .single()
+}
+
 export function getAlbums(columns = '*') {
   return supabase.from('albums').select(columns)
 }

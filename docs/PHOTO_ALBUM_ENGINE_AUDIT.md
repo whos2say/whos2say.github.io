@@ -153,3 +153,40 @@ Recommended next extraction order:
 4. `music.js` for music URL/library/upload/delete behavior.
 5. `slideshowSelector.js` for slideshow selection state and start URL construction.
 6. `shareTools.js` only after the core media workflows are stable.
+
+## Phase 4A Update
+
+Extracted the album-page data-read and single-file download behavior:
+
+- `albumLoader.js`: owns the album detail read flow for album metadata, ordered photos, and cover photo ID normalization. It routes the detail-page album read through `albumService.getAlbumForDetailPage()` and the ordered photo list read through `photoService.getOrderedAlbumPhotos()`.
+- `download.js`: owns the shared single-photo fetch/blob/download helper with injected toast behavior and the existing filename fallback.
+- `albumService.js`: adds the album detail-page metadata query while preserving selected columns, album ID filtering, `limit(1)`, and `single()` behavior.
+- `photoService.js`: adds the album detail ordered photo query while preserving selected columns and ordering by `sort_order` ascending with nulls last, then `created_at` descending.
+
+`js/album.js` remains the page-level controller. It still owns URL validation, owner/admin UI wiring, title rendering, share-panel binding, album state updates, empty-state display, grid rendering, drag setup, music tools, slideshow selector, crop flow, and analytics.
+
+Remaining direct Supabase calls in `album.js` after Phase 4A:
+
+- Album update/read calls for title size, music URL, music removal, and music track selection.
+- `music_tracks` reads/inserts/deletes and `music` bucket storage calls.
+- Crop upload rollback and cropped-photo persistence continue to use the existing storage/photo services where already wired.
+- Sharing, crop, music, and slideshow selector remain embedded in the page controller.
+
+Manual smoke checklist for Phase 4A:
+
+- Album loads metadata/title.
+- Photos render in correct order.
+- Empty album still behaves correctly.
+- Cover photo indicator still works.
+- Lightbox opens.
+- Single download works.
+- Bulk download still works.
+- Selection, bulk actions, reorder, and focal point still work.
+- Crop, music, slideshow selector, and share tools are unaffected.
+
+Recommended next extraction order:
+
+1. `music.js` for music URL/library/upload/delete behavior and remaining `music_tracks`/`music` storage calls.
+2. `slideshowSelector.js` for slideshow selection state, persistence, drag ordering, and start URL construction.
+3. `crop.js` for Cropper.js modal behavior, cropped-copy upload, rollback handling, and lightbox reopen behavior.
+4. `shareTools.js` only after media workflows are stable.

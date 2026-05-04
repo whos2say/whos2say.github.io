@@ -4,6 +4,12 @@ export function getAlbumPhotos(albumId, columns = '*') {
   return supabase.from('photos').select(columns).eq('album_id', albumId)
 }
 
+export function getOrderedAlbumPhotos(albumId) {
+  return getAlbumPhotos(albumId, 'id, file_path, created_at, focal_point, sort_order')
+    .order('sort_order', { ascending: true, nullsFirst: false })
+    .order('created_at', { ascending: false })
+}
+
 export function getPhotoById(photoId, columns = '*') {
   return supabase.from('photos').select(columns).eq('id', photoId).single()
 }
