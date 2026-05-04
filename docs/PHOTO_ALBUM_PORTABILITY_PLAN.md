@@ -9,8 +9,8 @@ Make the current static Photo Album App portable without freezing feature work o
 - Services: `authService`, `albumService`, `photoService`, `storageService`, `commentService`.
 - Config: bucket names, admin email, size limits, default focal points.
 - Utilities: URL parsing, DOM helpers, media helpers, HTML escaping.
-- Album feature modules: `features/album/toast.js`, `permissions.js`, `albumState.js`, `comments.js`, `lightbox.js`, `photoGrid.js`, `selection.js`, `bulkActions.js`, `dragReorder.js`, and `focalPoint.js`.
-- Future modules: feature controllers for upload queue, downloads, album data loading, slideshow, music, crop, and share tools.
+- Album feature modules: `features/album/toast.js`, `permissions.js`, `albumState.js`, `comments.js`, `lightbox.js`, `photoGrid.js`, `selection.js`, `bulkActions.js`, `dragReorder.js`, `focalPoint.js`, `albumLoader.js`, and `download.js`.
+- Future modules: feature controllers for upload queue, slideshow, music, crop, and share tools.
 
 ## Album Feature Module Structure
 
@@ -24,8 +24,10 @@ Make the current static Photo Album App portable without freezing feature work o
 - `bulkActions.js` is partly portable because it routes deletion/move/download behavior through services and injected callbacks, but still assumes the current move modal DOM.
 - `dragReorder.js` is portable for plain DOM drag/drop grids and persists order through `photoService`.
 - `focalPoint.js` is portable for the current modal DOM and persists through `photoService`, but future apps may want this as a component-level editor.
+- `albumLoader.js` is portable as a data loader because it depends on album/photo services and returns plain album/photo data for the host controller to render.
+- `download.js` is portable as a browser download helper with injected toast behavior, but still assumes `fetch`, `Blob` URLs, and DOM anchor downloads are available.
 
-Currently portable with little adaptation: toast, comment service usage, comment rendering logic, lightbox media/navigation behavior, photo grid tile construction, selection state helpers, drag reorder behavior, focal point persistence, and client-side permission predicates.
+Currently portable with little adaptation: toast, comment service usage, comment rendering logic, lightbox media/navigation behavior, photo grid tile construction, selection state helpers, drag reorder behavior, focal point persistence, album detail loading, single-file download behavior, and client-side permission predicates.
 
 Still app-shell dependent: static route redirects, direct DOM selectors, current modal markup, Cropper.js integration, share-panel wiring, music tooling, slideshow selector, and any security-sensitive authorization.
 
@@ -55,6 +57,7 @@ Still app-shell dependent: static route redirects, direct DOM selectors, current
 ## Next Portability Milestones
 
 - Finish extracting all Supabase calls from page controllers.
+- Move remaining music, slideshow selector, crop, and share behavior out of `js/album.js` behind focused modules.
 - Define typed/plain object contracts for album, photo, comment, contributor, and setting records.
 - Add a service adapter boundary so Supabase can be replaced or mocked in tests.
 - Continue splitting `album.js` into feature modules before any framework migration.

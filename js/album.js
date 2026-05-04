@@ -6,10 +6,12 @@ import { updateAlbum } from './photo-album/services/albumService.js'
 import { createPhoto } from './photo-album/services/photoService.js'
 import { getPublicUrl, removeFiles, uploadFile } from './photo-album/services/storageService.js'
 import { getAlbumIdFromUrl } from './photo-album/utils/dom.js'
+import { loadAlbumData } from './photo-album/features/album/albumLoader.js'
 import { albumState, setAlbumState } from './photo-album/features/album/albumState.js'
 import { createBulkActionsController } from './photo-album/features/album/bulkActions.js'
 import { createCommentsController } from './photo-album/features/album/comments.js'
 import { createDragReorderController } from './photo-album/features/album/dragReorder.js'
+import { downloadPhoto as downloadPhotoFile } from './photo-album/features/album/download.js'
 import { createFocalPointController } from './photo-album/features/album/focalPoint.js'
 import { createLightboxController } from './photo-album/features/album/lightbox.js'
 import { isAlbumAdmin } from './photo-album/features/album/permissions.js'
@@ -305,24 +307,8 @@ async function setCoverPhoto(photoId) {
   }
 }
 
-// --- Download ---
-async function downloadPhoto(url, filename) {
-  showToast('Downloading…')
-  try {
-    const res = await fetch(url)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const blob = await res.blob()
-    const blobUrl = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = blobUrl
-    a.download = filename || 'photo'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
-  } catch (err) {
-    showToast('Download failed: ' + err.message, true)
-  }
+function downloadPhoto(url, filename) {
+  return downloadPhotoFile(url, filename, { showToast })
 }
 
 function escapeHtmlMusic(str) {
@@ -855,15 +841,7 @@ async function loadAlbum() {
   slideshowBtnEl.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`
 
   try {
-    // Fetch album data
-    const { data: albumData, error: albumError } = await supabase
-      .from('albums')
-      .select('name, cover_photo_id, music_url, title_size')
-      .eq('id', currentAlbumId)
-      .limit(1)
-      .single()
-
-    if (albumError) throw albumError
+    const { album: albumData, photos, coverPhotoId: loadedCoverPhotoId } = await loadAlbumData(currentAlbumId)
 
     if (albumData?.name) {
       albumNameEl.textContent = albumData.name
@@ -888,25 +866,14 @@ async function loadAlbum() {
       }
     }
 
-    if (albumData?.cover_photo_id) {
-      coverPhotoId = albumData.cover_photo_id
+    if (loadedCoverPhotoId) {
+      coverPhotoId = loadedCoverPhotoId
       setAlbumState({ coverPhotoId })
     }
 
     updateMusicBadge(!!albumData?.music_url, albumData?.music_url)
 
-    // Fetch photos for this album
-    // SQL required: ALTER TABLE photos ADD COLUMN IF NOT EXISTS sort_order INTEGER;
-    const { data: photos, error: photosError } = await supabase
-      .from('photos')
-      .select('id, file_path, created_at, focal_point, sort_order')
-      .eq('album_id', currentAlbumId)
-      .order('sort_order', { ascending: true, nullsFirst: false })
-      .order('created_at', { ascending: false })
-
-    if (photosError) throw photosError
-
-    if (!photos || photos.length === 0) {
+    if (photos.length === 0) {
       emptyStateEl.style.display = 'block'
       photosGridEl.innerHTML = ''
       return
