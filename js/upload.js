@@ -1,6 +1,5 @@
 import { getCurrentUser } from './photo-album/services/authService.js'
-import { createPhoto } from './photo-album/services/photoService.js'
-import { getPublicUrl, uploadFile } from './photo-album/services/storageService.js'
+import { buildUploadPath, getUploadedAssetPublicUrl, uploadPhotoAsset } from './photo-album/services/uploadService.js'
 import { PHOTO_ALBUM_CONFIG } from './photo-album/config.js'
 import { getAlbumIdFromUrl } from './photo-album/utils/dom.js'
 import { isHeicFile, isVideoFile } from './photo-album/utils/media.js'
@@ -261,10 +260,17 @@ async function handleFiles(files) {
         contentType = file.type || 'video/mp4'
         const ext = file.name.match(/\.[^/.]+$/)?.[0]?.toLowerCase() || '.mp4'
         const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '_').toLowerCase()
-        path = `${albumId}/${Date.now()}_${baseName}${ext}`
+        path = buildUploadPath(albumId, `${baseName}${ext}`)
 
         setStatus('Uploading…')
-        const { error: uploadError } = await uploadFile(path, file, { cacheControl: '3600', upsert: false, contentType })
+        const { error: uploadError } = await uploadPhotoAsset({
+          albumId,
+          filePath: path,
+          body: file,
+          contentType,
+          uploadedBy: user?.id || null,
+          focalPoint,
+        })
         if (uploadError) throw uploadError
 
         previewEl = document.createElement('video')
@@ -273,10 +279,10 @@ async function handleFiles(files) {
         previewEl.preload = 'metadata'
       } else {
         // ── IMAGE ──────────────────────────────────────────────
-        let uploadFile = await convertHeicToJpeg(file)
+        let processedFile = await convertHeicToJpeg(file)
 
         // Quality warning
-        const dims = await getOriginalDimensions(uploadFile)
+        const dims = await getOriginalDimensions(processedFile)
         const isLowRes = dims.width > 0 && (dims.width < 1280 || dims.height < 720)
         if (isLowRes) {
           const warn = document.createElement('span')
@@ -286,10 +292,10 @@ async function handleFiles(files) {
           fileItem.appendChild(warn)
         }
 
-        let uploadBlob = uploadFile
-        contentType = uploadFile.type || 'image/jpeg'
-        if (uploadFile.type.startsWith('image/') || uploadFile.type === '') {
-          uploadBlob = await resizeImage(uploadFile, 1600, 0.8)
+        let uploadBlob = processedFile
+        contentType = processedFile.type || 'image/jpeg'
+        if (processedFile.type.startsWith('image/') || processedFile.type === '') {
+          uploadBlob = await resizeImage(processedFile, 1600, 0.8)
           contentType = 'image/jpeg'
         }
 
@@ -297,10 +303,17 @@ async function handleFiles(files) {
 
         const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '_').toLowerCase()
         const filename = contentType === 'image/jpeg' ? `${baseName}.jpg` : file.name
-        path = `${albumId}/${Date.now()}_${filename}`
+        path = buildUploadPath(albumId, filename)
 
         setStatus('Uploading…')
-        const { error: uploadError } = await uploadFile(path, uploadBlob, { cacheControl: '3600', upsert: false, contentType })
+        const { error: uploadError } = await uploadPhotoAsset({
+          albumId,
+          filePath: path,
+          body: uploadBlob,
+          contentType,
+          uploadedBy: user?.id || null,
+          focalPoint,
+        })
         if (uploadError) throw uploadError
 
         previewEl = document.createElement('img')
@@ -308,17 +321,8 @@ async function handleFiles(files) {
         previewEl.loading = 'lazy'
       }
 
-      // Record in database
-      const { error: dbError } = await createPhoto([{
-        album_id: albumId,
-        file_path: path,
-        uploaded_by: user?.id || null,
-        focal_point: focalPoint
-      }])
-      if (dbError) throw dbError
-
       // Show preview thumbnail
-      const publicUrl = getPublicUrl(path)
+      const publicUrl = getUploadedAssetPublicUrl(path)
       previewEl.src = publicUrl
       fileItem.appendChild(previewEl)
 
