@@ -9,6 +9,7 @@ import { loadAlbumData } from './photo-album/features/album/albumLoader.js'
 import { albumState, setAlbumState } from './photo-album/features/album/albumState.js'
 import { createBulkActionsController } from './photo-album/features/album/bulkActions.js'
 import { createCommentsController } from './photo-album/features/album/comments.js'
+import { createCropController } from './photo-album/features/album/crop.js'
 import { createDragReorderController } from './photo-album/features/album/dragReorder.js'
 import { downloadPhoto as downloadPhotoFile } from './photo-album/features/album/download.js'
 import { createFocalPointController } from './photo-album/features/album/focalPoint.js'
@@ -104,6 +105,13 @@ const slideshowSelectorClearAllBtn = document.getElementById('ss-clear-all')
 const slideshowSelectorSaveBtn = document.getElementById('ss-save-btn')
 const slideshowSelectorCloseBtn = document.getElementById('ss-selector-close')
 const slideshowSelectorCancelBtn = document.getElementById('ss-cancel-btn')
+const cropModalEl = document.getElementById('crop-modal')
+const cropImgEl = document.getElementById('crop-img')
+const cropSaveBtn = document.getElementById('crop-save-btn')
+const cropCancelBtn = document.getElementById('crop-cancel-btn')
+const cropStatusEl = document.getElementById('crop-status')
+const cropRatiosEl = document.getElementById('crop-ratios')
+const lightboxCropBtn = document.getElementById('lightbox-crop-btn')
 
 let currentAlbumId = null
 let coverPhotoId = null
@@ -115,12 +123,6 @@ let selectedPhotos = new Set()
 let allPhotos = []
 setAlbumState({ selectedPhotos, allPhotos })
 
-// Crop state
-let cropperInstance = null
-let cropPhotoIndex = -1
-let cropPhotoId = null
-let cropPhotoFilePath = null
-let cropPhotoUrl = null
 const dragSelectArea = document.createElement('div')
 dragSelectArea.className = 'drag-select-area'
 document.body.appendChild(dragSelectArea)
@@ -145,6 +147,7 @@ async function checkAlbumOwner() {
 
 // --- Lightbox + comments ---
 let lightboxController
+let cropController
 const commentsController = createCommentsController({
   state: albumState,
   getCurrentPhotoId: () => lightboxController?.getCurrentPhotoId(),
@@ -166,16 +169,39 @@ lightboxController = createLightboxController({
   loadComments: commentsController.loadComments,
   trackPhotoView,
   downloadPhoto,
-  getCropState: () => ({
-    isOpen: cropModalEl && cropModalEl.classList.contains('show'),
-    photoIndex: cropPhotoIndex,
-  }),
-  closeCropModal,
-  reopenLightboxAfterCrop,
+  getCropState: () => cropController?.getCropState() || { isOpen: false, photoIndex: -1 },
+  closeCropModal: () => cropController?.closeCropModal(),
+  reopenLightboxAfterCrop: (index) => cropController?.reopenLightboxAfterCrop(index),
 })
 
 const { openLightbox, closeLightbox } = lightboxController
 lightboxController.bindLightboxEvents()
+
+cropController = createCropController({
+  state: {
+    getCurrentAlbumId: () => currentAlbumId,
+    getCurrentUser: () => currentUser,
+    getAllPhotos: () => allPhotos,
+  },
+  elements: {
+    cropModal: cropModalEl,
+    cropImg: cropImgEl,
+    cropSaveBtn,
+    cropCancelBtn,
+    cropStatus: cropStatusEl,
+    cropRatios: cropRatiosEl,
+    lightboxCropBtn,
+  },
+  getPublicUrl,
+  uploadFile,
+  removeFiles,
+  createPhoto,
+  openLightbox,
+  closeLightbox,
+  getLightboxCurrentIndex: () => lightboxController.getCurrentIndex(),
+  showToast,
+  reloadAlbum: loadAlbum,
+})
 
 const titleControlsController = createTitleControlsController({
   elements: {
@@ -434,6 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
   titleControlsController.bindTitleSizeEvents()
   slideshowSelectorController.bindEvents()
   musicController.bindEvents()
+  cropController.bindEvents()
 
   commentsController.bindCommentForm()
 
@@ -475,226 +502,5 @@ if (bulkCancelBtn) {
 if (modalCancelBtn) {
   modalCancelBtn.addEventListener('click', () => {
     moveModal.classList.remove('show')
-  })
-}
-
-// ── Crop feature ─────────────────────────────────────────────────
-// Opens a Cropper.js modal for the current lightbox photo, crops to selected
-// aspect ratio, and saves the cropped result as a NEW photo row (original kept).
-// Requires CropperJS (loaded via CDN in album.html) and a signed-in user.
-
-const cropModalEl  = document.getElementById('crop-modal')
-const cropImgEl    = document.getElementById('crop-img')
-const cropSaveBtn  = document.getElementById('crop-save-btn')
-const cropCancelBtn = document.getElementById('crop-cancel-btn')
-const cropStatusEl = document.getElementById('crop-status')
-const cropRatiosEl = document.getElementById('crop-ratios')
-const lightboxCropBtn = document.getElementById('lightbox-crop-btn')
-
-function setCropStatus(msg, isError = false) {
-  if (!cropStatusEl) return
-  if (!msg) { cropStatusEl.style.display = 'none'; return }
-  cropStatusEl.textContent = msg
-  cropStatusEl.className = 'crop-status' + (isError ? ' crop-status-error' : ' crop-status-success')
-  cropStatusEl.style.display = 'block'
-}
-
-function openCropModal(index) {
-  if (!cropModalEl || !cropImgEl) return
-  const photo = allPhotos[index]
-  if (!photo) return
-  cropPhotoIndex = index
-  cropPhotoId = photo.id
-  cropPhotoFilePath = photo.file_path
-  cropPhotoUrl = getPublicUrl(photo.file_path)
-
-  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
-  setCropStatus('')
-  if (cropSaveBtn) { cropSaveBtn.disabled = false; cropSaveBtn.textContent = 'Save Copy' }
-
-  // Reset ratio buttons to Free
-  if (cropRatiosEl) {
-    cropRatiosEl.querySelectorAll('.crop-ratio-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.ratio === 'free')
-    })
-  }
-
-  cropImgEl.src = ''
-  cropModalEl.classList.add('show')
-  document.body.style.overflow = 'hidden'
-
-  // Fetch image as blob to avoid CORS canvas-tainting issues.
-  // This ensures getCroppedCanvas() works regardless of storage CORS config.
-  fetch(cropPhotoUrl)
-    .then(res => {
-      if (!res.ok) throw new Error('Failed to fetch image: ' + res.status)
-      return res.blob()
-    })
-    .then(blob => {
-      const blobUrl = URL.createObjectURL(blob)
-      // Blob URLs are same-origin; crossorigin attribute is unnecessary and can
-      // cause Cropper.js canvas operations to fail in some browsers.
-      cropImgEl.removeAttribute('crossorigin')
-      const initCropper = () => {
-        if (typeof Cropper === 'undefined') {
-          setCropStatus('Cropper library failed to load. Check your connection and reload.', true)
-          return
-        }
-        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
-        try {
-          cropperInstance = new Cropper(cropImgEl, {
-            viewMode: 1,
-            autoCropArea: 0.85,
-            responsive: true,
-            restore: false,
-            guides: true,
-            center: true,
-            highlight: false,
-            toggleDragModeOnDblclick: false,
-            checkCrossOrigin: false,
-          })
-        } catch (err) {
-          console.error('Cropper init error:', err)
-          setCropStatus('Failed to initialize cropper: ' + (err.message || String(err)), true)
-        }
-      }
-      cropImgEl.addEventListener('load', initCropper, { once: true })
-      cropImgEl.addEventListener('error', () => {
-        setCropStatus('Could not load image for cropping.', true)
-      }, { once: true })
-      cropImgEl.src = blobUrl
-    })
-    .catch(err => {
-      console.error('Crop image fetch error:', err)
-      setCropStatus('Could not load image for cropping. Try again.', true)
-    })
-}
-
-function closeCropModal() {
-  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
-  if (cropModalEl) cropModalEl.classList.remove('show')
-  document.body.style.overflow = ''
-  if (cropImgEl) {
-    // Revoke blob URL if one was created
-    if (cropImgEl.src && cropImgEl.src.startsWith('blob:')) {
-      URL.revokeObjectURL(cropImgEl.src)
-    }
-    cropImgEl.src = ''
-  }
-}
-
-// Re-open the lightbox at the given index after canceling a crop
-function reopenLightboxAfterCrop(index) {
-  const photo = allPhotos[index]
-  if (!photo) return
-  const url = getPublicUrl(photo.file_path)
-  openLightbox(url, photo.id, photo.file_path, index)
-}
-
-// Lightbox "Crop" button → close lightbox and open crop modal
-if (lightboxCropBtn) {
-  lightboxCropBtn.addEventListener('click', (e) => {
-    e.stopPropagation()
-    if (!currentUser) { showToast('Sign in to crop photos.'); return }
-    const idx = lightboxController.getCurrentIndex()
-    if (idx < 0) return
-    closeLightbox()
-    openCropModal(idx)
-  })
-}
-
-if (cropCancelBtn) {
-  cropCancelBtn.addEventListener('click', () => {
-    const idx = cropPhotoIndex
-    closeCropModal()
-    if (idx >= 0) reopenLightboxAfterCrop(idx)
-  })
-}
-
-if (cropModalEl) {
-  cropModalEl.addEventListener('click', (e) => {
-    if (e.target === cropModalEl) {
-      const idx = cropPhotoIndex
-      closeCropModal()
-      if (idx >= 0) reopenLightboxAfterCrop(idx)
-    }
-  })
-}
-
-if (cropRatiosEl) {
-  cropRatiosEl.addEventListener('click', (e) => {
-    const btn = e.target.closest('.crop-ratio-btn')
-    if (!btn || !cropperInstance) return
-    cropRatiosEl.querySelectorAll('.crop-ratio-btn').forEach(b => b.classList.remove('active'))
-    btn.classList.add('active')
-    const parts = btn.dataset.ratio.split(':')
-    const ratio = parts.length === 2 ? parseInt(parts[0]) / parseInt(parts[1]) : NaN
-    cropperInstance.setAspectRatio(ratio)
-  })
-}
-
-if (cropSaveBtn) {
-  cropSaveBtn.addEventListener('click', async () => {
-    if (!cropperInstance || !currentUser) return
-    cropSaveBtn.disabled = true
-    cropSaveBtn.textContent = 'Saving…'
-    setCropStatus('')
-
-    const filePath = cropPhotoFilePath || ''
-    const extMatch = filePath.match(/\.([^.]+)$/)
-    const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg'
-    const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg'
-    const quality = mimeType === 'image/jpeg' ? 0.92 : undefined
-
-    const canvas = cropperInstance.getCroppedCanvas({ maxWidth: 4096, maxHeight: 4096, fillColor: '#fff' })
-    if (!canvas) {
-      setCropStatus('Failed to get cropped image.', true)
-      cropSaveBtn.disabled = false
-      cropSaveBtn.textContent = 'Save Copy'
-      return
-    }
-
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        setCropStatus('Failed to create image file.', true)
-        cropSaveBtn.disabled = false
-        cropSaveBtn.textContent = 'Save Copy'
-        return
-      }
-
-      const baseName = filePath.split('/').pop().replace(/\.[^.]+$/, '')
-      const saveExt = mimeType === 'image/png' ? 'png' : 'jpg'
-      const croppedPath = `${currentAlbumId}/${Date.now()}-crop-${baseName}.${saveExt}`
-
-      const { error: uploadError } = await uploadFile(croppedPath, blob, {
-        contentType: mimeType,
-        upsert: false,
-      })
-      if (uploadError) {
-        setCropStatus('Upload failed: ' + uploadError.message, true)
-        cropSaveBtn.disabled = false
-        cropSaveBtn.textContent = 'Save Copy'
-        return
-      }
-
-      const { error: dbError } = await createPhoto({
-        album_id: currentAlbumId,
-        file_path: croppedPath,
-        uploaded_by: currentUser.id,
-      })
-      if (dbError) {
-        // Roll back the storage upload so we don't leave an orphan file
-        await removeFiles([croppedPath])
-        setCropStatus('Failed to save photo record: ' + dbError.message, true)
-        cropSaveBtn.disabled = false
-        cropSaveBtn.textContent = 'Save Copy'
-        return
-      }
-
-      closeCropModal()
-      showToast('Cropped copy saved.')
-      // Refresh the album to pick up the new photo
-      if (typeof loadAlbum === 'function') await loadAlbum()
-    }, mimeType, quality)
   })
 }
