@@ -1,3 +1,22 @@
+import { getCurrentUser, isAdminUser, signOut as authSignOut } from './photo-album/services/authService.js'
+import {
+  buildAlbumListQuery,
+  createAlbum,
+  deleteAlbumRecord,
+  getAlbumOwnerEmails,
+  getAlbumUsers,
+  getSiteSetting,
+  getUserIdByEmail,
+  saveSiteSetting,
+  updateAlbum,
+} from './photo-album/services/albumService.js'
+import {
+  deletePhotosForAlbum,
+  getAlbumPhotos,
+  getCoverPhoto,
+  getLatestAlbumPhoto,
+} from './photo-album/services/photoService.js'
+import { getPublicUrl, removeFiles } from './photo-album/services/storageService.js'
 import { supabase } from './supabase.js'
 
 const albumsGridEl = document.getElementById('albums-grid')
@@ -118,7 +137,7 @@ async function saveAlbumOrder() {
   try {
     await Promise.all(
       cards.map((card, idx) =>
-        supabase.from('albums').update({ sort_order: idx }).eq('id', card.dataset.albumId)
+        updateAlbum(card.dataset.albumId, { sort_order: idx })
       )
     )
     // Brief visual confirmation
@@ -148,11 +167,7 @@ async function loadAlbums() {
       } catch { /* table may not exist yet */ }
     }
 
-    let query = supabase
-      .from('albums')
-      .select('id, name, created_at, cover_photo_id, is_private')
-      .order('sort_order', { ascending: true, nullsFirst: false })
-      .order('created_at', { ascending: false })
+    let query = buildAlbumListQuery()
 
     // Non-admin users (or admin in preview mode) see filtered albums
     if (userIsLoggedIn && (!userIsAdmin || adminPreviewMode) && currentUser) {
@@ -198,23 +213,14 @@ async function loadAlbums() {
 
       if (album.cover_photo_id) {
         // Use the designated cover photo
-        const { data: coverPhoto } = await supabase
-          .from('photos')
-          .select('file_path, focal_point')
-          .eq('id', album.cover_photo_id)
-          .single()
+        const { data: coverPhoto } = await getCoverPhoto(album.cover_photo_id)
         coverFilePath = coverPhoto?.file_path || null
         coverFocalPoint = coverPhoto?.focal_point || '50% 35%'
       }
 
       if (!coverFilePath) {
         // Fall back to most recent photo
-        const { data: photos } = await supabase
-          .from('photos')
-          .select('file_path, focal_point')
-          .eq('album_id', album.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
+        const { data: photos } = await getLatestAlbumPhoto(album.id)
         coverFilePath = photos?.[0]?.file_path || null
         coverFocalPoint = photos?.[0]?.focal_point || '50% 35%'
       }
@@ -227,7 +233,7 @@ async function loadAlbums() {
       let coverHtml = ''
 
       if (coverFilePath) {
-        const publicUrl = supabase.storage.from('photos').getPublicUrl(coverFilePath).data.publicUrl
+        const publicUrl = getPublicUrl(coverFilePath)
         coverHtml = `<div class="album-cover"><img src="${publicUrl}" alt="Album cover" loading="lazy" width="280" height="160" style="object-position:${coverFocalPoint}" /></div>`
       } else {
         coverHtml = `<div class="album-cover"><div class="album-cover-placeholder">📷</div></div>`
@@ -287,7 +293,7 @@ async function loadAlbums() {
 async function fetchAdminAlbumData(albumIds) {
   try {
     const [ownerRes, contribRes] = await Promise.all([
-      supabase.rpc('get_album_owner_emails', { album_ids: albumIds }),
+      getAlbumOwnerEmails(albumIds),
       supabase.from('album_contributors').select('album_id').in('album_id', albumIds)
     ])
     ownerEmailMap = {}
@@ -348,7 +354,7 @@ async function toggleAlbumPrivacy(albumId, currentlyPrivate, card) {
   const label = document.getElementById(`privacy-label-${albumId}`)
   if (btn) { btn.disabled = true; btn.textContent = '…' }
 
-  const { error } = await supabase.from('albums').update({ is_private: newPrivate }).eq('id', albumId)
+  const { error } = await updateAlbum(albumId, { is_private: newPrivate })
 
   if (error) {
     alert('Failed to update visibility: ' + error.message)
@@ -413,10 +419,10 @@ async function doAssignOwner() {
   if (!email) { setModalMsg('ao-msg', 'Enter an email address', true); return }
   setModalMsg('ao-msg', 'Looking up user…')
   try {
-    const { data: uid, error: e1 } = await supabase.rpc('get_user_id_by_email', { lookup_email: email })
+    const { data: uid, error: e1 } = await getUserIdByEmail(email)
     if (e1) throw e1
     if (!uid) { setModalMsg('ao-msg', 'No account found for that email', true); return }
-    const { error: e2 } = await supabase.from('albums').update({ owner_id: uid }).eq('id', albumId)
+    const { error: e2 } = await updateAlbum(albumId, { owner_id: uid })
     if (e2) throw e2
     ownerEmailMap[albumId] = email
     updateOwnerDisplay(albumId, email)
@@ -431,7 +437,7 @@ async function doRemoveOwner() {
   const albumId = activeModalAlbumId
   setModalMsg('ao-msg', 'Removing…')
   try {
-    const { error } = await supabase.from('albums').update({ owner_id: null }).eq('id', albumId)
+    const { error } = await updateAlbum(albumId, { owner_id: null })
     if (error) throw error
     delete ownerEmailMap[albumId]
     updateOwnerDisplay(albumId, null)
@@ -495,7 +501,7 @@ async function doAddContributor() {
   if (!email) { setModalMsg('cm-msg', 'Enter an email address', true); return }
   setModalMsg('cm-msg', 'Adding…')
   try {
-    const { data: uid, error: e1 } = await supabase.rpc('get_user_id_by_email', { lookup_email: email })
+    const { data: uid, error: e1 } = await getUserIdByEmail(email)
     if (e1) throw e1
     if (!uid) { setModalMsg('cm-msg', 'No account found for that email', true); return }
     const { error: e2 } = await supabase.from('album_contributors').insert({ album_id: albumId, user_id: uid })
@@ -547,7 +553,7 @@ async function loadAdminUsers() {
   panel.style.display = 'block'
   const listEl = document.getElementById('admin-users-list')
   try {
-    const { data, error } = await supabase.rpc('get_album_users')
+    const { data, error } = await getAlbumUsers()
     if (error) throw error
     knownUsers = data || []
     populateUserDropdown()
@@ -604,9 +610,9 @@ function escapeHtml(text) {
 async function checkAuth() {
   const authEl = document.getElementById('auth-header-action')
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
     currentUser = user || null
-    userIsAdmin = user?.email === 'joe@whostosay.org'
+    userIsAdmin = isAdminUser(user)
     userIsLoggedIn = !!user
     createSectionEl.style.display = user ? 'block' : 'none'
 
@@ -652,7 +658,7 @@ function toggleAdminPreview() {
 }
 
 async function signOut() {
-  await supabase.auth.signOut()
+  await authSignOut()
   window.location.reload()
 }
 
@@ -660,20 +666,18 @@ async function deleteAlbum(albumId, albumName) {
   if (!confirm(`Delete "${albumName}" and ALL its photos? This cannot be undone.`)) return
   try {
     // 1. Fetch all photo file paths
-    const { data: photos } = await supabase
-      .from('photos').select('file_path').eq('album_id', albumId)
+    const { data: photos } = await getAlbumPhotos(albumId, 'file_path')
 
     // 2. Remove storage files
     if (photos && photos.length > 0) {
-      await supabase.storage.from('photos').remove(photos.map(p => p.file_path))
+      await removeFiles(photos.map(p => p.file_path))
     }
 
     // 3. Delete photo records
-    await supabase.from('photos').delete().eq('album_id', albumId)
+    await deletePhotosForAlbum(albumId)
 
     // 4. Delete album record
-    const { data, error } = await supabase
-      .from('albums').delete().eq('id', albumId).select('id')
+    const { data, error } = await deleteAlbumRecord(albumId)
 
     if (error) throw error
     if (!data || !data.length) throw new Error('Delete blocked — add admin DELETE policy for albums in Supabase')
@@ -696,7 +700,7 @@ async function handleCreateAlbum(e) {
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
     if (!user) {
       window.location.href = '/login.html'
       return
@@ -707,9 +711,7 @@ async function handleCreateAlbum(e) {
 
     const isPrivate = document.getElementById('album-private-checkbox')?.checked ?? false
 
-    const { error } = await supabase
-      .from('albums')
-      .insert([{ name: albumName, owner_id: user.id, is_private: isPrivate }])
+    const { error } = await createAlbum({ name: albumName, ownerId: user.id, isPrivate })
 
     if (error) throw error
 
@@ -745,11 +747,7 @@ function applyGalleryTitleSize(size) {
 
 async function loadGalleryTitleSize() {
   try {
-    const { data, error } = await supabase
-      .from('site_settings')
-      .select('value')
-      .eq('key', 'gallery_title_size')
-      .single()
+    const { data, error } = await getSiteSetting('gallery_title_size')
     if (!error && data?.value) applyGalleryTitleSize(data.value)
   } catch {
     // site_settings table may not exist yet — silently ignore
@@ -759,9 +757,7 @@ async function loadGalleryTitleSize() {
 async function saveGalleryTitleSize(size) {
   if (!userIsAdmin) return
   try {
-    const { error } = await supabase
-      .from('site_settings')
-      .upsert({ key: 'gallery_title_size', value: size })
+    const { error } = await saveSiteSetting('gallery_title_size', size)
     if (error) throw error
     applyGalleryTitleSize(size)
   } catch (err) {

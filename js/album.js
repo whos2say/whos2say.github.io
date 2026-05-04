@@ -1,6 +1,17 @@
 import { supabase } from './supabase.js'
 import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
 import { initSharePanel } from './share-panel.js'
+import { getCurrentUser } from './photo-album/services/authService.js'
+import { updateAlbum } from './photo-album/services/albumService.js'
+import { createPhoto, deletePhotoRecord, updatePhoto } from './photo-album/services/photoService.js'
+import { getPublicUrl, removeFiles, uploadFile } from './photo-album/services/storageService.js'
+import { getAlbumIdFromUrl } from './photo-album/utils/dom.js'
+import { isVideoPath } from './photo-album/utils/media.js'
+import { albumState, setAlbumState } from './photo-album/features/album/albumState.js'
+import { createCommentsController } from './photo-album/features/album/comments.js'
+import { createLightboxController } from './photo-album/features/album/lightbox.js'
+import { isAlbumAdmin } from './photo-album/features/album/permissions.js'
+import { showToast } from './photo-album/features/album/toast.js'
 
 // Analyze average brightness of an image (0–255).
 // Resizes to 100px wide on an offscreen canvas for speed.
@@ -44,9 +55,6 @@ const lightboxCloseEl = document.getElementById('lightbox-close')
 const lightboxDownloadEl = document.getElementById('lightbox-download')
 const lightboxEnhanceBtnEl = document.getElementById('lightbox-enhance-btn')
 
-function isVideoPath(path) {
-  return /\.(mp4|mov|webm|m4v)$/i.test(path || '')
-}
 const photosGridEl = document.getElementById('photos-grid')
 const emptyStateEl = document.getElementById('empty-state')
 const uploadBtnEl = document.getElementById('upload-btn')
@@ -78,13 +86,9 @@ let currentUser = null
 let isAlbumOwner = false
 let isAdmin = false
 let _sharePanelBound = false
-let currentLightboxPhotoId = null
-let currentLightboxUrl = null
-let currentLightboxFilePath = null
-let currentLightboxIndex = -1
-let _lightboxEnhanceFilter = 'brightness(1.5) contrast(1.15) saturate(1.05)'
 let selectedPhotos = new Set()
 let allPhotos = []
+setAlbumState({ selectedPhotos, allPhotos })
 
 // Crop state
 let cropperInstance = null
@@ -104,21 +108,21 @@ dragSelectArea.className = 'drag-select-area'
 document.body.appendChild(dragSelectArea)
 
 function getAlbumId() {
-  return new URLSearchParams(window.location.search).get('album') || 
-         new URLSearchParams(window.location.search).get('id')
+  return getAlbumIdFromUrl()
 }
 
 async function checkAlbumOwner() {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
     currentUser = user
     isAlbumOwner = !!user
-    isAdmin = user?.email === 'joe@whostosay.org'
+    isAdmin = isAlbumAdmin(user)
   } catch (err) {
     currentUser = null
     isAlbumOwner = false
     isAdmin = false
   }
+  setAlbumState({ currentUser, isAlbumOwner, isAdmin })
 }
 
 // --- Title size (S/M/L) — admin only ---
@@ -142,10 +146,7 @@ function applyTitleSize(size) {
 async function saveTitleSize(size) {
   if (!isAdmin || !currentAlbumId) return
   try {
-    const { error } = await supabase
-      .from('albums')
-      .update({ title_size: size })
-      .eq('id', currentAlbumId)
+    const { error } = await updateAlbum(currentAlbumId, { title_size: size })
     if (error) throw error
     applyTitleSize(size)
     showToast(`Title size: ${size.toUpperCase()}`)
@@ -154,269 +155,39 @@ async function saveTitleSize(size) {
   }
 }
 
-// --- Lightbox ---
-function openLightbox(url, photoId, filePath, index) {
-  const isVideo = isVideoPath(filePath || url)
-  if (isVideo) {
-    lightboxImgEl.style.display = 'none'
-    lightboxImgEl.src = ''
-    lightboxVideoEl.style.display = 'block'
-    lightboxVideoEl.src = url
-    lightboxVideoEl.load()
-  } else {
-    lightboxVideoEl.style.display = 'none'
-    lightboxVideoEl.src = ''
-    lightboxImgEl.style.filter = ''
-    lightboxImgEl.crossOrigin = 'anonymous'
-    lightboxImgEl.style.display = 'block'
-    lightboxImgEl.src = url
-  }
-  // Enhance button — show only for dark/dim photos, pick correct filter strength
-  if (lightboxEnhanceBtnEl) {
-    lightboxEnhanceBtnEl.classList.remove('active')
-    const sourceTile = photosGridEl?.querySelector(`[data-photo-id="${photoId}"]`)
-    const tileIsDark = !isVideo && sourceTile?.dataset.isDark === 'true'
-    lightboxEnhanceBtnEl.style.display = tileIsDark ? 'block' : 'none'
-    if (tileIsDark) {
-      const bv = parseInt(sourceTile.dataset.brightness || '128', 10)
-      const isMobile = window.matchMedia('(pointer: coarse)').matches
-      const darkThreshold = isMobile ? 85 : 60
-      _lightboxEnhanceFilter = bv < darkThreshold
-        ? 'brightness(1.5) contrast(1.15) saturate(1.05)'
-        : 'brightness(1.25) contrast(1.08)'
-      const offLabel = bv < darkThreshold ? '✨ Enhance' : '☀ Brighten'
-      lightboxEnhanceBtnEl.textContent = offLabel
-      lightboxEnhanceBtnEl.dataset.label = offLabel
-    }
-  }
-  lightboxEl.classList.add('show')
-  document.body.style.overflow = 'hidden'
-  currentLightboxPhotoId = photoId || null
-  currentLightboxUrl = url || null
-  currentLightboxFilePath = filePath || null
-  currentLightboxIndex = (index !== undefined) ? index : allPhotos.findIndex(p => p.id === photoId)
-  updateLightboxNavVisibility()
-  // Crop button: only for signed-in users viewing an image (not a video)
-  const lbCropBtn = document.getElementById('lightbox-crop-btn')
-  if (lbCropBtn) {
-    lbCropBtn.style.display = (currentUser && !isVideo) ? 'inline-flex' : 'none'
-  }
-  if (photoId) loadComments(photoId)
-  trackPhotoView(currentAlbumId, currentLightboxIndex, allPhotos.length)
-}
-
-function closeLightbox() {
-  lightboxEl.classList.remove('show')
-  document.body.style.overflow = ''
-  lightboxImgEl.src = ''
-  lightboxVideoEl.pause()
-  lightboxVideoEl.src = ''
-  currentLightboxPhotoId = null
-  currentLightboxUrl = null
-  currentLightboxFilePath = null
-  currentLightboxIndex = -1
-  const lbCropBtn = document.getElementById('lightbox-crop-btn')
-  if (lbCropBtn) lbCropBtn.style.display = 'none'
-}
-
-function updateLightboxNavVisibility() {
-  const prevBtn = document.getElementById('lightbox-prev')
-  const nextBtn = document.getElementById('lightbox-next')
-  if (!prevBtn || !nextBtn) return
-  prevBtn.style.display = (currentLightboxIndex > 0) ? '' : 'none'
-  nextBtn.style.display = (currentLightboxIndex < allPhotos.length - 1) ? '' : 'none'
-}
-
-function navigateLightbox(delta) {
-  if (!lightboxEl.classList.contains('show') || allPhotos.length === 0) return
-  const next = currentLightboxIndex + delta
-  if (next < 0 || next >= allPhotos.length) return
-  const photo = allPhotos[next]
-  const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
-  openLightbox(publicUrl, photo.id, photo.file_path, next)
-}
-
-// --- Comments ---
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-}
-
-function timeAgo(iso) {
-  const d = Math.floor((Date.now() - new Date(iso)) / 1000)
-  if (d < 60) return 'just now'
-  if (d < 3600) return `${Math.floor(d/60)}m ago`
-  if (d < 86400) return `${Math.floor(d/3600)}h ago`
-  return `${Math.floor(d/86400)}d ago`
-}
-
-async function loadComments(photoId) {
-  const listEl  = document.getElementById('lc-list')
-  const countEl = document.getElementById('lc-count')
-  const formEl  = document.getElementById('lc-form')
-  const signinEl= document.getElementById('lc-signin')
-  if (!listEl) return
-
-  // Show/hide input based on login state
-  if (currentUser) {
-    formEl.style.display = 'flex'
-    signinEl.style.display = 'none'
-    // Set sign-in link to return here after login
-    const loginLink = document.getElementById('lc-login-link')
-    if (loginLink) loginLink.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
-  } else {
-    formEl.style.display = 'none'
-    signinEl.style.display = 'block'
-  }
-
-  listEl.innerHTML = '<div class="lc-loading">Loading…</div>'
-
-  try {
-    const { data: comments, error } = await supabase
-      .from('photo_comments')
-      .select('id, user_id, user_email, comment, created_at')
-      .eq('photo_id', photoId)
-      .order('created_at', { ascending: true })
-
-    if (error) throw error
-
-    countEl.textContent = comments?.length ? `(${comments.length})` : ''
-    listEl.innerHTML = ''
-
-    if (!comments || comments.length === 0) {
-      listEl.innerHTML = '<div class="lc-empty">No comments yet.</div>'
-      return
-    }
-
-    comments.forEach(c => listEl.appendChild(buildCommentEl(c)))
-    listEl.scrollTop = listEl.scrollHeight
-  } catch (err) {
-    console.error('loadComments error:', err)
-    listEl.innerHTML = '<div class="lc-empty">Could not load comments.</div>'
-  }
-}
-
-function buildCommentEl(c) {
-  const isAdmin = currentUser?.email === 'joe@whostosay.org'
-  const isOwn   = currentUser?.id === c.user_id
-  const canDel  = isAdmin || isOwn
-
-  const item = document.createElement('div')
-  item.className = 'lc-item'
-  item.dataset.commentId = c.id
-
-  const shortName = escHtml(c.user_email.split('@')[0])
-  const timeStr   = escHtml(timeAgo(c.created_at))
-  const text      = escHtml(c.comment)
-
-  item.innerHTML = `
-    <div class="lc-item-meta">
-      <span class="lc-author">${shortName}</span>
-      <span class="lc-time">${timeStr}</span>
-    </div>
-    <p class="lc-text">${text}</p>
-    ${canDel ? `<button class="lc-del" title="Delete comment">✕</button>` : ''}
-  `
-
-  if (canDel) {
-    item.querySelector('.lc-del').addEventListener('click', () => deleteComment(c.id, item))
-  }
-  return item
-}
-
-async function postComment() {
-  if (!currentUser || !currentLightboxPhotoId) return
-  const input     = document.getElementById('lc-input')
-  const submitBtn = document.getElementById('lc-submit')
-  const text = input.value.trim()
-  if (!text) return
-
-  submitBtn.disabled = true
-  try {
-    const { error } = await supabase.from('photo_comments').insert({
-      photo_id:   currentLightboxPhotoId,
-      user_id:    currentUser.id,
-      user_email: currentUser.email,
-      comment:    text
-    })
-    if (error) throw error
-    input.value = ''
-    await loadComments(currentLightboxPhotoId)
-  } catch (err) {
-    showToast('Failed to post comment: ' + err.message, true)
-  } finally {
-    submitBtn.disabled = false
-  }
-}
-
-async function deleteComment(commentId, itemEl) {
-  try {
-    const { error } = await supabase.from('photo_comments').delete().eq('id', commentId)
-    if (error) throw error
-    itemEl.remove()
-    // Update count
-    const listEl  = document.getElementById('lc-list')
-    const countEl = document.getElementById('lc-count')
-    const remaining = listEl.querySelectorAll('.lc-item').length
-    countEl.textContent = remaining ? `(${remaining})` : ''
-    if (remaining === 0) listEl.innerHTML = '<div class="lc-empty">No comments yet.</div>'
-    showToast('Comment deleted')
-  } catch (err) {
-    showToast('Delete failed: ' + err.message, true)
-  }
-}
-
-lightboxCloseEl.addEventListener('click', closeLightbox)
-lightboxEl.addEventListener('click', e => { if (e.target === lightboxEl) closeLightbox() })
-
-if (lightboxEnhanceBtnEl) {
-  lightboxEnhanceBtnEl.addEventListener('click', () => {
-    const isActive = lightboxEnhanceBtnEl.classList.toggle('active')
-    lightboxImgEl.style.filter = isActive ? _lightboxEnhanceFilter : ''
-    lightboxEnhanceBtnEl.textContent = isActive ? '↩ Original' : lightboxEnhanceBtnEl.dataset.label || '✨ Enhance'
-  })
-}
-
-if (lightboxDownloadEl) {
-  lightboxDownloadEl.addEventListener('click', () => {
-    if (!currentLightboxUrl) return
-    const filename = currentLightboxFilePath
-      ? currentLightboxFilePath.split('/').pop()
-      : 'photo'
-    downloadPhoto(currentLightboxUrl, filename)
-  })
-}
-document.addEventListener('keydown', e => {
-  // Crop modal takes priority when open
-  const cropModalEl = document.getElementById('crop-modal')
-  if (cropModalEl && cropModalEl.classList.contains('show')) {
-    if (e.key === 'Escape') {
-      const idx = cropPhotoIndex
-      closeCropModal()
-      if (idx >= 0) reopenLightboxAfterCrop(idx)
-    }
-    return
-  }
-  if (!lightboxEl.classList.contains('show')) return
-  if (e.key === 'Escape') closeLightbox()
-  if (e.key === 'ArrowLeft') navigateLightbox(-1)
-  if (e.key === 'ArrowRight') navigateLightbox(1)
+// --- Lightbox + comments ---
+let lightboxController
+const commentsController = createCommentsController({
+  state: albumState,
+  getCurrentPhotoId: () => lightboxController?.getCurrentPhotoId(),
+  showToast,
 })
 
-// Swipe gestures in lightbox
-let lbTouchStartX = 0
-lightboxEl.addEventListener('touchstart', e => {
-  lbTouchStartX = e.changedTouches[0].clientX
-}, { passive: true })
-lightboxEl.addEventListener('touchend', e => {
-  const dx = lbTouchStartX - e.changedTouches[0].clientX
-  if (Math.abs(dx) > 48) navigateLightbox(dx > 0 ? 1 : -1)
-}, { passive: true })
+lightboxController = createLightboxController({
+  state: albumState,
+  elements: {
+    lightbox: lightboxEl,
+    img: lightboxImgEl,
+    video: lightboxVideoEl,
+    closeBtn: lightboxCloseEl,
+    downloadBtn: lightboxDownloadEl,
+    enhanceBtn: lightboxEnhanceBtnEl,
+    photosGrid: photosGridEl,
+  },
+  getPublicUrl,
+  loadComments: commentsController.loadComments,
+  trackPhotoView,
+  downloadPhoto,
+  getCropState: () => ({
+    isOpen: cropModalEl && cropModalEl.classList.contains('show'),
+    photoIndex: cropPhotoIndex,
+  }),
+  closeCropModal,
+  reopenLightboxAfterCrop,
+})
 
-// Lightbox prev/next buttons
-const lightboxPrevBtn = document.getElementById('lightbox-prev')
-const lightboxNextBtn = document.getElementById('lightbox-next')
-if (lightboxPrevBtn) lightboxPrevBtn.addEventListener('click', e => { e.stopPropagation(); navigateLightbox(-1) })
-if (lightboxNextBtn) lightboxNextBtn.addEventListener('click', e => { e.stopPropagation(); navigateLightbox(1) })
+const { openLightbox, closeLightbox } = lightboxController
+lightboxController.bindLightboxEvents()
 
 // --- Title edit ---
 function startTitleEdit() {
@@ -433,11 +204,7 @@ async function saveTitleEdit() {
   const name = albumNameEditEl.value.trim()
   if (!name) return
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .update({ name })
-      .eq('id', currentAlbumId)
-      .select('name')
+    const { data, error } = await updateAlbum(currentAlbumId, { name }).select('name')
     if (error) throw error
     if (!data || !data.length) throw new Error('Update blocked — check Supabase RLS UPDATE policy for albums')
     albumNameEl.textContent = name
@@ -463,37 +230,17 @@ albumNameEditEl.addEventListener('keydown', e => {
   if (e.key === 'Escape') cancelTitleEdit()
 })
 
-function showToast(message, isError = false) {
-  const toast = document.createElement('div')
-  toast.className = 'toast-notification' + (isError ? ' error' : '')
-  toast.textContent = message
-  
-  document.body.appendChild(toast)
-  
-  // Trigger animation
-  setTimeout(() => toast.classList.add('show'), 10)
-  
-  // Remove after 3 seconds
-  setTimeout(() => {
-    toast.classList.remove('show')
-    setTimeout(() => toast.remove(), 300)
-  }, 3000)
-}
-
 async function setCoverPhoto(photoId) {
   if (!isAlbumOwner || !currentAlbumId) return
 
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .update({ cover_photo_id: photoId })
-      .eq('id', currentAlbumId)
-      .select('cover_photo_id')
+    const { data, error } = await updateAlbum(currentAlbumId, { cover_photo_id: photoId }).select('cover_photo_id')
 
     if (error) throw error
     if (!data || data.length === 0) throw new Error('Cover update blocked — check Supabase RLS UPDATE policy for albums table')
 
     coverPhotoId = photoId
+    setAlbumState({ coverPhotoId })
     updateCoverIndicators()
     showToast('✓ Cover photo set')
   } catch (err) {
@@ -629,10 +376,10 @@ function updateSelectionUI() {
 }
 
 async function deletePhoto(photoId, filePath) {
-  const { error: storageError } = await supabase.storage.from('photos').remove([filePath])
+  const { error: storageError } = await removeFiles([filePath])
   if (storageError) throw new Error(`Storage delete failed: ${storageError.message}`)
 
-  const { data, error: dbError } = await supabase.from('photos').delete().eq('id', photoId).select('id')
+  const { data, error: dbError } = await deletePhotoRecord(photoId)
   if (dbError) throw new Error(`DB delete failed: ${dbError.message}`)
   if (!data || data.length === 0) throw new Error('Delete blocked — add a DELETE policy for the photos table in Supabase (Authentication → Policies)')
 }
@@ -651,6 +398,7 @@ async function deleteSelectedPhotos() {
     }
 
     selectedPhotos.clear()
+    setAlbumState({ selectedPhotos })
     updateSelectionUI()
     loadAlbum()
   } catch (err) {
@@ -704,6 +452,7 @@ async function movePhotos(targetAlbumId, targetAlbumName) {
 
     moveModal.classList.remove('show')
     selectedPhotos.clear()
+    setAlbumState({ selectedPhotos })
     updateSelectionUI()
     showToast(`Moved ${count} photo${count !== 1 ? 's' : ''} to "${targetAlbumName}"`)
     loadAlbum()
@@ -778,7 +527,7 @@ async function savePhotoOrder() {
   try {
     await Promise.all(
       tiles.map((tile, idx) =>
-        supabase.from('photos').update({ sort_order: idx }).eq('id', tile.dataset.photoId)
+        updatePhoto(tile.dataset.photoId, { sort_order: idx })
       )
     )
     showToast('✓ Order saved')
@@ -886,7 +635,7 @@ async function downloadSelectedPhotos() {
 
   if (photos.length === 1) {
     const photo = photos[0]
-    const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+    const url = getPublicUrl(photo.file_path)
     await downloadPhoto(url, photo.file_path.split('/').pop())
     return
   }
@@ -896,7 +645,7 @@ async function downloadSelectedPhotos() {
   try {
     const zip = new JSZip() // eslint-disable-line no-undef
     for (const photo of photos) {
-      const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+      const url = getPublicUrl(photo.file_path)
       const filename = photo.file_path.split('/').pop()
       const res = await fetch(url)
       if (!res.ok) throw new Error(`Failed to fetch ${filename}`)
@@ -1260,7 +1009,7 @@ function openSlideshowSelector() {
 
   grid.innerHTML = ''
   ssSortedPhotos.forEach(photo => {
-    const publicUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+    const publicUrl = getPublicUrl(photo.file_path)
     const isSelected = ssSelectedPhotos.has(photo.id)
 
     const thumb = document.createElement('div')
@@ -1409,6 +1158,7 @@ function startSlideshowFromSelector() {
 
 async function loadAlbum() {
   currentAlbumId = getAlbumId()
+  setAlbumState({ currentAlbumId })
   
   if (!currentAlbumId) {
     albumNameEl.textContent = 'No album specified'
@@ -1482,6 +1232,7 @@ async function loadAlbum() {
 
     if (albumData?.cover_photo_id) {
       coverPhotoId = albumData.cover_photo_id
+      setAlbumState({ coverPhotoId })
     }
 
     updateMusicBadge(!!albumData?.music_url, albumData?.music_url)
@@ -1508,10 +1259,11 @@ async function loadAlbum() {
 
     // Store all photos for bulk operations
     allPhotos = photos
+    setAlbumState({ allPhotos })
 
     // Update share panel with cover photo URL now that photos are loaded
     if (photos.length > 0) {
-      const firstUrl = supabase.storage.from('photos').getPublicUrl(photos[0].file_path).data.publicUrl
+      const firstUrl = getPublicUrl(photos[0].file_path)
       initSharePanel({ coverUrl: firstUrl })
     }
 
@@ -1744,14 +1496,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => saveTitleSize(btn.dataset.size))
   })
 
-  const submitBtn = document.getElementById('lc-submit')
-  const inputEl   = document.getElementById('lc-input')
-  if (submitBtn) submitBtn.addEventListener('click', postComment)
-  if (inputEl) {
-    inputEl.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); postComment() }
-    })
-  }
+  commentsController.bindCommentForm()
 
   // Intercept slideshow button → open photo selector instead of navigating directly
   if (slideshowBtnEl) {
@@ -1839,6 +1584,7 @@ if (bulkDownloadBtn) {
 if (bulkCancelBtn) {
   bulkCancelBtn.addEventListener('click', () => {
     selectedPhotos.clear()
+    setAlbumState({ selectedPhotos })
     updateSelectionUI()
   })
 }
@@ -1942,7 +1688,7 @@ function openCropModal(index) {
   cropPhotoIndex = index
   cropPhotoId = photo.id
   cropPhotoFilePath = photo.file_path
-  cropPhotoUrl = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+  cropPhotoUrl = getPublicUrl(photo.file_path)
 
   if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
   setCropStatus('')
@@ -2023,7 +1769,7 @@ function closeCropModal() {
 function reopenLightboxAfterCrop(index) {
   const photo = allPhotos[index]
   if (!photo) return
-  const url = supabase.storage.from('photos').getPublicUrl(photo.file_path).data.publicUrl
+  const url = getPublicUrl(photo.file_path)
   openLightbox(url, photo.id, photo.file_path, index)
 }
 
@@ -2032,7 +1778,7 @@ if (lightboxCropBtn) {
   lightboxCropBtn.addEventListener('click', (e) => {
     e.stopPropagation()
     if (!currentUser) { showToast('Sign in to crop photos.'); return }
-    const idx = currentLightboxIndex
+    const idx = lightboxController.getCurrentIndex()
     if (idx < 0) return
     closeLightbox()
     openCropModal(idx)
@@ -2102,7 +1848,7 @@ if (cropSaveBtn) {
       const saveExt = mimeType === 'image/png' ? 'png' : 'jpg'
       const croppedPath = `${currentAlbumId}/${Date.now()}-crop-${baseName}.${saveExt}`
 
-      const { error: uploadError } = await supabase.storage.from('photos').upload(croppedPath, blob, {
+      const { error: uploadError } = await uploadFile(croppedPath, blob, {
         contentType: mimeType,
         upsert: false,
       })
@@ -2113,14 +1859,14 @@ if (cropSaveBtn) {
         return
       }
 
-      const { error: dbError } = await supabase.from('photos').insert({
+      const { error: dbError } = await createPhoto({
         album_id: currentAlbumId,
         file_path: croppedPath,
         uploaded_by: currentUser.id,
       })
       if (dbError) {
         // Roll back the storage upload so we don't leave an orphan file
-        await supabase.storage.from('photos').remove([croppedPath])
+        await removeFiles([croppedPath])
         setCropStatus('Failed to save photo record: ' + dbError.message, true)
         cropSaveBtn.disabled = false
         cropSaveBtn.textContent = 'Save Copy'

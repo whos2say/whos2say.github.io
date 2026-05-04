@@ -1,4 +1,9 @@
-import { supabase } from './supabase.js'
+import { getCurrentUser } from './photo-album/services/authService.js'
+import { createPhoto } from './photo-album/services/photoService.js'
+import { getPublicUrl, uploadFile } from './photo-album/services/storageService.js'
+import { PHOTO_ALBUM_CONFIG } from './photo-album/config.js'
+import { getAlbumIdFromUrl } from './photo-album/utils/dom.js'
+import { isHeicFile, isVideoFile } from './photo-album/utils/media.js'
 
 const dropAreaEl = document.getElementById('drop-area')
 const fileInputEl = document.getElementById('file-input')
@@ -6,13 +11,12 @@ const uploadStatusEl = document.getElementById('upload-status')
 const albumIdDisplayEl = document.getElementById('album-id-display')
 
 function getAlbumId() {
-  return new URLSearchParams(window.location.search).get('album') || 
-         new URLSearchParams(window.location.search).get('id')
+  return getAlbumIdFromUrl()
 }
 
 async function checkAuth() {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
     if (!user) {
       // Redirect to login with return URL
       const currentUrl = window.location.pathname + window.location.search
@@ -68,13 +72,8 @@ function resizeImage(file, maxDimension = 1600, quality = 0.8) {
   })
 }
 
-const VIDEO_MAX_BYTES = 200 * 1024 * 1024  // 200 MB
-const VIDEO_MAX_SECONDS = 30
-
-function isVideoFile(file) {
-  return file.type.startsWith('video/') ||
-    /\.(mp4|mov|webm|m4v)$/i.test(file.name)
-}
+const VIDEO_MAX_BYTES = PHOTO_ALBUM_CONFIG.videoMaxBytes
+const VIDEO_MAX_SECONDS = PHOTO_ALBUM_CONFIG.videoMaxSeconds
 
 function getVideoDuration(file) {
   return new Promise((resolve, reject) => {
@@ -202,11 +201,7 @@ async function detectFocalPoint(blob) {
 }
 
 async function convertHeicToJpeg(file) {
-  const lowerName = file.name.toLowerCase()
-  const isHeic = file.type.includes('image/heic') || file.type.includes('image/heif') ||
-                 lowerName.endsWith('.heic') || lowerName.endsWith('.heif')
-
-  if (!isHeic) return file
+  if (!isHeicFile(file)) return file
 
   if (typeof window.heic2any === 'undefined') {
     throw new Error('HEIC conversion library not available. Try a different browser or convert the file first.')
@@ -250,7 +245,7 @@ async function handleFiles(files) {
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
       if (!uuidRegex.test(albumId)) throw new Error(`Invalid album ID: ${albumId}`)
 
-      const { data: { user } } = await supabase.auth.getUser()
+      const user = await getCurrentUser()
       let path, contentType, focalPoint = '50% 50%', previewEl
 
       if (isVideoFile(file)) {
@@ -269,9 +264,7 @@ async function handleFiles(files) {
         path = `${albumId}/${Date.now()}_${baseName}${ext}`
 
         setStatus('Uploading…')
-        const { error: uploadError } = await supabase.storage
-          .from('photos')
-          .upload(path, file, { cacheControl: '3600', upsert: false, contentType })
+        const { error: uploadError } = await uploadFile(path, file, { cacheControl: '3600', upsert: false, contentType })
         if (uploadError) throw uploadError
 
         previewEl = document.createElement('video')
@@ -307,9 +300,7 @@ async function handleFiles(files) {
         path = `${albumId}/${Date.now()}_${filename}`
 
         setStatus('Uploading…')
-        const { error: uploadError } = await supabase.storage
-          .from('photos')
-          .upload(path, uploadBlob, { cacheControl: '3600', upsert: false, contentType })
+        const { error: uploadError } = await uploadFile(path, uploadBlob, { cacheControl: '3600', upsert: false, contentType })
         if (uploadError) throw uploadError
 
         previewEl = document.createElement('img')
@@ -318,7 +309,7 @@ async function handleFiles(files) {
       }
 
       // Record in database
-      const { error: dbError } = await supabase.from('photos').insert([{
+      const { error: dbError } = await createPhoto([{
         album_id: albumId,
         file_path: path,
         uploaded_by: user?.id || null,
@@ -327,7 +318,7 @@ async function handleFiles(files) {
       if (dbError) throw dbError
 
       // Show preview thumbnail
-      const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(path)
+      const publicUrl = getPublicUrl(path)
       previewEl.src = publicUrl
       fileItem.appendChild(previewEl)
 

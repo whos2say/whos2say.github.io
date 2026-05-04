@@ -1,111 +1,79 @@
-# Photo Album — Quick Local Smoke Test
+# Photo Album App
 
-Follow these steps to verify the photo-album feature locally.
+This repo contains the existing static Who's to Say Photo Album App. It is still GitHub Pages compatible: the album list, individual album page, upload page, and smoke-test page run as plain HTML/CSS/ES modules.
 
-1) Configure keys
-- Open `js/supabase.js` and set `SUPABASE_URL` and `SUPABASE_ANON_KEY` to your project's values.
+## Current App Overview
 
-2) Supabase setup checklist
-- Create the `albums` and `photos` tables (example SQL below).
-- Create a storage bucket named `photos` and make it public.
-- In Supabase Auth settings: set `Site URL` to `http://localhost:8000` and add `http://localhost:8000` to Allowed redirect URLs if using magic-link redirects.
+- `albums.html`: album list, album creation, public/private visibility, admin owner/contributor controls, delete, drag reorder, gallery title sizing.
+- `album.html`: individual album view, image/video grid, lightbox, comments, downloads, cover photos, bulk selection, moving, deletion, drag reorder, focal point editing, cropping, slideshow selection, sharing, and music tools.
+- `upload.html`: drag/drop upload, image resizing, HEIC conversion, video validation, face-based focal point detection, Google Photos import.
+- `photo-album-test.html`: small Supabase smoke-test helper.
+- `js/supabase.js`: Supabase client initialization. Use only publishable/anon client keys and rely on RLS for security.
 
-Example SQL (run in Supabase SQL editor):
+## Local Smoke Test
 
-```
-create extension if not exists pgcrypto;
-
-create table if not exists albums (
-  id uuid primary key default gen_random_uuid(),
-  name text,
-  created_at timestamptz default now()
-);
-
-create table if not exists photos (
-  id uuid primary key default gen_random_uuid(),
-  album_id uuid references albums(id) on delete cascade,
-  file_path text,
-  uploaded_by uuid,
-  created_at timestamptz default now()
-);
-```
-
-3) Start a local static server
-
-Using Python (works on Windows):
+Start a static server from the repo root:
 
 ```bash
 python -m http.server 8000
 ```
 
-Or with Node (if you have npm):
+Open `http://localhost:8000/albums.html`.
 
-```bash
-npx http-server -c-1 . -p 8000
-```
+Basic flow:
 
-Open your browser at `http://localhost:8000`.
+1. Confirm `js/supabase.js` points at the intended non-production or safe test Supabase project.
+2. Visit `login.html` and sign in.
+3. Create an album from `albums.html`, or create a row in Supabase Studio and copy the album UUID.
+4. Open `upload.html?album=THE_ALBUM_UUID` and upload a small image.
+5. Open `album.html?album=THE_ALBUM_UUID` and confirm the photo renders, opens in the lightbox, and can receive a comment when signed in.
 
-4) Smoke-test flow
-- Visit `login.html` and enter an email. Magic links require SMTP configured in your Supabase project; if you don't have SMTP set up, use Supabase Studio to create a user and sign in from the browser console for testing:
+For local password testing from the browser console:
 
 ```js
-// run in browser console (after loading the page)
 import { supabase } from './js/supabase.js'
 await supabase.auth.signInWithPassword({ email: 'you@example.com', password: 'yourpassword' })
 ```
 
-- **Create a test album:** In your Supabase dashboard, go to the `albums` table → click "Insert row" → enter a name (e.g., "Test Album") → click save and copy the generated UUID from the `id` column.
-- Open `upload.html?album=THE_ALBUM_UUID` (replace `THE_ALBUM_UUID` with your copied UUID), upload images, then check the `photos` table for inserted rows and that files appear in the `photos` bucket.
-- Open `album.html?album=THE_ALBUM_UUID` to confirm images render.
+## Module Structure
 
-5) Troubleshooting
-- If images don't appear, confirm the `file_path` saved in `photos` matches object path in the `photos` bucket.
-- Check browser console for network errors (CORS, 401/403) and ensure `SUPABASE_URL`/`ANON_KEY` are correct.
-- If magic link emails never arrive, configure SMTP in Supabase or use the browser console sign-in method above for quick tests.
+Phase 1 introduced a thin reusable layer under `js/photo-album/`:
 
-6) Next steps (optional)
-- Wire `signInWithOtp` to include a `redirectTo` option so magic links return to a particular page.
-- Add client-side image resizing before upload for lower bandwidth.
+- `config.js`: app constants such as bucket names, admin email, media limits, and focal point defaults.
+- `services/authService.js`: current user, admin check, sign out, require-user redirect.
+- `services/albumService.js`: album table queries, updates, deletes, owner/admin RPC helpers, site settings.
+- `services/photoService.js`: photo table reads, inserts, updates, deletes, cover/latest helpers.
+- `services/storageService.js`: storage public URL, upload, and remove helpers.
+- `services/commentService.js`: comment read, create, delete helpers.
+- `utils/dom.js`: URL/query and small DOM helpers.
+- `utils/media.js`: video/HEIC/focal point media helpers.
+- `utils/html.js`: HTML escaping helpers.
 
-7) Magic-link redirect usage
+The existing page controllers still own rendering and most feature orchestration. This was intentional to avoid changing behavior during the first extraction.
 
-- The `login.html` page now accepts a `redirect` query parameter. If provided the magic link will include that URL, and after the user signs in they will be redirected there.
+## Supabase Setup
 
-- Example: to send users back to an album after sign-in, link to:
+See `supabase/photo-album-schema.sql` for inferred tables, storage notes, indexes, and draft RLS policy notes.
 
-```
-login.html?redirect=/album.html?album=THE_ALBUM_ID
-```
+Core resources currently implied by the app:
 
-- You can also pass a full URL if your site is hosted elsewhere:
+- Tables: `albums`, `photos`, `album_contributors`, `photo_comments`, `site_settings`.
+- Also used by `album.js`: `music_tracks`.
+- Storage buckets: `photos`, `music`.
+- RPC helpers: `get_user_id_by_email`, `get_album_owner_emails`, `get_album_contributors`, `get_album_users`.
 
-```
-login.html?redirect=https://example.com/album.html?album=THE_ALBUM_ID
-```
+## Known Limitations
 
-Security note: only use redirect URLs you trust. An application should validate redirect destinations server-side (or restrict allowed redirect hosts) to avoid open-redirect attacks. With Supabase, prefer passing a path (e.g. `/upload.html`) rather than an arbitrary external URL when possible.
+- `js/album.js` remains highly coupled and still contains direct Supabase calls for complex album, music, move, focal point, and crop flows.
+- Admin identity is currently hard-coded by email in client code and must be enforced by RLS/server-side policy.
+- Google Photos, face detection, HEIC conversion, Cropper.js, and QR generation depend on third-party browser/CDN resources.
+- Schema/RLS documentation is inferred from app usage and should be reviewed before production migration.
+- Static routing is hard-coded around `.html` pages.
 
-8) Implementation details
+## Next Refactor Phases
 
-- `login.html` includes the `redirect` target in the `signInWithOtp` call via `{ options: { emailRedirectTo: redirectTo } }` and also redirects already-signed-in users automatically.
-
-- Behaviour summary:
-  - If `redirect` is set, magic link will send users to that location after they confirm their email.
-  - If not set, users are sent to `/upload.html` by default.
-
-9) Credential management
-
-**Local development:**
-- Credentials are stored in `js/supabase.js` (for quick local testing).
-- These are added to `.gitignore` to prevent accidental commits to your repository.
-- If you accidentally commit these credentials, rotate your anon key in the Supabase dashboard immediately.
-
-**Production deployment:**
-- Never commit real credentials to your repo. For production, use one of these approaches:
-  - Environment variables injected at build time (via a static site generator or build tool).
-  - A secrets management service (e.g., GitHub Secrets, AWS Secrets Manager, HashiCorp Vault).
-  - Load credentials from a secure server endpoint instead of hardcoding them.
-- Rotate your `SUPABASE_ANON_KEY` regularly in the Supabase dashboard.
-- Row-level security (RLS) on your `albums` and `photos` tables ensures users can only access their own data.
-
+1. Replace remaining direct Supabase calls in page controllers with service methods.
+2. Split `js/album.js` into focused feature modules: photo grid, lightbox, comments, selection, music, crop, slideshow selector, sharing.
+3. Add permission/capability helpers so UI decisions are reusable outside this static site.
+4. Add lightweight static/browser smoke tests for album list, album load, upload validation, comments, and owner controls.
+5. Introduce adapters for a future Next.js app, participant portfolio app, and WTS Creator Platform while preserving the current static app.
