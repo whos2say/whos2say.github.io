@@ -125,3 +125,31 @@ Cleanup added page body classes:
 - `upload.html`: `photo-album-page upload-page`
 
 The extracted CSS is now scoped by page section under `.albums-page`, `.album-detail-page`, or `.upload-page` so the static pages keep their original page-specific styling while still sharing one stylesheet.
+
+## Phase 3 Update
+
+Extracted the next set of album-page behaviors into focused modules under `js/photo-album/features/album/`:
+
+- `photoGrid.js`: owns photo/video tile construction, video badges, tile controls, dark/dim photo enhancement controls, drag handles, and cover indicator class updates.
+- `selection.js`: owns selected-photo toggling, selected tile/checkbox sync, bulk action bar visibility, owner-only bulk button visibility, and drag-select rectangle events.
+- `bulkActions.js`: owns selected photo deletion, move modal loading, selected photo moving, and multi-photo download zip orchestration.
+- `dragReorder.js`: owns owner-only drag-to-reorder event binding and `sort_order` persistence.
+- `focalPoint.js`: owns the reposition modal state, crosshair positioning, focal point click handling, and `focal_point` persistence.
+
+`js/album.js` still remains the page-level controller. It now wires album state, feature controllers, album loading, title editing, cover metadata updates, downloads, music, slideshow selector, crop, sharing, and analytics.
+
+Remaining `album.js` coupling after Phase 3:
+
+- Album metadata and photo list loading still use direct Supabase queries.
+- Music, crop, slideshow selector, and sharing are still embedded in the page controller.
+- `downloadPhoto` remains in `album.js` because it is shared by lightbox, grid controls, and bulk downloads.
+- Crop still depends on global `Cropper` and the current album-page state.
+
+Recommended next extraction order:
+
+1. `albumData.js` or service methods for album metadata and ordered photo loading.
+2. `download.js` for single-file download behavior shared by lightbox/grid/bulk actions.
+3. `crop.js` for Cropper.js modal behavior and cropped-copy persistence.
+4. `music.js` for music URL/library/upload/delete behavior.
+5. `slideshowSelector.js` for slideshow selection state and start URL construction.
+6. `shareTools.js` only after the core media workflows are stable.

@@ -1,19 +1,23 @@
-import { supabase } from './supabase.js'
+﻿import { supabase } from './supabase.js'
 import { trackAlbumView, trackSlideshowStart, trackPhotoView } from './analytics.js'
 import { initSharePanel } from './share-panel.js'
 import { getCurrentUser } from './photo-album/services/authService.js'
 import { updateAlbum } from './photo-album/services/albumService.js'
-import { createPhoto, deletePhotoRecord, updatePhoto } from './photo-album/services/photoService.js'
+import { createPhoto } from './photo-album/services/photoService.js'
 import { getPublicUrl, removeFiles, uploadFile } from './photo-album/services/storageService.js'
 import { getAlbumIdFromUrl } from './photo-album/utils/dom.js'
-import { isVideoPath } from './photo-album/utils/media.js'
 import { albumState, setAlbumState } from './photo-album/features/album/albumState.js'
+import { createBulkActionsController } from './photo-album/features/album/bulkActions.js'
 import { createCommentsController } from './photo-album/features/album/comments.js'
+import { createDragReorderController } from './photo-album/features/album/dragReorder.js'
+import { createFocalPointController } from './photo-album/features/album/focalPoint.js'
 import { createLightboxController } from './photo-album/features/album/lightbox.js'
 import { isAlbumAdmin } from './photo-album/features/album/permissions.js'
+import { createPhotoGridController } from './photo-album/features/album/photoGrid.js'
+import { createSelectionController } from './photo-album/features/album/selection.js'
 import { showToast } from './photo-album/features/album/toast.js'
 
-// Analyze average brightness of an image (0–255).
+// Analyze average brightness of an image (0â€“255).
 // Resizes to 100px wide on an offscreen canvas for speed.
 function analyzeImageBrightness(imgEl) {
   return new Promise((resolve) => {
@@ -34,7 +38,7 @@ function analyzeImageBrightness(imgEl) {
         }
         resolve(totalBrightness / pixelCount)
       } catch (e) {
-        resolve(128) // CORS or other failure — treat as normal brightness
+        resolve(128) // CORS or other failure â€” treat as normal brightness
       }
     }
     if (imgEl.complete && imgEl.naturalWidth > 0) onReady()
@@ -100,9 +104,6 @@ let ssSelectedPhotos = new Set()
 let ssSortedPhotos = []       // photos in current selector modal order
 let ssLastClickedIdx = -1     // for shift-click range selection
 let ssDragSrcIdx = null       // for drag-to-reorder within selector
-let isDraggingSelect = false
-let dragStartX = 0
-let dragStartY = 0
 const dragSelectArea = document.createElement('div')
 dragSelectArea.className = 'drag-select-area'
 document.body.appendChild(dragSelectArea)
@@ -125,7 +126,7 @@ async function checkAlbumOwner() {
   setAlbumState({ currentUser, isAlbumOwner, isAdmin })
 }
 
-// --- Title size (S/M/L) — admin only ---
+// --- Title size (S/M/L) â€” admin only ---
 // SQL required: ALTER TABLE albums ADD COLUMN IF NOT EXISTS title_size TEXT;
 const TITLE_SIZES = { sm: '1.2rem', md: '1.8rem', lg: '2.5rem' }
 
@@ -206,9 +207,9 @@ async function saveTitleEdit() {
   try {
     const { data, error } = await updateAlbum(currentAlbumId, { name }).select('name')
     if (error) throw error
-    if (!data || !data.length) throw new Error('Update blocked — check Supabase RLS UPDATE policy for albums')
+    if (!data || !data.length) throw new Error('Update blocked â€” check Supabase RLS UPDATE policy for albums')
     albumNameEl.textContent = name
-    showToast('✓ Album name updated')
+    showToast('âœ“ Album name updated')
   } catch (err) {
     showToast(err.message, true)
   }
@@ -230,6 +231,61 @@ albumNameEditEl.addEventListener('keydown', e => {
   if (e.key === 'Escape') cancelTitleEdit()
 })
 
+const selectionController = createSelectionController({
+  state: albumState,
+  elements: {
+    photosGrid: photosGridEl,
+    bulkActionsBar,
+    selectionCount: selectionCountEl,
+    bulkDeleteBtn,
+    bulkMoveBtn,
+  },
+  dragSelectArea,
+})
+const { togglePhotoSelection, updateSelectionUI } = selectionController
+
+const bulkActionsController = createBulkActionsController({
+  state: albumState,
+  elements: {
+    moveModal,
+    albumList: albumListEl,
+  },
+  updateSelectionUI,
+  loadAlbum,
+  showToast,
+  downloadPhoto,
+})
+const { deletePhoto, deleteSelectedPhotos, showMoveModal, downloadSelectedPhotos } = bulkActionsController
+
+const dragReorderController = createDragReorderController({
+  photosGridEl,
+  showToast,
+})
+const { initDragAndDrop } = dragReorderController
+
+const focalPointController = createFocalPointController({ showToast })
+const {
+  openRepositionModal,
+  closeRepositionModal,
+  saveRepositionFocalPoint,
+  handleRepositionImageClick,
+} = focalPointController
+
+const photoGridController = createPhotoGridController({
+  state: albumState,
+  photosGridEl,
+  getPublicUrl,
+  analyzeImageBrightness,
+  openLightbox,
+  togglePhotoSelection,
+  downloadPhoto,
+  setCoverPhoto,
+  deletePhoto,
+  loadAlbum,
+  openRepositionModal,
+  showToast,
+})
+
 async function setCoverPhoto(photoId) {
   if (!isAlbumOwner || !currentAlbumId) return
 
@@ -241,7 +297,7 @@ async function setCoverPhoto(photoId) {
 
     coverPhotoId = photoId
     setAlbumState({ coverPhotoId })
-    updateCoverIndicators()
+    photoGridController.updateCoverIndicators()
     showToast('✓ Cover photo set')
   } catch (err) {
     console.error('Error setting cover:', err)
@@ -249,366 +305,9 @@ async function setCoverPhoto(photoId) {
   }
 }
 
-function updateCoverIndicators() {
-  document.querySelectorAll('.photo-tile').forEach(tile => {
-    const photoId = tile.dataset.photoId
-    if (photoId === coverPhotoId) {
-      tile.classList.add('is-cover')
-    } else {
-      tile.classList.remove('is-cover')
-    }
-  })
-}
-
-function togglePhotoSelection(photoId) {
-  if (selectedPhotos.has(photoId)) {
-    selectedPhotos.delete(photoId)
-  } else {
-    selectedPhotos.add(photoId)
-  }
-  updateSelectionUI()
-}
-
-function selectPhotosInRect(startX, startY, endX, endY) {
-  // Normalize coordinates
-  const rect = {
-    left: Math.min(startX, endX),
-    right: Math.max(startX, endX),
-    top: Math.min(startY, endY),
-    bottom: Math.max(startY, endY)
-  }
-
-  // Get all photo tiles and check which ones are in the selection area
-  document.querySelectorAll('.photo-tile').forEach(tile => {
-    const tileRect = tile.getBoundingClientRect()
-    
-    // Check if tile overlaps with selection rectangle
-    if (tileRect.left < rect.right &&
-        tileRect.right > rect.left &&
-        tileRect.top < rect.bottom &&
-        tileRect.bottom > rect.top) {
-      const photoId = tile.dataset.photoId
-      selectedPhotos.add(photoId)
-    }
-  })
-}
-
-function startDragSelect(e) {
-  // Only allow drag select when clicking on empty grid space
-  if (e.target.closest('.photo-tile')) return
-  
-  isDraggingSelect = true
-  dragStartX = e.clientX
-  dragStartY = e.clientY
-  
-  dragSelectArea.classList.add('active')
-  dragSelectArea.style.left = dragStartX + 'px'
-  dragSelectArea.style.top = dragStartY + 'px'
-  dragSelectArea.style.width = '0'
-  dragSelectArea.style.height = '0'
-  
-  photosGridEl.classList.add('drag-selecting')
-  
-  // Don't select text during drag
-  e.preventDefault()
-}
-
-function updateDragSelect(e) {
-  if (!isDraggingSelect) return
-  
-  const currentX = e.clientX
-  const currentY = e.clientY
-  
-  const width = Math.abs(currentX - dragStartX)
-  const height = Math.abs(currentY - dragStartY)
-  const left = Math.min(dragStartX, currentX)
-  const top = Math.min(dragStartY, currentY)
-  
-  dragSelectArea.style.left = left + 'px'
-  dragSelectArea.style.top = top + 'px'
-  dragSelectArea.style.width = width + 'px'
-  dragSelectArea.style.height = height + 'px'
-}
-
-function endDragSelect(e) {
-  if (!isDraggingSelect) return
-  
-  isDraggingSelect = false
-  dragSelectArea.classList.remove('active')
-  photosGridEl.classList.remove('drag-selecting')
-  
-  // Select photos in the dragged area
-  selectPhotosInRect(dragStartX, dragStartY, e.clientX, e.clientY)
-  updateSelectionUI()
-}
-
-function updateSelectionUI() {
-  const count = selectedPhotos.size
-  selectionCountEl.textContent = `${count} photo${count !== 1 ? 's' : ''} selected`
-
-  if (count > 0) {
-    bulkActionsBar.classList.add('show')
-  } else {
-    bulkActionsBar.classList.remove('show')
-  }
-
-  // Delete and Move are owner-only
-  if (bulkDeleteBtn) bulkDeleteBtn.style.display = isAlbumOwner ? '' : 'none'
-  if (bulkMoveBtn) bulkMoveBtn.style.display = isAlbumOwner ? '' : 'none'
-
-  document.querySelectorAll('.photo-checkbox').forEach(checkbox => {
-    const photoId = checkbox.closest('.photo-tile')?.dataset.photoId
-    if (photoId && selectedPhotos.has(photoId)) {
-      checkbox.checked = true
-    } else if (photoId) {
-      checkbox.checked = false
-    }
-  })
-
-  document.querySelectorAll('.photo-tile').forEach(tile => {
-    const photoId = tile.dataset.photoId
-    if (selectedPhotos.has(photoId)) {
-      tile.classList.add('selected')
-    } else {
-      tile.classList.remove('selected')
-    }
-  })
-}
-
-async function deletePhoto(photoId, filePath) {
-  const { error: storageError } = await removeFiles([filePath])
-  if (storageError) throw new Error(`Storage delete failed: ${storageError.message}`)
-
-  const { data, error: dbError } = await deletePhotoRecord(photoId)
-  if (dbError) throw new Error(`DB delete failed: ${dbError.message}`)
-  if (!data || data.length === 0) throw new Error('Delete blocked — add a DELETE policy for the photos table in Supabase (Authentication → Policies)')
-}
-
-async function deleteSelectedPhotos() {
-  if (selectedPhotos.size === 0 || !isAlbumOwner) return
-
-  const confirm = window.confirm(`Delete ${selectedPhotos.size} photo(s)? This cannot be undone.`)
-  if (!confirm) return
-
-  try {
-    for (const photoId of selectedPhotos) {
-      const photo = allPhotos.find(p => p.id === photoId)
-      if (!photo) continue
-      await deletePhoto(photoId, photo.file_path)
-    }
-
-    selectedPhotos.clear()
-    setAlbumState({ selectedPhotos })
-    updateSelectionUI()
-    loadAlbum()
-  } catch (err) {
-    console.error('Delete error:', err)
-    showToast(err.message, true)
-  }
-}
-
-async function showMoveModal() {
-  if (selectedPhotos.size === 0 || !isAlbumOwner) return
-
-  try {
-    const { data: albums, error } = await supabase
-      .from('albums')
-      .select('id, name')
-      .neq('id', currentAlbumId)
-      .order('name')
-
-    if (error) throw error
-
-    albumListEl.innerHTML = ''
-    if (!albums || albums.length === 0) {
-      albumListEl.innerHTML = '<p style="color: var(--text-muted);">No other albums available</p>'
-    } else {
-      albums.forEach(album => {
-        const option = document.createElement('div')
-        option.className = 'album-option'
-        option.textContent = album.name
-        option.addEventListener('click', () => movePhotos(album.id, album.name))
-        albumListEl.appendChild(option)
-      })
-    }
-
-    moveModal.classList.add('show')
-  } catch (err) {
-    console.error('Error loading albums:', err)
-    alert('Failed to load albums')
-  }
-}
-
-async function movePhotos(targetAlbumId, targetAlbumName) {
-  const count = selectedPhotos.size
-  try {
-    for (const photoId of selectedPhotos) {
-      const { error } = await supabase
-        .from('photos')
-        .update({ album_id: targetAlbumId })
-        .eq('id', photoId)
-      if (error) throw error
-    }
-
-    moveModal.classList.remove('show')
-    selectedPhotos.clear()
-    setAlbumState({ selectedPhotos })
-    updateSelectionUI()
-    showToast(`Moved ${count} photo${count !== 1 ? 's' : ''} to "${targetAlbumName}"`)
-    loadAlbum()
-  } catch (err) {
-    console.error('Move error:', err)
-    showToast(`Failed to move photos: ${err.message}`, true)
-  }
-}
-
-// --- Drag-to-reorder ---
-let dragSrcId = null
-
-function initDragAndDrop() {
-  document.querySelectorAll('.photo-tile[draggable]').forEach(tile => {
-    tile.addEventListener('dragstart', onDragStart)
-    tile.addEventListener('dragover',  onDragOver)
-    tile.addEventListener('dragleave', onDragLeave)
-    tile.addEventListener('drop',      onDrop)
-    tile.addEventListener('dragend',   onDragEnd)
-  })
-}
-
-function onDragStart(e) {
-  dragSrcId = this.dataset.photoId
-  e.dataTransfer.effectAllowed = 'move'
-  e.dataTransfer.setData('text/plain', dragSrcId)
-  // Slight delay so the ghost image captures the un-dimmed tile
-  requestAnimationFrame(() => this.classList.add('dragging'))
-}
-
-function onDragOver(e) {
-  e.preventDefault()
-  e.dataTransfer.dropEffect = 'move'
-  if (this.dataset.photoId !== dragSrcId) this.classList.add('drag-over')
-}
-
-function onDragLeave() {
-  this.classList.remove('drag-over')
-}
-
-async function onDrop(e) {
-  e.preventDefault()
-  this.classList.remove('drag-over')
-  const targetId = this.dataset.photoId
-  if (!targetId || targetId === dragSrcId) return
-
-  const srcTile = photosGridEl.querySelector(`[data-photo-id="${dragSrcId}"]`)
-  const tgtTile = this
-  if (!srcTile || !tgtTile) return
-
-  const tiles = [...photosGridEl.querySelectorAll('.photo-tile')]
-  const srcIdx = tiles.indexOf(srcTile)
-  const tgtIdx = tiles.indexOf(tgtTile)
-
-  if (srcIdx < tgtIdx) {
-    tgtTile.insertAdjacentElement('afterend', srcTile)
-  } else {
-    tgtTile.insertAdjacentElement('beforebegin', srcTile)
-  }
-
-  await savePhotoOrder()
-}
-
-function onDragEnd() {
-  this.classList.remove('dragging')
-  document.querySelectorAll('.photo-tile').forEach(t => t.classList.remove('drag-over'))
-  dragSrcId = null
-}
-
-async function savePhotoOrder() {
-  const tiles = [...photosGridEl.querySelectorAll('.photo-tile')]
-  try {
-    await Promise.all(
-      tiles.map((tile, idx) =>
-        updatePhoto(tile.dataset.photoId, { sort_order: idx })
-      )
-    )
-    showToast('✓ Order saved')
-  } catch (err) {
-    showToast('Failed to save order: ' + err.message, true)
-  }
-}
-
-// --- Reposition (focal point editor) ---
-let repositionPhotoId = null
-let repositionFocalPoint = { x: 50, y: 50 }
-
-function openRepositionModal(photoId, publicUrl, currentFocalPoint) {
-  repositionPhotoId = photoId
-  const modal = document.getElementById('reposition-modal')
-  const img = document.getElementById('reposition-img')
-  if (!modal || !img) return
-
-  // Parse stored focal_point "43% 28%" or default "50% 50%"
-  const parts = (currentFocalPoint || '50% 50%').match(/([\d.]+)%\s*([\d.]+)%/)
-  repositionFocalPoint = {
-    x: parts ? parseFloat(parts[1]) : 50,
-    y: parts ? parseFloat(parts[2]) : 50
-  }
-
-  img.onload = () => updateRepositionCrosshair()
-  img.src = publicUrl
-  if (img.complete && img.naturalWidth) updateRepositionCrosshair()
-  modal.classList.add('show')
-}
-
-function updateRepositionCrosshair() {
-  const crosshair = document.getElementById('reposition-crosshair')
-  const wrap = document.getElementById('reposition-image-wrap')
-  const img = document.getElementById('reposition-img')
-  if (!crosshair || !wrap || !img) return
-
-  const wrapRect = wrap.getBoundingClientRect()
-  const imgRect = img.getBoundingClientRect()
-
-  const x = (imgRect.left - wrapRect.left) + (imgRect.width * repositionFocalPoint.x / 100)
-  const y = (imgRect.top - wrapRect.top) + (imgRect.height * repositionFocalPoint.y / 100)
-
-  crosshair.style.left = x + 'px'
-  crosshair.style.top = y + 'px'
-  crosshair.style.display = 'block'
-}
-
-function closeRepositionModal() {
-  const modal = document.getElementById('reposition-modal')
-  if (modal) modal.classList.remove('show')
-  repositionPhotoId = null
-}
-
-async function saveRepositionFocalPoint() {
-  if (!repositionPhotoId) return
-  const focalPointStr = `${repositionFocalPoint.x.toFixed(1)}% ${repositionFocalPoint.y.toFixed(1)}%`
-  try {
-    const { error } = await supabase
-      .from('photos')
-      .update({ focal_point: focalPointStr })
-      .eq('id', repositionPhotoId)
-    if (error) throw error
-
-    // Update the tile's img immediately so the change is visible
-    const tile = document.querySelector(`[data-photo-id="${repositionPhotoId}"]`)
-    if (tile) {
-      const tileImg = tile.querySelector('img')
-      if (tileImg) tileImg.style.objectPosition = focalPointStr
-    }
-
-    showToast('✓ Focal point saved')
-    closeRepositionModal()
-  } catch (err) {
-    showToast('Failed to save: ' + err.message, true)
-  }
-}
-
 // --- Download ---
 async function downloadPhoto(url, filename) {
-  showToast('Downloading…')
+  showToast('Downloadingâ€¦')
   try {
     const res = await fetch(url)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -621,47 +320,6 @@ async function downloadPhoto(url, filename) {
     a.click()
     document.body.removeChild(a)
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
-  } catch (err) {
-    showToast('Download failed: ' + err.message, true)
-  }
-}
-
-async function downloadSelectedPhotos() {
-  if (selectedPhotos.size === 0) return
-
-  const photos = [...selectedPhotos]
-    .map(id => allPhotos.find(p => p.id === id))
-    .filter(Boolean)
-
-  if (photos.length === 1) {
-    const photo = photos[0]
-    const url = getPublicUrl(photo.file_path)
-    await downloadPhoto(url, photo.file_path.split('/').pop())
-    return
-  }
-
-  // Multiple photos → zip
-  showToast(`Preparing ${photos.length} files…`)
-  try {
-    const zip = new JSZip() // eslint-disable-line no-undef
-    for (const photo of photos) {
-      const url = getPublicUrl(photo.file_path)
-      const filename = photo.file_path.split('/').pop()
-      const res = await fetch(url)
-      if (!res.ok) throw new Error(`Failed to fetch ${filename}`)
-      zip.file(filename, await res.blob())
-    }
-    showToast('Creating zip…')
-    const blob = await zip.generateAsync({ type: 'blob' })
-    const blobUrl = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = blobUrl
-    a.download = 'photos.zip'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 2000)
-    showToast(`Downloaded ${photos.length} files!`)
   } catch (err) {
     showToast('Download failed: ' + err.message, true)
   }
@@ -704,7 +362,7 @@ function updateCurrentMusicStrip(url) {
       const seg = new URL(url).pathname.split('/').pop()
       if (seg) displayName = decodeURIComponent(seg).replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
     } catch (_) { /* url may not be absolute */ }
-    labelEl.textContent = `♪ Now set: ${displayName}`
+    labelEl.textContent = `â™ª Now set: ${displayName}`
     stripEl.style.display = 'flex'
   } else {
     stripEl.style.display = 'none'
@@ -729,10 +387,10 @@ async function saveMusicUrl() {
     if (error) throw error
 
     if (!data || data.length === 0) {
-      throw new Error('Update blocked — check Supabase RLS policy for albums table (need UPDATE policy for authenticated users)')
+      throw new Error('Update blocked â€” check Supabase RLS policy for albums table (need UPDATE policy for authenticated users)')
     }
 
-    showToast(musicUrl ? '✓ Music URL saved!' : '✓ Music removed.')
+    showToast(musicUrl ? 'âœ“ Music URL saved!' : 'âœ“ Music removed.')
     updateMusicBadge(!!musicUrl, musicUrl)
     musicModal.classList.remove('show')
   } catch (err) {
@@ -750,8 +408,8 @@ async function removeMusicFromAlbum() {
       .eq('id', currentAlbumId)
       .select('music_url')
     if (error) throw error
-    if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
-    showToast('✓ Music removed.')
+    if (!data || data.length === 0) throw new Error('Update blocked â€” check RLS policy')
+    showToast('âœ“ Music removed.')
     updateMusicBadge(false, null)
     updateCurrentMusicStrip('')
     if (musicUrlInput) musicUrlInput.value = ''
@@ -772,8 +430,8 @@ async function selectMusicTrack(url, title) {
       .eq('id', currentAlbumId)
       .select('music_url')
     if (error) throw error
-    if (!data || data.length === 0) throw new Error('Update blocked — check RLS policy')
-    showToast(`✓ Music set: ${title}`)
+    if (!data || data.length === 0) throw new Error('Update blocked â€” check RLS policy')
+    showToast(`âœ“ Music set: ${title}`)
     updateMusicBadge(true, url)
     musicModal.classList.remove('show')
   } catch (err) {
@@ -785,7 +443,7 @@ async function selectMusicTrack(url, title) {
 async function loadMusicLibrary() {
   const listEl = document.getElementById('music-library-list')
   if (!listEl) return
-  listEl.innerHTML = '<p class="music-library-loading">Loading library…</p>'
+  listEl.innerHTML = '<p class="music-library-loading">Loading libraryâ€¦</p>'
 
   try {
     const [tracksResult, albumResult] = await Promise.all([
@@ -799,7 +457,7 @@ async function loadMusicLibrary() {
     const currentUrl = albumResult.data?.music_url || ''
 
     if (tracks.length === 0) {
-      listEl.innerHTML = '<p class="music-library-empty">No tracks yet — upload one using the ⬆ Upload tab.</p>'
+      listEl.innerHTML = '<p class="music-library-empty">No tracks yet â€” upload one using the â¬† Upload tab.</p>'
       return
     }
 
@@ -815,7 +473,7 @@ async function loadMusicLibrary() {
       const selectBtn = document.createElement('button')
       selectBtn.className = 'music-track-select'
       selectBtn.title = isActive ? 'Currently selected' : 'Use this track'
-      selectBtn.innerHTML = `<span class="music-track-icon">${isActive ? '▶' : '♪'}</span><span class="music-track-title">${escapeHtmlMusic(track.title)}</span>`
+      selectBtn.innerHTML = `<span class="music-track-icon">${isActive ? 'â–¶' : 'â™ª'}</span><span class="music-track-title">${escapeHtmlMusic(track.title)}</span>`
       selectBtn.addEventListener('click', () => selectMusicTrack(publicUrl, track.title))
       item.appendChild(selectBtn)
 
@@ -823,7 +481,7 @@ async function loadMusicLibrary() {
         const delBtn = document.createElement('button')
         delBtn.className = 'music-track-delete'
         delBtn.title = 'Delete from library'
-        delBtn.textContent = '✕'
+        delBtn.textContent = 'âœ•'
         delBtn.addEventListener('click', (e) => {
           e.stopPropagation()
           deleteMusicTrack(track.id, track.file_path, item)
@@ -852,7 +510,7 @@ async function uploadMusicFile(file) {
     return
   }
   if (file.size > 20 * 1024 * 1024) {
-    showToast('File too large — maximum 20 MB', true)
+    showToast('File too large â€” maximum 20 MB', true)
     return
   }
 
@@ -867,7 +525,7 @@ async function uploadMusicFile(file) {
   if (musicUploadZone) musicUploadZone.style.display = 'none'
   if (musicUploadProgress) musicUploadProgress.style.display = 'flex'
   if (musicProgressFill) musicProgressFill.style.width = '20%'
-  if (musicProgressLabel) musicProgressLabel.textContent = 'Uploading…'
+  if (musicProgressLabel) musicProgressLabel.textContent = 'Uploadingâ€¦'
 
   try {
     const { error: uploadError } = await supabase.storage
@@ -876,7 +534,7 @@ async function uploadMusicFile(file) {
     if (uploadError) throw uploadError
 
     if (musicProgressFill) musicProgressFill.style.width = '65%'
-    if (musicProgressLabel) musicProgressLabel.textContent = 'Saving to library…'
+    if (musicProgressLabel) musicProgressLabel.textContent = 'Saving to libraryâ€¦'
 
     const { error: dbError } = await supabase
       .from('music_tracks')
@@ -894,7 +552,7 @@ async function uploadMusicFile(file) {
       if (musicProgressFill) musicProgressFill.style.width = '0%'
       if (musicFileInput) musicFileInput.value = ''
       await selectMusicTrack(publicUrl, title)
-      showToast(`✓ "${title}" uploaded and set as album music!`)
+      showToast(`âœ“ "${title}" uploaded and set as album music!`)
     }, 700)
   } catch (err) {
     console.error('Music upload error:', err)
@@ -968,9 +626,9 @@ function saveSlideshowConfig() {
   const excludedIds = ssSortedPhotos.filter(p => !ssSelectedPhotos.has(p.id)).map(p => p.id)
   try {
     localStorage.setItem(getSlideshowConfigKey(), JSON.stringify({ orderedIds, excludedIds }))
-    showToast(`💾 Slideshow saved — ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} photos`)
+    showToast(`ðŸ’¾ Slideshow saved â€” ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} photos`)
     const hint = document.getElementById('ss-config-hint')
-    if (hint) hint.textContent = `✓ Saved · ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included · Shift+click range · Drag to reorder`
+    if (hint) hint.textContent = `âœ“ Saved Â· ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included Â· Shift+click range Â· Drag to reorder`
   } catch (e) {
     showToast('Save failed: ' + e.message, true)
   }
@@ -1025,7 +683,7 @@ function openSlideshowSelector() {
 
     const check = document.createElement('span')
     check.className = 'ss-check'
-    check.textContent = '✓'
+    check.textContent = 'âœ“'
 
     const excl = document.createElement('div')
     excl.className = 'ss-excl'
@@ -1115,9 +773,9 @@ function openSlideshowSelector() {
   const hint = document.getElementById('ss-config-hint')
   if (hint) {
     if (savedConfig) {
-      hint.textContent = `✓ Saved · ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included · Shift+click range · Drag to reorder`
+      hint.textContent = `âœ“ Saved Â· ${ssSelectedPhotos.size} of ${ssSortedPhotos.length} included Â· Shift+click range Â· Drag to reorder`
     } else {
-      hint.textContent = 'Click to include/exclude · Shift+click for range · Drag to reorder'
+      hint.textContent = 'Click to include/exclude Â· Shift+click for range Â· Drag to reorder'
     }
   }
 
@@ -1184,7 +842,7 @@ async function loadAlbum() {
   if (musicBtnEl) {
     musicBtnEl.style.display = isAlbumOwner ? 'inline-block' : 'none'
   }
-  // Admin bar (rename + font size) — admin only
+  // Admin bar (rename + font size) â€” admin only
   const adminBarEl = document.getElementById('album-admin-bar')
   if (adminBarEl) {
     adminBarEl.style.display = isAdmin ? 'flex' : 'none'
@@ -1268,220 +926,9 @@ async function loadAlbum() {
     }
 
     // Render photos with staggered animation and cover buttons
-    photos.forEach((photo, idx) => {
-      const publicUrl = supabase.storage
-        .from('photos')
-        .getPublicUrl(photo.file_path).data.publicUrl
-
-      const tile = document.createElement('div')
-      tile.className = 'photo-tile'
-      tile.dataset.photoId = photo.id
-      tile.style.animationDelay = `${idx * 0.05}s`
-
-      const isVid = isVideoPath(photo.file_path)
-      let media
-      if (isVid) {
-        media = document.createElement('video')
-        media.src = publicUrl
-        media.muted = true
-        media.playsInline = true
-        media.loop = true
-        media.preload = 'metadata'
-        media.style.cursor = 'pointer'
-        // Touch devices: autoplay in grid; pointer devices: hover to play
-        if (window.matchMedia('(hover: none)').matches) {
-          media.autoplay = true
-        } else {
-          media.addEventListener('mouseenter', () => media.play())
-          media.addEventListener('mouseleave', () => { media.pause(); media.currentTime = 0 })
-        }
-
-        const badge = document.createElement('span')
-        badge.className = 'video-badge'
-        badge.textContent = '▶ Video'
-        tile.appendChild(badge)
-      } else {
-        media = document.createElement('img')
-        media.crossOrigin = 'anonymous'
-        media.src = publicUrl
-        media.alt = 'Photo from album'
-        media.loading = 'lazy'
-        media.width = 600
-        media.height = 400
-        media.style.objectPosition = photo.focal_point || '50% 50%'
-        media.style.cursor = 'zoom-in'
-      }
-      // Prevent native browser image drag from interfering with tile drag-to-reorder
-      media.draggable = false
-      media.addEventListener('click', () => openLightbox(publicUrl, photo.id, photo.file_path, idx))
-
-      tile.appendChild(media)
-
-      // Dark photo detection — images only
-      if (!isVid) {
-        const darkBadge = document.createElement('div')
-        darkBadge.className = 'dark-badge'
-        darkBadge.innerHTML = '🌙 Dark'
-        darkBadge.style.display = 'none'
-        tile.appendChild(darkBadge)
-
-        const enhancedBadge = document.createElement('div')
-        enhancedBadge.className = 'enhanced-badge'
-        enhancedBadge.innerHTML = '✨ Enhanced'
-        tile.appendChild(enhancedBadge)
-
-        analyzeImageBrightness(media).then(brightness => {
-          const isMobile = window.matchMedia('(pointer: coarse)').matches
-          const darkThreshold = isMobile ? 85 : 60
-          const dimThreshold  = isMobile ? 110 : 85
-
-          // Debug: log brightness values so thresholds can be tuned. Remove after tuning.
-          console.log(
-            `[brightness] Photo ${idx + 1}: ${Math.round(brightness)}/255` +
-            ` | thresholds: dark<${darkThreshold} dim<${dimThreshold}` +
-            ` | ${isMobile ? 'mobile' : 'desktop'}` +
-            (brightness < darkThreshold ? ' → DARK' : brightness < dimThreshold ? ' → DIM' : ' → OK')
-          )
-
-          tile.dataset.brightness = Math.round(brightness)
-
-          if (brightness < dimThreshold) {
-            const isDark = brightness < darkThreshold
-            tile.dataset.isDark = 'true'
-
-            darkBadge.innerHTML = isDark ? '🌙 Dark' : '🌤 Dim'
-            darkBadge.style.display = 'flex'
-            if (!isDark) {
-              darkBadge.style.color = '#ffa94d'
-              darkBadge.style.borderColor = 'rgba(255, 169, 77, 0.3)'
-            }
-
-            const enhanceFilter = isDark
-              ? 'brightness(1.5) contrast(1.15) saturate(1.05)'
-              : 'brightness(1.25) contrast(1.08)'
-
-            const enhanceBtn = document.createElement('button')
-            enhanceBtn.className = 'photo-btn enhance-photo'
-            enhanceBtn.textContent = isDark ? '✨ Enhance' : '☀ Brighten'
-            enhanceBtn.addEventListener('click', (e) => {
-              e.stopPropagation()
-              if (tile.classList.contains('enhanced')) {
-                tile.classList.remove('enhanced')
-                media.style.filter = ''
-                enhanceBtn.textContent = isDark ? '✨ Enhance' : '☀ Brighten'
-                enhanceBtn.className = 'photo-btn enhance-photo'
-              } else {
-                tile.classList.add('enhanced')
-                media.style.filter = enhanceFilter
-                enhanceBtn.textContent = '↩ Original'
-                enhanceBtn.className = 'photo-btn unenhance-photo'
-              }
-            })
-            controls.appendChild(enhanceBtn)
-
-            // On mobile, auto-enhance dark photos so they're visible
-            if (isMobile && isDark) {
-              tile.classList.add('enhanced')
-              media.style.filter = enhanceFilter
-              enhanceBtn.textContent = '↩ Original'
-              enhanceBtn.className = 'photo-btn unenhance-photo'
-            }
-          }
-        })
-      }
-
-      // Checkbox for selection — available to all users
-      const checkbox = document.createElement('input')
-      checkbox.type = 'checkbox'
-      checkbox.className = 'photo-checkbox'
-      checkbox.addEventListener('change', () => togglePhotoSelection(photo.id))
-
-      // Ctrl/Cmd+click to toggle selection
-      tile.addEventListener('click', (e) => {
-        if ((e.ctrlKey || e.metaKey) && !e.target.closest('button')) {
-          e.preventDefault()
-          checkbox.checked = !checkbox.checked
-          togglePhotoSelection(photo.id)
-        }
-      })
-
-      tile.appendChild(checkbox)
-
-      // Photo controls — download for all, cover/delete for owners only
-      const controls = document.createElement('div')
-      controls.className = isAlbumOwner ? 'photo-controls full-width' : 'photo-controls'
-
-      const downloadBtn = document.createElement('button')
-      downloadBtn.className = 'photo-btn download-photo'
-      downloadBtn.textContent = '⬇ Save'
-      downloadBtn.addEventListener('click', (e) => {
-        e.stopPropagation()
-        const filename = photo.file_path.split('/').pop()
-        downloadPhoto(publicUrl, filename)
-      })
-      controls.appendChild(downloadBtn)
-
-      if (isAlbumOwner) {
-        const setCoverBtn = document.createElement('button')
-        setCoverBtn.className = 'photo-btn set-cover'
-        setCoverBtn.textContent = photo.id === coverPhotoId ? '★ Cover' : 'Set Cover'
-        setCoverBtn.addEventListener('click', () => setCoverPhoto(photo.id))
-
-        const deleteBtn = document.createElement('button')
-        deleteBtn.className = 'photo-btn delete-photo'
-        deleteBtn.textContent = '🗑 Delete'
-        deleteBtn.addEventListener('click', async () => {
-          const confirm = window.confirm('Delete this photo?')
-          if (confirm) {
-            try {
-              const photoToDelete = allPhotos.find(p => p.id === photo.id)
-              if (photoToDelete) {
-                await deletePhoto(photo.id, photoToDelete.file_path)
-                loadAlbum()
-              }
-            } catch (err) {
-              console.error('Delete error:', err)
-              showToast(err.message, true)
-            }
-          }
-        })
-
-        const repositionBtn = document.createElement('button')
-        repositionBtn.className = 'photo-btn reposition-photo'
-        repositionBtn.textContent = '⊹ Reposition'
-        repositionBtn.title = 'Set focal point for cropping'
-        repositionBtn.addEventListener('click', (e) => {
-          e.stopPropagation()
-          openRepositionModal(photo.id, publicUrl, photo.focal_point)
-        })
-
-        controls.appendChild(setCoverBtn)
-        controls.appendChild(deleteBtn)
-        controls.appendChild(repositionBtn)
-      }
-
-      tile.appendChild(controls)
-
-      // Drag-to-reorder: owner only
-      if (isAlbumOwner) {
-        tile.draggable = true
-        const handle = document.createElement('div')
-        handle.className = 'drag-handle'
-        handle.title = 'Drag to reorder'
-        handle.textContent = '⠿'
-        tile.appendChild(handle)
-      }
-
-      // Mark if this is the cover
-      if (photo.id === coverPhotoId) {
-        tile.classList.add('is-cover')
-      }
-
-      photosGridEl.appendChild(tile)
-    })
+    photoGridController.renderPhotos(photos)
 
     if (isAlbumOwner) initDragAndDrop()
-
   } catch (err) {
     console.error('Load album error:', err)
     emptyStateEl.textContent = `Error loading album: ${err.message}`
@@ -1498,7 +945,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   commentsController.bindCommentForm()
 
-  // Intercept slideshow button → open photo selector instead of navigating directly
+  // Intercept slideshow button â†’ open photo selector instead of navigating directly
   if (slideshowBtnEl) {
     slideshowBtnEl.addEventListener('click', e => {
       e.preventDefault()
@@ -1544,28 +991,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('reposition-modal')?.addEventListener('click', e => {
     if (e.target === document.getElementById('reposition-modal')) closeRepositionModal()
   })
-  document.getElementById('reposition-image-wrap')?.addEventListener('click', e => {
-    const wrap = document.getElementById('reposition-image-wrap')
-    const img = document.getElementById('reposition-img')
-    if (!wrap || !img) return
-    const wrapRect = wrap.getBoundingClientRect()
-    const imgRect = img.getBoundingClientRect()
-    // Clamp click to image bounds
-    const clampedX = Math.max(imgRect.left, Math.min(e.clientX, imgRect.right))
-    const clampedY = Math.max(imgRect.top, Math.min(e.clientY, imgRect.bottom))
-    repositionFocalPoint = {
-      x: parseFloat(((clampedX - imgRect.left) / imgRect.width * 100).toFixed(1)),
-      y: parseFloat(((clampedY - imgRect.top) / imgRect.height * 100).toFixed(1))
-    }
-    updateRepositionCrosshair()
-  })
+  document.getElementById('reposition-image-wrap')?.addEventListener('click', handleRepositionImageClick)
 })
 
 // Drag-select event listeners
 if (photosGridEl) {
-  photosGridEl.addEventListener('mousedown', startDragSelect)
-  document.addEventListener('mousemove', updateDragSelect)
-  document.addEventListener('mouseup', endDragSelect)
+  selectionController.bindDragSelect()
 }
 
 // Bulk action button event listeners
@@ -1595,7 +1026,7 @@ if (modalCancelBtn) {
   })
 }
 
-// Music button — open modal
+// Music button â€” open modal
 if (musicBtnEl) {
   musicBtnEl.addEventListener('click', () => {
     if (!isAlbumOwner) {
@@ -1609,15 +1040,15 @@ if (musicBtnEl) {
   })
 }
 
-// Music modal — URL tab buttons
+// Music modal â€” URL tab buttons
 if (musicSaveBtn) musicSaveBtn.addEventListener('click', saveMusicUrl)
 if (musicClearBtn) musicClearBtn.addEventListener('click', clearMusicUrl)
 if (musicCloseBtn) musicCloseBtn.addEventListener('click', closeMusicModal)
 
-// Music modal — remove current music
+// Music modal â€” remove current music
 document.getElementById('music-remove-btn')?.addEventListener('click', removeMusicFromAlbum)
 
-// Music modal — tab switching
+// Music modal â€” tab switching
 document.querySelectorAll('.music-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.dataset.tab
@@ -1626,7 +1057,7 @@ document.querySelectorAll('.music-tab').forEach(btn => {
   })
 })
 
-// Music modal — upload zone click
+// Music modal â€” upload zone click
 if (musicUploadZone) {
   musicUploadZone.addEventListener('click', () => musicFileInput?.click())
   musicUploadZone.addEventListener('keydown', e => {
@@ -1645,7 +1076,7 @@ if (musicUploadZone) {
   })
 }
 
-// Music modal — file input change
+// Music modal â€” file input change
 if (musicFileInput) {
   musicFileInput.addEventListener('change', () => {
     const file = musicFileInput.files?.[0]
@@ -1660,7 +1091,7 @@ if (musicModal) {
   })
 }
 
-// ── Crop feature ──────────────────────────────────────────────────
+// â”€â”€ Crop feature â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Opens a Cropper.js modal for the current lightbox photo, crops to selected
 // aspect ratio, and saves the cropped result as a NEW photo row (original kept).
 // Requires CropperJS (loaded via CDN in album.html) and a signed-in user.
@@ -1773,7 +1204,7 @@ function reopenLightboxAfterCrop(index) {
   openLightbox(url, photo.id, photo.file_path, index)
 }
 
-// Lightbox "Crop" button → close lightbox and open crop modal
+// Lightbox "Crop" button â†’ close lightbox and open crop modal
 if (lightboxCropBtn) {
   lightboxCropBtn.addEventListener('click', (e) => {
     e.stopPropagation()
@@ -1819,7 +1250,7 @@ if (cropSaveBtn) {
   cropSaveBtn.addEventListener('click', async () => {
     if (!cropperInstance || !currentUser) return
     cropSaveBtn.disabled = true
-    cropSaveBtn.textContent = 'Saving…'
+    cropSaveBtn.textContent = 'Savingâ€¦'
     setCropStatus('')
 
     const filePath = cropPhotoFilePath || ''
