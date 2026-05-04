@@ -1,5 +1,5 @@
 export async function downloadPhoto(url, filename, { showToast } = {}) {
-  showToast?.('Downloading...')
+  showToast?.('Downloading…')
   try {
     const res = await fetch(url)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
