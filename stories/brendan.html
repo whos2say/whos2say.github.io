@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meet DJ Brendan — Who&rsquo;s to Say Foundation</title>
+<meta name="description" content="Brendan Bukowski found his loudest voice in music. Meet DJ Brendan and the Remix Studio at Who&rsquo;s to Say Foundation — and help fund the next set." />
+<meta name="robots" content="index,follow" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Meet DJ Brendan — Who&rsquo;s to Say Foundation" />
+<meta property="og:description" content="Brendan Bukowski found his loudest voice in music. Meet DJ Brendan and the Remix Studio." />
+<meta property="og:type" content="article" />
+<meta property="og:image" content="/assets/images/stories/brendan/brendan-hero.png" />
+<meta property="og:url" content="https://whostosay.org/stories/brendan.html" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-46JBLZ3YPT');
+</script>
+
+<!-- Brand font (Nunito variable, 200–900, italic + regular) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+
+<!-- Participant Stories design tokens + components -->
+<link rel="stylesheet" href="/assets/css/story-base.css" />
+<link rel="stylesheet" href="/assets/css/story.css" />
+
+<link rel="icon" href="/assets/images/stories/brand/wts-logo-icon.svg" />
+
+<!-- Brendan-specific accent (magenta) -->
+<style>
+  .story-page {
+    --story-accent: #D946EF;
+    --story-accent-ink: #A21CB4;
+    --story-accent-deep: #7B1389;
+    --story-accent-soft: rgba(217, 70, 239, 0.16);
+  }
+
+  /* Brendan-specific meet stage: a "setlist" card instead of a business card */
+  .story-page .setlist {
+    position: relative;
+    width: min(380px, 78%);
+    aspect-ratio: 0.72 / 1;
+    border-radius: 14px;
+    background: #050509;
+    color: white;
+    padding: 22px 22px 20px;
+    box-shadow: 0 30px 60px -20px rgba(5,5,9,0.55), 0 8px 18px rgba(5,5,9,0.25);
+    transform: rotate(-3.5deg);
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 14px;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .story-page .setlist:hover { transform: rotate(-1deg) translateY(-4px); }
+  .story-page .setlist-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+  }
+  .story-page .setlist-head strong {
+    color: white; font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: -0.01em;
+  }
+  .story-page .setlist-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 26px;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: white;
+    margin: 0;
+  }
+  .story-page .setlist-title em { color: var(--w2s-blue-soft); font-style: italic; }
+  .story-page .setlist-tracks {
+    list-style: none; padding: 0; margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    column-gap: 12px;
+    row-gap: 6px;
+    align-content: start;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+  }
+  .story-page .setlist-tracks li { display: contents; }
+  .story-page .setlist-tracks .n {
+    color: rgba(255,255,255,0.40);
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+  .story-page .setlist-tracks .t {
+    color: white;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    text-transform: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .story-page .setlist-tracks .bpm {
+    color: var(--story-accent);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+  }
+  .story-page .setlist-foot {
+    border-top: 1px dashed rgba(255,255,255,0.18);
+    padding-top: 12px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+  }
+  .story-page .setlist-foot .name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    text-transform: none;
+    color: white;
+    margin-bottom: 2px;
+  }
+  .story-page .setlist-foot small { display: block; color: rgba(255,255,255,0.50); margin-top: 2px; }
+
+  /* The second card peeking from behind — a vinyl sleeve */
+  .story-page .sleeve-second {
+    position: absolute;
+    inset: 0;
+    width: min(380px, 78%);
+    aspect-ratio: 0.72 / 1;
+    border-radius: 14px;
+    background: white;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 40px -16px rgba(5,5,9,0.25);
+    transform: translate(46px, 38px) rotate(4.5deg);
+    z-index: -1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .story-page .sleeve-second::before {
+    content: "";
+    width: 78%; aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--story-accent-soft) 0 22%, transparent 22.5% 24%, var(--story-accent-soft) 24.5% 28%, transparent 28.5% 30%, var(--story-accent-soft) 30.5% 36%, transparent 36.5% 38%, var(--story-accent-soft) 38.5% 100%);
+    opacity: 0.85;
+  }
+  .story-page .sleeve-second::after {
+    content: "";
+    position: absolute;
+    width: 14%; aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--story-accent);
+    box-shadow: 0 0 0 4px white inset;
+  }
+
+  /* DJB monogram (used in footer co-brand) */
+  .story-page .monogram {
+    display: inline-grid;
+    place-items: center;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--story-accent);
+    color: var(--w2s-dark);
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    box-shadow: 0 4px 12px rgba(217, 70, 239, 0.24);
+  }
+  .story-page .monogram.sm { width: 36px; height: 36px; font-size: 14px; border-radius: 8px; }
+  .story-page .monogram.lg { width: 80px; height: 80px; font-size: 32px; border-radius: 16px; }
+
+  /* Hero portrait container — taller crop for Brendan */
+  .story-page .hero-portrait { aspect-ratio: 2 / 3; }
+
+  /* Tighten vertical rhythm between sections */
+  .story-page .section { padding: clamp(48px, 6.5vw, 88px) 0; }
+
+  /* Small "now playing" pill in the hero portrait */
+  .story-page .hero-portrait-tag.now .dot {
+    background: var(--story-accent);
+    box-shadow: 0 0 12px var(--story-accent);
+    animation: brendan-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes brendan-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.35); opacity: 0.7; }
+  }
+
+  /* Gear list (kept for future use in the Remix Studio editorial) */
+  .story-page .gear-list {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .story-page .gear-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.005em;
+    color: var(--w2s-dark);
+  }
+  .story-page .gear-list .gear-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--story-accent);
+    flex: none;
+    box-shadow: 0 0 0 4px var(--story-accent-soft);
+  }
+</style>
+</head>
+
+<body class="story-page">
+<a class="skip-link" href="#story">Skip to story</a>
+
+<!-- ============================================================ Top bar -->
+<header class="topbar" role="banner">
+  <div class="topbar-inner">
+    <a class="topbar-brand" href="/" aria-label="Who&rsquo;s to Say Foundation — home">
+      <img src="/assets/images/stories/brand/wts-logo-black.svg" alt="Who&rsquo;s to Say Foundation" />
+      <span class="topbar-brand-label">
+        <strong>Participant stories</strong>
+        Vol. 02 &middot; Brendan
+      </span>
+    </a>
+    <nav class="topbar-cta" aria-label="Primary">
+      <a class="topbar-link" href="#story">Read</a>
+      <a class="topbar-link" href="#give">Give</a>
+      <a class="btn btn-accent btn-sm" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate &rarr;</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============================================================== Hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow eyebrow--on-blue">A Who&rsquo;s to Say ? story &middot; Vol. 02</p>
+      <h1 class="hero-title" id="hero-title">
+        Meet <em>DJ Brendan</em>.<br />
+        Where Broadway beats meet <span class="accent">unbound potential.</span>
+      </h1>
+      <p class="hero-lead">
+        Brendan Bukowski found his loudest voice in music. In our Remix Studio he navigates his own playlists, practices his transitions, and goes <em>on air</em> as DJ Brendan &mdash; every beat a step toward more confidence and connection.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-on-blue btn-lg" href="#give">Fund his next set</a>
+        <a class="btn btn-ghost-on-blue btn-lg" href="#story">Read the story &rarr;</a>
+      </div>
+    </div>
+
+    <div style="position: relative;">
+      <div class="hero-sticker" aria-hidden="true">
+        &ldquo;Music connects us all.&rdquo;
+        <small>&mdash; DJ Brendan Radio</small>
+      </div>
+      <div class="hero-portrait">
+        <img src="/assets/images/stories/brendan/brendan-hero.png" alt="Brendan at the radio mixing board, headphones around his neck, under a DJ Brendan neon sign and an ON AIR light" />
+        <span class="hero-portrait-tag now">
+          <span class="dot"></span>
+          DJ Brendan &middot; on air
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== Meet / setlist -->
+<section class="section" id="story">
+  <div class="wrap meet">
+    <div class="meet-copy">
+      <p class="eyebrow">The piece</p>
+      <h2>He built his own Top&nbsp;5 musicals, Broadway Mix.</h2>
+      <p>Brendan has a keen ear for classic rock and a heart full of Broadway show tunes. So he made a playlist that&rsquo;s entirely his &mdash; &ldquo;DJ Brendan&rsquo;s Broadway Mix&rdquo; &mdash; and he navigates it with real independence, cueing the next number and practicing the introductions between every song.</p>
+      <p class="optional">For Brendan, music isn&rsquo;t just entertainment. It&rsquo;s a way to engage confidently in a dialogue about something he is passionate about.</p>
+    </div>
+
+    <div class="meet-stage" aria-hidden="true">
+      <div class="sleeve-second"></div>
+      <div class="setlist">
+        <div class="setlist-head">
+          <strong>On Air &middot; Vol. 02</strong>
+          <span>Live</span>
+        </div>
+        <h3 class="setlist-title">DJ Brendan&rsquo;s <em>Broadway Mix</em></h3>
+        <ol class="setlist-tracks">
+          <li><span class="n">01</span><span class="t">Station ID &middot; &ldquo;You&rsquo;re on with DJ Brendan&rdquo;</span><span class="bpm">:15</span></li>
+          <li><span class="n">02</span><span class="t">#5 Part of Your World &middot; The Little Mermaid</span><span class="bpm">3:40</span></li>
+          <li><span class="n">03</span><span class="t">#4 Circle of Life &middot; Lion King</span><span class="bpm">4:05</span></li>
+          <li><span class="n">04</span><span class="t">#3 Do You Want to Build a Snowman &middot; Frozen</span><span class="bpm">4:58</span></li>
+          <li><span class="n">05</span><span class="t">#2 The Rum Tum Tugger &middot; Cats</span><span class="bpm">3:22</span></li>
+          <li><span class="n">06</span><span class="t">#1 Alexander Hamilton &middot; Hamilton</span><span class="bpm">:30</span></li>
+          <li><span class="n">07</span><span class="t">Sign-off &middot; &ldquo;Music connects us all&rdquo;</span><span class="bpm">:20</span></li>
+        </ol>
+        <div class="setlist-foot">
+          <div>
+            <div class="name">DJ Brendan</div>
+            <span>Remix Studio &middot; Resident</span>
+            <small>DJ Brendan Radio</small>
+          </div>
+          <div style="text-align:right;">
+            DJB<br />
+            <small>On the air</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Editorial 1 -->
+<section class="section section--soft">
+  <div class="wrap editorial">
+    <div class="editorial-img">
+      <img src="/assets/images/stories/brendan/brendan-karaoke.png" alt="Brendan singing into a microphone along with a music video and on-screen lyrics" />
+      <span class="editorial-img-cap">Singing along &middot; Remix Studio</span>
+    </div>
+    <div class="editorial-copy">
+      <p class="eyebrow">The work</p>
+      <h3>From fan to DJ: <em>mastering the mix.</em></h3>
+      <p>Step into Brendan&rsquo;s world and you&rsquo;ll find him creating his playlist with real independence &mdash; navigating Spotify, setting up collaborative shares, and practicing smooth transitions between his favorite Broadway anthems. He&rsquo;s not just listening. He&rsquo;s hosting and sharing, because he believes music is for everyone.</p>
+      <p class="optional">
+        With personalized headphone coaching, he&rsquo;s honing the craft of a radio show host one song intro at a time.
+      </p>
+      <p>
+        And the music is doing something bigger: <strong>his communication is flourishing</strong> &mdash; from simple responses to joyful, sustained, lyrical participation.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Editorial 2 -->
+<section class="section">
+  <div class="wrap editorial flip">
+    <div class="editorial-img">
+      <img src="/assets/images/stories/brendan/brendan-remix-studio.png" alt="Brendan on the DJ Brendan Radio set wearing headphones and gold-frame sunglasses, microphone in front of him" />
+      <span class="editorial-img-cap">DJ Brendan Radio &middot; on set</span>
+    </div>
+    <div class="editorial-copy">
+      <p class="eyebrow">Behind the scenes</p>
+      <h3>Powered by the <em>Remix Studio.</em></h3>
+      <p>
+        Brendan&rsquo;s growth is amplified by a professional, accessible space built for exactly this. The <strong>Remix Studio</strong> gives him real gear &mdash; a Blue Yeti microphone, a Rode Wireless GO II system, and intuitive audio software &mdash; plus a safe place to explore, experiment, and be heard.
+      </p>
+      <p class="optional">
+        It isn&rsquo;t just about recording. It&rsquo;s about building real-world digital media skills, at his pace, around his passion.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== What we're building -->
+<section class="section section--soft">
+  <div class="wrap">
+    <header class="s-head">
+      <p class="eyebrow">The pathway</p>
+      <h2>Unique pathways, <em>not</em> generic training.</h2>
+      <p class="lead">
+        Who&rsquo;s to Say builds possibility paths around an individual&rsquo;s strengths &mdash; never a one-size-fits-all job program. For Brendan, that path sings. Here&rsquo;s the Digital Content Creator pathway we&rsquo;re building with him, and for every young adult who walks in next.
+      </p>
+    </header>
+
+    <ol class="building-grid">
+      <li class="building-card" style="--pcolor: var(--pathway-entertainment);">
+        <span class="num">01 / Express</span>
+        <h4>Music as a voice.</h4>
+        <p>Broadway, classic rock, and a microphone. We follow what lights him up and let communication grow through the songs he loves.</p>
+        <span class="tag"><span class="dot"></span>Entertainment pathway</span>
+      </li>
+      <li class="building-card" style="--pcolor: var(--pathway-maker);">
+        <span class="num">02 / Create</span>
+        <h4>Real skills, real gear.</h4>
+        <p>Spotify navigation, playlist shares, mic technique, and clean transitions &mdash; on professional tools, with personalized coaching.</p>
+        <span class="tag"><span class="dot"></span>Maker pathway</span>
+      </li>
+      <li class="building-card" style="--pcolor: var(--pathway-community);">
+        <span class="num">03 / Broadcast</span>
+        <h4>On air, and independent.</h4>
+        <p>DJ Brendan Radio &mdash; a show he hosts and publishes himself. The foundation&rsquo;s vision of independent content creation, made real.</p>
+        <span class="tag"><span class="dot"></span>Community pathway</span>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ Photo band -->
+<section class="photoband">
+  <div class="photoband-img">
+    <img src="/assets/images/stories/brendan/brendan-stage.png" alt="DJ Brendan on a concert stage with a giant DJ BRENDAN video wall, mixer, and purple-and-blue lights" />
+    <div class="photoband-overlay">
+      <div class="photoband-overlay-inner">
+        <p class="eyebrow eyebrow--on-blue">On air</p>
+        <h3 style="color: rgb(255, 255, 255)">
+          His name in lights, his playlist on the system, his voice on the mic.
+          <br/>That&rsquo;s what &ldquo;unbound potential&rdquo; looks like.
+        </h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== Donation -->
+<section class="section" id="give">
+  <div class="wrap">
+    <header class="s-head">
+      <p class="eyebrow">Here&rsquo;s where you come in</p>
+      <h2>Brendan&rsquo;s show doesn&rsquo;t need you to <em>fix</em> anything.</h2>
+      <p class="lead">
+        It needs resources. Studio time. Gear that works. A coach across the table who says &mdash; <em>yes, cue it up, let&rsquo;s hear it.</em> Your gift makes that table available to more young adults like Brendan.
+      </p>
+    </header>
+
+    <div class="tier-grid">
+      <article class="tier">
+        <span class="tier-name">The Microphone</span>
+        <div class="tier-amount"><sup>$</sup>50</div>
+        <p class="tier-blurb">Buys one young adult their first real tool &mdash; and the belief that comes with it.</p>
+        <ul class="tier-list">
+          <li>A mic, a brush, or a season&rsquo;s pass</li>
+          <li>One creative session, fully funded</li>
+        </ul>
+        <div class="tier-cta"><a class="btn btn-ghost" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener" style="border:1.5px solid var(--w2s-dark); color: var(--w2s-dark);">Give $50</a></div>
+      </article>
+
+      <article class="tier is-featured">
+        <span class="tier-pin">Most chosen</span>
+        <span class="tier-name">The Mentor Chair</span>
+        <div class="tier-amount"><sup>$</sup>250</div>
+        <p class="tier-blurb">Funds an entire month of one-on-one creative coaching for one young adult.</p>
+        <ul class="tier-list">
+          <li>4 mentor sessions in studio</li>
+          <li>Equipment time + project review</li>
+          <li>A real brief, a real deliverable</li>
+        </ul>
+        <div class="tier-cta"><a class="btn btn-on-dark" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Give $250 &rarr;</a></div>
+      </article>
+
+      <article class="tier">
+        <span class="tier-name">The Studio</span>
+        <div class="tier-amount"><sup>$</sup>1,000</div>
+        <p class="tier-blurb">Underwrites studio access, pro equipment, and real business development &mdash; for a full quarter.</p>
+        <ul class="tier-list">
+          <li>3 months of studio access</li>
+          <li>Gear, software, mentor hours</li>
+          <li>Launch plan for one creator&rsquo;s brand</li>
+        </ul>
+        <div class="tier-cta"><a class="btn btn-primary" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Give $1,000</a></div>
+      </article>
+    </div>
+
+    <form class="custom-give" action="https://givebutter.com/whostosayfoundation" method="get" target="_blank" rel="noopener">
+      <label for="custom">Or pick your own</label>
+      <div class="custom-give-amount">
+        <span>$</span>
+        <input id="custom" name="amount" type="number" min="1" step="1" placeholder="120" inputmode="numeric" />
+      </div>
+      <button class="btn btn-accent" type="submit">Give today &rarr;</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================ Final CTA -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <p class="eyebrow eyebrow--on-dark">Who&rsquo;s to say ?</p>
+    <h2>Who&rsquo;s to say <em>he can&rsquo;t?</em></h2>
+    <p class="final-cta-answer">He <strong>already is.</strong></p>
+    <p class="lead">
+      Your gift to Who&rsquo;s to Say Foundation funds the studio, the mentor, and the table where dreams like Brendan&rsquo;s get built. Not as a program. As a pathway.
+    </p>
+    <div class="final-cta-actions">
+      <a class="btn btn-on-dark btn-lg" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate now &rarr;</a>
+      <a class="btn btn-ghost btn-lg" href="#story" style="color: white; border: 1.5px solid rgba(255,255,255,0.4);">Share Brendan&rsquo;s story</a>
+    </div>
+    <div class="final-cta-meta">
+      <span><strong>Who&rsquo;s to Say Foundation</strong></span>
+      <span>EIN &middot; 33-3826585</span>
+      <span>501(c)(3) Public Charity</span>
+      <span>whostosay.org</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="/assets/images/stories/brand/wts-logo-black.svg" alt="Who&rsquo;s to Say Foundation" />
+      <p>
+        We empower young adults with intellectual and developmental disabilities to turn their dreams into real, visible work &mdash; whatever shape those dreams take.
+      </p>
+      <div class="footer-djr">
+        <span class="monogram lg" aria-hidden="true">DJB</span>
+        <div class="note">
+          Featuring
+          <strong>DJ Brendan Radio</strong>
+          Brendan Bukowski &middot; Remix Studio
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h5>Programs</h5>
+      <ul>
+        <li><a href="/programs.html">Pathways</a></li>
+        <li><a href="/creative-workshops.html">Creative Workshops</a></li>
+        <li><a href="/contact.html">Mentor with us</a></li>
+        <li><a href="/contact.html">Studio access</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Give</h5>
+      <ul>
+        <li><a href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Make a donation</a></li>
+        <li><a href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Monthly giving</a></li>
+        <li><a href="/contact.html">Corporate sponsorship</a></li>
+        <li><a href="/contact.html">Contact us</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-base">
+    <span>&copy; <span id="year"></span> Who&rsquo;s to Say Foundation &middot; EIN 33-3826585 &middot; 501(c)(3)</span>
+    <span>Who&rsquo;s to say what&rsquo;s possible?</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var el = document.getElementById("year");
+    if (el) el.textContent = new Date().getFullYear();
+  })();
+</script>
+
+</body>
+</html>

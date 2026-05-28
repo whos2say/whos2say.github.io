@@ -1,0 +1,228 @@
+/* ==========================================================================
+   Who's to Say Foundation — Participant Stories design system (base tokens)
+   story-base.css  — colors, typography, spacing tokens
+   Used together with story.css. Loaded only on /stories/* pages so it does
+   not collide with the canonical site stylesheet (assets/css/styles.css).
+   ========================================================================== */
+
+/* Font is loaded from Google Fonts in the page <head>:
+   https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..900;1,200..900&display=swap
+   The variable axis covers the 200–900 weight range used by the design. */
+
+:root {
+  /* ===== BRAND COLORS =====================================================
+     Pulled directly from the brand color palette reference. */
+
+  --w2s-primary:        #63F5E6;   /* Possibility cyan — brand fill / hero */
+  --w2s-primary-ink:    #0FB5A4;   /* on-white partner — AA-large / UI */
+  --w2s-primary-deep:   #0A8B7E;   /* on-white · AA body (4.7:1) */
+  --w2s-dark:           #050509;   /* near-black foreground */
+  --w2s-light:          #FFFFFF;   /* pure white */
+  --w2s-muted:          #B5B5BD;   /* neutral muted gray */
+
+  /* secondary brand blue — unified with Sports value (single source of truth) */
+  --w2s-blue:           #1E64F0;
+  --w2s-blue-soft:      #BDDEFF;   /* the soft baby-blue used in logo type */
+
+  /* ===== PATHWAY COLORS ===================================================
+     The 6 "pathways" young adults can explore. These are the spectrum
+     colors that flow through the rainbow road in the brand mark. */
+
+  --pathway-digital:        #7C3AED;   /* purple — Digital */
+  --pathway-sports:         #1E64F0;   /* royal blue — Sports (= --w2s-blue) */
+  --pathway-life:           #22C55E;   /* green — Life */
+  --pathway-community:      #F97316;   /* orange — Community */
+  --pathway-maker:          #FACC15;   /* yellow — Maker */
+  --pathway-entertainment:  #D946EF;   /* magenta — Entertainment */
+
+  /* ===== NEUTRAL SCALE ===================================================== */
+  --neutral-0:    #FFFFFF;
+  --neutral-50:   #FAFAFB;
+  --neutral-100:  #F4F4F7;
+  --neutral-200:  #E7E7EC;
+  --neutral-300:  #D4D4DC;
+  --neutral-400:  #B5B5BD;
+  --neutral-500:  #8E8E9E;
+  --neutral-600:  #6A6A78;
+  --neutral-700:  #44444F;
+  --neutral-800:  #25252E;
+  --neutral-900:  #050509;
+
+  /* ===== SEMANTIC COLOR TOKENS ============================================ */
+  --bg:             var(--neutral-0);
+  --bg-soft:        var(--neutral-50);
+  --bg-sunken:      var(--neutral-100);
+  --bg-dark:        var(--w2s-dark);
+  --bg-brand:       var(--w2s-blue);
+
+  --fg:             var(--w2s-dark);
+  --fg-muted:       var(--neutral-600);
+  --fg-subtle:      var(--neutral-500);
+  --fg-on-dark:     var(--neutral-0);
+  --fg-on-brand:    var(--neutral-0);
+
+  --border:         var(--neutral-200);
+  --border-strong:  var(--neutral-300);
+
+  --accent:           var(--w2s-primary);
+  --accent-ink:       var(--w2s-primary-ink);
+  --accent-on-light:  var(--w2s-primary-deep);
+  --link:             var(--w2s-blue);
+
+  --success: var(--pathway-life);
+  --warning: var(--pathway-community);
+  --danger:  #E03131;
+  --info:    var(--w2s-blue);
+
+  /* ===== TYPOGRAPHY ====================================================== */
+  --font-display: "Nunito", ui-rounded, "Avenir Next Rounded", system-ui, sans-serif;
+  --font-sans:    "Nunito", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono:    ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Type scale */
+  --fs-display-xl: 88px;   --lh-display-xl: 0.95;  --tk-display-xl: -0.03em;
+  --fs-display-l:  64px;   --lh-display-l:  1.00;  --tk-display-l:  -0.02em;
+  --fs-display-m:  48px;   --lh-display-m:  1.05;  --tk-display-m:  -0.02em;
+  --fs-h1:         40px;   --lh-h1:         1.10;  --tk-h1:         -0.015em;
+  --fs-h2:         32px;   --lh-h2:         1.15;  --tk-h2:         -0.01em;
+  --fs-h3:         24px;   --lh-h3:         1.25;  --tk-h3:         -0.005em;
+  --fs-h4:         20px;   --lh-h4:         1.30;  --tk-h4:         0;
+  --fs-lead:       20px;   --lh-lead:       1.55;
+  --fs-body:       16px;   --lh-body:       1.55;
+  --fs-small:      14px;   --lh-small:      1.50;
+  --fs-caption:    12px;   --lh-caption:    1.40;  --tk-caption: 0.04em;
+
+  /* Weights */
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold: 600;
+  --fw-bold:    700;
+  --fw-black:   900;
+
+  /* ===== SPACING (4px base) =============================================== */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* ===== RADIUS =========================================================== */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 40px;
+  --radius-pill: 999px;
+
+  /* ===== SHADOW =========================================================== */
+  --shadow-xs: 0 1px 2px rgba(5, 5, 9, 0.06);
+  --shadow-sm: 0 2px 8px rgba(5, 5, 9, 0.08);
+  --shadow-md: 0 8px 24px rgba(5, 5, 9, 0.10);
+  --shadow-lg: 0 20px 48px rgba(5, 5, 9, 0.14);
+  --shadow-glow: 0 0 0 6px rgba(99, 245, 230, 0.30);
+
+  /* ===== MOTION =========================================================== */
+  --ease-out:      cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-bounce:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:      120ms;
+  --dur-base:      200ms;
+  --dur-slow:      360ms;
+}
+
+/* ==========================================================================
+   Semantic element styling — drop-in for prose. Scoped to .story-page so it
+   only applies on story templates and never leaks to other pages.
+   ========================================================================== */
+
+.story-page {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg);
+  background: var(--bg);
+}
+
+.story-page h1,
+.story-page h2,
+.story-page h3,
+.story-page h4,
+.story-page h5,
+.story-page h6 {
+  font-family: var(--font-display);
+  color: var(--fg);
+  font-weight: var(--fw-bold);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.story-page h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); letter-spacing: var(--tk-h1); }
+.story-page h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--tk-h2); }
+.story-page h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: var(--tk-h3); }
+.story-page h4 { font-size: var(--fs-h4); line-height: var(--lh-h4); letter-spacing: var(--tk-h4); font-weight: var(--fw-semibold); }
+
+.story-page p {
+  margin: 0 0 var(--space-4) 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  text-wrap: pretty;
+  color: var(--fg);
+}
+
+.story-page .lead {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: var(--fg-muted);
+}
+
+.story-page small,
+.story-page .small {
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+}
+
+.story-page .caption,
+.story-page .eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tk-caption);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.story-page code,
+.story-page kbd,
+.story-page samp,
+.story-page pre {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+.story-page a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1.5px;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.story-page a:hover { color: var(--w2s-dark); }
+
+/* Display utility classes for big headlines */
+.story-page .display-xl { font-family: var(--font-display); font-size: var(--fs-display-xl); line-height: var(--lh-display-xl); letter-spacing: var(--tk-display-xl); font-weight: var(--fw-semibold); }
+.story-page .display-l  { font-family: var(--font-display); font-size: var(--fs-display-l);  line-height: var(--lh-display-l);  letter-spacing: var(--tk-display-l);  font-weight: var(--fw-semibold); }
+.story-page .display-m  { font-family: var(--font-display); font-size: var(--fs-display-m);  line-height: var(--lh-display-m);  letter-spacing: var(--tk-display-m);  font-weight: var(--fw-semibold); }
+
+.story-page .wordmark-accent {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--fw-semibold);
+}

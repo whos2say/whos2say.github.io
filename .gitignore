@@ -11,3 +11,6 @@ js/credentials.js
 
 # Cowork scratch files
 .cowork-test*
+
+# Design-package scratch extracts
+.tmp-design-*
