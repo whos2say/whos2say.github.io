@@ -1,0 +1,27 @@
+ assets/css/styles.css                        |  40 +++
+ contact.html                                 |  12 +
+ creative-workshops.html                      | 380 +++++++++++++++++++++++++++
+ index.html                                   |   2 +
+ programs.html                                |  17 ++
+ programs/community-integration-advocacy.html |   1 +
+ programs/digital-content-creator.html        |   1 +
+ programs/entertainment-pathways.html         |   1 +
+ programs/life-skills-independent-living.html |   1 +
+ programs/maker-market-events.html            |   1 +
+ programs/whos-to-say-sports.html             |   1 +
+ support-coordinators.html                    | 270 +++++++++++++++++++
+ 12 files changed, 727 insertions(+)
+
+Changed files:
+M	assets/css/styles.css
+M	contact.html
+A	creative-workshops.html
+M	index.html
+M	programs.html
+M	programs/community-integration-advocacy.html
+M	programs/digital-content-creator.html
+M	programs/entertainment-pathways.html
+M	programs/life-skills-independent-living.html
+M	programs/maker-market-events.html
+M	programs/whos-to-say-sports.html
+A	support-coordinators.html

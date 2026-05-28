@@ -1,0 +1,245 @@
+REVIEW STATUS — feature/public-creative-workshops
+==================================================
+
+Branch: feature/public-creative-workshops (from origin/main @ 0274dd8)
+Copy source: PUBLIC_WORKSHOPS_COPY_SOURCE_OF_TRUTH.md
+            (read from C:\Studio\StudioVault\01_Projects\Web\public_workshops_copy_source_of_truth.md)
+
+
+SUMMARY OF WORK
+---------------
+- Built two new public pages from the approved copy source:
+    creative-workshops.html        (hero, 10-card workshop menu, 4-tier pricing,
+                                    how-sessions-work steps, inclusive/intergenerational
+                                    section, funding note linking to support-coordinators,
+                                    maker-space next-phase section, final CTA)
+    support-coordinators.html      (hero, what-we-provide, 4 sample description
+                                    blocks, 2 sample invoice descriptions, documentation
+                                    list, public-access funding note, next-phase
+                                    vision, final CTA, sidebar contact + quick-reference
+                                    + funding note cards)
+- Updated existing pages per approved copy:
+    programs.html        — replaced draft workshop callout body with approved
+                          "Public Workshops / Creative Workshops & Studio Sessions"
+                          card label, title, body, and "View Creative Workshops" button.
+    contact.html         — added new sidebar card "Interested in a workshop or
+                          studio session?" with approved body and CTA to workshops.
+    index.html           — added "Creative Workshops" nav link and a primary CTA
+                          button in the homepage hero actions row.
+    All 6 program subpages — added "Creative Workshops" nav link for nav consistency
+                          (community-integration-advocacy, digital-content-creator,
+                          entertainment-pathways, life-skills-independent-living,
+                          maker-market-events, whos-to-say-sports).
+- CSS: appended scoped helpers to assets/css/styles.css
+    .how-grid--4   (responsive 4-up step/pricing grid)
+    .rate-price    (brand-color price emphasis inside reused .how-card)
+    .cw-note       (small supporting note styling)
+    .cw-cta        (centered final CTA block)
+    Plus a small specificity fix: rate-price now uses combined `p.rate-price,
+    .rate-price` selector to win over the existing `.how-card p { color: muted }`
+    rule so prices render in --color-primary.
+
+
+PAGES CREATED
+-------------
+creative-workshops.html        (380 new lines)
+support-coordinators.html      (270 new lines)
+
+
+PAGES UPDATED
+-------------
+assets/css/styles.css                        (+40 lines, scoped helpers)
+contact.html                                 (+12 lines, workshop sidebar card + nav link)
+index.html                                   (+2 lines, nav link + hero CTA)
+programs.html                                (+17/-7 lines, callout body rewritten to approved copy)
+programs/community-integration-advocacy.html (+1 line, nav link)
+programs/digital-content-creator.html        (+1 line, nav link)
+programs/entertainment-pathways.html         (+1 line, nav link)
+programs/life-skills-independent-living.html (+1 line, nav link)
+programs/maker-market-events.html            (+1 line, nav link)
+programs/whos-to-say-sports.html             (+1 line, nav link)
+
+
+NAV CHANGES
+-----------
+Added a primary nav item "Creative Workshops" → /creative-workshops.html to:
+  - index.html (.site-nav)
+  - programs.html (.site-nav)
+  - contact.html (.site-nav)
+  - all 6 program subpages under programs/ (.site-nav)
+Also rendered the same nav structure within the two new pages.
+aria-current="page" set correctly on creative-workshops.html.
+
+
+CSS CHANGES
+-----------
+40 lines appended to assets/css/styles.css under a "Creative Workshops Page (scoped)"
+header. No tokens, base styles, or shared components modified. Helpers reuse existing
+.how-card, .program-card, .program-section patterns. Specificity of .rate-price was
+fixed via `p.rate-price, .rate-price { ... }` so it beats the existing `.how-card p`
+muted-color rule.
+
+
+OPTIONAL MAKER-SPACE / BUILD-THE-STUDIO PAGE
+--------------------------------------------
+DEFERRED to Phase 2.
+
+Reasoning: the approved source explicitly marks this as optional ("may be a future
+page, not necessarily part of the first launch"). Keeping the optional page out
+keeps this PR small and rollback-safe (single revert). The "Help Build the Studio"
+CTA in creative-workshops.html currently points to https://givebutter.com/whostosayfoundation
+which is the live foundation donation page — preserves the intent of the CTA until
+the dedicated page is built.
+
+Recommended Phase 2 follow-up: build community-makerspace.html (or build-the-studio.html)
+using the optional "Page 3" copy from the source of truth, then re-point the
+"Help Build the Studio" buttons in creative-workshops.html and add a footer/homepage
+"Build the Studio" CTA per the approved copy's "Optional second nav or footer label".
+
+
+COMPLIANCE VERIFICATION
+-----------------------
+Ran prohibited-term scan across created/modified files (creative-workshops.html,
+support-coordinators.html, programs.html, contact.html) for:
+  Day Hab / Medicaid / DDD / Community Inclusion / disability support /
+  compliance-approved / therapeutic / clinical / treatment / respite /
+  behavioral support / adult day program / vocational rehabilitation /
+  senior care / elder care / memory care / private club / members-only /
+  staff support / supervision
+Result: NO MATCHES in any file authored or modified in this PR.
+
+Conditional funding language verified present:
+  "may be eligible" — support-coordinators.html
+  "approved through the individual's plan" — creative-workshops.html, support-coordinators.html (multiple)
+  "Approval decisions are made by the applicable funding source, plan, or reviewer"
+    — creative-workshops.html, support-coordinators.html (multiple)
+
+
+VALIDATION RESULTS
+------------------
+git status --short:
+    A  creative-workshops.html
+    A  support-coordinators.html
+    M  assets/css/styles.css
+    M  contact.html
+    M  index.html
+    M  programs.html
+    M  programs/community-integration-advocacy.html
+    M  programs/digital-content-creator.html
+    M  programs/entertainment-pathways.html
+    M  programs/life-skills-independent-living.html
+    M  programs/maker-market-events.html
+    M  programs/whos-to-say-sports.html
+
+git diff --check (cached): clean (no whitespace errors, exit 0)
+
+Browser preview (http://localhost:8099):
+  creative-workshops.html
+    - title:            "Creative Workshops | Who's to Say?"
+    - h1:               "Creative media, storytelling, and maker experiences for people of all ages and abilities."
+    - workshop cards:   10 (all approved cards present)
+    - pricing tiers:    4 → $25–$75 / $95–$175 / $225–$300 / Coming soon
+    - how-sessions steps: 4 numbered steps
+    - support-coordinators link: present
+    - "Help Build the Studio" CTA: present
+    - Console errors:   none
+  support-coordinators.html
+    - title:            "Support Coordinator Information | Who's to Say?"
+    - h1:               "Creative workshop descriptions and documentation for plan review."
+    - main h2 sections: 7 (What we provide / Sample description language / Sample
+                            invoice language / Documentation available / Public
+                            access / Growing community space / Final CTA)
+    - sample description h3s: 4 (General / Project-based / Community-centered /
+                                 Intergenerational)
+    - sidebar cards:    3 (Contact / Quick reference / Funding review note)
+    - breadcrumb:       Home › Creative Workshops › Support Coordinator Information
+    - Console errors:   none
+  programs.html
+    - workshop callout: label "Public Workshops", h2 "Creative Workshops & Studio
+                        Sessions", approved body, btn "View Creative Workshops"
+                        → /creative-workshops.html
+  contact.html
+    - new sidebar card: "Interested in a workshop or studio session?" with
+                        approved body and CTA "View Creative Workshops"
+  index.html
+    - nav has "Creative Workshops" link; home actions row has "Creative Workshops"
+      primary button (link)
+
+Dark/light theme:
+  - Switching html[data-theme] from light to dark and back: body background, text,
+    card background, and .rate-price all re-render correctly using the design-system
+    tokens. .rate-price renders in brand cyan (#63f5ef) in both themes after the
+    specificity fix.
+
+Mobile (375×812):
+  - No horizontal overflow.
+  - .how-grid--4 collapses to single column (CSS already supports this; .how-grid--4
+    drops to 2 cols at 980px and 1 col at 560px).
+  - .program-grid (workshop menu) collapses to 1 col at 640px.
+  - Top h1 font scales via clamp() to ~35px.
+  - Site nav hidden at this width — same as every other page on the site. The
+    repo does not have a mobile menu pattern wired up; preserving that pre-existing
+    site-wide behavior is intentional and out of scope.
+
+Screenshot: preview_screenshot tool consistently times out on these pages —
+appears to be related to the animated programs-hero shimmer (programsPathDrift
+keyframes). Page itself is healthy (document.readyState === "complete", no modal,
+scrollHeight ~10700). Verified via accessibility tree / computed styles instead.
+
+
+MANUAL REVIEW CHECKLIST (for PR description)
+--------------------------------------------
+[ ] Confirm pricing language is approved
+    ($25–$75 / $95–$175 / $225–$300 / Coming soon)
+[ ] Confirm funding language remains conditional
+    ("may be eligible", "when approved through the individual's plan or funding source",
+     "Approval decisions are made by the applicable funding source, plan, or reviewer")
+[ ] Confirm no prohibited compliance-sensitive wording was added
+    (automated scan = clean; please eyeball both pages)
+[ ] Confirm maker-space language is framed as future / next phase
+    ("next phase", "building toward", "raising funds", "future space")
+[ ] Confirm senior / intergenerational language is dignified and not transactional
+[ ] Confirm Creative Workshops is linked from homepage, programs page, and nav (yes)
+[ ] Confirm Support Coordinator page is linked from the funding section
+    (creative-workshops.html → #funding section → "Information for Support Coordinators" btn)
+[ ] Confirm mobile layout works
+[ ] Confirm dark/light theme works
+[ ] Confirm no console errors
+[ ] Confirm changes are contained in one clean PR for easy rollback
+    (yes — single PR, single feat: commit, revertable via `git revert <merge-sha>`)
+
+
+KNOWN ISSUES / ASSUMPTIONS
+--------------------------
+1. The "Help Build the Studio" CTA on creative-workshops.html points to the
+   existing Givebutter donation URL because the dedicated community-makerspace.html
+   page is deferred to Phase 2. This preserves the intent of the CTA. If/when
+   Phase 2 lands, repoint these buttons to the new page.
+
+2. There is no mobile menu (hamburger) on any page in the repo, even though the
+   CSS contains the styles for one (.mobile-menu-btn, .mobile-menu-panel). At
+   widths below 900px, the entire .site-nav is hidden. This is a pre-existing
+   site-wide condition; not introduced by this PR.
+
+3. contact.html contains a pre-existing stray `</form>` tag at line 146 (a duplicate
+   closing tag). This is unrelated to this PR's changes and not addressed here.
+
+4. preview_screenshot tool times out on pages using the animated
+   `.programs-hero--image` shimmer. Verified those pages via DOM/computed-style
+   evaluation instead. No runtime errors.
+
+5. The "Building Toward..." section uses the existing programs-wrapper +
+   divider-ribbon + program-section pattern (single column) rather than a
+   dedicated `.maker-vision` style — keeps the page consistent with the rest of
+   creative-workshops.html and avoids new CSS.
+
+
+ROLLBACK
+--------
+This PR is intended to be a single clean PR. If problems are discovered after
+merge, rollback is a single command:
+
+    git revert -m 1 <merge-commit-sha>
+
+That will reverse all 12 file changes in one commit. No data migrations, no
+schema changes, no deploys triggered outside GitHub Pages publishing.

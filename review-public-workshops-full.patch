@@ -1,0 +1,867 @@
+diff --git a/assets/css/styles.css b/assets/css/styles.css
+index 81e63ae..6386b1b 100644
+--- a/assets/css/styles.css
++++ b/assets/css/styles.css
+@@ -1703,3 +1703,43 @@ html[data-theme="light"] .programs-hero--image::before{
+ 
+ /* Tap highlight color */
+ * { -webkit-tap-highlight-color: rgba(99, 245, 239, 0.12); }
++
++/* =========================================================
++   Creative Workshops Page (scoped) — reuses program/how-card styles
++   Adds: 4-up steps grid, rate price emphasis, note + centered CTA
++   ========================================================= */
++
++/* 4-up "How It Works" steps (how-grid stays 3-up elsewhere) */
++.how-grid--4{
++  grid-template-columns: repeat(4, minmax(0, 1fr));
++}
++@media (max-width: 980px){
++  .how-grid--4{ grid-template-columns: 1fr 1fr; }
++}
++@media (max-width: 560px){
++  .how-grid--4{ grid-template-columns: 1fr; }
++}
++
++/* Rate emphasis inside reused .how-card
++   p.rate-price beats .how-card p on specificity ties (defined later, same 0,1,1) */
++p.rate-price,
++.rate-price{
++  margin: 0.35rem 0 0.4rem;
++  font-family: var(--font-heading);
++  font-size: 1.4rem;
++  font-weight: 800;
++  color: var(--color-primary);
++}
++
++/* Supporting note under rates / funding */
++.cw-note{
++  margin-top: 1rem;
++  color: var(--text-muted);
++  font-size: 0.95rem;
++}
++.cw-note a{ color: var(--color-primary); }
++
++/* Centered final CTA block */
++.cw-cta{ text-align: center; }
++.cw-cta .how-sub{ margin-left: auto; margin-right: auto; }
++.cw-cta .btn-row{ justify-content: center; }
+diff --git a/contact.html b/contact.html
+index a3fca7e..3636353 100644
+--- a/contact.html
++++ b/contact.html
+@@ -51,6 +51,7 @@
+           </div>
+         </div>
+ 
++        <a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+         <a class="nav-link" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate</a>
+         <a class="nav-link active" data-nav="contact" href="/contact.html" aria-current="page">Contact</a>
+       </nav>
+@@ -167,6 +168,17 @@
+           </ul>
+         </div>
+ 
++        <div class="program-sidebar-card">
++          <h3>Interested in a workshop or studio session?</h3>
++          <p>
++            Tell us what you are hoping to create. We can help identify a workshop, private creative coaching session,
++            intergenerational storytelling project, project-based studio block, or community partnership opportunity.
++          </p>
++          <div class="btn-row">
++            <a class="btn btn-primary" href="/creative-workshops.html">View Creative Workshops</a>
++          </div>
++        </div>
++
+         <div class="accordion-stack">
+           <details class="accordion">
+             <summary>What happens after I submit?</summary>
+diff --git a/creative-workshops.html b/creative-workshops.html
+new file mode 100644
+index 0000000..37fbaa5
+--- /dev/null
++++ b/creative-workshops.html
+@@ -0,0 +1,380 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++<meta charset="utf-8" />
++<title>Creative Workshops | Who’s to Say?</title>
++<meta content="width=device-width, initial-scale=1" name="viewport" />
++<meta content="Public creative media workshops, private creative coaching, intergenerational storytelling, and project-based studio sessions for people of all ages and abilities, with a vision to grow into a community-centered digital media and maker space." name="description" />
++<meta content="index,follow" name="robots" />
++<!-- Google tag (gtag.js) -->
++<script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
++<script>
++  window.dataLayer = window.dataLayer || [];
++  function gtag(){dataLayer.push(arguments);}
++  gtag('js', new Date());
++  gtag('config', 'G-46JBLZ3YPT');
++</script>
++<!-- Fonts -->
++<link rel="preconnect" href="https://fonts.googleapis.com" />
++<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
++<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&amp;family=Poppins:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
++<script src="/assets/js/theme.js" defer></script>
++<link href="/assets/css/styles.css" rel="stylesheet" />
++</head>
++
++<body data-page="creative-workshops">
++<a class="skip-link" href="#main">Skip to content</a>
++
++<!-- Canonical Header -->
++<header class="site-header">
++  <div class="header-inner">
++    <a class="brand" href="/" aria-label="Who’s to Say ? Foundation Home">
++      <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
++      <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
++    </a>
++    <nav class="site-nav" aria-label="Primary navigation">
++      <a class="nav-link" data-nav="home" href="/">Home</a>
++      <div class="nav-item has-submenu" data-submenu="programs">
++        <a class="nav-link" data-nav="programs" href="/programs.html" aria-haspopup="true" aria-expanded="false">Programs</a>
++        <div class="nav-submenu" role="menu" aria-label="Programs submenu">
++          <a class="submenu-link" role="menuitem" href="/programs/digital-content-creator.html">Digital Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/whos-to-say-sports.html">Sports Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/life-skills-independent-living.html">Independence Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/community-integration-advocacy.html">Community Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/maker-market-events.html">Art Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/entertainment-pathways.html">Entertainment Path</a>
++        </div>
++      </div>
++      <a class="nav-link active" aria-current="page" href="/creative-workshops.html">Creative Workshops</a>
++      <a class="nav-link" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate</a>
++      <a class="nav-link" href="/contact.html">Contact</a>
++    </nav>
++    <div class="header-actions">
++      <button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false"></button>
++    </div>
++  </div>
++</header>
++
++<main id="main">
++
++  <!-- HERO -->
++  <section class="programs-hero programs-hero--image" aria-label="Creative Workshops introduction">
++    <div class="programs-wrapper hero-inner">
++      <p class="home-kicker">Public Creative Workshops</p>
++      <h1>Creative media, storytelling, and maker experiences for people of all ages and abilities.</h1>
++      <p>
++        Who’s to Say? offers public creative workshops, private creative coaching, and project-based studio sessions
++        where participants can explore photography, video, music, gaming, design, sports media, storytelling, legacy
++        projects, and hands-on creative builds.
++      </p>
++      <p>
++        Our sessions are interest-driven, welcoming, and built around real creative work — helping each person build
++        confidence, communication, technical skills, connection, and a stronger sense of what is possible.
++      </p>
++      <div class="btn-row">
++        <a class="btn btn-primary" href="#workshop-menu">Explore Workshops</a>
++        <a class="btn btn-secondary" href="/contact.html">Contact Us</a>
++      </div>
++    </div>
++  </section>
++
++  <!-- OPEN TO THE PUBLIC -->
++  <section class="programs-wrapper" aria-label="Open to the public">
++    <div class="divider-ribbon">
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++      <h2>Creative opportunities open to the community.</h2>
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++    </div>
++    <div class="program-section">
++      <p>
++        Who’s to Say? is building a creative studio model that welcomes people of all ages and abilities. Our workshops
++        and private sessions are available to the general public and can be adapted around each participant’s interests,
++        experience level, communication style, and creative goals.
++      </p>
++      <p>
++        Some people come to learn a specific tool. Some come to build confidence. Some want to tell their story, create
++        content, explore music, document sports, preserve family memories, design something original, or simply try a
++        new creative experience in a supportive environment.
++      </p>
++      <p>
++        We are especially interested in creative projects that bring generations together — helping older adults
++        preserve stories, photos, music, and memories while giving younger creators and participants meaningful roles in
++        capturing, designing, editing, and sharing those stories.
++      </p>
++      <p>The common thread is simple: creativity without comparison.</p>
++    </div>
++  </section>
++
++  <!-- WORKSHOP MENU -->
++  <section class="programs-wrapper" id="workshop-menu" aria-label="Workshop menu">
++    <div class="divider-ribbon">
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++      <h2>Workshop and studio session options</h2>
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++    </div>
++    <p class="how-sub">
++      Sessions may be offered as private creative coaching, small-group workshops, family-supported projects,
++      intergenerational storytelling sessions, community workshops, or customized studio blocks depending on the
++      participant’s goals and the type of creative work involved.
++    </p>
++    <div class="program-grid">
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Storytelling</span>
++          <h3>Digital Storytelling</h3>
++          <p>Plan, record, edit, and share personal stories through video, photos, captions, voice, and simple publishing workflows.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Photography</span>
++          <h3>Photography &amp; Visual Storytelling</h3>
++          <p>Learn how to capture images, choose favorites, edit photos, build galleries, and tell a story through a visual collection.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Legacy</span>
++          <h3>Legacy Story Lab</h3>
++          <p>Bring old photos, family memories, favorite songs, life stories, or local history and turn them into short videos, digital albums, captions, interviews, or keepsake projects.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Audio</span>
++          <h3>Podcasting &amp; Voice</h3>
++          <p>Explore microphones, interview questions, short scripts, voice recordings, show ideas, and simple audio production.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Music</span>
++          <h3>Music &amp; DJ-Style Media</h3>
++          <p>Create playlists, radio-style intros, music stories, artist spotlights, and short audio segments built around personal music interests and memories.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Gaming</span>
++          <h3>Gaming &amp; Streaming Content</h3>
++          <p>Develop creator-style content around favorite games, including commentary, short clips, stream layouts, thumbnails, and safe publishing habits.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Sports Media</span>
++          <h3>Sports Media</h3>
++          <p>Create sports coverage through photos, interviews, recap videos, player spotlights, score graphics, local sports memories, and community event storytelling.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Design</span>
++          <h3>Design, Canva &amp; Creator Tools</h3>
++          <p>Use accessible digital tools to create posters, social graphics, cards, simple brand assets, photo layouts, and project designs.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Maker</span>
++          <h3>Maker Projects &amp; Creative Builds</h3>
++          <p>Explore hands-on creative projects using digital design, upcycled materials, simple fabrication, merch concepts, and project-based making.</p>
++        </div>
++      </div>
++      <div class="program-card">
++        <div class="card-content">
++          <span class="program-label">Intergenerational</span>
++          <h3>Intergenerational Media Projects</h3>
++          <p>Create shared projects that connect seniors, families, students, creators, and people of all abilities through stories, photos, music, interviews, and community memory projects.</p>
++        </div>
++      </div>
++    </div>
++  </section>
++
++  <!-- FLEXIBLE WAYS TO PARTICIPATE -->
++  <section class="programs-wrapper" id="pricing" aria-label="Flexible ways to participate">
++    <div class="divider-ribbon">
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++      <h2>Flexible ways to participate</h2>
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++    </div>
++    <p class="how-sub">
++      Who’s to Say? offers a mix of low-cost public workshops, private creative coaching, project-based studio sessions,
++      and donor-supported access opportunities. Pricing depends on the session type, length, materials, equipment,
++      preparation, travel, and project scope.
++    </p>
++    <p class="how-sub">The examples below are public-facing starting points and may vary depending on the project.</p>
++
++    <div class="how-grid how-grid--4">
++      <div class="how-card">
++        <h3>Community Workshops</h3>
++        <p class="rate-price">$25–$75</p>
++        <p>Lower-cost public workshops, drop-in creative experiences, community events, or introductory sessions focused on one activity, tool, or project theme.</p>
++      </div>
++      <div class="how-card">
++        <h3>Private Creative Coaching</h3>
++        <p class="rate-price">$95–$175</p>
++        <p>Focused one-on-one creative sessions built around the participant’s interests, project goals, learning style, and preferred creative tools.</p>
++      </div>
++      <div class="how-card">
++        <h3>Extended Project Studio Sessions</h3>
++        <p class="rate-price">$225–$300</p>
++        <p>Longer project-based studio sessions for deeper creative work such as recording, editing, photography, design, sports media, storytelling, or maker projects.</p>
++      </div>
++      <div class="how-card">
++        <h3>Memberships &amp; Sponsored Access</h3>
++        <p class="rate-price">Coming soon</p>
++        <p>Our next phase includes community memberships, sponsored workshops, donor-supported scholarships, and studio access options that help make creative tools available to more people.</p>
++      </div>
++    </div>
++
++    <p class="cw-note">
++      Rates may vary based on session length, materials, preparation, travel, equipment needs, and project scope. Some
++      community workshops may be free, donation-based, sponsored, or scholarship-supported.
++      <a href="/contact.html">Contact us</a> for current availability and the best fit for your project.
++    </p>
++  </section>
++
++  <!-- HOW SESSIONS WORK -->
++  <section class="how-pathways" aria-label="How sessions work">
++    <div class="programs-wrapper">
++      <div class="divider-ribbon">
++        <span class="divider-ribbon__line" aria-hidden="true"></span>
++        <h2>How sessions work</h2>
++        <span class="divider-ribbon__line" aria-hidden="true"></span>
++      </div>
++      <div class="how-grid how-grid--4">
++        <div class="how-card">
++          <div class="how-icon" aria-hidden="true">1</div>
++          <h3>Choose a creative direction</h3>
++          <p>Start with an interest, story, tool, project idea, event, memory, or creative goal.</p>
++        </div>
++        <div class="how-card">
++          <div class="how-icon" aria-hidden="true">2</div>
++          <h3>Plan the session</h3>
++          <p>We shape the session around the participant’s goals, communication style, comfort level, creative interests, and project needs.</p>
++        </div>
++        <div class="how-card">
++          <div class="how-icon" aria-hidden="true">3</div>
++          <h3>Create together</h3>
++          <p>Participants explore tools, make creative decisions, practice skills, and build something real.</p>
++        </div>
++        <div class="how-card">
++          <div class="how-icon" aria-hidden="true">4</div>
++          <h3>Share or continue</h3>
++          <p>Projects can become galleries, videos, graphics, audio segments, portfolios, family keepsakes, community stories, or future workshop ideas.</p>
++        </div>
++      </div>
++    </div>
++  </section>
++
++  <!-- INCLUSIVE AND INTERGENERATIONAL BY DESIGN -->
++  <section class="programs-wrapper" aria-label="Inclusive and intergenerational by design">
++    <div class="divider-ribbon">
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++      <h2>Inclusive and intergenerational by design</h2>
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++    </div>
++    <div class="program-section">
++      <p>
++        Who’s to Say? was built around the belief that creativity should not be limited by comparison, labels, age,
++        confidence, or low expectations. We welcome people with different learning styles, communication styles, support
++        needs, life experiences, and creative backgrounds.
++      </p>
++      <p>
++        Our approach is flexible, patient, practical, and project-based. We focus on helping each person participate
++        meaningfully, make choices, use real tools, and experience the pride of creating something that reflects who
++        they are.
++      </p>
++      <p>
++        We also believe communities are stronger when people of different generations have a place to create together.
++        Seniors may bring stories, photos, music, memories, and local history. Younger creators and participants may
++        bring energy, curiosity, technical tools, and new ways to share. The studio becomes the bridge.
++      </p>
++    </div>
++  </section>
++
++  <!-- FUNDING NOTE -->
++  <section class="programs-wrapper" id="funding" aria-label="Using approved funding sources">
++    <div class="divider-ribbon">
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++      <h2>Using approved funding sources</h2>
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++    </div>
++    <div class="program-section">
++      <p>
++        Families using self-directed budgets, third-party funding, grants, scholarships, or other approved funding
++        sources may be able to use those funds for Who’s to Say? workshops or private creative sessions when the service
++        is approved through the individual’s plan or funding source.
++      </p>
++      <p>
++        We can provide general descriptions, session summaries, invoices, and supporting documentation upon request.
++        Approval decisions are made by the applicable funding source, plan, or reviewer.
++      </p>
++      <div class="btn-row">
++        <a class="btn btn-primary" href="/support-coordinators.html">Information for Support Coordinators</a>
++      </div>
++    </div>
++  </section>
++
++  <!-- BUILDING TOWARD A COMMUNITY DIGITAL MEDIA & MAKER SPACE -->
++  <section class="programs-wrapper" aria-label="Building the next phase">
++    <div class="divider-ribbon">
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++      <h2>Building the next phase: a community creative space.</h2>
++      <span class="divider-ribbon__line" aria-hidden="true"></span>
++    </div>
++    <div class="program-section">
++      <p>
++        Today, Who’s to Say? offers creative workshops, private coaching, intergenerational storytelling, and
++        project-based studio sessions. Our next phase is to grow this work into a community-centered digital media and
++        maker space — a welcoming place where people of different ages, abilities, backgrounds, and life experiences can
++        create, collaborate, learn modern tools, and share their stories.
++      </p>
++      <p>
++        This future space will support digital storytelling, photography, video, music, gaming, design, maker projects,
++        community exhibits, sports media, creator workshops, family legacy projects, photo digitizing, accessible
++        technology experiences, and intergenerational community memory projects.
++      </p>
++      <p>
++        Funds raised through donations, sponsorships, grants, memberships, and community partnerships will help us
++        expand access to equipment, studio space, adaptive tools, creative technology, workshops, scholarships, and
++        community programming.
++      </p>
++      <div class="btn-row">
++        <a class="btn btn-primary" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Help Build the Studio</a>
++        <a class="btn btn-secondary" href="/contact.html">Contact Us</a>
++      </div>
++    </div>
++  </section>
++
++  <!-- FINAL CTA -->
++  <section class="how-pathways" aria-label="Start a conversation">
++    <div class="programs-wrapper cw-cta">
++      <div class="divider-ribbon">
++        <span class="divider-ribbon__line" aria-hidden="true"></span>
++        <h2>Have a project, participant, class, family story, or community idea in mind?</h2>
++        <span class="divider-ribbon__line" aria-hidden="true"></span>
++      </div>
++      <p class="how-sub">
++        We would love to hear what you are hoping to create. Contact us to discuss workshop availability, private
++        creative coaching, intergenerational storytelling, community partnerships, sponsored access, or ways to support
++        the next phase of Who’s to Say?.
++      </p>
++      <div class="btn-row">
++        <a class="btn btn-primary" href="/contact.html">Start a Conversation</a>
++      </div>
++    </div>
++  </section>
++
++</main>
++
++<footer class="site-footer">© <span id="year"></span> Who’s to Say ? Foundation</footer>
++<script>
++  (function () {
++    var el = document.getElementById("year");
++    if (el) el.textContent = new Date().getFullYear();
++  })();
++</script>
++</body>
++</html>
+diff --git a/index.html b/index.html
+index 35f0be5..8a7425d 100644
+--- a/index.html
++++ b/index.html
+@@ -171,6 +171,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/contact.html">Contact</a>
+ </nav>
+@@ -187,6 +188,7 @@
+ <p class="home-subhead">Creativity without comparison. <br>Building possibility paths for young adults with diverse abilities.</p>
+ <div class="home-actions">
+ <a class="btn btn-primary" href="/programs.html">Explore Programs</a>
++<a class="btn btn-primary" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="btn btn-primary" href="/albums.html">📷 Photo Albums</a>
+ <a class="btn btn-primary" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ </div>
+diff --git a/programs.html b/programs.html
+index d182174..543a4de 100644
+--- a/programs.html
++++ b/programs.html
+@@ -40,6 +40,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/contact.html">Contact</a>
+ </nav>
+@@ -127,6 +128,22 @@
+ </div>
+ </main>
+ 
++<!-- PUBLIC CREATIVE WORKSHOPS CALLOUT -->
++<section class="programs-wrapper" aria-label="Creative Workshops and Studio Sessions">
++<div class="program-section">
++<span class="program-label">Public Workshops</span>
++<h2>Creative Workshops &amp; Studio Sessions</h2>
++<p>
++      Explore public creative workshops, private creative coaching, intergenerational storytelling, and project-based
++      studio sessions in storytelling, photography, music, gaming, design, sports media, legacy projects, and maker
++      activities.
++    </p>
++<div class="btn-row">
++<a class="btn btn-primary" href="/creative-workshops.html">View Creative Workshops</a>
++</div>
++</div>
++</section>
++
+ <!-- HOW PATHWAYS WORK -->
+ <section class="how-pathways">
+   <div class="programs-wrapper">
+diff --git a/programs/community-integration-advocacy.html b/programs/community-integration-advocacy.html
+index a9bc870..d15ba9a 100644
+--- a/programs/community-integration-advocacy.html
++++ b/programs/community-integration-advocacy.html
+@@ -42,6 +42,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/#contact">Contact</a>
+ </nav>
+diff --git a/programs/digital-content-creator.html b/programs/digital-content-creator.html
+index 6563862..2e7bacc 100644
+--- a/programs/digital-content-creator.html
++++ b/programs/digital-content-creator.html
+@@ -42,6 +42,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/#contact">Contact</a>
+ </nav>
+diff --git a/programs/entertainment-pathways.html b/programs/entertainment-pathways.html
+index e134bbf..ec0b2ea 100644
+--- a/programs/entertainment-pathways.html
++++ b/programs/entertainment-pathways.html
+@@ -41,6 +41,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/#contact">Contact</a>
+ </nav>
+diff --git a/programs/life-skills-independent-living.html b/programs/life-skills-independent-living.html
+index 056e091..44c25c2 100644
+--- a/programs/life-skills-independent-living.html
++++ b/programs/life-skills-independent-living.html
+@@ -41,6 +41,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/#contact">Contact</a>
+ </nav>
+diff --git a/programs/maker-market-events.html b/programs/maker-market-events.html
+index 5a4ac17..4de0242 100644
+--- a/programs/maker-market-events.html
++++ b/programs/maker-market-events.html
+@@ -42,6 +42,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/#contact">Contact</a>
+ </nav>
+diff --git a/programs/whos-to-say-sports.html b/programs/whos-to-say-sports.html
+index 77c6be6..9e066a0 100644
+--- a/programs/whos-to-say-sports.html
++++ b/programs/whos-to-say-sports.html
+@@ -43,6 +43,7 @@
+ <a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+ </div>
+ </div>
++<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
+ <a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+ <a class="nav-link" href="/#contact">Contact</a>
+ </nav>
+diff --git a/support-coordinators.html b/support-coordinators.html
+new file mode 100644
+index 0000000..c4baefd
+--- /dev/null
++++ b/support-coordinators.html
+@@ -0,0 +1,270 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++<meta charset="utf-8" />
++<title>Support Coordinator Information | Who’s to Say?</title>
++<meta content="width=device-width, initial-scale=1" name="viewport" />
++<meta content="Information for families and Support Coordinators about Who’s to Say? public creative workshops, private creative coaching, project-based studio sessions, documentation, funding review support, and inclusive community access." name="description" />
++<meta content="index,follow" name="robots" />
++<!-- Google tag (gtag.js) -->
++<script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
++<script>
++  window.dataLayer = window.dataLayer || [];
++  function gtag(){dataLayer.push(arguments);}
++  gtag('js', new Date());
++  gtag('config', 'G-46JBLZ3YPT');
++</script>
++<!-- Fonts -->
++<link rel="preconnect" href="https://fonts.googleapis.com" />
++<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
++<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&amp;family=Poppins:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet" />
++<script src="/assets/js/theme.js" defer></script>
++<link href="/assets/css/styles.css" rel="stylesheet" />
++</head>
++
++<body data-page="support-coordinators">
++<a class="skip-link" href="#main">Skip to content</a>
++
++<!-- Canonical Header -->
++<header class="site-header">
++  <div class="header-inner">
++    <a class="brand" href="/" aria-label="Who’s to Say ? Foundation Home">
++      <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo (dark)" />
++      <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo (light)" />
++    </a>
++    <nav class="site-nav" aria-label="Primary navigation">
++      <a class="nav-link" data-nav="home" href="/">Home</a>
++      <div class="nav-item has-submenu" data-submenu="programs">
++        <a class="nav-link" data-nav="programs" href="/programs.html" aria-haspopup="true" aria-expanded="false">Programs</a>
++        <div class="nav-submenu" role="menu" aria-label="Programs submenu">
++          <a class="submenu-link" role="menuitem" href="/programs/digital-content-creator.html">Digital Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/whos-to-say-sports.html">Sports Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/life-skills-independent-living.html">Independence Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/community-integration-advocacy.html">Community Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/maker-market-events.html">Art Path</a>
++          <a class="submenu-link" role="menuitem" href="/programs/entertainment-pathways.html">Entertainment Path</a>
++        </div>
++      </div>
++      <a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>
++      <a class="nav-link" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate</a>
++      <a class="nav-link" href="/contact.html">Contact</a>
++    </nav>
++    <div class="header-actions">
++      <button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false"></button>
++    </div>
++  </div>
++</header>
++
++<main id="main" class="program-page">
++
++  <!-- HERO -->
++  <section class="program-hero">
++    <div class="program-hero-card">
++      <div class="program-hero-media">
++        <img src="/assets/images/Abstract_Program-hero.png" alt="" loading="lazy" decoding="async" />
++      </div>
++      <div class="program-hero-body">
++        <div class="breadcrumb">
++          <a href="/">Home</a><span>›</span><a href="/creative-workshops.html">Creative Workshops</a><span>›</span><span>Support Coordinator Information</span>
++        </div>
++        <p class="home-kicker">Support Coordinator Information</p>
++        <h1>Creative workshop descriptions and documentation for plan review.</h1>
++        <p class="program-subtitle">
++          Who’s to Say? offers public creative workshops, private creative coaching, intergenerational storytelling, and
++          project-based studio sessions focused on creative media, storytelling, digital tools, communication,
++          confidence, and community participation.
++        </p>
++        <p class="program-subtitle">
++          This page provides general language that families and Support Coordinators may use when considering whether a
++          workshop or session may be appropriate for an individual’s plan or funding source.
++        </p>
++        <div class="btn-row">
++          <a class="btn btn-primary" href="/creative-workshops.html">View Creative Workshops</a>
++          <a class="btn btn-secondary" href="/contact.html">Contact Us</a>
++        </div>
++      </div>
++    </div>
++  </section>
++
++  <!-- 60/40 SHELL -->
++  <section class="program-shell program-shell--6040">
++    <article class="program-content">
++
++      <section class="program-section">
++        <h2>What Who’s to Say? provides</h2>
++        <p>
++          Who’s to Say? provides public creative media workshops and project-based studio sessions that can be
++          individualized around a participant’s interests, goals, preferred tools, and communication style.
++        </p>
++        <p>
++          Sessions may include activities such as photography, video creation, podcast-style recording, music and
++          playlist storytelling, sports media, gaming content, graphic design, creator tools, legacy storytelling,
++          photo digitizing, community memory projects, and hands-on maker projects.
++        </p>
++        <p>
++          The focus is on meaningful creative participation, communication, confidence, digital skill-building, project
++          completion, and community connection.
++        </p>
++      </section>
++
++      <section class="program-section">
++        <h2>Sample description language</h2>
++        <p>Families and Support Coordinators may adapt the following language when describing a session request or creative workshop goal.</p>
++
++        <h3>General creative workshop description</h3>
++        <p>
++          Public creative media workshop or private creative coaching session focused on digital storytelling, creative
++          skill-building, communication, confidence, and project-based participation through photography, video, music,
++          design, gaming, sports media, legacy storytelling, or maker activities.
++        </p>
++
++        <h3>Project-based studio description</h3>
++        <p>
++          Project-based creative studio session designed around the participant’s interests and goals, supporting
++          planning, creative decision-making, use of digital tools, communication, and completion of a tangible media
++          or maker project.
++        </p>
++
++        <h3>Community-centered creative participation</h3>
++        <p>
++          Inclusive creative workshop experience that supports participation in community-based media, storytelling,
++          design, photography, audio, video, or maker projects while building confidence, communication, and creative
++          independence.
++        </p>
++
++        <h3>Intergenerational storytelling description</h3>
++        <p>
++          Creative storytelling session focused on preserving stories, photos, music, memories, interviews, or community
++          history through digital media, captions, photo organization, audio, video, or simple design projects.
++        </p>
++      </section>
++
++      <section class="program-section">
++        <h2>Sample invoice language</h2>
++        <p>
++          When requested, invoices may describe the specific public workshop or creative session provided, including the
++          date, session type, rate, length, and project focus.
++        </p>
++        <ul>
++          <li>
++            Creative media workshop / private creative coaching session focused on project-based digital storytelling,
++            communication, creative skill-building, and use of media tools aligned with the participant’s approved goals
++            and interests.
++          </li>
++          <li>
++            Project-based studio session focused on photography, video, music, design, sports media, maker activities,
++            or legacy storytelling, including planning, creative decision-making, use of digital tools, and completion
++            of a media or creative project.
++          </li>
++        </ul>
++        <p class="cw-note">
++          Invoice language can be adjusted to accurately reflect the actual session provided, the approved plan
++          language, and the documentation needs of the family or funding source.
++        </p>
++      </section>
++
++      <section class="program-section">
++        <h2>Documentation available upon request</h2>
++        <p>Who’s to Say? can provide basic documentation to support review and recordkeeping, including:</p>
++        <ul>
++          <li>public workshop or session descriptions</li>
++          <li>invoices with date, rate, session type, and project focus</li>
++          <li>brief session summaries</li>
++          <li>examples of creative activities offered</li>
++          <li>general rate information</li>
++          <li>contact information for follow-up questions</li>
++        </ul>
++        <p>
++          Approval decisions are made by the applicable funding source, plan, or reviewer. We are happy to provide
++          accurate descriptions of the service offered and the creative work completed.
++        </p>
++      </section>
++
++      <section class="program-section">
++        <h2>Public access and funding review</h2>
++        <p>
++          Who’s to Say? workshops and private creative sessions are public-facing creative opportunities. They are
++          designed to be inclusive and accessible while remaining available to the broader community.
++        </p>
++        <p>
++          Families using self-directed budgets, third-party funding, grants, scholarships, or other approved funding
++          sources may be able to use those funds when the workshop or session is approved through the individual’s plan
++          or funding source.
++        </p>
++      </section>
++
++      <section class="program-section">
++        <h2>A growing community creative space</h2>
++        <p>
++          Who’s to Say? is also raising funds for the next phase of this work: a community-centered digital media and
++          maker space where people of different ages, abilities, backgrounds, and life experiences can create,
++          collaborate, learn modern tools, and share their stories.
++        </p>
++        <p>
++          This vision supports a broader public benefit — expanding access to creative technology, media tools,
++          workshops, studio experiences, intergenerational storytelling, digital literacy, family legacy projects, photo
++          preservation, community memory work, and accessible creative tools.
++        </p>
++      </section>
++
++      <section class="program-section cw-cta">
++        <h2>Need a description, invoice, or workshop explanation?</h2>
++        <p>
++          Families and Support Coordinators can contact us with questions about current workshop options, session
++          descriptions, documentation, rates, project ideas, or funding-source review needs.
++        </p>
++        <div class="btn-row">
++          <a class="btn btn-primary" href="/contact.html">Contact Who’s to Say?</a>
++        </div>
++      </section>
++
++    </article>
++
++    <aside class="program-sidebar">
++      <div class="program-sidebar-card">
++        <h3>Contact</h3>
++        <ul class="contact-list">
++          <li><strong>Phone:</strong> <a href="tel:+17323141943">(732) 314-1943</a></li>
++          <li><strong>Email:</strong> <a href="mailto:info@whostosay.org">info@whostosay.org</a></li>
++        </ul>
++        <div class="btn-row">
++          <a class="btn btn-primary" href="/contact.html">Contact Us</a>
++          <a class="btn btn-secondary" href="/creative-workshops.html">View Workshops</a>
++        </div>
++      </div>
++
++      <div class="program-sidebar-card">
++        <h3>Quick reference</h3>
++        <ul class="contact-list">
++          <li>Public creative workshops</li>
++          <li>Private creative coaching</li>
++          <li>Project-based studio sessions</li>
++          <li>Intergenerational storytelling</li>
++          <li>Legacy &amp; community memory projects</li>
++        </ul>
++      </div>
++
++      <div class="program-sidebar-card">
++        <h3>Funding review note</h3>
++        <p>
++          Families using self-directed budgets, third-party funding, grants, scholarships, or other approved funding
++          sources may be eligible to use those funds when approved through the individual’s plan or funding source.
++        </p>
++        <p class="cw-note">
++          Approval decisions are made by the applicable funding source, plan, or reviewer.
++        </p>
++      </div>
++    </aside>
++  </section>
++
++</main>
++
++<footer class="site-footer">© <span id="year"></span> Who’s to Say ? Foundation</footer>
++<script>
++  (function () {
++    var el = document.getElementById("year");
++    if (el) el.textContent = new Date().getFullYear();
++  })();
++</script>
++</body>
++</html>
