@@ -1,0 +1,88 @@
+{
+  "_comment": "Support Coordinator reference copy. Use conditional funding language only. Page shell: support-coordinators.html (when published).",
+  "meta": {
+    "title": "Information for Support Coordinators | Who's to Say ? Foundation",
+    "description": "Reference language for support coordinators — creative studio sessions, individualized creative media sessions, and community participation supports."
+  },
+  "hero": {
+    "title": "Information for Support Coordinators",
+    "subtitle": "Reference materials for coordinators reviewing individualized creative media sessions, public-facing classes, and community participation supports through our creative studio.",
+    "pills": ["Creative Studio", "Skill-Building", "Digital Storytelling", "Community Participation"]
+  },
+  "whatWeProvide": {
+    "title": "What We Provide",
+    "intro": "Who's to Say Foundation offers interest-driven, community-centered creative supports — not licensed day habilitation or clinical services.",
+    "items": [
+      "Individualized or small-group creative media coaching in video, design, photography, audio, and studio production",
+      "Project-based skill-building tied to participant interests and ISP goals where applicable",
+      "Community participation through outings, showcases, and storytelling projects",
+      "Documentation of session focus, skills practiced, and participant-led outcomes when requested"
+    ]
+  },
+  "sampleDescriptions": [
+    {
+      "title": "Digital Content Creator Session",
+      "body": "Individualized creative media session supporting the person in accessible video editing, digital design, photography, or basic studio production. Supports are goal-driven and interest-led, building communication, planning, and practical digital skills."
+    },
+    {
+      "title": "Community Storytelling Session",
+      "body": "Community participation session combining a supported outing or event with follow-up storytelling (video, writing, or art). Emphasis on self-expression, social connection, and advocacy — aligned with community inclusion goals."
+    },
+    {
+      "title": "Art Studio & Showcase Preparation",
+      "body": "Creative studio session supporting design and creation of digital or physical items, plus presentation practice for low-pressure showcases. Focus on skill development, social interaction, and self-esteem rather than commercial sales."
+    },
+    {
+      "title": "Entertainment & On-Camera Skills",
+      "body": "Individualized session focused on communication and performance skills: teleprompter practice, on-camera segments, voice work, and media literacy. Outcomes include improved self-expression and a small set of media clips reflecting the person's interests."
+    }
+  ],
+  "invoiceDescriptions": [
+    {
+      "title": "Sample invoice line — single session",
+      "body": "Individualized creative media coaching session (approx. 1–2 hours): interest-led digital storytelling / studio production support, skill-building, and participant documentation as applicable."
+    },
+    {
+      "title": "Sample invoice line — multi-session block",
+      "body": "Creative studio session block: project-based skill-building in digital media, design, or community storytelling; supports aligned with ISP goals for communication, community participation, and independence."
+    }
+  ],
+  "documentation": {
+    "title": "Documentation Available",
+    "items": [
+      "Session date, duration, and format (individual or small group)",
+      "Skills and tools covered during the session",
+      "Participant-led project or outcome summary",
+      "Follow-up recommendations when requested"
+    ]
+  },
+  "fundingNote": {
+    "title": "Public Access & Funding",
+    "body": "Some participants may be eligible for funding when approved through the individual's plan or funding source. Approval decisions are made by the applicable funding source, plan, or reviewer. Who's to Say Foundation does not guarantee approval or act as a funding authority."
+  },
+  "nextPhase": {
+    "title": "Next-Phase Vision",
+    "body": "We are building toward an expanded maker space and community studio — a future phase supported by fundraising, not a current licensed facility. Language should reflect creative studio and community participation, not day-program or clinical framing."
+  },
+  "sidebar": {
+    "contactTitle": "Coordinator Questions",
+    "contactIntro": "Email or call with session format questions, documentation needs, or scheduling.",
+    "quickReferenceTitle": "Quick Reference",
+    "quickReferenceItems": [
+      "Creative studio — not day habilitation",
+      "Individualized creative media sessions",
+      "Public-facing classes when scheduled",
+      "Community participation & digital storytelling"
+    ],
+    "fundingCardTitle": "Funding Language",
+    "fundingCardBody": "Always use conditional phrasing: \"may be eligible,\" \"when approved through the individual's plan or funding source.\""
+  },
+  "finalCta": {
+    "title": "Questions about a specific participant?",
+    "body": "Reach out with goals, interests, and any documentation requirements.",
+    "primaryLabel": "Contact Us",
+    "primaryHref": "/contact.html",
+    "secondaryLabel": "View Creative Workshops",
+    "secondaryHref": "/creative-workshops.html"
+  }
+}

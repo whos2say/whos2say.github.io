@@ -1,0 +1,73 @@
+{
+  "_comment": "Programs landing page copy and pathway cards. Card order matches the public program grid.",
+  "meta": {
+    "title": "Programs | Who's to Say ? Foundation"
+  },
+  "hero": {
+    "title": "Who's to Say What's Possible.",
+    "subtitle": "Interest-driven programs designed to build confidence, skills, and community one pathway at a time."
+  },
+  "gridHeading": {
+    "title": "The Possibility Paths",
+    "subtitle": "Participants can explore one or multiple pathways depending on their interests, strengths, and goals."
+  },
+  "programs": [
+    {
+      "id": "digital",
+      "label": "Digital Path",
+      "title": "Digital Content Creator Pathways",
+      "summary": "Video, design, photography, and production skills built one project at a time.",
+      "href": "/programs/digital-content-creator.html",
+      "image": "/assets/images/Modern_podcast_Studio_setup.png"
+    },
+    {
+      "id": "sports",
+      "label": "Sports Path",
+      "title": "Who's to Say Sports",
+      "summary": "Challenger Sports, fitness, outings, and sports storytelling.",
+      "href": "/programs/whos-to-say-sports.html",
+      "image": "/assets/images/Turkey-Bowl.jpg"
+    },
+    {
+      "id": "independence",
+      "label": "Independence Path",
+      "title": "Life Skills & Independent Living",
+      "summary": "Everyday skills for confidence, independence, and routine.",
+      "href": "/programs/life-skills-independent-living.html",
+      "image": "/assets/images/cooking1.png"
+    },
+    {
+      "id": "community",
+      "label": "Community Path",
+      "title": "Community Integration & Advocacy",
+      "summary": "Show up, speak up, and be seen through supported community engagement.",
+      "href": "/programs/community-integration-advocacy.html",
+      "image": "/assets/images/Matt-Presentation.png"
+    },
+    {
+      "id": "art",
+      "label": "Art Path",
+      "title": "Art Studio & Events",
+      "summary": "Create, share, and celebrate work in supportive settings.",
+      "href": "/programs/maker-market-events.html",
+      "image": "/assets/images/Maker_space.png"
+    },
+    {
+      "id": "entertainment",
+      "label": "Entertainment Path",
+      "title": "Entertainment Pathways",
+      "summary": "On-camera confidence, acting basics, and voice work.",
+      "href": "/programs/entertainment-pathways.html",
+      "image": "/assets/images/Matt-Teleprompter.JPG"
+    }
+  ],
+  "howPathways": {
+    "title": "How Pathways Work",
+    "subtitle": "Flexible paths for building confidence and independence.",
+    "steps": [
+      { "icon": "➜", "title": "Choose", "body": "Start with what excites you — interests lead the way." },
+      { "icon": "✦", "title": "Build", "body": "Grow skills, routines, and confidence through real projects." },
+      { "icon": "◎", "title": "Expand", "body": "Paths can overlap and evolve toward work, community, and independence." }
+    ]
+  }
+}

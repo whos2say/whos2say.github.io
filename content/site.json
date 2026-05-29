@@ -1,0 +1,22 @@
+{
+  "_comment": "Shared site-wide copy and links. Edit here for org name, contact info, and default CTAs used across pages.",
+  "organization": {
+    "name": "Who's to Say ? Foundation",
+    "legalName": "Who's to Say ? Foundation",
+    "ein": "33-3826585",
+    "taxStatus": "501(c)(3) Public Charity · United States",
+    "location": "Ocean County, New Jersey"
+  },
+  "contact": {
+    "email": "info@whostosay.org",
+    "phone": "(732) 314-1943",
+    "phoneTel": "+17323141943"
+  },
+  "donate": {
+    "url": "https://givebutter.com/whostosayfoundation",
+    "label": "Donate"
+  },
+  "footer": {
+    "copyright": "Who's to Say ? Foundation"
+  }
+}

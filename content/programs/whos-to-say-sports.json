@@ -1,0 +1,118 @@
+{
+  "slug": "whos-to-say-sports",
+  "pathKey": "sports",
+  "meta": {
+    "title": "Who's to Say Sports | Who's to Say ? Foundation",
+    "description": "Challenger Sports, fitness, outings, and sports storytelling for participants who love sports."
+  },
+  "hero": {
+    "breadcrumb": "Sports Path",
+    "title": "Who's to Say Sports",
+    "subtitle": "Challenger Sports, fitness, outings, and sports storytelling—built around each participant's interests.",
+    "pills": ["Participation", "Media Crew", "Outings", "Confidence"],
+    "bestFor": "Participants who love sports and want to play, cheer, talk about the game, or be part of a media crew.",
+    "image": "/assets/images/Matt-Conner.jpg"
+  },
+  "sections": [
+    {
+      "title": "Purpose",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "html": "<strong>Who's to Say Sports</strong> blends athletic leadership, sports media, and community engagement. It's for participants who love sports—whether they want to play, volunteer, talk about the game, or help create coverage as part of a \"media crew.\""
+        }
+      ]
+    },
+    {
+      "title": "Program Elements",
+      "blocks": [
+        { "type": "h3", "text": "School Alumni Team Inclusion" },
+        { "type": "paragraph", "html": "Supports individuals who:" },
+        { "type": "ul", "items": ["Have aged out of the school district", "Previously held HS team roles", "Would lose access without insurance/support"] },
+        { "type": "paragraph", "html": "Services provided:" },
+        { "type": "ul", "items": ["Program definition and enrollment", "Defined role (manager, media, assistant)", "Insurance & liability coverage", "Optional 1:1 or small-group support"] },
+        { "type": "h3", "text": "Sports Media & Commentary" },
+        { "type": "ul", "items": ["Recording short game recaps or \"fan takes\"", "Interviewing teammates, coaches, or friends", "Learning how to film highlights on a phone", "Participating in simple \"Who's to Say Sports\" podcast segments"] },
+        { "type": "h3", "text": "Community & Events" },
+        { "type": "ul", "items": ["Group outings to games", "Spirit nights or watch parties", "Opportunities to meet teams or visit fields/arenas"] }
+      ]
+    },
+    {
+      "title": "Outcomes & Skills",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "Social skills, teamwork, and confidence",
+            "Better understanding of health and movement",
+            "Communication skills through interviews and commentary",
+            "Stronger sense of belonging and community pride"
+          ]
+        }
+      ]
+    }
+  ],
+  "sidebar": {
+    "sessionStyle": {
+      "title": "Session Style",
+      "items": ["Community-based outings", "Team participation + skill building", "Sports media projects"]
+    },
+    "getStarted": {
+      "title": "Get Started",
+      "prompt": "Want to explore a Sports Path fit?",
+      "primaryLabel": "Contact Us",
+      "primaryHref": "/contact.html",
+      "secondaryLabel": "Email",
+      "secondaryHref": "mailto:info@whostosay.org"
+    },
+    "accordions": [
+      {
+        "summary": "How It Works",
+        "open": true,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "In colaboration with local HS sports teams and community volunteers, we help expand the reach of existing programs and help create new ones.<br>\nWe focus on access, continuity, and skill development, helping individuals remain connected to sports culture while building communication, confidence, and real-world experience.<br>"
+          },
+          { "type": "paragraph", "html": "Participation may include:" },
+          {
+            "type": "ul",
+            "items": [
+              "Continued involvement with high school teams in defined alumni roles",
+              "Connection to Challenger or other inclusive sports programs",
+              "Sessions focused on filming, photography",
+              "Reviewing and editing content to practice communication and storytelling"
+            ]
+          },
+          {
+            "type": "paragraph",
+            "html": "Supports are designed to wrap around participation, with planning, reflection, and skill-building occurring before or after activities, promoting independence and long-term growth."
+          }
+        ]
+      },
+      {
+        "summary": "Coordinator / DDD Summary",
+        "open": false,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "The Sports Pathway is a community-based support service that uses sports environments as a real-world context for skill development, not as the service itself.<br>\nSupports funded through DDD Goods &amp; Services may include:"
+          },
+          {
+            "type": "ul",
+            "items": [
+              "Pre- and post-activity support related to participation in Challenger or other inclusive sports programs",
+              "Planning, reminders, and reflection connected to team roles or community involvement",
+              "Communication, social, and vocational skill development in community settings",
+              "Sports media skill practice, including guided filming, commentary, interviews, and content review"
+            ]
+          },
+          {
+            "type": "paragraph",
+            "html": "DDD funding applies to individualized support services only and does not include supervision during practices or games, admission fees, or entertainment costs. All supports are aligned with ISP goals related to community inclusion, employment exploration, communication, and independence."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "_comment": "Site-wide FAQ entries. Program-specific coordinator summaries stay in each program JSON. Contact page pulls items tagged 'contact'.",
+  "items": [
+    {
+      "id": "contact-after-submit",
+      "tags": ["contact"],
+      "question": "What happens after I submit?",
+      "answer": "We'll review your message and respond using the contact info you provided. If your request is time-sensitive, email us directly."
+    },
+    {
+      "id": "contact-partners",
+      "tags": ["contact"],
+      "question": "Are you accepting partners?",
+      "answer": "Yes. We welcome community partners, sponsors, and creators who align with our mission and pathways. Share what you have in mind."
+    },
+    {
+      "id": "workshops-funding",
+      "tags": ["creative-workshops", "support-coordinators"],
+      "question": "Can sessions be funded through an individual's plan?",
+      "answer": "Some participants may be eligible for funding when approved through the individual's plan or funding source. Approval decisions are made by the applicable funding source, plan, or reviewer — not by Who's to Say Foundation."
+    },
+    {
+      "id": "workshops-who",
+      "tags": ["creative-workshops"],
+      "question": "Who are public creative workshops for?",
+      "answer": "Public-facing classes and individualized creative media sessions are designed for young adults with diverse abilities who want skill-building through digital storytelling, studio projects, and community participation — in a creative studio setting, not a clinical program."
+    }
+  ]
+}

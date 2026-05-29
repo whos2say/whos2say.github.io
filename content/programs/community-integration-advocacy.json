@@ -1,0 +1,88 @@
+{
+  "slug": "community-integration-advocacy",
+  "pathKey": "community",
+  "meta": {
+    "title": "Community Leaders & Advocacy | Who's to Say ? Foundation",
+    "description": "Community engagement plus creative advocacy and storytelling to help participants build voice and belonging."
+  },
+  "hero": {
+    "breadcrumb": "Community Path",
+    "title": "Community Leadership & Self-Advocacy",
+    "subtitle": "Community outings + creative advocacy and storytelling—helping participants show up, speak up, and be seen.",
+    "pills": ["Outings", "Advocacy", "Storytelling", "Relationships"],
+    "bestFor": "Self-advocates and anyone who wants to be more active in their community.",
+    "image": "/assets/images/Matt-Presentation.png"
+  },
+  "sections": [
+    {
+      "title": "Purpose",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "html": "This program helps participants show up, speak up, and be seen in their community. It combines community outings with creative advocacy and storytelling."
+        }
+      ]
+    },
+    {
+      "title": "Core Components",
+      "blocks": [
+        { "type": "h3", "text": "Community Outings" },
+        { "type": "ul", "items": ["Local events, fairs, concerts, art shows", "Library visits, workshops, clubs, or meetups", "Volunteering or observing volunteer roles"] },
+        { "type": "h3", "text": "Advocacy & Storytelling" },
+        { "type": "ul", "items": ["Helping participants tell their story in their own way (video, audio, writing, art)", "Creating positive social media or digital content (with family approval)", "Practicing speaking up about their needs and preferences"] },
+        { "type": "h3", "text": "Relationship-Building" },
+        { "type": "ul", "items": ["Meeting community partners (coaches, artists, business owners)", "Practicing introductions and conversations", "Finding places they want to return to regularly"] }
+      ]
+    },
+    {
+      "title": "Outcomes & Skills",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "Increased comfort in community spaces",
+            "Stronger self-advocacy and voice",
+            "Real connections with local people and organizations",
+            "Positive representation in the community"
+          ]
+        }
+      ]
+    }
+  ],
+  "sidebar": {
+    "sessionStyle": {
+      "title": "Session Style",
+      "items": ["Community-based sessions", "Supported practice + reflection", "Creative storytelling follow-up"]
+    },
+    "getStarted": {
+      "title": "Get Started",
+      "prompt": "Want help identifying go-to places and community connections?",
+      "primaryLabel": "Contact Us",
+      "primaryHref": "/contact.html",
+      "secondaryLabel": "Email",
+      "secondaryHref": "mailto:info@whostosay.org"
+    },
+    "accordions": [
+      {
+        "summary": "How It Works",
+        "open": true,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "Scheduled as community-based sessions where a staff member accompanies the participants to events and/or helps them create content afterward."
+          }
+        ]
+      },
+      {
+        "summary": "Coordinator / DDD Summary",
+        "open": false,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "Supports funded through DDD Goods &amp; Services focus on helping the person engage in community activities they care about and express themselves through advocacy. This may include attending events with support, practicing social skills, and working on simple advocacy or storytelling projects (video, writing, or art) that reflect the person's interests and goals."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "_comment": "Homepage hero, featured section, and CTAs. Edit via Decap CMS → Homepage or directly in this file.",
+  "meta": {
+    "title": "Who's to Say ? Foundation | Coming Soon",
+    "description": "Who's to Say ? Foundation is a 501(c)(3) nonprofit creating creative, community-centered programs and a future live/work residence for neurodiverse young adults. Full site coming soon."
+  },
+  "hero": {
+    "kicker": "Official Site - COMING SOON",
+    "title": "Who's to Say ? Foundation",
+    "subhead": "Creativity without comparison. Building possibility paths for young adults with diverse abilities.",
+    "subheadHtml": "Creativity without comparison. <br>Building possibility paths for young adults with diverse abilities.",
+    "note": "More updates coming soon. For partnerships, reach us via the Contact link in the header.",
+    "legalLine": "EIN: 33-3826585  <br> Status: 501(c)(3) Public Charity · United States ."
+  },
+  "actions": [
+    { "label": "Explore Programs", "href": "/programs.html", "style": "primary" },
+    { "label": "📷 Photo Albums", "href": "/albums.html", "style": "primary" },
+    { "label": "Donate", "href": "https://givebutter.com/whostosayfoundation", "style": "primary", "external": true }
+  ],
+  "autismMonth": {
+    "enabled": true,
+    "eyebrow": "Autism Acceptance Month · April 2026",
+    "title": "Every Mind Is a World",
+    "titleAccent": "Worth Exploring",
+    "body": "April is Autism Acceptance Month — a time to celebrate neurodiversity, embrace different ways of thinking, and champion inclusion for all.\n\nAt the Who's to Say? Foundation, we believe every person brings something extraordinary to the table. Acceptance isn't just a word — it's how we show up, every single day.",
+    "bodyHtml": "April is Autism Acceptance Month — a time to celebrate neurodiversity, embrace different ways of thinking, and champion inclusion for all.<br><br>\n    At the Who's to Say? Foundation, we believe every person brings something extraordinary to the table. Acceptance isn't just a word — it's how we show up, every single day.",
+    "actions": [
+      { "label": "Learn About Our Programs", "href": "/programs.html", "style": "primary" },
+      { "label": "Donate to Support Inclusion", "href": "https://givebutter.com/whostosayfoundation", "style": "ghost", "external": true }
+    ],
+    "link": {
+      "label": "See our World Down Syndrome Day 2026 celebration →",
+      "href": "/wdsd-2026.html"
+    }
+  }
+}

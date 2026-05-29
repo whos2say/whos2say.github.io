@@ -1,0 +1,33 @@
+{
+  "_comment": "Contact page hero, form intro, sidebar, and mini-FAQ accordions.",
+  "meta": {
+    "title": "Contact Us | Who's to Say ? Foundation",
+    "description": "Contact Who's to Say ? Foundation — programs, partnerships, and general inquiries."
+  },
+  "hero": {
+    "title": "Contact Us",
+    "subtitle": "Programs, partnerships, media inquiries, or general questions — send a message and we'll get back to you.",
+    "image": "/assets/images/Abstract_Program-hero.png",
+    "pills": ["Programs", "Partnerships", "Volunteering", "Media"]
+  },
+  "form": {
+    "title": "Send a Message",
+    "intro": "Please include the best way to reach you and a little context. All fields are required."
+  },
+  "sidebar": {
+    "bestForTitle": "Best for",
+    "bestForItems": [
+      "Program interest & enrollment questions",
+      "Partnerships & sponsorships",
+      "Volunteer opportunities",
+      "Media / storytelling collaboration"
+    ],
+    "workshopCard": {
+      "enabled": false,
+      "title": "Interested in a workshop or studio session?",
+      "body": "Explore our public-facing creative workshops and individualized creative media sessions.",
+      "buttonLabel": "View Creative Workshops",
+      "buttonHref": "/creative-workshops.html"
+    }
+  }
+}
