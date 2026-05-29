@@ -6,7 +6,8 @@
       "href": "/",
       "enabled": true,
       "environment": "all",
-      "order": 10
+      "order": 10,
+      "external": false
     },
     {
       "label": "Programs",
@@ -14,13 +15,14 @@
       "enabled": true,
       "environment": "all",
       "order": 20,
+      "external": false,
       "children": [
-        { "label": "Digital Path", "href": "/programs/digital-content-creator.html", "enabled": true, "environment": "all", "order": 10 },
-        { "label": "Sports Path", "href": "/programs/whos-to-say-sports.html", "enabled": true, "environment": "all", "order": 20 },
-        { "label": "Independence Path", "href": "/programs/life-skills-independent-living.html", "enabled": true, "environment": "all", "order": 30 },
-        { "label": "Community Path", "href": "/programs/community-integration-advocacy.html", "enabled": true, "environment": "all", "order": 40 },
-        { "label": "Art Path", "href": "/programs/maker-market-events.html", "enabled": true, "environment": "all", "order": 50 },
-        { "label": "Entertainment Path", "href": "/programs/entertainment-pathways.html", "enabled": true, "environment": "all", "order": 60 }
+        { "label": "Digital Path", "href": "/programs/digital-content-creator.html", "enabled": true, "environment": "all", "order": 10, "external": false },
+        { "label": "Sports Path", "href": "/programs/whos-to-say-sports.html", "enabled": true, "environment": "all", "order": 20, "external": false },
+        { "label": "Independence Path", "href": "/programs/life-skills-independent-living.html", "enabled": true, "environment": "all", "order": 30, "external": false },
+        { "label": "Community Path", "href": "/programs/community-integration-advocacy.html", "enabled": true, "environment": "all", "order": 40, "external": false },
+        { "label": "Art Path", "href": "/programs/maker-market-events.html", "enabled": true, "environment": "all", "order": 50, "external": false },
+        { "label": "Entertainment Path", "href": "/programs/entertainment-pathways.html", "enabled": true, "environment": "all", "order": 60, "external": false }
       ]
     },
     {
@@ -29,6 +31,7 @@
       "enabled": true,
       "environment": "staging",
       "order": 30,
+      "external": false,
       "note": "Draft/staging page. Do not promote to production without leadership/compliance review."
     },
     {
@@ -37,6 +40,7 @@
       "enabled": true,
       "environment": "staging",
       "order": 40,
+      "external": false,
       "note": "Draft/staging page. Contains coordinator/DDD-sensitive language."
     },
     {
@@ -52,7 +56,8 @@
       "href": "/contact.html",
       "enabled": true,
       "environment": "all",
-      "order": 90
+      "order": 90,
+      "external": false
     }
   ],
   "footer": [
@@ -61,7 +66,8 @@
       "href": "/programs.html",
       "enabled": true,
       "environment": "all",
-      "order": 10
+      "order": 10,
+      "external": false
     },
     {
       "label": "Creative Workshops",
@@ -69,6 +75,7 @@
       "enabled": true,
       "environment": "staging",
       "order": 20,
+      "external": false,
       "note": "Staging-only until compliance review."
     },
     {
@@ -76,7 +83,8 @@
       "href": "/contact.html",
       "enabled": true,
       "environment": "all",
-      "order": 90
+      "order": 90,
+      "external": false
     }
   ],
   "subnavs": {

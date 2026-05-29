@@ -76,6 +76,7 @@ collections:
               - label: Enabled
                 name: enabled
                 widget: boolean
+                required: false
                 default: true
               - label: Environment
                 name: environment
@@ -93,6 +94,7 @@ collections:
               - label: External link
                 name: external
                 widget: boolean
+                required: false
                 default: false
               - label: Editor note
                 name: note
@@ -112,6 +114,7 @@ collections:
                   - label: Enabled
                     name: enabled
                     widget: boolean
+                    required: false
                     default: true
                   - label: Environment
                     name: environment
@@ -126,6 +129,11 @@ collections:
                     widget: number
                     default: 10
                     value_type: int
+                  - label: External link
+                    name: external
+                    widget: boolean
+                    required: false
+                    default: false
           - label: Footer navigation
             name: footer
             widget: list
@@ -140,6 +148,7 @@ collections:
               - label: Enabled
                 name: enabled
                 widget: boolean
+                required: false
                 default: true
               - label: Environment
                 name: environment
@@ -157,6 +166,7 @@ collections:
               - label: External link
                 name: external
                 widget: boolean
+                required: false
                 default: false
               - label: Editor note
                 name: note
@@ -181,6 +191,7 @@ collections:
                   - label: Enabled
                     name: enabled
                     widget: boolean
+                    required: false
                     default: true
                   - label: Environment
                     name: environment
@@ -213,6 +224,7 @@ collections:
                   - label: Enabled
                     name: enabled
                     widget: boolean
+                    required: false
                     default: true
                   - label: Environment
                     name: environment
@@ -245,6 +257,7 @@ collections:
                   - label: Enabled
                     name: enabled
                     widget: boolean
+                    required: false
                     default: true
                   - label: Environment
                     name: environment
