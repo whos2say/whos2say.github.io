@@ -79,7 +79,8 @@
   }
 
   function bindThemeToggle() {
-    document.querySelectorAll(".theme-toggle").forEach((btn) => {
+    document.querySelectorAll(".theme-toggle:not([data-wts-bound])").forEach((btn) => {
+      btn.setAttribute("data-wts-bound", "true");
       btn.addEventListener("click", () => {
         const current = root.getAttribute("data-theme") || "dark";
         setUserTheme(current === "dark" ? "light" : "dark");
@@ -321,10 +322,22 @@
     });
   }
 
+  function refreshNavigationUi() {
+    document.querySelectorAll(".mobile-menu-btn").forEach(function (el) { el.remove(); });
+    document.querySelectorAll(".mobile-menu-panel").forEach(function (el) { el.remove(); });
+    initThemeEarly();
+    bindThemeToggle();
+    buildMobileMenu();
+    const hasRibbon = document.body && document.body.dataset && document.body.dataset.hasRibbon === "true";
+    if (!hasRibbon) bindDropdowns();
+    markActiveNav();
+  }
+
   // expose a minimal API
   window.WTSTheme = {
     set: setUserTheme,
     get: () => root.getAttribute("data-theme") || "dark",
+    reinitAfterDynamicRender: refreshNavigationUi,
   };
 
   // init before paint if possible
@@ -340,15 +353,6 @@
     markActiveNav();
     markActivePathwayChip();
   });
-
-  function refreshNavigationUi() {
-    document.querySelectorAll(".mobile-menu-btn").forEach(function (el) { el.remove(); });
-    document.querySelectorAll(".mobile-menu-panel").forEach(function (el) { el.remove(); });
-    buildMobileMenu();
-    const hasRibbon = document.body && document.body.dataset && document.body.dataset.hasRibbon === "true";
-    if (!hasRibbon) bindDropdowns();
-    markActiveNav();
-  }
 
   document.addEventListener("w2s:navigation-ready", refreshNavigationUi);
 })();

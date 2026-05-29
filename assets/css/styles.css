@@ -1705,8 +1705,47 @@ html[data-theme="light"] .programs-hero--image::before{
 * { -webkit-tap-highlight-color: rgba(99, 245, 239, 0.12); }
 
 /* =========================================================
-   Content-driven pages (Creative Workshops — scoped)
+   Content-driven full pages (Creative Workshops, Support Coordinators)
+   Align with program-page / contact-page layout. Adjust spacing here.
    ========================================================= */
+.content-page .program-hero {
+  max-width: var(--page-width);
+}
+
+.content-page-shell:not(.program-shell--6040) {
+  max-width: var(--page-width);
+  margin: var(--space-7) auto 0;
+  padding: 0 5vw var(--space-8);
+}
+
+.content-page .program-shell--6040.content-page-shell {
+  margin-top: var(--space-7);
+}
+
+.content-page-section + .content-page-section,
+.content-page-section + #samples,
+#samples + .content-page-section {
+  margin-top: 1.25rem;
+}
+
+.content-page-grid .program-card--static {
+  pointer-events: none;
+}
+
+.content-page-grid .program-card--static:hover {
+  transform: none;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.content-page-section .how-grid {
+  margin-top: 1rem;
+}
+
+/* Staging banner + sticky subnav offset */
+body:has(#w2s-staging-banner) .page-subnav {
+  top: calc(var(--header-height, 76px) + 2.35rem);
+}
+
 .how-grid--4 {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 }
