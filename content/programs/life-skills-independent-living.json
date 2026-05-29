@@ -1,0 +1,92 @@
+{
+  "slug": "life-skills-independent-living",
+  "pathKey": "independence",
+  "meta": {
+    "title": "Life Skills & Independent Living | Who's to Say ? Foundation",
+    "description": "Everyday habits and routines that build independence—skills, confidence, and choices."
+  },
+  "hero": {
+    "breadcrumb": "Independence Path",
+    "title": "Life Skills & Independent Living Preparation",
+    "subtitle": "Everyday skills for confidence and independence—routines, home tasks, money basics, and community navigation.",
+    "pills": ["Routines", "Home Skills", "Money Basics", "Navigation"],
+    "bestFor": "Young adults preparing for more independence at home and in the community.",
+    "image": "/assets/images/cooking1.png"
+  },
+  "sections": [
+    {
+      "title": "Purpose",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "html": "<strong>Life Skills &amp; Independent Living Preparation</strong> focuses on the everyday habits and routines that make independence possible. It's not about doing everything alone; it's about building skills, confidence, and choices."
+        }
+      ]
+    },
+    {
+      "title": "Core Life Skill Areas",
+      "blocks": [
+        { "type": "h3", "text": "Daily Routines" },
+        { "type": "ul", "items": ["Using calendars, alarms, or visual schedules"] },
+        { "type": "h3", "text": "Home & Kitchen Skills" },
+        { "type": "ul", "items": ["Simple meal prep and kitchen safety", "Cleaning up and organizing", "Using checklists to complete tasks"] },
+        { "type": "h3", "text": "Money & Shopping" },
+        { "type": "ul", "items": ["Handling cash and cards in real or practice scenarios", "Comparing prices, making simple budgets", "Practicing purchases in real stores when appropriate"] },
+        { "type": "h3", "text": "Community Navigation" },
+        { "type": "ul", "items": ["Using rides with family, paratransit, or rideshare safely", "Learning routes to familiar places (library, rec center, etc.)"] },
+        { "type": "h3", "text": "Social & Emotional Skills" },
+        { "type": "ul", "items": ["Practicing conversation and self-advocacy", "Managing frustration and asking for help", "Building positive self-talk and confidence"] }
+      ]
+    },
+    {
+      "title": "Outcomes & Skills",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "More predictable days and routines",
+            "Increased participation in home tasks",
+            "Improved comfort in stores and community spaces",
+            "Stronger communication and self-advocacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "sidebar": {
+    "sessionStyle": {
+      "title": "Session Style",
+      "items": ["Recurring, practical coaching sessions", "Goal-driven supports tied to daily life", "Community practice when appropriate"]
+    },
+    "getStarted": {
+      "title": "Get Started",
+      "prompt": "Want to talk goals and supports for daily independence?",
+      "primaryLabel": "Contact Us",
+      "primaryHref": "/contact.html",
+      "secondaryLabel": "Email",
+      "secondaryHref": "mailto:info@whostosay.org"
+    },
+    "accordions": [
+      {
+        "summary": "How It Works",
+        "open": true,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "Families can schedule recurring sessions where a mentor works alongside the participant on practical, goal-driven skills."
+          }
+        ]
+      },
+      {
+        "summary": "Coordinator / DDD Summary",
+        "open": false,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "Life Skills &amp; Independent Living sessions are individualized supports funded through DDD Goods &amp; Services. Focus areas include daily routines, simple meal preparation, basic money skills, and community navigation. Supports are practical, goal-driven, and designed to increase the person's independence and participation at home and in the community."
+          }
+        ]
+      }
+    ]
+  }
+}

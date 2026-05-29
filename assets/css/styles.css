@@ -1703,3 +1703,25 @@ html[data-theme="light"] .programs-hero--image::before{
 
 /* Tap highlight color */
 * { -webkit-tap-highlight-color: rgba(99, 245, 239, 0.12); }
+
+/* =========================================================
+   Content-driven pages (Creative Workshops — scoped)
+   ========================================================= */
+.how-grid--4 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.program-section .how-card .rate-price,
+.how-card .rate-price {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.35rem;
+  color: var(--color-primary);
+  margin: 0.35rem 0 0.5rem;
+}
+.cw-note a {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.cw-cta .btn + .btn {
+  margin-left: 0.5rem;
+}
