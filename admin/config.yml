@@ -1,0 +1,343 @@
+# Decap CMS configuration — maps collections to JSON files in /content/
+# Docs: docs/CONTENT_EDITING.md
+# Admin UI: https://whostosay.org/admin/
+
+backend:
+  name: github
+  repo: whos2say/whos2say.github.io
+  branch: main
+  # Vercel-hosted OAuth proxy (api/auth.js + api/callback.js) — NOT Netlify
+  base_url: https://whostosay.org
+  auth_endpoint: api/auth
+  site_domain: whostosay.org
+
+# editorial_workflow: drafts require Publish before going live in CMS.
+# Saves still commit to GitHub — see docs/CONTENT_EDITING.md for branch/PR options.
+publish_mode: editorial_workflow
+
+media_folder: assets/images/uploads
+public_folder: /assets/images/uploads
+
+locale: en
+
+site_url: https://whostosay.org
+display_url: https://whostosay.org
+
+collections:
+  - name: site
+    label: Site Settings
+    files:
+      - label: Organization & Contact
+        name: site
+        file: content/site.json
+        fields:
+          - { label: Organization Name, name: organization, widget: object, fields: [
+              { label: Display Name, name: name, widget: string },
+              { label: EIN, name: ein, widget: string },
+              { label: Tax Status Line, name: taxStatus, widget: string },
+              { label: Location, name: location, widget: string }
+            ]}
+          - { label: Contact, name: contact, widget: object, fields: [
+              { label: Email, name: email, widget: string },
+              { label: Phone (display), name: phone, widget: string },
+              { label: Phone (tel link), name: phoneTel, widget: string }
+            ]}
+          - { label: Donate Link, name: donate, widget: object, fields: [
+              { label: URL, name: url, widget: string },
+              { label: Button Label, name: label, widget: string }
+            ]}
+
+  - name: homepage
+    label: Homepage
+    files:
+      - label: Homepage
+        name: homepage
+        file: content/homepage.json
+        fields:
+          - { label: Page Title, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Meta Description, name: description, widget: text }
+            ]}
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Kicker, name: kicker, widget: string },
+              { label: Headline, name: title, widget: string },
+              { label: Subhead (plain), name: subhead, widget: text },
+              { label: Subhead (HTML), name: subheadHtml, widget: text, hint: "Use <br> for line breaks" },
+              { label: Note, name: note, widget: text },
+              { label: Legal Line (HTML), name: legalLine, widget: text }
+            ]}
+          - label: Hero Buttons
+            name: actions
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: href, widget: string }
+              - { label: Style, name: style, widget: select, options: [primary, secondary, ghost] }
+              - { label: External Link, name: external, widget: boolean, default: false }
+          - { label: Autism Acceptance Section, name: autismMonth, widget: object, fields: [
+              { label: Show Section, name: enabled, widget: boolean, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Title Accent, name: titleAccent, widget: string },
+              { label: Body (HTML), name: bodyHtml, widget: text },
+              { label: Link Label, name: link, widget: object, fields: [
+                  { label: Text, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+            ]}
+
+  - name: programs-index
+    label: Programs (Index)
+    files:
+      - label: Programs Landing Page
+        name: programs-index
+        file: content/programs-index.json
+        fields:
+          - { label: Hero Title, name: hero, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: subtitle, widget: text }
+            ]}
+          - { label: Grid Heading, name: gridHeading, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: subtitle, widget: text }
+            ]}
+          - label: Program Cards
+            name: programs
+            widget: list
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Label, name: label, widget: string }
+              - { label: Title, name: title, widget: string }
+              - { label: Summary, name: summary, widget: text }
+              - { label: Page URL, name: href, widget: string }
+              - { label: Card Image, name: image, widget: image }
+          - { label: How Pathways Work, name: howPathways, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: subtitle, widget: text },
+              { label: Steps, name: steps, widget: list, fields: [
+                  { label: Icon, name: icon, widget: string },
+                  { label: Title, name: title, widget: string },
+                  { label: Body, name: body, widget: text }
+                ]}
+            ]}
+
+  - name: programs
+    label: Programs (Detail)
+    folder: content/programs
+    extension: json
+    format: json
+    create: false
+    slug: "{{slug}}"
+    identifier_field: slug
+    fields:
+      - { label: Slug, name: slug, widget: string }
+      - { label: Path Key, name: pathKey, widget: string, hint: "Matches data-path on program cards" }
+      - { label: SEO, name: meta, widget: object, fields: [
+          { label: Title, name: title, widget: string },
+          { label: Description, name: description, widget: text }
+        ]}
+      - { label: Hero, name: hero, widget: object, fields: [
+          { label: Breadcrumb, name: breadcrumb, widget: string },
+          { label: Title, name: title, widget: string },
+          { label: Subtitle, name: subtitle, widget: text },
+          { label: Pills, name: pills, widget: list, field: { label: Pill, name: pill, widget: string } },
+          { label: Best For, name: bestFor, widget: text },
+          { label: Hero Image, name: image, widget: image }
+        ]}
+      - label: Content Sections
+        name: sections
+        widget: list
+        fields:
+          - { label: Section Title, name: title, widget: string }
+          - label: Blocks
+            name: blocks
+            widget: list
+            types:
+              - label: Paragraph (HTML allowed)
+                name: paragraph
+                widget: object
+                fields:
+                  - { label: HTML, name: html, widget: text }
+              - label: Subheading
+                name: h3
+                widget: object
+                fields:
+                  - { label: Text, name: text, widget: string }
+              - label: Bullet List
+                name: ul
+                widget: object
+                fields:
+                  - { label: Items, name: items, widget: list, field: { label: Item, name: item, widget: string } }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        fields:
+          - label: Session Style
+            name: sessionStyle
+            widget: object
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Items, name: items, widget: list, field: { label: Item, name: item, widget: string } }
+          - label: Get Started
+            name: getStarted
+            widget: object
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Prompt, name: prompt, widget: string }
+              - { label: Primary Label, name: primaryLabel, widget: string }
+              - { label: Primary URL, name: primaryHref, widget: string }
+              - { label: Secondary Label, name: secondaryLabel, widget: string }
+              - { label: Secondary URL, name: secondaryHref, widget: string }
+          - label: Accordions (FAQs)
+            name: accordions
+            widget: list
+            hint: "Coordinator summaries — review compliance language before publishing."
+            fields:
+              - { label: Summary, name: summary, widget: string }
+              - { label: Open by Default, name: open, widget: boolean, default: false }
+              - { label: Body HTML, name: blocks, widget: list, field: { label: Paragraph HTML, name: html, widget: text }, hint: "One paragraph per row; use block type paragraph in JSON for full fidelity." }
+
+  - name: faqs
+    label: FAQs
+    files:
+      - label: Site FAQs
+        name: faqs
+        file: content/faqs.json
+        fields:
+          - label: FAQ Items
+            name: items
+            widget: list
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Tags, name: tags, widget: list, field: { label: Tag, name: tag, widget: string }, hint: "Use contact, creative-workshops, support-coordinators" }
+              - { label: Question, name: question, widget: string }
+              - { label: Answer, name: answer, widget: text }
+
+  - name: contact
+    label: Contact Page
+    files:
+      - label: Contact
+        name: contact
+        file: content/contact.json
+        fields:
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: subtitle, widget: text },
+              { label: Pills, name: pills, widget: list, field: { label: Pill, name: pill, widget: string } }
+            ]}
+          - { label: Form, name: form, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text }
+            ]}
+          - { label: Sidebar, name: sidebar, widget: object, fields: [
+              { label: Best For Items, name: bestForItems, widget: list, field: { label: Item, name: item, widget: string } }
+            ]}
+
+  - name: creative-workshops
+    label: Public Pricing / Classes
+    files:
+      - label: Creative Workshops
+        name: creative-workshops
+        file: content/creative-workshops.json
+        fields:
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Description, name: description, widget: text }
+            ]}
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Kicker, name: kicker, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: subtitle, widget: text },
+              { label: Pills, name: pills, widget: list, field: { label: Pill, name: pill, widget: string } }
+            ]}
+          - label: Workshops
+            name: workshops
+            widget: list
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Summary, name: summary, widget: text }
+          - { label: Pricing, name: pricing, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text },
+              { label: Tiers, name: tiers, widget: list, fields: [
+                  { label: Name, name: name, widget: string },
+                  { label: Price, name: price, widget: string },
+                  { label: Description, name: description, widget: text }
+                ]}
+            ]}
+          - { label: Funding Note, name: fundingNote, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text, hint: "Use conditional funding language only" }
+            ]}
+          - { label: Final CTA, name: finalCta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text },
+              { label: Primary Label, name: primaryLabel, widget: string },
+              { label: Primary URL, name: primaryHref, widget: string }
+            ]}
+
+  - name: support-coordinators
+    label: Support Coordinator Copy
+    files:
+      - label: Support Coordinators
+        name: support-coordinators
+        file: content/support-coordinators.json
+        fields:
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: subtitle, widget: text }
+            ]}
+          - { label: What We Provide, name: whatWeProvide, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text },
+              { label: Items, name: items, widget: list, field: { label: Item, name: item, widget: string } }
+            ]}
+          - label: Sample Descriptions
+            name: sampleDescriptions
+            widget: list
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: text }
+          - label: Invoice Descriptions
+            name: invoiceDescriptions
+            widget: list
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: text }
+          - { label: Funding Note, name: fundingNote, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text }
+            ]}
+
+  - name: stories
+    label: Stories
+    folder: content/stories
+    extension: json
+    format: json
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Story Slug, name: slug, widget: string, default: "brendan" }
+      - { label: SEO, name: meta, widget: object, fields: [
+          { label: Title, name: title, widget: string },
+          { label: Description, name: description, widget: text }
+        ]}
+      - { label: Hero, name: hero, widget: object, fields: [
+          { label: Eyebrow, name: eyebrow, widget: string },
+          { label: Title (HTML), name: titleHtml, widget: text },
+          { label: Lead, name: lead, widget: text },
+          { label: Sticker Quote, name: stickerQuote, widget: string }
+        ]}
+      - { label: Donation Section, name: donation, widget: object, fields: [
+          { label: Title (HTML), name: titleHtml, widget: text },
+          { label: Lead, name: lead, widget: text },
+          { label: Tiers, name: tiers, widget: list, fields: [
+              { label: Name, name: name, widget: string },
+              { label: Amount, name: amount, widget: number },
+              { label: Blurb, name: blurb, widget: text }
+            ]}
+        ]}
+      - { label: Final CTA, name: finalCta, widget: object, fields: [
+          { label: Title (HTML), name: titleHtml, widget: text },
+          { label: Lead, name: lead, widget: text }
+        ]}
