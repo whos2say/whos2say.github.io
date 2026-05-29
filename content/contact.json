@@ -23,7 +23,7 @@
       "Media / storytelling collaboration"
     ],
     "workshopCard": {
-      "enabled": false,
+      "enabled": true,
       "title": "Interested in a workshop or studio session?",
       "body": "Explore our public-facing creative workshops and individualized creative media sessions.",
       "buttonLabel": "View Creative Workshops",

@@ -14,7 +14,6 @@
       '</a><nav aria-label="Primary navigation" class="site-nav">' +
       '<a class="nav-link" href="/">Home</a>' +
       '<a class="nav-link" href="/programs.html">Programs</a>' +
-      '<a class="nav-link" href="/creative-workshops.html">Creative Workshops</a>' +
       '<a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>' +
       '<a class="nav-link" href="/contact.html">Contact</a>' +
       '</nav><div class="header-actions">' +
@@ -100,6 +99,9 @@
     var theme = document.createElement('script');
     theme.src = '/assets/js/theme.js';
     document.body.appendChild(theme);
+    var env = document.createElement('script');
+    env.src = '/js/content/environment.js';
+    document.body.appendChild(env);
   }
 
   function renderSupportCoordinators(data) {
@@ -165,6 +167,9 @@
     var theme = document.createElement('script');
     theme.src = '/assets/js/theme.js';
     document.body.appendChild(theme);
+    var env = document.createElement('script');
+    env.src = '/js/content/environment.js';
+    document.body.appendChild(env);
   }
 
   global.W2SContentRenderFullPage = function (page, data) {
