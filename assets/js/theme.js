@@ -9,6 +9,13 @@
   const STORAGE_KEY = "wts-theme";
   const root = document.documentElement;
 
+  const uiState = {
+    dropdownGlobalsBound: false,
+    mobileGlobalsBound: false,
+    systemListenerBound: false,
+    mobileMenuController: { close: function () {} },
+  };
+
   // -------------------------
   // THEME
   // -------------------------
@@ -28,8 +35,6 @@
     return v === "light" || v === "dark" ? v : null;
   }
 
-  // Works if you have ONE logo with data-logo-light/dark.
-  // If you're using dual logos (logo-dark/logo-light) via CSS, this does nothing (and that's fine).
   function updateLogo(theme) {
     const logos = document.querySelectorAll(".brand-logo");
     if (!logos.length) return;
@@ -37,7 +42,7 @@
     logos.forEach((logo) => {
       const light = logo.getAttribute("data-logo-light");
       const dark = logo.getAttribute("data-logo-dark");
-      if (!light || !dark) return; // dual-logo CSS approach -> no swap needed
+      if (!light || !dark) return;
       logo.src = theme === "light" ? light : dark;
     });
   }
@@ -89,7 +94,9 @@
   }
 
   function bindSystemListener() {
-    if (!window.matchMedia) return;
+    if (uiState.systemListenerBound || !window.matchMedia) return;
+    uiState.systemListenerBound = true;
+
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const handler = () => {
       if (!savedTheme()) applyTheme(systemTheme());
@@ -105,12 +112,8 @@
 
   // -------------------------
   // DROPDOWNS (Programs)
-  // Supports:
-  // 1) legacy: [data-dropdown] + .nav-trigger
-  // 2) current: .has-submenu + .nav-submenu (trigger = .nav-link inside)
   // -------------------------
   function isDesktopHover() {
-    // Only hover-open if the device supports hover and we're not in a narrow layout
     try {
       return (
         window.matchMedia &&
@@ -125,7 +128,6 @@
   function getDropdowns() {
     const legacy = Array.from(document.querySelectorAll("[data-dropdown]"));
     const current = Array.from(document.querySelectorAll(".has-submenu"));
-    // de-dupe
     const set = new Set([...legacy, ...current]);
     return Array.from(set);
   }
@@ -163,24 +165,41 @@
     });
   }
 
+  function onDropdownDocumentClick() {
+    closeAll(null);
+  }
+
+  function onDropdownDocumentKeydown(ev) {
+    if (ev.key === "Escape") closeAll(null);
+  }
+
+  function bindDropdownGlobalsOnce() {
+    if (uiState.dropdownGlobalsBound) return;
+    uiState.dropdownGlobalsBound = true;
+    document.addEventListener("click", onDropdownDocumentClick);
+    document.addEventListener("keydown", onDropdownDocumentKeydown);
+  }
+
   function bindDropdowns() {
     const dropdowns = getDropdowns();
     if (!dropdowns.length) return;
 
+    bindDropdownGlobalsOnce();
+
     dropdowns.forEach((dd) => {
+      if (dd.getAttribute("data-wts-dropdown-bound") === "true") return;
+
       const trigger = getTrigger(dd);
       const menu = getMenu(dd);
       if (!trigger || !menu) return;
 
-      // a11y baseline
+      dd.setAttribute("data-wts-dropdown-bound", "true");
       trigger.setAttribute("aria-haspopup", "true");
       trigger.setAttribute(
         "aria-expanded",
         dd.classList.contains("is-open") ? "true" : "false"
       );
-      // CLICK navigates normally (dropdown opens on hover)
 
-      // HOVER opens on desktop (unless pinned)
       dd.addEventListener("mouseenter", () => {
         if (!isDesktopHover()) return;
         closeAll(dd);
@@ -192,128 +211,131 @@
         closeDropdown(dd);
       });
     });
-
-    // Outside click closes (unless pinned? We DO close even pinned on outside click — expected UX)
-    document.addEventListener("click", () => closeAll(null));
-
-    // Esc closes all
-    document.addEventListener("keydown", (ev) => {
-      if (ev.key === "Escape") closeAll(null);
-    });
-
-    // If layout changes (resize), unpin to avoid weird states
-    window.addEventListener("resize", () => {
-      if (!isDesktopHover()) {
-        // on mobile/tablet: keep state but remove hover-open assumptions
-        // no-op
-      }
-    });
   }
 
-  
   // -------------------------
   // Mobile hamburger menu
   // -------------------------
+  function bindMobileMenuGlobalsOnce() {
+    if (uiState.mobileGlobalsBound) return;
+    uiState.mobileGlobalsBound = true;
+
+    document.addEventListener("click", function () {
+      uiState.mobileMenuController.close();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") uiState.mobileMenuController.close();
+    });
+
+    window.addEventListener("resize", function () {
+      if (window.innerWidth >= 900) uiState.mobileMenuController.close();
+    });
+  }
+
   function buildMobileMenu() {
-    const siteNav = document.querySelector('.site-nav');
-    const headerActions = document.querySelector('.header-actions');
+    const siteNav = document.querySelector(".site-nav");
+    const headerActions = document.querySelector(".header-actions");
     if (!siteNav || !headerActions) return;
 
-    // Create hamburger button
-    const hamburger = document.createElement('button');
-    hamburger.className = 'mobile-menu-btn';
-    hamburger.setAttribute('aria-label', 'Open navigation menu');
-    hamburger.setAttribute('aria-expanded', 'false');
-    hamburger.setAttribute('type', 'button');
+    bindMobileMenuGlobalsOnce();
+
+    const hamburger = document.createElement("button");
+    hamburger.className = "mobile-menu-btn";
+    hamburger.setAttribute("aria-label", "Open navigation menu");
+    hamburger.setAttribute("aria-expanded", "false");
+    hamburger.setAttribute("type", "button");
     hamburger.innerHTML =
       '<span class="hamburger-icon" aria-hidden="true">' +
-      '<span></span><span></span><span></span>' +
-      '</span>';
+      "<span></span><span></span><span></span>" +
+      "</span>";
     headerActions.insertBefore(hamburger, headerActions.firstChild);
 
-    // Build mobile panel
-    const panel = document.createElement('nav');
-    panel.className = 'mobile-menu-panel';
-    panel.setAttribute('aria-label', 'Mobile navigation');
-    panel.setAttribute('aria-hidden', 'true');
+    const panel = document.createElement("nav");
+    panel.className = "mobile-menu-panel";
+    panel.setAttribute("aria-label", "Mobile navigation");
+    panel.setAttribute("aria-hidden", "true");
 
-    const here = window.location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '');
+    const here = window.location.pathname
+      .replace(/\/index\.html$/, "/")
+      .replace(/\/+$/, "");
 
-    siteNav.querySelectorAll('.nav-link').forEach(function (link) {
-      const a = document.createElement('a');
+    siteNav.querySelectorAll(".nav-link").forEach(function (link) {
+      const a = document.createElement("a");
       a.href = link.href;
       a.textContent = link.textContent;
-      a.className = 'mobile-nav-link';
-      const hrefRaw = (link.getAttribute('href') || '').split('#')[0]
-        .replace(/\/index\.html$/, '/').replace(/\/+$/, '');
-      const isHome = (here === '' || here === '/');
-      const targetIsHome = (hrefRaw === '' || hrefRaw === '/');
-      const active = targetIsHome ? isHome : (hrefRaw && hrefRaw === here);
-      if (active) { a.classList.add('active'); a.setAttribute('aria-current', 'page'); }
+      a.className = "mobile-nav-link";
+      const hrefRaw = (link.getAttribute("href") || "")
+        .split("#")[0]
+        .replace(/\/index\.html$/, "/")
+        .replace(/\/+$/, "");
+      const isHome = here === "" || here === "/";
+      const targetIsHome = hrefRaw === "" || hrefRaw === "/";
+      const active = targetIsHome ? isHome : hrefRaw && hrefRaw === here;
+      if (active) {
+        a.classList.add("active");
+        a.setAttribute("aria-current", "page");
+      }
       panel.appendChild(a);
     });
 
     document.body.appendChild(panel);
 
     function closeMenu() {
-      hamburger.classList.remove('is-open');
-      hamburger.setAttribute('aria-expanded', 'false');
-      panel.classList.remove('is-open');
-      panel.setAttribute('aria-hidden', 'true');
+      hamburger.classList.remove("is-open");
+      hamburger.setAttribute("aria-expanded", "false");
+      panel.classList.remove("is-open");
+      panel.setAttribute("aria-hidden", "true");
     }
 
     function openMenu() {
-      hamburger.classList.add('is-open');
-      hamburger.setAttribute('aria-expanded', 'true');
-      panel.classList.add('is-open');
-      panel.setAttribute('aria-hidden', 'false');
+      hamburger.classList.add("is-open");
+      hamburger.setAttribute("aria-expanded", "true");
+      panel.classList.add("is-open");
+      panel.setAttribute("aria-hidden", "false");
     }
 
-    hamburger.addEventListener('click', function (e) {
+    uiState.mobileMenuController.close = closeMenu;
+
+    hamburger.addEventListener("click", function (e) {
       e.stopPropagation();
-      hamburger.classList.contains('is-open') ? closeMenu() : openMenu();
+      hamburger.classList.contains("is-open") ? closeMenu() : openMenu();
     });
 
-    document.addEventListener('click', closeMenu);
-    panel.addEventListener('click', function (e) { e.stopPropagation(); });
-    panel.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', closeMenu);
+    panel.addEventListener("click", function (e) {
+      e.stopPropagation();
     });
 
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeMenu();
-    });
-
-    window.addEventListener('resize', function () {
-      if (window.innerWidth >= 900) closeMenu();
+    panel.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", closeMenu);
     });
   }
 
   // -------------------------
-  // Active nav link (no per-page markup needed)
+  // Active nav link
   // -------------------------
   function markActiveNav() {
-    const here = window.location.pathname.replace(/\/index\.html$/, "/").replace(/\/+$/, "");
+    const here = window.location.pathname
+      .replace(/\/index\.html$/, "/")
+      .replace(/\/+$/, "");
     document.querySelectorAll(".site-nav .nav-link").forEach((a) => {
       const hrefRaw = a.getAttribute("href") || "";
-      // ignore external links
       if (/^https?:\/\//i.test(hrefRaw) || hrefRaw.startsWith("mailto:")) return;
 
-      const href = hrefRaw.split("#")[0].replace(/\/index\.html$/, "/").replace(/\/+$/, "");
-      const isHome = (here === "" || here === "/");
-      const targetIsHome = (href === "" || href === "/");
+      const href = hrefRaw
+        .split("#")[0]
+        .replace(/\/index\.html$/, "/")
+        .replace(/\/+$/, "");
+      const isHome = here === "" || here === "/";
+      const targetIsHome = href === "" || href === "/";
 
-      const active = targetIsHome ? isHome : (href && href === here);
+      const active = targetIsHome ? isHome : href && href === here;
       a.classList.toggle("active", active);
       if (active) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
   }
 
-
-// -------------------------
-  // Pathways ribbon auto-active
-  // -------------------------
   function markActivePathwayChip() {
     const here = window.location.pathname.replace(/\/+$/, "");
     document.querySelectorAll(".pathways-ribbon .pathway-chip").forEach((a) => {
@@ -323,32 +345,42 @@
   }
 
   function refreshNavigationUi() {
-    document.querySelectorAll(".mobile-menu-btn").forEach(function (el) { el.remove(); });
-    document.querySelectorAll(".mobile-menu-panel").forEach(function (el) { el.remove(); });
+    document.querySelectorAll(".mobile-menu-btn").forEach(function (el) {
+      el.remove();
+    });
+    document.querySelectorAll(".mobile-menu-panel").forEach(function (el) {
+      el.remove();
+    });
+    uiState.mobileMenuController.close = function () {};
+
     initThemeEarly();
     bindThemeToggle();
     buildMobileMenu();
-    const hasRibbon = document.body && document.body.dataset && document.body.dataset.hasRibbon === "true";
+    const hasRibbon =
+      document.body &&
+      document.body.dataset &&
+      document.body.dataset.hasRibbon === "true";
     if (!hasRibbon) bindDropdowns();
     markActiveNav();
   }
 
-  // expose a minimal API
   window.WTSTheme = {
     set: setUserTheme,
     get: () => root.getAttribute("data-theme") || "dark",
     reinitAfterDynamicRender: refreshNavigationUi,
   };
 
-  // init before paint if possible
   initThemeEarly();
 
   document.addEventListener("DOMContentLoaded", function () {
     initThemeEarly();
     bindThemeToggle();
     buildMobileMenu();
-    bindSystemListener();    // Programs dropdown (disabled on ribbon pages)
-    const hasRibbon = document.body && document.body.dataset && document.body.dataset.hasRibbon === "true";
+    bindSystemListener();
+    const hasRibbon =
+      document.body &&
+      document.body.dataset &&
+      document.body.dataset.hasRibbon === "true";
     if (!hasRibbon) bindDropdowns();
     markActiveNav();
     markActivePathwayChip();
@@ -356,4 +388,3 @@
 
   document.addEventListener("w2s:navigation-ready", refreshNavigationUi);
 })();
-

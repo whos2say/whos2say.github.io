@@ -181,19 +181,22 @@
   }
 
   function bindSubnavScroll(container) {
-    var links = container.querySelectorAll('.page-subnav__link[href^="#"]');
-    links.forEach(function (link) {
-      link.addEventListener('click', function (e) {
-        var id = link.getAttribute('href').slice(1);
-        var target = document.getElementById(id);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          if (global.history && global.history.replaceState) {
-            global.history.replaceState(null, '', '#' + id);
-          }
-        }
-      });
+    if (container.getAttribute('data-wts-subnav-bound') === 'true') return;
+    container.setAttribute('data-wts-subnav-bound', 'true');
+
+    container.addEventListener('click', function (e) {
+      var link = e.target.closest('.page-subnav__link[href^="#"]');
+      if (!link || !container.contains(link)) return;
+
+      var id = link.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (global.history && global.history.replaceState) {
+        global.history.replaceState(null, '', '#' + id);
+      }
     });
   }
 
