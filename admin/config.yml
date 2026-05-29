@@ -57,42 +57,111 @@ collections:
         name: navigation
         file: content/navigation.json
         fields:
-          - { label: Editor guidance, name: _comment, widget: text, required: false }
+          - label: Editor guidance
+            name: _comment
+            widget: text
+            required: false
           - label: Primary (header) navigation
             name: primary
             widget: list
             summary: "{{fields.label}} · {{fields.environment}}"
             hint: "Use environment staging for draft/compliance-sensitive pages. Do not promote Creative Workshops, Support Coordinators, pricing, or DDD language to production without review."
             fields:
-              - { label: Label, name: label, widget: string }
-              - { label: URL, name: href, widget: string }
-              - { label: Enabled, name: enabled, widget: boolean, default: true }
-              - { label: Environment, name: environment, widget: select, options: [all, staging, production], default: all }
-              - { label: Order, name: order, widget: number, default: 10, value_type: int }
-              - { label: External link, name: external, widget: boolean, default: false }
-              - { label: Editor note, name: note, widget: text, required: false }
-              - label: Submenu items (optional — e.g. Programs paths)
+              - label: Label
+                name: label
+                widget: string
+              - label: URL
+                name: href
+                widget: string
+              - label: Enabled
+                name: enabled
+                widget: boolean
+                default: true
+              - label: Environment
+                name: environment
+                widget: select
+                options:
+                  - all
+                  - staging
+                  - production
+                default: all
+              - label: Order
+                name: order
+                widget: number
+                default: 10
+                value_type: int
+              - label: External link
+                name: external
+                widget: boolean
+                default: false
+              - label: Editor note
+                name: note
+                widget: text
+                required: false
+              - label: "Submenu items (optional — e.g. Programs paths)"
                 name: children
                 widget: list
                 required: false
                 fields:
-                  - { label: Label, name: label, widget: string }
-                  - { label: URL, name: href, widget: string }
-                  - { label: Enabled, name: enabled, widget: boolean, default: true }
-                  - { label: Environment, name: environment, widget: select, options: [all, staging, production], default: all }
-                  - { label: Order, name: order, widget: number, default: 10, value_type: int }
+                  - label: Label
+                    name: label
+                    widget: string
+                  - label: URL
+                    name: href
+                    widget: string
+                  - label: Enabled
+                    name: enabled
+                    widget: boolean
+                    default: true
+                  - label: Environment
+                    name: environment
+                    widget: select
+                    options:
+                      - all
+                      - staging
+                      - production
+                    default: all
+                  - label: Order
+                    name: order
+                    widget: number
+                    default: 10
+                    value_type: int
           - label: Footer navigation
             name: footer
             widget: list
             summary: "{{fields.label}} · {{fields.environment}}"
             fields:
-              - { label: Label, name: label, widget: string }
-              - { label: URL, name: href, widget: string }
-              - { label: Enabled, name: enabled, widget: boolean, default: true }
-              - { label: Environment, name: environment, widget: select, options: [all, staging, production], default: all }
-              - { label: Order, name: order, widget: number, default: 10, value_type: int }
-              - { label: External link, name: external, widget: boolean, default: false }
-              - { label: Editor note, name: note, widget: text, required: false }
+              - label: Label
+                name: label
+                widget: string
+              - label: URL
+                name: href
+                widget: string
+              - label: Enabled
+                name: enabled
+                widget: boolean
+                default: true
+              - label: Environment
+                name: environment
+                widget: select
+                options:
+                  - all
+                  - staging
+                  - production
+                default: all
+              - label: Order
+                name: order
+                widget: number
+                default: 10
+                value_type: int
+              - label: External link
+                name: external
+                widget: boolean
+                default: false
+              - label: Editor note
+                name: note
+                widget: text
+                required: false
           - label: Page subnavs (in-page section links)
             name: subnavs
             widget: object
@@ -103,34 +172,97 @@ collections:
                 widget: list
                 required: false
                 fields:
-                  - { label: Label, name: label, widget: string }
-                  - { label: URL or #anchor, name: href, widget: string }
-                  - { label: Enabled, name: enabled, widget: boolean, default: true }
-                  - { label: Environment, name: environment, widget: select, options: [all, staging, production], default: all }
-                  - { label: Order, name: order, widget: number, default: 10, value_type: int }
-                  - { label: Editor note, name: note, widget: text, required: false }
+                  - label: Label
+                    name: label
+                    widget: string
+                  - label: "URL or #anchor"
+                    name: href
+                    widget: string
+                  - label: Enabled
+                    name: enabled
+                    widget: boolean
+                    default: true
+                  - label: Environment
+                    name: environment
+                    widget: select
+                    options:
+                      - all
+                      - staging
+                      - production
+                    default: all
+                  - label: Order
+                    name: order
+                    widget: number
+                    default: 10
+                    value_type: int
+                  - label: Editor note
+                    name: note
+                    widget: text
+                    required: false
               - label: Support Coordinators
                 name: support-coordinators
                 widget: list
                 required: false
                 fields:
-                  - { label: Label, name: label, widget: string }
-                  - { label: URL or #anchor, name: href, widget: string }
-                  - { label: Enabled, name: enabled, widget: boolean, default: true }
-                  - { label: Environment, name: environment, widget: select, options: [all, staging, production], default: all }
-                  - { label: Order, name: order, widget: number, default: 10, value_type: int }
-                  - { label: Editor note, name: note, widget: text, required: false }
+                  - label: Label
+                    name: label
+                    widget: string
+                  - label: "URL or #anchor"
+                    name: href
+                    widget: string
+                  - label: Enabled
+                    name: enabled
+                    widget: boolean
+                    default: true
+                  - label: Environment
+                    name: environment
+                    widget: select
+                    options:
+                      - all
+                      - staging
+                      - production
+                    default: all
+                  - label: Order
+                    name: order
+                    widget: number
+                    default: 10
+                    value_type: int
+                  - label: Editor note
+                    name: note
+                    widget: text
+                    required: false
               - label: Brendan story
                 name: story-brendan
                 widget: list
                 required: false
                 fields:
-                  - { label: Label, name: label, widget: string }
-                  - { label: URL or #anchor, name: href, widget: string }
-                  - { label: Enabled, name: enabled, widget: boolean, default: true }
-                  - { label: Environment, name: environment, widget: select, options: [all, staging, production], default: all }
-                  - { label: Order, name: order, widget: number, default: 10, value_type: int }
-                  - { label: Editor note, name: note, widget: text, required: false }
+                  - label: Label
+                    name: label
+                    widget: string
+                  - label: "URL or #anchor"
+                    name: href
+                    widget: string
+                  - label: Enabled
+                    name: enabled
+                    widget: boolean
+                    default: true
+                  - label: Environment
+                    name: environment
+                    widget: select
+                    options:
+                      - all
+                      - staging
+                      - production
+                    default: all
+                  - label: Order
+                    name: order
+                    widget: number
+                    default: 10
+                    value_type: int
+                  - label: Editor note
+                    name: note
+                    widget: text
+                    required: false
 
   - name: homepage
     label: Homepage
