@@ -17,18 +17,60 @@
       "order": 20,
       "external": false,
       "children": [
-        { "label": "Digital Path", "href": "/programs/digital-content-creator.html", "enabled": true, "environment": "all", "order": 10, "external": false },
-        { "label": "Sports Path", "href": "/programs/whos-to-say-sports.html", "enabled": true, "environment": "all", "order": 20, "external": false },
-        { "label": "Independence Path", "href": "/programs/life-skills-independent-living.html", "enabled": true, "environment": "all", "order": 30, "external": false },
-        { "label": "Community Path", "href": "/programs/community-integration-advocacy.html", "enabled": true, "environment": "all", "order": 40, "external": false },
-        { "label": "Art Path", "href": "/programs/maker-market-events.html", "enabled": true, "environment": "all", "order": 50, "external": false },
-        { "label": "Entertainment Path", "href": "/programs/entertainment-pathways.html", "enabled": true, "environment": "all", "order": 60, "external": false }
+        {
+          "label": "Digital Path",
+          "href": "/programs/digital-content-creator.html",
+          "enabled": true,
+          "environment": "all",
+          "order": 10,
+          "external": false
+        },
+        {
+          "label": "Sports Path",
+          "href": "/programs/whos-to-say-sports.html",
+          "enabled": true,
+          "environment": "all",
+          "order": 20,
+          "external": false
+        },
+        {
+          "label": "Independence Path",
+          "href": "/programs/life-skills-independent-living.html",
+          "enabled": true,
+          "environment": "all",
+          "order": 30,
+          "external": false
+        },
+        {
+          "label": "Community Path",
+          "href": "/programs/community-integration-advocacy.html",
+          "enabled": true,
+          "environment": "all",
+          "order": 40,
+          "external": false
+        },
+        {
+          "label": "Art Path",
+          "href": "/programs/maker-market-events.html",
+          "enabled": true,
+          "environment": "all",
+          "order": 50,
+          "external": false
+        },
+        {
+          "label": "Entertainment Path",
+          "href": "/programs/entertainment-pathways.html",
+          "enabled": true,
+          "environment": "all",
+          "order": 60,
+          "external": false
+        }
       ]
     },
     {
       "label": "Creative Workshops",
       "href": "/creative-workshops.html",
-      "enabled": true,
+      "enabled": false,
       "environment": "staging",
       "order": 30,
       "external": false,
