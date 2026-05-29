@@ -20,12 +20,7 @@
     "copyright": "Who's to Say ? Foundation"
   },
   "environment": {
-    "_comment": "Staging-only UI. On main/production keep showDraftPagesInNav false. On staging branch set both true.",
-    "showDraftPagesInNav": true,
-    "showStagingBanner": true,
-    "draftNavLinks": [
-      { "href": "/creative-workshops.html", "label": "Creative Workshops" },
-      { "href": "/support-coordinators.html", "label": "For Coordinators" }
-    ]
+    "_comment": "Staging banner only. Nav visibility is controlled by content/navigation.json.",
+    "showStagingBanner": true
   }
 }

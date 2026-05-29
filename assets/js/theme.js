@@ -340,5 +340,16 @@
     markActiveNav();
     markActivePathwayChip();
   });
+
+  function refreshNavigationUi() {
+    document.querySelectorAll(".mobile-menu-btn").forEach(function (el) { el.remove(); });
+    document.querySelectorAll(".mobile-menu-panel").forEach(function (el) { el.remove(); });
+    buildMobileMenu();
+    const hasRibbon = document.body && document.body.dataset && document.body.dataset.hasRibbon === "true";
+    if (!hasRibbon) bindDropdowns();
+    markActiveNav();
+  }
+
+  document.addEventListener("w2s:navigation-ready", refreshNavigationUi);
 })();
 

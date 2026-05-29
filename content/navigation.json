@@ -1,0 +1,186 @@
+{
+  "_comment": "Central navigation source of truth. Items with environment: staging are hidden on production (www.whostosay.org). Do not promote Creative Workshops, Support Coordinators, pricing, or DDD-sensitive links to production without leadership/compliance review.",
+  "primary": [
+    {
+      "label": "Home",
+      "href": "/",
+      "enabled": true,
+      "environment": "all",
+      "order": 10
+    },
+    {
+      "label": "Programs",
+      "href": "/programs.html",
+      "enabled": true,
+      "environment": "all",
+      "order": 20,
+      "children": [
+        { "label": "Digital Path", "href": "/programs/digital-content-creator.html", "enabled": true, "environment": "all", "order": 10 },
+        { "label": "Sports Path", "href": "/programs/whos-to-say-sports.html", "enabled": true, "environment": "all", "order": 20 },
+        { "label": "Independence Path", "href": "/programs/life-skills-independent-living.html", "enabled": true, "environment": "all", "order": 30 },
+        { "label": "Community Path", "href": "/programs/community-integration-advocacy.html", "enabled": true, "environment": "all", "order": 40 },
+        { "label": "Art Path", "href": "/programs/maker-market-events.html", "enabled": true, "environment": "all", "order": 50 },
+        { "label": "Entertainment Path", "href": "/programs/entertainment-pathways.html", "enabled": true, "environment": "all", "order": 60 }
+      ]
+    },
+    {
+      "label": "Creative Workshops",
+      "href": "/creative-workshops.html",
+      "enabled": true,
+      "environment": "staging",
+      "order": 30,
+      "note": "Draft/staging page. Do not promote to production without leadership/compliance review."
+    },
+    {
+      "label": "For Coordinators",
+      "href": "/support-coordinators.html",
+      "enabled": true,
+      "environment": "staging",
+      "order": 40,
+      "note": "Draft/staging page. Contains coordinator/DDD-sensitive language."
+    },
+    {
+      "label": "Donate",
+      "href": "https://givebutter.com/whostosayfoundation",
+      "enabled": true,
+      "environment": "all",
+      "order": 80,
+      "external": true
+    },
+    {
+      "label": "Contact",
+      "href": "/contact.html",
+      "enabled": true,
+      "environment": "all",
+      "order": 90
+    }
+  ],
+  "footer": [
+    {
+      "label": "Programs",
+      "href": "/programs.html",
+      "enabled": true,
+      "environment": "all",
+      "order": 10
+    },
+    {
+      "label": "Creative Workshops",
+      "href": "/creative-workshops.html",
+      "enabled": true,
+      "environment": "staging",
+      "order": 20,
+      "note": "Staging-only until compliance review."
+    },
+    {
+      "label": "Contact",
+      "href": "/contact.html",
+      "enabled": true,
+      "environment": "all",
+      "order": 90
+    }
+  ],
+  "subnavs": {
+    "creative-workshops": [
+      {
+        "label": "Overview",
+        "href": "#overview",
+        "enabled": true,
+        "environment": "all",
+        "order": 10
+      },
+      {
+        "label": "Workshop Menu",
+        "href": "#workshop-menu",
+        "enabled": true,
+        "environment": "all",
+        "order": 15
+      },
+      {
+        "label": "Pricing",
+        "href": "#pricing",
+        "enabled": true,
+        "environment": "staging",
+        "order": 20,
+        "note": "Keep staging-only until pricing is approved."
+      },
+      {
+        "label": "Session Flow",
+        "href": "#session-flow",
+        "enabled": true,
+        "environment": "all",
+        "order": 30
+      },
+      {
+        "label": "Funding Note",
+        "href": "#funding",
+        "enabled": true,
+        "environment": "staging",
+        "order": 40,
+        "note": "DDD/Goods & Services-sensitive section."
+      }
+    ],
+    "support-coordinators": [
+      {
+        "label": "Overview",
+        "href": "#overview",
+        "enabled": true,
+        "environment": "all",
+        "order": 10
+      },
+      {
+        "label": "What We Provide",
+        "href": "#what-we-provide",
+        "enabled": true,
+        "environment": "all",
+        "order": 15
+      },
+      {
+        "label": "Sample Descriptions",
+        "href": "#samples",
+        "enabled": true,
+        "environment": "staging",
+        "order": 20
+      },
+      {
+        "label": "Invoice Language",
+        "href": "#invoice-lines",
+        "enabled": true,
+        "environment": "staging",
+        "order": 30,
+        "note": "Compliance-sensitive. Review before production."
+      },
+      {
+        "label": "Funding Note",
+        "href": "#funding",
+        "enabled": true,
+        "environment": "staging",
+        "order": 40,
+        "note": "DDD/Goods & Services-sensitive section."
+      }
+    ],
+    "story-brendan": [
+      {
+        "label": "Story",
+        "href": "#story",
+        "enabled": true,
+        "environment": "all",
+        "order": 10
+      },
+      {
+        "label": "Give",
+        "href": "#give",
+        "enabled": true,
+        "environment": "all",
+        "order": 15
+      },
+      {
+        "label": "Creative Workshops",
+        "href": "/creative-workshops.html",
+        "enabled": true,
+        "environment": "staging",
+        "order": 20,
+        "note": "Staging-only draft page link."
+      }
+    ]
+  }
+}

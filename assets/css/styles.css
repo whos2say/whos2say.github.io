@@ -1747,3 +1747,59 @@ html[data-theme="light"] .programs-hero--image::before{
   border-radius: 3px;
   font-size: 0.92em;
 }
+
+/* =========================================================
+   Centralized nav / subnav (js/content/navigation.js)
+   Adjust spacing, colors, and link styles here.
+   Uses existing --border, --text-muted, --color-primary, --radius-md.
+   ========================================================= */
+.page-subnav {
+  position: sticky;
+  top: var(--header-height, 76px);
+  z-index: 40;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-main) 92%, transparent);
+  backdrop-filter: blur(12px);
+}
+.page-subnav__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.65rem 5vw;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  align-items: center;
+}
+.page-subnav__link {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm, 6px);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.page-subnav__link:hover {
+  color: var(--color-primary);
+}
+.page-subnav__link.is-active,
+.page-subnav__link[aria-current="true"] {
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+.footer-nav__link {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.footer-nav__link:hover {
+  color: var(--color-primary);
+}

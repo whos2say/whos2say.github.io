@@ -18,7 +18,8 @@
       '<a class="nav-link" href="/contact.html">Contact</a>' +
       '</nav><div class="header-actions">' +
       '<button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>' +
-      '</div></div></header>'
+      '</div></div></header>' +
+      '<nav data-page-subnav class="page-subnav" aria-label="Page sections" hidden></nav>'
     );
   }
 
@@ -68,7 +69,7 @@
       '<a class="skip-link" href="#main">Skip to content</a>' +
       headerHtml() +
       '<main class="program-page" id="main">' +
-      '<section class="program-hero contact-hero">' +
+      '<section class="program-hero contact-hero" id="overview">' +
       '<div class="program-hero-card"><div class="program-hero-body">' +
       '<p class="home-kicker">' + data.hero.kicker + '</p>' +
       '<h1>' + data.hero.title + '</h1>' +
@@ -79,13 +80,13 @@
       }).join('') +
       '</div></div></div></section>' +
       '<section class="program-shell"><article class="program-content">' +
-      '<section class="program-section"><h2>Workshop Menu</h2><div class="program-grid">' + workshops + '</div></section>' +
-      '<section class="program-section"><h2>' + data.pricing.title + '</h2><p>' + data.pricing.intro + '</p>' +
+      '<section class="program-section" id="workshop-menu"><h2>Workshop Menu</h2><div class="program-grid">' + workshops + '</div></section>' +
+      '<section class="program-section" id="pricing"><h2>' + data.pricing.title + '</h2><p>' + data.pricing.intro + '</p>' +
       '<div class="how-grid how-grid--4">' + tiers + '</div></section>' +
-      '<section class="program-section"><h2>' + data.howSessionsWork.title + '</h2>' +
+      '<section class="program-section" id="session-flow"><h2>' + data.howSessionsWork.title + '</h2>' +
       '<div class="how-grid how-grid--4">' + steps + '</div></section>' +
       '<section class="program-section"><h2>' + data.inclusiveSection.title + '</h2><p>' + data.inclusiveSection.body + '</p></section>' +
-      '<section class="program-section cw-note"><h2>' + data.fundingNote.title + '</h2><p>' + data.fundingNote.body + '</p>' +
+      '<section class="program-section cw-note" id="funding"><h2>' + data.fundingNote.title + '</h2><p>' + data.fundingNote.body + '</p>' +
       '<a href="' + data.fundingNote.linkHref + '">' + data.fundingNote.linkLabel + '</a></section>' +
       '<section class="program-section"><h2>' + data.makerSpace.title + '</h2><p>' + data.makerSpace.body + '</p>' +
       '<a class="btn btn-primary" href="' + data.makerSpace.ctaHref + '"' +
@@ -96,12 +97,22 @@
       '</article></section></main>' +
       footerHtml();
 
+    appendPageScripts();
+  }
+
+  function appendPageScripts() {
     var theme = document.createElement('script');
     theme.src = '/assets/js/theme.js';
     document.body.appendChild(theme);
     var env = document.createElement('script');
     env.src = '/js/content/environment.js';
     document.body.appendChild(env);
+    var nav = document.createElement('script');
+    nav.src = '/js/content/navigation.js';
+    nav.onload = function () {
+      if (global.W2SNavigation && global.W2SNavigation.init) global.W2SNavigation.init();
+    };
+    document.body.appendChild(nav);
   }
 
   function renderSupportCoordinators(data) {
@@ -125,7 +136,7 @@
       '<a class="skip-link" href="#main">Skip to content</a>' +
       headerHtml() +
       '<main class="program-page" id="main">' +
-      '<section class="program-hero contact-hero"><div class="program-hero-card"><div class="program-hero-body">' +
+      '<section class="program-hero contact-hero" id="overview"><div class="program-hero-card"><div class="program-hero-body">' +
       '<h1>' + data.hero.title + '</h1>' +
       '<p class="program-subtitle">' + data.hero.subtitle + '</p>' +
       '<div class="pills">' +
@@ -135,17 +146,18 @@
       '</div></div></div></section>' +
       '<section class="program-shell program-shell--6040">' +
       '<article class="program-content">' +
-      '<section class="program-section"><h2>' + data.whatWeProvide.title + '</h2><p>' + data.whatWeProvide.intro + '</p><ul>' +
+      '<section class="program-section" id="what-we-provide"><h2>' + data.whatWeProvide.title + '</h2><p>' + data.whatWeProvide.intro + '</p><ul>' +
       data.whatWeProvide.items.map(function (i) {
         return '<li>' + i + '</li>';
       }).join('') +
-      '</ul></section>' + samples +
+      '</ul></section>' +
+      '<div id="samples">' + samples + '</div>' +
       '<section class="program-section"><h2>' + data.documentation.title + '</h2><ul>' +
       data.documentation.items.map(function (i) {
         return '<li>' + i + '</li>';
       }).join('') +
       '</ul></section>' +
-      '<section class="program-section"><h2>' + data.fundingNote.title + '</h2><p>' + data.fundingNote.body + '</p></section>' +
+      '<section class="program-section cw-note" id="funding"><h2>' + data.fundingNote.title + '</h2><p>' + data.fundingNote.body + '</p></section>' +
       '<section class="program-section"><h2>' + data.nextPhase.title + '</h2><p>' + data.nextPhase.body + '</p></section>' +
       '<section class="program-section cw-cta"><h2>' + data.finalCta.title + '</h2><p>' + data.finalCta.body + '</p>' +
       '<a class="btn btn-primary" href="' + data.finalCta.primaryHref + '">' + data.finalCta.primaryLabel + '</a> ' +
@@ -160,16 +172,11 @@
       }).join('') +
       '</ul></div>' +
       '<div class="program-sidebar-card"><h3>' + data.sidebar.fundingCardTitle + '</h3><p>' + data.sidebar.fundingCardBody + '</p></div>' +
-      invoices +
+      '<div id="invoice-lines">' + invoices + '</div>' +
       '</aside></section></main>' +
       footerHtml();
 
-    var theme = document.createElement('script');
-    theme.src = '/assets/js/theme.js';
-    document.body.appendChild(theme);
-    var env = document.createElement('script');
-    env.src = '/js/content/environment.js';
-    document.body.appendChild(env);
+    appendPageScripts();
   }
 
   global.W2SContentRenderFullPage = function (page, data) {

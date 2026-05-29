@@ -1,7 +1,6 @@
 /**
- * Staging vs production UI — draft page nav, staging banner.
- * Reads content/site.json environment flags; hostname is a fallback.
- * Production nav stays unchanged when showDraftPagesInNav is false.
+ * Staging vs production UI — staging banner and data-staging-only elements.
+ * Navigation is handled by js/content/navigation.js (content/navigation.json).
  */
 (function (global) {
   'use strict';
@@ -19,7 +18,6 @@
 
   function applyEnvironment(site) {
     var env = (site && site.environment) || {};
-    var showDraftNav = env.showDraftPagesInNav === true || isStagingHost();
     var showBanner = env.showStagingBanner === true || isStagingHost();
 
     if (showBanner && !document.getElementById('w2s-staging-banner')) {
@@ -34,39 +32,11 @@
       document.body.insertBefore(banner, document.body.firstChild);
     }
 
-    if (showDraftNav) {
-      injectDraftNavLinks(env.draftNavLinks);
+    if (showBanner || isStagingHost()) {
       showStagingOnlyElements();
     } else {
       hideStagingOnlyElements();
     }
-  }
-
-  function defaultDraftLinks() {
-    return [
-      { href: '/creative-workshops.html', label: 'Creative Workshops' },
-      { href: '/support-coordinators.html', label: 'For Coordinators' },
-    ];
-  }
-
-  function injectDraftNavLinks(links) {
-    var items = links && links.length ? links : defaultDraftLinks();
-    document.querySelectorAll('.site-nav').forEach(function (nav) {
-      if (nav.querySelector('[data-draft-nav]')) return;
-      items.forEach(function (item) {
-        var a = document.createElement('a');
-        a.className = 'nav-link';
-        a.setAttribute('data-draft-nav', 'true');
-        a.href = item.href;
-        a.textContent = item.label;
-        var donate = nav.querySelector('a[href*="givebutter"]');
-        if (donate && donate.parentNode) {
-          donate.parentNode.insertBefore(a, donate);
-        } else {
-          nav.appendChild(a);
-        }
-      });
-    });
   }
 
   function showStagingOnlyElements() {
@@ -92,7 +62,7 @@
       })
       .then(applyEnvironment)
       .catch(function () {
-        if (isStagingHost()) applyEnvironment({ environment: { showDraftPagesInNav: true, showStagingBanner: true } });
+        if (isStagingHost()) applyEnvironment({ environment: { showStagingBanner: true } });
         else applyEnvironment({});
       });
   }
