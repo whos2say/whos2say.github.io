@@ -19,6 +19,8 @@ const root = path.join(__dirname, '..')
 const sharedPath = path.join(root, 'admin', 'config.shared.yml')
 const outputPath = path.join(root, 'admin', 'config.yml')
 
+const GITHUB_REPO = 'whos2say/whos2say.github.io'
+
 const PRODUCTION = {
   gitBranch: 'main',
   siteOrigin: 'https://www.whostosay.org',
@@ -89,7 +91,7 @@ ${cmsNote}
 
 backend:
   name: github
-  repo: whos2say/whostosay.github.io
+  repo: ${GITHUB_REPO}
   branch: ${env.gitBranch}
   base_url: ${env.siteOrigin}
   auth_endpoint: api/auth

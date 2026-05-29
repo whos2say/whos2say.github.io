@@ -7,7 +7,7 @@
 
 backend:
   name: github
-  repo: whos2say/whostosay.github.io
+  repo: whos2say/whos2say.github.io
   branch: staging
   base_url: https://staging.whostosay.org
   auth_endpoint: api/auth
