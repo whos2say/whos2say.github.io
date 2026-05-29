@@ -7,9 +7,9 @@ backend:
   repo: whos2say/whos2say.github.io
   branch: main
   # Vercel-hosted OAuth proxy (api/auth.js + api/callback.js) — NOT Netlify
-  base_url: https://whostosay.org
+  base_url: https://www.whostosay.org
   auth_endpoint: api/auth
-  site_domain: whostosay.org
+  site_domain: www.whostosay.org
 
 # editorial_workflow: drafts require Publish before going live in CMS.
 # Saves still commit to GitHub — see docs/CONTENT_EDITING.md for branch/PR options.
