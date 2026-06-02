@@ -70,7 +70,7 @@
     {
       "label": "Creative Workshops",
       "href": "/creative-workshops.html",
-      "enabled": false,
+      "enabled": true,
       "environment": "staging",
       "order": 30,
       "external": false,
