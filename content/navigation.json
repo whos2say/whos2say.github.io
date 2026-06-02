@@ -79,7 +79,7 @@
     {
       "label": "For Coordinators",
       "href": "/support-coordinators.html",
-      "enabled": true,
+      "enabled": false,
       "environment": "staging",
       "order": 40,
       "external": false,
