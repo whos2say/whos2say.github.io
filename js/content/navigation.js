@@ -241,7 +241,12 @@
       }
     });
 
-    global.dispatchEvent(new CustomEvent('w2s:navigation-ready'));
+    var readyEvent = new CustomEvent('w2s:navigation-ready', { bubbles: true });
+    if (global.document && global.document.dispatchEvent) {
+      global.document.dispatchEvent(readyEvent);
+    } else {
+      global.dispatchEvent(readyEvent);
+    }
   }
 
   function init() {

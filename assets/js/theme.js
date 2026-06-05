@@ -233,11 +233,22 @@
     });
   }
 
+  function destroyMobileMenu() {
+    document.querySelectorAll(".mobile-menu-btn").forEach(function (el) {
+      el.remove();
+    });
+    document.querySelectorAll(".mobile-menu-panel").forEach(function (el) {
+      el.remove();
+    });
+    uiState.mobileMenuController.close = function () {};
+  }
+
   function buildMobileMenu() {
     const siteNav = document.querySelector(".site-nav");
     const headerActions = document.querySelector(".header-actions");
     if (!siteNav || !headerActions) return;
 
+    destroyMobileMenu();
     bindMobileMenuGlobalsOnce();
 
     const hamburger = document.createElement("button");
@@ -345,13 +356,7 @@
   }
 
   function refreshNavigationUi() {
-    document.querySelectorAll(".mobile-menu-btn").forEach(function (el) {
-      el.remove();
-    });
-    document.querySelectorAll(".mobile-menu-panel").forEach(function (el) {
-      el.remove();
-    });
-    uiState.mobileMenuController.close = function () {};
+    destroyMobileMenu();
 
     initThemeEarly();
     bindThemeToggle();
