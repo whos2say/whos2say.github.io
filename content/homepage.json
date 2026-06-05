@@ -13,20 +13,45 @@
     "legalLine": "EIN: 33-3826585  <br> Status: 501(c)(3) Public Charity · United States ."
   },
   "actions": [
-    { "label": "Explore Programs", "href": "/programs.html", "style": "primary", "external": false },
-    { "label": "📷 Photo Albums", "href": "/albums.html", "style": "primary", "external": false },
-    { "label": "Donate", "href": "https://givebutter.com/whostosayfoundation", "style": "primary", "external": true }
+    {
+      "label": "Explore Programs",
+      "href": "/programs.html",
+      "style": "primary",
+      "external": false
+    },
+    {
+      "label": "📷 Photo Albums",
+      "href": "/albums.html",
+      "style": "primary",
+      "external": false
+    },
+    {
+      "label": "Donate",
+      "href": "https://givebutter.com/whostosayfoundation",
+      "style": "primary",
+      "external": true
+    }
   ],
   "autismMonth": {
-    "enabled": true,
+    "enabled": false,
     "eyebrow": "Autism Acceptance Month · April 2026",
     "title": "Every Mind Is a World",
     "titleAccent": "Worth Exploring",
     "body": "April is Autism Acceptance Month — a time to celebrate neurodiversity, embrace different ways of thinking, and champion inclusion for all.\n\nAt the Who's to Say? Foundation, we believe every person brings something extraordinary to the table. Acceptance isn't just a word — it's how we show up, every single day.",
     "bodyHtml": "April is Autism Acceptance Month — a time to celebrate neurodiversity, embrace different ways of thinking, and champion inclusion for all.<br><br>\n    At the Who's to Say? Foundation, we believe every person brings something extraordinary to the table. Acceptance isn't just a word — it's how we show up, every single day.",
     "actions": [
-      { "label": "Learn About Our Programs", "href": "/programs.html", "style": "primary", "external": false },
-      { "label": "Donate to Support Inclusion", "href": "https://givebutter.com/whostosayfoundation", "style": "ghost", "external": true }
+      {
+        "label": "Learn About Our Programs",
+        "href": "/programs.html",
+        "style": "primary",
+        "external": false
+      },
+      {
+        "label": "Donate to Support Inclusion",
+        "href": "https://givebutter.com/whostosayfoundation",
+        "style": "ghost",
+        "external": true
+      }
     ],
     "link": {
       "label": "See our World Down Syndrome Day 2026 celebration →",
