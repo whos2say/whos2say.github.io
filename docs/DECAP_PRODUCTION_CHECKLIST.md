@@ -1,6 +1,8 @@
 # Decap CMS — production setup checklist (Vercel + GitHub OAuth)
 
-Use this once when enabling `/admin/` on https://whostosay.org.
+Use this once when enabling `/admin/` on https://www.whostosay.org.
+
+> **Staging:** See [`docs/STAGING_WORKFLOW.md`](STAGING_WORKFLOW.md) for a second OAuth app and env vars on `staging.whostosay.org`.
 
 ## Architecture
 
@@ -21,8 +23,8 @@ The site is **static HTML on Vercel** with **serverless API routes** in `/api` (
 1. Open [GitHub → Developer settings → OAuth Apps](https://github.com/settings/developers) → **New OAuth App**.
 2. Set:
    - **Application name:** `Who's to Say CMS` (any label)
-   - **Homepage URL:** `https://whostosay.org`
-   - **Authorization callback URL:** `https://whostosay.org/api/callback`
+   - **Homepage URL:** `https://www.whostosay.org`
+   - **Authorization callback URL:** `https://www.whostosay.org/api/callback`
 3. Create the app → **Generate a new client secret**.
 4. Copy **Client ID** and **Client Secret** (secret is shown once).
 
@@ -38,8 +40,10 @@ In **Vercel → Project → Settings → Environment Variables**, add for **Prod
 | --- | --- | --- |
 | `GITHUB_CLIENT_ID` | From OAuth App | No |
 | `GITHUB_CLIENT_SECRET` | From OAuth App | **Yes** |
-| `OAUTH_REDIRECT_URI` | `https://whostosay.org/api/callback` | No |
-| `SITE_ORIGIN` | `https://whostosay.org` | No |
+| `OAUTH_REDIRECT_URI` | `https://www.whostosay.org/api/callback` | No |
+| `SITE_ORIGIN` | `https://www.whostosay.org` | No |
+| `DECAP_GIT_BRANCH` | `main` | No |
+| `DECAP_SITE_DOMAIN` | `www.whostosay.org` | No |
 
 Redeploy after adding variables.
 
@@ -63,16 +67,15 @@ OAuth proves identity; **GitHub repo permissions** enforce who can commit.
 
 Ensure these paths are committed and deployed:
 
-- `admin/`
-- `content/`
-- `api/auth.js`, `api/callback.js`
-- `lib/decap-oauth.js`
+- `admin/config.shared.yml` — collections schema (hand-edited)
+- `scripts/generate-decap-config.mjs` — build-time config generator
+- `admin/config.yml` — generated at deploy (see `vercel.json` buildCommand)
 
 ---
 
 ## 5. Smoke test (production)
 
-- [ ] Open `https://whostosay.org/admin/`
+- [ ] Open `https://www.whostosay.org/admin/`
 - [ ] Click **Login with GitHub** — popup goes to GitHub, not Netlify
 - [ ] After approving, popup closes and CMS collections load
 - [ ] Edit a low-risk field in **Homepage** (e.g. hero kicker)

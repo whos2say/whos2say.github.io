@@ -3,5 +3,7 @@
     { "source": "/s/:slug",          "destination": "/api/s/[slug]" },
     { "source": "/share/slideshow",  "destination": "/api/share/slideshow" },
     { "source": "/share/album",      "destination": "/api/share/album" }
-  ]
+  ],
+  "buildCommand": "npm run build:decap-config",
+  "outputDirectory": "."
 }
