@@ -20,9 +20,20 @@ Each JSON file includes a `"_comment"` field explaining its purpose (ignored by 
 
 ## Two ways to edit
 
+### Staging vs production
+
+| Site | Admin URL | Commits to |
+| --- | --- | --- |
+| **Production** | https://www.whostosay.org/admin/ | `main` |
+| **Staging** | https://staging.whostosay.org/admin/ | `staging` |
+
+Use **staging** for workshops, coordinator pages, and new stories. Merge `staging` → `main` when ready.
+
+Full workflow: [`docs/STAGING_WORKFLOW.md`](STAGING_WORKFLOW.md)
+
 ### 1. Decap CMS (recommended for non-developers)
 
-1. Open **`https://whostosay.org/admin/`** (or `/admin/` locally).
+1. Open **`https://www.whostosay.org/admin/`** (production) or **`https://staging.whostosay.org/admin/`** (staging).
 2. Log in with GitHub (requires repo write access).
 3. Pick a collection (Homepage, Programs, FAQs, etc.).
 4. Save — Decap commits changes to the `content/` JSON files in GitHub.
@@ -183,3 +194,4 @@ Edits write directly to local `content/` files without GitHub. Remove `local_bac
 - Admin UI: [`admin/index.html`](../admin/index.html)
 - OAuth proxy: [`api/auth.js`](../api/auth.js), [`api/callback.js`](../api/callback.js), [`lib/decap-oauth.js`](../lib/decap-oauth.js)
 - Production checklist: [`docs/DECAP_PRODUCTION_CHECKLIST.md`](DECAP_PRODUCTION_CHECKLIST.md)
+- Staging workflow: [`docs/STAGING_WORKFLOW.md`](STAGING_WORKFLOW.md)

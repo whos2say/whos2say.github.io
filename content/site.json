@@ -18,5 +18,9 @@
   },
   "footer": {
     "copyright": "Who's to Say ? Foundation"
+  },
+  "environment": {
+    "_comment": "Staging banner only. Nav visibility is controlled by content/navigation.json.",
+    "showStagingBanner": false
   }
 }

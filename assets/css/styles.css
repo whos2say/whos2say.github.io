@@ -1705,8 +1705,47 @@ html[data-theme="light"] .programs-hero--image::before{
 * { -webkit-tap-highlight-color: rgba(99, 245, 239, 0.12); }
 
 /* =========================================================
-   Content-driven pages (Creative Workshops — scoped)
+   Content-driven full pages (Creative Workshops, Support Coordinators)
+   Align with program-page / contact-page layout. Adjust spacing here.
    ========================================================= */
+.content-page .program-hero {
+  max-width: var(--page-width);
+}
+
+.content-page-shell:not(.program-shell--6040) {
+  max-width: var(--page-width);
+  margin: var(--space-7) auto 0;
+  padding: 0 5vw var(--space-8);
+}
+
+.content-page .program-shell--6040.content-page-shell {
+  margin-top: var(--space-7);
+}
+
+.content-page-section + .content-page-section,
+.content-page-section + #samples,
+#samples + .content-page-section {
+  margin-top: 1.25rem;
+}
+
+.content-page-grid .program-card--static {
+  pointer-events: none;
+}
+
+.content-page-grid .program-card--static:hover {
+  transform: none;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.content-page-section .how-grid {
+  margin-top: 1rem;
+}
+
+/* Staging banner + sticky subnav offset */
+body:has(#w2s-staging-banner) .page-subnav {
+  top: calc(var(--header-height, 76px) + 2.35rem);
+}
+
 .how-grid--4 {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 }
@@ -1724,4 +1763,82 @@ html[data-theme="light"] .programs-hero--image::before{
 }
 .cw-cta .btn + .btn {
   margin-left: 0.5rem;
+}
+
+/* Staging environment banner (js/content/environment.js) */
+.w2s-staging-banner {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  padding: 0.55rem 1rem;
+  background: #422006;
+  color: #fef3c7;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-align: center;
+  border-bottom: 1px solid #d97706;
+}
+.w2s-staging-banner a { color: #fde68a; }
+.w2s-staging-banner code {
+  background: rgba(0,0,0,0.25);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-size: 0.92em;
+}
+
+/* =========================================================
+   Centralized nav / subnav (js/content/navigation.js)
+   Adjust spacing, colors, and link styles here.
+   Uses existing --border, --text-muted, --color-primary, --radius-md.
+   ========================================================= */
+.page-subnav {
+  position: sticky;
+  top: var(--header-height, 76px);
+  z-index: 40;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-main) 92%, transparent);
+  backdrop-filter: blur(12px);
+}
+.page-subnav__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.65rem 5vw;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  align-items: center;
+}
+.page-subnav__link {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm, 6px);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.page-subnav__link:hover {
+  color: var(--color-primary);
+}
+.page-subnav__link.is-active,
+.page-subnav__link[aria-current="true"] {
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+.footer-nav__link {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.footer-nav__link:hover {
+  color: var(--color-primary);
 }
