@@ -272,14 +272,55 @@ body[data-ph="plain"] .ph {
 .cc-callout--soft .cc-callout-mark { color: #fff; }
 .cc-callout--soft .cc-callout-text small { color: var(--fg-muted); }
 
+/* ---------- Media Team collage: creators in action ----------------- */
+.cc-team-collage {
+  margin: clamp(32px, 4.5vw, 56px) auto 0;
+  max-width: 760px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 40px 90px -24px rgba(0,0,0,0.7);
+  background: rgba(255,255,255,0.04);
+}
+.cc-team-collage img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cc-team-collage figcaption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.66);
+  padding: 16px 20px;
+  text-align: center;
+}
+
 /* ---------- Roles: the hats the Media Team wore --------------------- */
 .cc-roles {
   list-style: none;
   margin: 36px 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 14px;
+}
+
+/* Media Team Role header: text left, Sports Media logo in the right corner */
+.cc-role-head {
+  max-width: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(28px, 5vw, 72px);
+}
+.cc-role-head .cc-role-head-text { max-width: 760px; }
+.cc-role-head-logo {
+  flex: none;
+  width: clamp(150px, 18vw, 248px);
+  height: auto;
+  filter: drop-shadow(0 14px 34px rgba(0,0,0,0.55));
 }
 .cc-role {
   position: relative;
@@ -579,7 +620,32 @@ body[data-ph="plain"] .ph {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: clamp(28px, 5vw, 72px);
-  align-items: center;
+  align-items: start;
+}
+/* overview side panel: team photo frame */
+.cc-team-frame {
+  margin: 0;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+.cc-team-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1240 / 744;
+  object-fit: cover;
+}
+.cc-team-frame figcaption {
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  border-top: 1px solid var(--border);
 }
 .cc-cardstack {
   position: relative;
@@ -623,6 +689,12 @@ body[data-ph="plain"] .ph {
   .cc-overview { grid-template-columns: 1fr; }
   .cc-donor-cta { grid-template-columns: 1fr; }
   .cc-hero-pair { min-height: 420px; }
+  .cc-roles { grid-template-columns: repeat(2, 1fr); }
+  .cc-role-head { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .cc-role-head-logo { width: 140px; }
+}
+@media (max-width: 520px) {
+  .cc-roles { grid-template-columns: 1fr; }
 }
 
 /* ---------- Compact mode (Tweak) ------------------------------------ */
