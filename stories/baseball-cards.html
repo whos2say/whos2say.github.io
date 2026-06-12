@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Turning Players Into Heroes — A Who&rsquo;s to Say Media Team Case Study</title>
+<meta name="description" content="How young adult creators on the Who&rsquo;s to Say Media Team used photography, design, and storytelling to turn Point Pleasant Panthers Challenger Baseball players into trading-card heroes — and gave their families a keepsake to treasure." />
+<meta name="robots" content="index,follow" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Turning Players Into Heroes — A Who&rsquo;s to Say Media Team Case Study" />
+<meta property="og:description" content="Young creators with disabilities turned an adaptive baseball team into trading-card heroes. See the project, and help bring it to more teams." />
+<meta property="og:type" content="article" />
+<meta property="og:image" content="/assets/images/stories/baseball-cards/cc-card-ozman.png" />
+<meta property="og:url" content="https://whostosay.org/stories/baseball-cards.html" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-46JBLZ3YPT');
+</script>
+
+<!-- Brand font (Nunito variable, 200–900, italic + regular) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+
+<!-- Global site chrome (header, nav, theme toggle) -->
+<link href="/assets/css/styles.css?v=20251227-1" rel="stylesheet" />
+<!-- Participant Stories design system + this case study -->
+<link rel="stylesheet" href="/assets/css/story-base.css" />
+<link rel="stylesheet" href="/assets/css/story.css" />
+<link rel="stylesheet" href="/assets/css/casestudy.css" />
+
+<link rel="icon" href="/assets/images/stories/baseball-cards/wts-logo-icon.svg" />
+
+<script src="/assets/js/theme.js" defer></script>
+
+<!-- Page-specific styles: full-bleed card gallery -->
+<style>
+  .cc-gallery {
+    background: var(--w2s-dark);
+    color: #fff;
+    padding: clamp(72px, 10vw, 128px) 0;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .cc-gallery::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(620px 620px at 78% 30%, rgba(30,100,240,0.20), transparent 70%),
+      radial-gradient(420px 420px at 12% 80%, rgba(99,245,230,0.10), transparent 70%);
+    pointer-events: none;
+  }
+  .cc-gallery-inner {
+    position: relative; z-index: 1;
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: clamp(28px, 5vw, 72px);
+    align-items: center;
+  }
+  .cc-gallery-copy h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(34px, 4.6vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: #fff;
+    margin: 14px 0 18px;
+    text-wrap: balance;
+  }
+  .cc-gallery-copy h2 em { font-style: italic; color: var(--story-accent); }
+  .cc-gallery-copy p { color: rgba(255,255,255,0.82); font-size: 18px; line-height: 1.6; max-width: 480px; margin: 0; }
+  .cc-gallery-cards {
+    position: relative;
+    aspect-ratio: 1.05 / 1;
+    display: block;
+  }
+  .cc-gallery-cards img {
+    position: absolute;
+    border-radius: 14px;
+    box-shadow: 0 34px 80px -16px rgba(0,0,0,0.75);
+    border: 2px solid rgba(255,255,255,0.10);
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .cc-gallery-cards .g-card-1 { width: 50%; left: 2%; top: 6%; transform: rotate(-6deg); z-index: 1; }
+  .cc-gallery-cards .g-card-2 { width: 54%; right: 2%; bottom: 2%; transform: rotate(6deg); z-index: 2; }
+  .cc-gallery-cards:hover .g-card-1 { transform: rotate(-8deg) translateY(-6px); }
+  .cc-gallery-cards:hover .g-card-2 { transform: rotate(4deg) translateY(-6px); }
+  .cc-gallery-cards .g-tag {
+    position: absolute; z-index: 3;
+    left: 50%; bottom: -6px; transform: translateX(-50%);
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--story-accent);
+    color: var(--w2s-dark);
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  /* Why it matters — centered shield statement */
+  .cc-why-shield { width: clamp(144px, 19.2vw, 202px); height: auto; margin: 0 auto 8px; filter: drop-shadow(0 12px 30px rgba(0,0,0,0.5)); }
+
+  @media (max-width: 880px) {
+    .cc-gallery-inner { grid-template-columns: 1fr; }
+    .cc-gallery-cards { aspect-ratio: 1.3 / 1; max-width: 520px; margin: 0 auto; width: 100%; }
+  }
+</style>
+</head>
+
+<body data-content-page="story-baseball-cards" data-compact="false" data-callouts="visible" data-ph="highlight">
+<a class="skip-link" href="#overview">Skip to content</a>
+
+<!-- ===================================================== Global site header -->
+<header class="site-header">
+<div class="header-inner">
+<a aria-label="Who&rsquo;s to Say ? Foundation Home" class="brand" href="/">
+<img alt="Who&rsquo;s to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+<img alt="Who&rsquo;s to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a class="nav-link" data-nav="home" href="/">Home</a>
+<div class="nav-item has-submenu" data-submenu="programs">
+<a aria-expanded="false" aria-haspopup="true" class="nav-link" data-nav="programs" href="/programs.html">
+          Programs
+        </a>
+<div aria-label="Programs submenu" class="nav-submenu" role="menu">
+<a class="submenu-link" href="/programs/digital-content-creator.html" role="menuitem">Digital Path</a>
+<a class="submenu-link" href="/programs/whos-to-say-sports.html" role="menuitem">Sports Path</a>
+<a class="submenu-link" href="/programs/life-skills-independent-living.html" role="menuitem">Independence Path</a>
+<a class="submenu-link" href="/programs/community-integration-advocacy.html" role="menuitem">Community Path</a>
+<a class="submenu-link" href="/programs/maker-market-events.html" role="menuitem">Art Path</a>
+<a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+</div>
+</div>
+<a class="nav-link" data-nav="stories" href="/stories/" aria-current="page">Stories</a>
+<a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+<a class="nav-link" href="/contact.html">Contact</a>
+</nav>
+<div class="header-actions">
+<button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+</div>
+</div>
+</header>
+
+<!-- ============================================================== Hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow eyebrow--on-blue">A Who&rsquo;s to Say ? Media Team Case Study</p>
+      <h1 class="hero-title" id="hero-title">
+        Turning players into <span class="accent">heroes.</span>
+      </h1>
+      <p class="hero-lead">
+        How young adult creators on the Who&rsquo;s to Say Media Team used photography, design, and storytelling to turn a group of adaptive baseball players into trading-card heroes — and gave their families a keepsake to treasure.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-on-blue btn-lg" href="#support">See what support makes possible</a>
+        <a class="btn btn-ghost-on-blue btn-lg" href="#overview">Read the story &rarr;</a>
+      </div>
+    </div>
+
+    <div class="cc-hero-evo" aria-label="From team photo to finished card to hero card">
+      <figure class="cc-evo cc-evo--1">
+        <span class="cc-evo-step">1</span>
+        <span class="cc-photo" role="img" aria-label="A young Challenger baseball player in batting stance — the original team photo"></span>
+        <figcaption class="cc-evo-cap">The photo</figcaption>
+      </figure>
+      <figure class="cc-evo cc-evo--2">
+        <span class="cc-evo-step">2</span>
+        <img src="/assets/images/stories/baseball-cards/cc-card-ozzie.png" alt="The finished personalized trading card" />
+        <figcaption class="cc-evo-cap">The card</figcaption>
+      </figure>
+      <figure class="cc-evo cc-evo--3">
+        <span class="cc-evo-step">3</span>
+        <img src="/assets/images/stories/baseball-cards/cc-card-ozman.png" alt="A cinematic 'hero card' with the player's superpower, spirit animal, and dream job" />
+        <figcaption class="cc-evo-cap">The hero</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================== 1. Overview -->
+<section class="section" id="overview" style="padding: 50px 0px">
+  <div class="wrap cc-overview">
+    <div class="meet-copy">
+      <p class="eyebrow">The overview</p>
+      <h2 style="font-family:var(--font-display);font-size:clamp(36px,4.8vw,60px);font-weight:900;line-height:1.02;letter-spacing:-0.025em;margin:14px 0 20px;">
+        A team&rsquo;s first season, <em style="color:var(--story-accent-deep);font-style:italic;">remembered forever.</em>
+      </h2>
+      <p style="font-size:18px;line-height:1.6;color:var(--fg-muted);">
+        The <strong style="color:var(--fg);">Point Pleasant Panthers Challenger Baseball</strong> program played its very first season — and the Who&rsquo;s to Say Media Team was there for it. We came to document practices and Opening Day, then had an idea: what if every player got their own custom trading card?
+      </p>
+      <p class="cc-optional" style="font-size:18px;line-height:1.6;color:var(--fg-muted);">
+        Working with accessible design tools, young adult creators from the Who&rsquo;s to Say Media Team captured photos, gathered each player&rsquo;s personality and dreams, and turned them into personalized, trading-card-style keepsakes. The result was a hands-on media production experience — and a gift these families will keep.
+      </p>
+      <div class="cc-callout cc-callout--soft" style="margin-top:24px;">
+        <span class="cc-callout-mark">?</span>
+        <span class="cc-callout-text">
+          Created by the Who&rsquo;s to Say Media Team
+          <small>Young adults with disabilities — as the creators</small>
+        </span>
+      </div>
+    </div>
+
+    <div class="cc-overview-side">
+      <div class="cc-cardstack" aria-hidden="true">
+        <img src="/assets/images/stories/baseball-cards/cc-card-ozman.png" alt="" />
+        <img src="/assets/images/stories/baseball-cards/cc-card-ozzie.png" alt="" />
+        <span class="cc-cardstack-cap">Finished cards · Challenger Baseball 2026</span>
+      </div>
+      <dl class="cc-facts">
+        <div class="cc-fact">
+          <dt>Program</dt>
+          <dd>Panthers Challenger Baseball</dd>
+        </div>
+        <div class="cc-fact">
+          <dt>Season</dt>
+          <dd>Inaugural · 2026</dd>
+        </div>
+        <div class="cc-fact">
+          <dt>Players celebrated</dt>
+          <dd><span class="ph">20</span></dd>
+        </div>
+        <div class="cc-fact">
+          <dt>Captured at</dt>
+          <dd>Practices &amp; Opening Day</dd>
+        </div>
+        <div class="cc-fact">
+          <dt>Location</dt>
+          <dd><span class="ph">Point Pleasant HS Baseball Field</span></dd>
+        </div>
+        <div class="cc-fact">
+          <dt>Produced by</dt>
+          <dd>Who&rsquo;s to Say Media Team</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== 2. The Opportunity -->
+<section class="section section--soft" style="padding: 50px 0px">
+  <div class="wrap editorial">
+    <div class="editorial-img" style="aspect-ratio:3/4;background:var(--neutral-100);">
+      <img src="/assets/images/stories/baseball-cards/cc-players-group.png" alt="Six Point Pleasant Panthers Challenger Baseball players posing with bats" style="object-fit:contain;padding:18px;" />
+      <span class="editorial-img-cap">Before the cards · the team</span>
+    </div>
+    <div class="editorial-copy">
+      <p class="eyebrow">The opportunity</p>
+      <h3>Every athlete deserves to be <em>celebrated.</em></h3>
+      <p>
+        Younger adaptive athletes deserve the same excitement, creativity, and pride as any other player. Families often have photos from the season — but rarely a polished, personalized keepsake that captures who their child really is.
+      </p>
+      <p class="cc-optional">
+        Not just a face in a team picture, but the player&rsquo;s spirit: their nickname, their favorite food, their dream job, the spirit animal they&rsquo;d pick, the superpower they wish they had.
+      </p>
+      <p>
+        That gap was the opportunity. <strong>What if the players became the heroes — and young creators with disabilities were the ones who made it happen?</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ 3. The Media Team Role -->
+<section class="section section--dark cc-on-dark">
+  <div class="wrap">
+    <header class="s-head s-head-light">
+      <p class="eyebrow eyebrow--on-dark">The Who&rsquo;s to Say Media Team role</p>
+      <h2>Not just participants. <em>Creators.</em></h2>
+      <p class="lead">
+        Young adults with disabilities didn&rsquo;t watch this project happen — they ran it. The Media Team brought the cards to life, stepping into real creative roles at every stage of production.
+      </p>
+    </header>
+
+    <ol class="cc-roles">
+      <li class="cc-role">
+        <span class="cc-role-num">01</span>
+        <h4>Photographer</h4>
+        <p>Captured player portraits and candid team moments at practices and on Opening Day.</p>
+      </li>
+      <li class="cc-role">
+        <span class="cc-role-num">02</span>
+        <h4>Interviewer</h4>
+        <p>Sat with each player to learn their favorites, dreams, strengths, and personality.</p>
+      </li>
+      <li class="cc-role">
+        <span class="cc-role-num">03</span>
+        <h4>Designer</h4>
+        <p>Learned how templates, layouts, and design layers come together into a card.</p>
+      </li>
+      <li class="cc-role">
+        <span class="cc-role-num">04</span>
+        <h4>Editor</h4>
+        <p>Selected and refined images, adjusted backgrounds, and cleaned up each layer.</p>
+      </li>
+      <li class="cc-role">
+        <span class="cc-role-num">05</span>
+        <h4>Storyteller</h4>
+        <p>Shaped each player&rsquo;s details into a short, joyful, respectful card story.</p>
+      </li>
+      <li class="cc-role">
+        <span class="cc-role-num">06</span>
+        <h4>Creative Director</h4>
+        <p>Made the calls on look and feel — reviewing choices so every card felt right.</p>
+      </li>
+      <li class="cc-role">
+        <span class="cc-role-num">07</span>
+        <h4>Production Assistant</h4>
+        <p>Organized files, tracked versions, and helped move each card to the finish line.</p>
+      </li>
+      <li class="cc-role" style="display:grid;place-content:center;text-align:center;background:transparent;border:1px dashed var(--border-strong);">
+        <img src="/assets/images/stories/baseball-cards/cc-wts-sports-shield-cutout.png" alt="Who&rsquo;s to Say Sports Media" style="width:96px;height:auto;margin:0 auto 8px;" />
+        <p style="color:rgba(255,255,255,0.7);font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;">Who&rsquo;s to Say Sports Media</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================================================ 4. Creative Process -->
+<section class="section" id="process">
+  <div class="wrap">
+    <header class="s-head">
+      <p class="eyebrow">The creative process</p>
+      <h2>From player photos to <em>hero cards.</em></h2>
+      <p class="lead">
+        A clear, repeatable workflow — simple enough to learn, real enough to feel like professional media production.
+      </p>
+    </header>
+
+    <div class="cc-process">
+      <ol class="cc-steps">
+        <li>
+          <h4>Capture</h4>
+          <p>Photograph each player and the team moments that tell the season&rsquo;s story.</p>
+        </li>
+        <li>
+          <h4>Listen</h4>
+          <p>Interview each player about their personality, favorites, dreams, and strengths.</p>
+        </li>
+        <li>
+          <h4>Organize</h4>
+          <p>Gather every detail into a creative storytelling template, one player at a time.</p>
+        </li>
+        <li>
+          <h4>Design</h4>
+          <p>Build the card with design layers, image editing, and trading-card layouts.</p>
+        </li>
+        <li>
+          <h4>Refine</h4>
+          <p>Review and revise so each card feels personal, joyful, and respectful.</p>
+        </li>
+        <li>
+          <h4>Deliver</h4>
+          <p>Produce a finished keepsake families and players can hold, share, and treasure.</p>
+        </li>
+      </ol>
+
+      <div class="cc-screens" aria-hidden="true">
+        <div class="cc-screen cc-screen--back">
+          <img src="/assets/images/stories/baseball-cards/cc-process-template.png" alt="" />
+        </div>
+        <div class="cc-screen cc-screen--front">
+          <img src="/assets/images/stories/baseball-cards/cc-process-bg.png" alt="" />
+          <span class="cc-screen-tag">In the design studio · layers &amp; templates</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cc-callout" style="margin-top:48px;">
+      <span class="cc-callout-mark">★</span>
+      <span class="cc-callout-text">
+        From Player Photos to Hero Cards
+        <small>One template, one player, one story at a time</small>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== Big pull quote -->
+<section class="pullquote" style="padding: 50px 0px">
+  <div class="pullquote-inner">
+    <p class="pullquote-mark" aria-hidden="true">&ldquo;</p>
+    <p class="pullquote-text">
+      Every player deserves to be seen as the hero of their own <span class="punct">story.</span>
+    </p>
+    <div class="pullquote-cite">
+      <div class="pullquote-cite-rule"></div>
+      <div class="pullquote-cite-text">
+        <strong>The Who&rsquo;s to Say Media Team</strong> · Panthers Challenger Baseball
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================== Card gallery -->
+<section class="cc-gallery">
+  <div class="cc-gallery-inner">
+    <div class="cc-gallery-copy">
+      <p class="eyebrow eyebrow--on-dark">The finished keepsakes</p>
+      <h2>More than a card. A <em>memory you can hold.</em></h2>
+      <p>
+        Each finished card celebrates the player as an athlete, a hero, a teammate, and an individual — something families can display, share, and treasure long after the season ends.
+      </p>
+    </div>
+    <div class="cc-gallery-cards">
+      <img class="g-card-1" src="/assets/images/stories/baseball-cards/cc-card-ozzie.png" alt="Finished Challenger Baseball trading card — classic layout" />
+      <img class="g-card-2" src="/assets/images/stories/baseball-cards/cc-card-ozman.png" alt="Finished Challenger Baseball hero card — cinematic 'superpower' layout" />
+      <span class="g-tag">Two players · two heroes</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== 5. Skills Developed -->
+<section class="section section--soft" style="padding: 50px 0px">
+  <div class="wrap">
+    <header class="s-head">
+      <p class="eyebrow">Skills developed</p>
+      <h2>Real creative skills — and the <em>confidence</em> that comes with them.</h2>
+      <p class="lead">
+        The cards were the deliverable. The growth was the point. Media Team members built practical creative skills alongside the social-emotional ones that come from owning real work.
+      </p>
+    </header>
+
+    <div class="cc-skills">
+      <div class="cc-skill-group">
+        <h4>Creative &amp; technical</h4>
+        <p>Hands-on with the same tools and concepts a working media producer uses.</p>
+        <div class="cc-chips">
+          <span class="cc-chip">Photography &amp; composition</span>
+          <span class="cc-chip">Digital design templates</span>
+          <span class="cc-chip">Layers &amp; editing</span>
+          <span class="cc-chip">Image selection</span>
+          <span class="cc-chip">Creative writing &amp; storytelling</span>
+          <span class="cc-chip">Prompt-based storytelling</span>
+          <span class="cc-chip">File organization</span>
+          <span class="cc-chip">Review &amp; revision</span>
+          <span class="cc-chip">Presentation</span>
+        </div>
+      </div>
+      <div class="cc-skill-group cc-skill-group--dark cc-on-dark">
+        <h4>Confidence &amp; collaboration</h4>
+        <p>The skills that turn a task into a sense of pride and belonging.</p>
+        <div class="cc-chips">
+          <span class="cc-chip">Interviewing &amp; listening</span>
+          <span class="cc-chip">Collaboration &amp; feedback</span>
+          <span class="cc-chip">Communication</span>
+          <span class="cc-chip">Decision-making</span>
+          <span class="cc-chip">Teamwork</span>
+          <span class="cc-chip">Project ownership</span>
+          <span class="cc-chip">Confidence</span>
+          <span class="cc-chip">Pride in finished work</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cc-callout cc-callout--soft" style="margin-top:32px;">
+      <span class="cc-callout-mark">✦</span>
+      <span class="cc-callout-text">
+        Real Skills. Real Stories. Real Memories.
+        <small>A media production experience — not a craft activity</small>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================== 6. Community Impact -->
+<section class="section" id="impact" style="padding: 50px 0px">
+  <div class="wrap">
+    <header class="s-head">
+      <p class="eyebrow">Community impact</p>
+      <h2>One project. Three kinds of <em>belonging.</em></h2>
+      <p class="lead">
+        We saw the effect ripple outward — to the players celebrated, the families who received a keepsake, and the creators who made it.
+      </p>
+    </header>
+
+    <div class="cc-impact">
+      <article class="cc-impact-card">
+        <span class="cc-impact-who">The players</span>
+        <h4>Seen as heroes.</h4>
+        <p>Each younger athlete received a heroic, personalized keepsake — celebrated as an individual, a teammate, and the star of their own card.</p>
+      </article>
+      <article class="cc-impact-card">
+        <span class="cc-impact-who">The families</span>
+        <h4>A memory to hold.</h4>
+        <p>Families received a tangible, polished tribute that honored their child&rsquo;s personality and spirit — something to display, share, and keep.</p>
+      </article>
+      <article class="cc-impact-card">
+        <span class="cc-impact-who">The Media Team</span>
+        <h4>Creators who served.</h4>
+        <p>Young adults with disabilities gained real creative production experience while giving something meaningful back to their community.</p>
+      </article>
+    </div>
+
+    <figure class="cc-quotes" style="margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+      <blockquote style="margin:0;padding:28px 30px;border-radius:var(--radius-xl);background:var(--bg-soft);border:1px solid var(--border);">
+        <p style="font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1.3;letter-spacing:-0.01em;color:var(--fg);margin:0 0 12px;text-wrap:pretty;">
+          <span class="ph">[Family quote — what receiving the card meant to them]</span>
+        </p>
+        <footer style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--fg-muted);">— A Challenger Baseball family</footer>
+      </blockquote>
+      <blockquote style="margin:0;padding:28px 30px;border-radius:var(--radius-xl);background:var(--bg-soft);border:1px solid var(--border);">
+        <p style="font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1.3;letter-spacing:-0.01em;color:var(--fg);margin:0 0 12px;text-wrap:pretty;">
+          <span class="ph">[Media Team participant quote — what creating the cards meant to them]</span>
+        </p>
+        <footer style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--fg-muted);">— A Who&rsquo;s to Say Media Team creator</footer>
+      </blockquote>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================================================== 7. Why It Matters -->
+<section class="section section--dark cc-on-dark" style="text-align:center;">
+  <div class="wrap" style="max-width:920px;">
+    <img class="cc-why-shield" src="/assets/images/stories/baseball-cards/cc-wts-sports-shield-cutout.png" alt="Who&rsquo;s to Say Foundation Sports Media — Anything Is Possible" />
+    <p class="eyebrow eyebrow--on-dark" style="justify-content:center;">Why it matters</p>
+    <h2 style="font-family:var(--font-display);font-weight:900;font-size:clamp(34px,4.8vw,60px);line-height:1.05;letter-spacing:-0.025em;color:#fff;margin:14px 0 22px;text-wrap:balance;">
+      Who&rsquo;s to Say creates space for people with disabilities to be both the <em style="color:var(--story-accent);font-style:italic;">subject</em> and the <em style="color:var(--story-accent);font-style:italic;">author</em> of meaningful stories.
+    </h2>
+    <p class="lead" style="color:rgba(255,255,255,0.82);margin:0 auto;max-width:640px;">This project proves the model in miniature: accessible creative technology, inclusive teams and real roles, and trust.
+Give young creators the tools and the purpose, and they make work that celebrates others, builds confidence, and strengthens community.</p>
+  </div>
+</section>
+
+<!-- ============================================== 8. What Support Makes Possible -->
+<section class="section" id="support" style="padding: 50px 0px 115px">
+  <div class="wrap">
+    <header class="s-head">
+      <p class="eyebrow">What your support makes possible</p>
+      <h2>Help us bring this to <em>more teams.</em></h2>
+      <p class="lead">
+        This is a repeatable model. Donor and sponsor support lets us bring the Who&rsquo;s to Say Media Team experience to more leagues, schools, camps, and community programs — and more families who deserve a keepsake like this.
+      </p>
+    </header>
+
+    <div class="cc-funds">
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Equipment</strong><span>Cameras, lenses, and the gear to capture every player.</span></div></div>
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Software</strong><span>Accessible design and editing tools the Media Team learns on.</span></div></div>
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Training</strong><span>Coaching in photography, design, and storytelling.</span></div></div>
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Design time</strong><span>The hours it takes to build each card with care.</span></div></div>
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Materials</strong><span>Printing and finishing the keepsakes families take home.</span></div></div>
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Transportation</strong><span>Getting the Media Team to practices, games, and events.</span></div></div>
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Event coverage</strong><span>Documenting Opening Day and the moments that matter.</span></div></div>
+      <div class="cc-fund"><span class="cc-fund-dot"></span><div><strong>Media Team opportunities</strong><span>More real creative roles for more young adults.</span></div></div>
+    </div>
+
+    <div class="cc-callout cc-callout--soft" style="margin-top:32px;">
+      <span class="cc-callout-mark">↻</span>
+      <span class="cc-callout-text">
+        A repeatable model for teams, schools, and community programs
+        <small>Bring the Media Team experience to <span class="ph">[Team or league name]</span></small>
+      </span>
+    </div>
+
+    <div class="cc-donor-cta">
+      <h3>Help us bring the Who&rsquo;s to Say Media Team experience to more athletes, families, and communities.</h3>
+      <div class="cc-donor-actions">
+        <a class="btn btn-on-blue btn-lg" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate at Givebutter &rarr;</a>
+      </div>
+    </div>
+
+    <p style="margin-top:20px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-muted);">
+      Sponsored in part by <span class="ph">[Sponsor name]</span> · <span class="ph">[Event date]</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================= 9. Closing / Final CTA -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <p class="eyebrow eyebrow--on-dark">In closing</p>
+    <h2>When young creators get tools, trust, and <em>purpose</em> —</h2>
+    <p class="final-cta-answer">they make <strong>heroes.</strong></p>
+    <p class="lead">
+      This project proves it. The Who&rsquo;s to Say Media Team built work that gave players pride, gave families memories that last, and gave its own creators a real place in the story. That&rsquo;s the mission, made tangible.
+    </p>
+    <div class="final-cta-actions">
+      <a class="btn btn-on-dark btn-lg" href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Support the next team &rarr;</a>
+      <a class="btn btn-ghost btn-lg" href="/stories/" style="color:white;border:1.5px solid rgba(255,255,255,0.4);">See more stories</a>
+    </div>
+    <div class="final-cta-meta">
+      <span><strong>Who&rsquo;s to Say Foundation</strong></span>
+      <span>EIN · 33-3826585</span>
+      <span>501(c)(3) Public Charity</span>
+      <span>whostosay.org</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="/assets/images/stories/baseball-cards/wts-logo-black.svg" alt="Who&rsquo;s to Say Foundation" />
+      <p>
+        We empower young adults with intellectual and developmental disabilities to turn their dreams into real, visible work — whatever shape those dreams take.
+      </p>
+      <div class="footer-djr">
+        <img src="/assets/images/stories/baseball-cards/cc-wts-sports-shield-cutout.png" alt="Who&rsquo;s to Say Sports Media" />
+        <div class="note">
+          Featuring
+          <strong>Who&rsquo;s to Say Sports Media</strong>
+          Panthers Challenger Baseball · Card Project
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h5>The work</h5>
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#process">Creative process</a></li>
+        <li><a href="#impact">Community impact</a></li>
+        <li><a href="#support">What support funds</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Get involved</h5>
+      <ul>
+        <li><a href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Make a donation</a></li>
+        <li><a href="/contact.html">Sponsor a team</a></li>
+        <li><a href="/contact.html">Bring this to your league</a></li>
+        <li><a href="/contact.html">Contact us</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-base">
+    <span>&copy; <span id="year">2026</span> Who&rsquo;s to Say Foundation · EIN 33-3826585 · 501(c)(3)</span>
+    <span>Who&rsquo;s to say what&rsquo;s possible?</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var el = document.getElementById("year");
+    if (el) el.textContent = new Date().getFullYear();
+  })();
+</script>
+<script src="/js/content/environment.js" defer></script>
+<script src="/js/content/navigation.js" defer></script>
+
+</body>
+</html>

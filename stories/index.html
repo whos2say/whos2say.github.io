@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stories — Who&rsquo;s to Say ? Foundation</title>
+<meta name="description" content="Real stories from the Who&rsquo;s to Say Foundation — young adults with disabilities as the creators, the athletes, and the authors of their own work." />
+<meta name="robots" content="index,follow" />
+
+<meta property="og:title" content="Stories — Who&rsquo;s to Say ? Foundation" />
+<meta property="og:description" content="Participant stories and Media Team case studies from the Who&rsquo;s to Say Foundation." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://whostosay.org/stories/" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-46JBLZ3YPT');
+</script>
+
+<!-- Brand font (Nunito variable, 200–900, italic + regular) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+
+<!-- Global site chrome + Participant Stories design system -->
+<link href="/assets/css/styles.css?v=20251227-1" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/story-base.css" />
+<link rel="stylesheet" href="/assets/css/story.css" />
+
+<link rel="icon" href="/assets/images/stories/brand/wts-logo-icon.svg" />
+
+<script src="/assets/js/theme.js" defer></script>
+
+<style>
+  .stories-intro { padding: clamp(56px, 8vw, 104px) 0 clamp(8px, 2vw, 24px); }
+  .stories-intro .wrap { max-width: 880px; }
+  .stories-intro h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(44px, 6.4vw, 84px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    margin: 14px 0 18px;
+    text-wrap: balance;
+  }
+  .stories-intro h1 em { font-style: italic; color: var(--story-accent-deep); }
+  .stories-intro .lead { font-size: clamp(18px, 1.6vw, 22px); max-width: 640px; }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(20px, 3vw, 32px);
+    margin-top: 8px;
+  }
+  .story-card {
+    --card-accent: var(--w2s-primary);
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--fg);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur-base) var(--ease-out),
+                box-shadow var(--dur-base) var(--ease-out),
+                border-color var(--dur-base) var(--ease-out);
+  }
+  .story-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--card-accent);
+    color: var(--fg);
+  }
+  .story-card-media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--w2s-dark);
+    overflow: hidden;
+  }
+  .story-card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-out); }
+  .story-card:hover .story-card-media img { transform: scale(1.04); }
+  .story-card-media.is-contain {
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 70% 25%, rgba(30,100,240,0.16), transparent 60%),
+      var(--w2s-dark);
+  }
+  .story-card-media.is-contain img { object-fit: contain; padding: 22px; transform: rotate(-3deg); }
+  .story-card:hover .story-card-media.is-contain img { transform: rotate(-1deg) scale(1.03); }
+  .story-card-vol {
+    position: absolute; top: 14px; left: 14px;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--card-accent);
+    color: var(--w2s-dark);
+    font-family: var(--font-mono);
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+  }
+  .story-card-body { padding: 24px 26px 28px; display: grid; gap: 10px; align-content: start; }
+  .story-card-body h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(24px, 2.6vw, 30px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .story-card-body p { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--fg-muted); }
+  .story-card-go {
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--story-accent-deep);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .story-card:hover .story-card-go { gap: 10px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+
+<body data-content-page="stories-index">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ===================================================== Global site header -->
+<header class="site-header">
+<div class="header-inner">
+<a aria-label="Who&rsquo;s to Say ? Foundation Home" class="brand" href="/">
+<img alt="Who&rsquo;s to Say ? Foundation logo (dark)" class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png"/>
+<img alt="Who&rsquo;s to Say ? Foundation logo (light)" class="brand-logo logo-light" src="/assets/images/logo-black-light.png"/>
+</a>
+<nav aria-label="Primary navigation" class="site-nav">
+<a class="nav-link" data-nav="home" href="/">Home</a>
+<div class="nav-item has-submenu" data-submenu="programs">
+<a aria-expanded="false" aria-haspopup="true" class="nav-link" data-nav="programs" href="/programs.html">
+          Programs
+        </a>
+<div aria-label="Programs submenu" class="nav-submenu" role="menu">
+<a class="submenu-link" href="/programs/digital-content-creator.html" role="menuitem">Digital Path</a>
+<a class="submenu-link" href="/programs/whos-to-say-sports.html" role="menuitem">Sports Path</a>
+<a class="submenu-link" href="/programs/life-skills-independent-living.html" role="menuitem">Independence Path</a>
+<a class="submenu-link" href="/programs/community-integration-advocacy.html" role="menuitem">Community Path</a>
+<a class="submenu-link" href="/programs/maker-market-events.html" role="menuitem">Art Path</a>
+<a class="submenu-link" href="/programs/entertainment-pathways.html" role="menuitem">Entertainment Path</a>
+</div>
+</div>
+<a class="nav-link" data-nav="stories" href="/stories/" aria-current="page">Stories</a>
+<a class="nav-link" href="https://givebutter.com/whostosayfoundation" rel="noopener" target="_blank">Donate</a>
+<a class="nav-link" href="/contact.html">Contact</a>
+</nav>
+<div class="header-actions">
+<button aria-label="Toggle theme" aria-pressed="false" class="theme-toggle" type="button"></button>
+</div>
+</div>
+</header>
+
+<main id="main">
+<!-- ============================================================ Intro -->
+<section class="stories-intro">
+  <div class="wrap">
+    <p class="eyebrow">Who&rsquo;s to Say ? &middot; Stories</p>
+    <h1>Real people. Real work. <em>Real stories.</em></h1>
+    <p class="lead">
+      At Who&rsquo;s to Say, young adults with disabilities aren&rsquo;t just participants — they&rsquo;re the creators, the athletes, and the authors of their own stories. Here are a few of them.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ Story grid -->
+<section class="section" style="padding-top: clamp(24px, 4vw, 48px);">
+  <div class="wrap">
+    <div class="stories-grid">
+
+      <a class="story-card" href="/stories/baseball-cards.html" style="--card-accent: var(--w2s-primary);">
+        <div class="story-card-media is-contain">
+          <span class="story-card-vol">Vol. 03 &middot; Case Study</span>
+          <img src="/assets/images/stories/baseball-cards/cc-card-ozman.png" alt="A finished Challenger Baseball hero trading card created by the Who&rsquo;s to Say Media Team" />
+        </div>
+        <div class="story-card-body">
+          <h2>Turning Players Into Heroes</h2>
+          <p>The Who&rsquo;s to Say Media Team turned Point Pleasant Panthers Challenger Baseball players into custom trading-card heroes — with young creators with disabilities behind the camera, the keyboard, and the story.</p>
+          <span class="story-card-go">Read the case study &rarr;</span>
+        </div>
+      </a>
+
+      <a class="story-card" href="/stories/brendan.html" style="--card-accent: var(--pathway-entertainment);">
+        <div class="story-card-media">
+          <span class="story-card-vol" style="background: var(--pathway-entertainment); color:#fff;">Vol. 02 &middot; Participant</span>
+          <img src="/assets/images/stories/brendan/brendan-hero.png" alt="Brendan at the radio mixing board under a DJ Brendan neon sign and an ON AIR light" />
+        </div>
+        <div class="story-card-body">
+          <h2>Meet DJ Brendan</h2>
+          <p>Brendan Bukowski found his loudest voice in music. In the Remix Studio he builds his playlists, practices his transitions, and goes on air as DJ Brendan — every beat a step toward more confidence and connection.</p>
+          <span class="story-card-go" style="color: var(--pathway-entertainment);">Read his story &rarr;</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============================================================== Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="/assets/images/stories/brand/wts-logo-black.svg" alt="Who&rsquo;s to Say Foundation" />
+      <p>
+        We empower young adults with intellectual and developmental disabilities to turn their dreams into real, visible work — whatever shape those dreams take.
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <h5>Stories</h5>
+      <ul>
+        <li><a href="/stories/baseball-cards.html">Turning Players Into Heroes</a></li>
+        <li><a href="/stories/brendan.html">Meet DJ Brendan</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5>Get involved</h5>
+      <ul>
+        <li><a href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Make a donation</a></li>
+        <li><a href="/programs.html">Explore programs</a></li>
+        <li><a href="/contact.html">Contact us</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-base">
+    <span>&copy; <span id="year">2026</span> Who&rsquo;s to Say Foundation · EIN 33-3826585 · 501(c)(3)</span>
+    <span>Who&rsquo;s to say what&rsquo;s possible?</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var el = document.getElementById("year");
+    if (el) el.textContent = new Date().getFullYear();
+  })();
+</script>
+<script src="/js/content/environment.js" defer></script>
+<script src="/js/content/navigation.js" defer></script>
+
+</body>
+</html>

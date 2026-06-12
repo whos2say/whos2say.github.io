@@ -1,0 +1,633 @@
+/* =====================================================================
+   Baseball Cards — Who's to Say Media Team Case Study
+   Extends ./colors_and_type.css + ./story.css with case-study components.
+   All selectors prefixed .cc- to avoid collisions with the story pages.
+   ===================================================================== */
+
+/* ---------- Highlighted placeholder chips --------------------------- */
+.ph {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--story-accent-deep);
+  background: var(--story-accent-soft);
+  border: 1px dashed var(--story-accent-ink);
+  border-radius: 6px;
+  padding: 0.05em 0.42em;
+  white-space: nowrap;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.ph::before { content: ""; }
+/* On dark / blue surfaces the chip flips to a light treatment */
+.cc-on-dark .ph, .hero .ph, .final-cta .ph, .photoband-overlay .ph {
+  color: white;
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.45);
+}
+/* Tweak: hide the highlight, render placeholders as plain text */
+body[data-ph="plain"] .ph {
+  color: inherit;
+  background: transparent;
+  border-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0;
+}
+
+/* ---------- Hero: before -> after pairing --------------------------- */
+.cc-hero-pair {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 460px;
+  isolation: isolate;
+}
+.cc-frame {
+  position: absolute;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 30px 70px -18px rgba(5,5,9,0.55), 0 8px 20px rgba(5,5,9,0.30);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.cc-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* "before" — instant-photo style print */
+.cc-frame--before {
+  width: clamp(180px, 21vw, 240px);
+  aspect-ratio: 3 / 4;
+  padding: 12px 12px 44px;
+  left: 0;
+  top: 4%;
+  transform: rotate(-7deg);
+  z-index: 1;
+}
+.cc-frame--before .cc-photo {
+  display: block;
+  width: 100%; height: 100%;
+  border-radius: 8px;
+  background-color: #fff;
+  background-image: url("/assets/images/stories/baseball-cards/cc-raw-photo.png");
+  background-size: 168%;
+  background-position: 42% 26%;
+  background-repeat: no-repeat;
+}
+.cc-frame--before .cc-frame-cap {
+  position: absolute;
+  left: 0; right: 0; bottom: 12px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+}
+.cc-hero-pair:hover .cc-frame--before { transform: rotate(-9deg) translateY(-4px); }
+
+/* "after" — the finished trading card */
+.cc-frame--after {
+  width: clamp(220px, 27vw, 312px);
+  aspect-ratio: 725 / 980;
+  right: -2%; bottom: -2%;
+  transform: rotate(4deg);
+  z-index: 2;
+  border: 3px solid rgba(255,255,255,0.85);
+  box-shadow: 0 36px 90px -16px rgba(5,5,9,0.65), 0 0 0 1px rgba(255,255,255,0.08);
+}
+.cc-hero-pair:hover .cc-frame--after { transform: rotate(2deg) translateY(-6px); }
+
+/* connector badge between the two */
+.cc-pair-badge {
+  position: absolute;
+  z-index: 3;
+  left: 35%; top: 33%;
+  transform: translate(-50%, -50%) rotate(-4deg);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 16px;
+  background: var(--w2s-primary);
+  color: var(--w2s-dark);
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(5,5,9,0.35);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 26px;
+  line-height: 1;
+}
+.cc-pair-badge small {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* ---------- Hero: three-card evolution ------------------------------ */
+.cc-hero-evo {
+  position: relative;
+  min-height: 480px;
+  isolation: isolate;
+}
+.cc-evo {
+  position: absolute;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 30px 70px -18px rgba(5,5,9,0.55), 0 8px 20px rgba(5,5,9,0.30);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.cc-evo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cc-evo .cc-evo-cap {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  bottom: 8px;
+  padding: 5px 11px;
+  border-radius: var(--radius-pill);
+  background: rgba(5,5,9,0.70);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+  white-space: nowrap;
+}
+.cc-evo .cc-evo-step {
+  position: absolute;
+  top: 8px; left: 8px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--w2s-primary);
+  color: var(--w2s-dark);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1;
+  box-shadow: 0 4px 10px rgba(5,5,9,0.3);
+  z-index: 2;
+}
+
+/* 1 — the raw team photo, as a white print */
+.cc-evo--1 {
+  width: clamp(116px, 28vw, 156px);
+  aspect-ratio: 3 / 4;
+  padding: 9px 9px 30px;
+  left: 0; top: 17%;
+  transform: rotate(-8deg);
+  z-index: 1;
+}
+.cc-evo--1 .cc-photo {
+  display: block;
+  width: 100%; height: 100%;
+  border-radius: 7px;
+  background-color: #fff;
+  background-image: url("/assets/images/stories/baseball-cards/cc-raw-photo.png");
+  background-size: 168%;
+  background-position: 42% 26%;
+  background-repeat: no-repeat;
+}
+.cc-evo--1 .cc-evo-cap { background: none; color: var(--neutral-500); backdrop-filter: none; }
+
+/* 2 — the finished card */
+.cc-evo--2 {
+  width: clamp(140px, 34vw, 192px);
+  aspect-ratio: 725 / 980;
+  left: 27%; top: 4%;
+  transform: rotate(-1deg);
+  z-index: 2;
+  border: 2px solid rgba(255,255,255,0.85);
+}
+
+/* 3 — the hero card */
+.cc-evo--3 {
+  width: clamp(156px, 38vw, 224px);
+  aspect-ratio: 689 / 919;
+  right: -2%; bottom: 0;
+  transform: rotate(6deg);
+  z-index: 3;
+  border: 3px solid rgba(255,255,255,0.85);
+  box-shadow: 0 36px 90px -16px rgba(5,5,9,0.65), 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+.cc-hero-evo:hover .cc-evo--1 { transform: rotate(-10deg) translateY(-4px); }
+.cc-hero-evo:hover .cc-evo--2 { transform: rotate(-1deg) translateY(-8px); }
+.cc-hero-evo:hover .cc-evo--3 { transform: rotate(4deg) translateY(-6px); }
+
+@media (max-width: 880px) {
+  .cc-hero-evo { max-width: 520px; margin: 0 auto; min-height: 420px; }
+}
+
+/* ---------- Inline callout box -------------------------------------- */
+.cc-callout {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 26px;
+  border-radius: var(--radius-lg);
+  background: var(--w2s-dark);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+.cc-callout .cc-callout-mark {
+  flex: none;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--story-accent);
+  color: var(--w2s-dark);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 22px;
+  line-height: 1;
+}
+.cc-callout .cc-callout-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.cc-callout .cc-callout-text small {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+.cc-callout--soft {
+  background: var(--story-accent-soft);
+  color: var(--fg);
+  box-shadow: none;
+  border: 1px solid var(--story-accent-ink);
+}
+.cc-callout--soft .cc-callout-mark { color: #fff; }
+.cc-callout--soft .cc-callout-text small { color: var(--fg-muted); }
+
+/* ---------- Roles: the hats the Media Team wore --------------------- */
+.cc-roles {
+  list-style: none;
+  margin: 36px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+.cc-role {
+  position: relative;
+  padding: 22px 20px;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 6px;
+  transition: transform var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out);
+}
+.cc-role:hover { transform: translateY(-3px); border-color: var(--story-accent-ink); box-shadow: var(--shadow-sm); }
+.cc-role .cc-role-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--story-accent-deep);
+}
+.cc-role h4 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.cc-role p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-muted);
+}
+
+/* ---------- Creative process: numbered workflow --------------------- */
+.cc-process {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+.cc-steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.cc-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 18px 8px 18px 64px;
+  border-bottom: 1px dashed var(--border-strong);
+}
+.cc-steps li:last-child { border-bottom: 0; }
+.cc-steps li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0; top: 16px;
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--story-accent-soft);
+  color: var(--story-accent-deep);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 16px;
+}
+.cc-steps li h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  margin: 0 0 3px;
+}
+.cc-steps li p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--fg-muted);
+}
+
+/* stacked screenshot frames showing the Canva workflow */
+.cc-screens {
+  position: relative;
+  aspect-ratio: 4 / 3.4;
+}
+.cc-screen {
+  position: absolute;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 50px -18px rgba(5,5,9,0.45);
+}
+.cc-screen img { width: 100%; height: auto; display: block; }
+.cc-screen--back  { width: 78%; right: 0; top: 0; transform: rotate(3deg); z-index: 1; }
+.cc-screen--front { width: 78%; left: 0; bottom: 0; transform: rotate(-3deg); z-index: 2; }
+.cc-screen-tag {
+  position: absolute;
+  left: 12px; bottom: 12px;
+  z-index: 3;
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(5,5,9,0.72);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+/* ---------- Skills: two-column tag groups --------------------------- */
+.cc-skills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.cc-skill-group {
+  padding: 28px 26px;
+  border-radius: var(--radius-xl);
+  background: #fff;
+  border: 1px solid var(--border);
+}
+.cc-skill-group--dark { background: var(--w2s-dark); color: #fff; border-color: var(--w2s-dark); }
+.cc-skill-group h4 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.015em;
+  margin: 0 0 6px;
+}
+.cc-skill-group > p {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+.cc-skill-group--dark > p { color: rgba(255,255,255,0.7); }
+.cc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.cc-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-sunken);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+.cc-chip::before {
+  content: "";
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--story-accent-ink);
+}
+.cc-skill-group--dark .cc-chip { background: rgba(255,255,255,0.08); color: #fff; }
+.cc-skill-group--dark .cc-chip::before { background: var(--story-accent); }
+
+/* ---------- Community impact: three groups -------------------------- */
+.cc-impact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.cc-impact-card {
+  padding: 32px 28px;
+  border-radius: var(--radius-xl);
+  background: #fff;
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.cc-impact-card .cc-impact-who {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--story-accent-deep);
+}
+.cc-impact-card h4 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(22px, 2.4vw, 27px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.cc-impact-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+
+/* ---------- What support funds: list, no fixed amounts -------------- */
+.cc-funds {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+.cc-fund {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  background: #fff;
+  border: 1px solid var(--border);
+}
+.cc-fund .cc-fund-dot {
+  flex: none;
+  margin-top: 4px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--story-accent);
+  box-shadow: 0 0 0 5px var(--story-accent-soft);
+}
+.cc-fund strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+.cc-fund span {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--fg-muted);
+}
+
+/* donor CTA strip under the funds list */
+.cc-donor-cta {
+  margin-top: 28px;
+  padding: 32px 34px;
+  border-radius: var(--radius-xl);
+  background: var(--w2s-blue);
+  color: #fff;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+  overflow: hidden;
+  position: relative;
+}
+.cc-donor-cta h3 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0;
+  max-width: 620px;
+}
+.cc-donor-cta .cc-donor-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ---------- Project facts strip (overview) -------------------------- */
+.cc-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 28px;
+}
+.cc-fact {
+  background: #fff;
+  padding: 22px 22px;
+  display: grid;
+  gap: 4px;
+}
+.cc-fact dt {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.cc-fact dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+/* overview side panel: stacked finished cards */
+.cc-overview {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+.cc-cardstack {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 70% 25%, rgba(30,100,240,0.12), transparent 60%),
+    repeating-linear-gradient(45deg, var(--neutral-100) 0 14px, var(--neutral-50) 14px 28px);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.cc-cardstack img {
+  position: absolute;
+  width: 46%;
+  border-radius: 12px;
+  box-shadow: 0 24px 50px -16px rgba(5,5,9,0.5);
+  border: 2px solid rgba(255,255,255,0.9);
+}
+.cc-cardstack img:nth-child(1) { transform: rotate(-8deg) translate(-32%, 4%); z-index: 1; }
+.cc-cardstack img:nth-child(2) { transform: rotate(6deg) translate(34%, -3%); z-index: 2; }
+.cc-cardstack .cc-cardstack-cap {
+  position: absolute;
+  bottom: 18px; left: 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  z-index: 3;
+}
+
+/* shared eyebrow-on-blue placeholder readability already handled above */
+
+/* ---------- Mobile -------------------------------------------------- */
+@media (max-width: 880px) {
+  .cc-process { grid-template-columns: 1fr; }
+  .cc-skills { grid-template-columns: 1fr; }
+  .cc-impact { grid-template-columns: 1fr; }
+  .cc-overview { grid-template-columns: 1fr; }
+  .cc-donor-cta { grid-template-columns: 1fr; }
+  .cc-hero-pair { min-height: 420px; }
+}
+
+/* ---------- Compact mode (Tweak) ------------------------------------ */
+body[data-compact="true"] .cc-optional { display: none; }
+
+/* ---------- Callouts / pull quotes visibility (Tweak) --------------- */
+body[data-callouts="hidden"] .cc-callout,
+body[data-callouts="hidden"] .pullquote { display: none; }
