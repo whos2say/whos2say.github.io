@@ -68,6 +68,15 @@
       ]
     },
     {
+      "label": "Stories",
+      "href": "/stories/",
+      "enabled": true,
+      "environment": "all",
+      "order": 25,
+      "external": false,
+      "note": "Participant stories & Media Team case studies index (/stories/)."
+    },
+    {
       "label": "Creative Workshops",
       "href": "/creative-workshops.html",
       "enabled": true,
@@ -109,6 +118,14 @@
       "enabled": true,
       "environment": "all",
       "order": 10,
+      "external": false
+    },
+    {
+      "label": "Stories",
+      "href": "/stories/",
+      "enabled": true,
+      "environment": "all",
+      "order": 15,
       "external": false
     },
     {
@@ -206,30 +223,6 @@
         "environment": "staging",
         "order": 40,
         "note": "DDD/Goods & Services-sensitive section."
-      }
-    ],
-    "story-brendan": [
-      {
-        "label": "Story",
-        "href": "#story",
-        "enabled": true,
-        "environment": "all",
-        "order": 10
-      },
-      {
-        "label": "Give",
-        "href": "#give",
-        "enabled": true,
-        "environment": "all",
-        "order": 15
-      },
-      {
-        "label": "Creative Workshops",
-        "href": "/creative-workshops.html",
-        "enabled": true,
-        "environment": "staging",
-        "order": 20,
-        "note": "Staging-only draft page link."
       }
     ]
   }
