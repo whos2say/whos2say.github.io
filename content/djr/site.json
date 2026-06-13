@@ -1,0 +1,41 @@
+{
+  "_comment": "DJR Photography — global branding, navigation, contact, footer. Edit via Decap CMS → DJR Photography → Site Settings, or directly in this file.",
+  "brand": {
+    "wordmark": "DJR",
+    "name": "David J. Richards",
+    "tagline": "Photography"
+  },
+  "nav": [
+    { "label": "Home", "href": "/djr/", "key": "home" },
+    { "label": "Galleries", "href": "/djr/galleries.html", "key": "galleries" },
+    { "label": "Services", "href": "/djr/#services", "key": "services" },
+    { "label": "About", "href": "/djr/#about", "key": "about" },
+    { "label": "Contact", "href": "/djr/contact.html", "key": "contact" }
+  ],
+  "bookButton": { "label": "Book a Session", "href": "/djr/contact.html" },
+  "contact": {
+    "phone": "(207) 123-4567",
+    "phoneTel": "+12071234567",
+    "email": "djrphotography@outlook.com",
+    "location": "Maine, USA"
+  },
+  "social": [
+    { "label": "Facebook", "icon": "f", "href": "#" },
+    { "label": "Instagram", "icon": "◎", "href": "#" },
+    { "label": "YouTube", "icon": "▶", "href": "#" }
+  ],
+  "quickLinks": [
+    { "label": "About Me", "href": "/djr/#about" },
+    { "label": "Galleries", "href": "/djr/galleries.html" },
+    { "label": "Services", "href": "/djr/#services" },
+    { "label": "Contact", "href": "/djr/contact.html" }
+  ],
+  "partner": {
+    "enabled": true,
+    "label": "In partnership with",
+    "logo": "/assets/images/logo-white-dark.png",
+    "href": "https://www.whostosay.org",
+    "alt": "Who's to Say Foundation"
+  },
+  "footerCopyright": "© 2026 DJR Photography. All Rights Reserved."
+}

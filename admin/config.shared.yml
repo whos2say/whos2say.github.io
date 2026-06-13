@@ -528,6 +528,193 @@
               { label: Body, name: body, widget: text }
             ]}
 
+  - name: djr
+    label: DJR Photography
+    files:
+      - label: Site Settings (brand, nav, footer)
+        name: djr-site
+        file: content/djr/site.json
+        fields:
+          - label: Editor guidance
+            name: _comment
+            widget: text
+            required: false
+          - { label: Brand, name: brand, widget: object, fields: [
+              { label: Wordmark (logo text), name: wordmark, widget: string },
+              { label: Name, name: name, widget: string },
+              { label: Tagline, name: tagline, widget: string }
+            ]}
+          - label: Navigation
+            name: nav
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: href, widget: string }
+              - { label: "Page key (home, galleries, services, about, contact)", name: key, widget: string, required: false }
+          - { label: Book a Session button, name: bookButton, widget: object, fields: [
+              { label: Label, name: label, widget: string },
+              { label: URL, name: href, widget: string }
+            ]}
+          - { label: Contact Info, name: contact, widget: object, fields: [
+              { label: Phone (display), name: phone, widget: string },
+              { label: Phone (tel link), name: phoneTel, widget: string },
+              { label: Email, name: email, widget: string },
+              { label: Location, name: location, widget: string }
+            ]}
+          - label: Social Links
+            name: social
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: Icon (emoji or letter), name: icon, widget: string }
+              - { label: URL, name: href, widget: string }
+          - label: Footer Quick Links
+            name: quickLinks
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: href, widget: string }
+          - { label: Partner Logo (footer), name: partner, widget: object, fields: [
+              { label: Show, name: enabled, widget: boolean, required: false, default: true },
+              { label: Label, name: label, widget: string },
+              { label: Logo, name: logo, widget: image },
+              { label: Link URL, name: href, widget: string },
+              { label: Alt Text, name: alt, widget: string }
+            ]}
+          - { label: Footer Copyright Line, name: footerCopyright, widget: string }
+
+      - label: Homepage
+        name: djr-home
+        file: content/djr/home.json
+        fields:
+          - label: Editor guidance
+            name: _comment
+            widget: text
+            required: false
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Meta Description, name: description, widget: text }
+            ]}
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Background Image (optional), name: backgroundImage, widget: image, required: false },
+              { label: Tagline, name: tagline, widget: string },
+              { label: Primary Button, name: primaryButton, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]},
+              { label: Secondary Button, name: secondaryButton, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+            ]}
+          - { label: Picture of the Week, name: pictureOfTheWeek, widget: object, fields: [
+              { label: Show Section, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text },
+              { label: Image, name: image, widget: image, required: false },
+              { label: Image Alt Text, name: imageAlt, widget: string, required: false },
+              { label: Button, name: button, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+            ]}
+          - { label: Services Section, name: services, widget: object, fields: [
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Service Cards, name: items, widget: list, summary: "{{fields.title}}", fields: [
+                  { label: Icon (emoji), name: icon, widget: string },
+                  { label: Title, name: title, widget: string },
+                  { label: Text, name: text, widget: text },
+                  { label: Card Image (optional), name: image, widget: image, required: false },
+                  { label: "Link URL (e.g. /djr/galleries.html?cat=wedding)", name: href, widget: string }
+                ]}
+            ]}
+          - { label: About Section, name: about, widget: object, fields: [
+              { label: Show Section, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Photo (optional), name: photo, widget: image, required: false },
+              { label: Body, name: body, widget: text }
+            ]}
+          - { label: Bottom CTA, name: cta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: sub, widget: text },
+              { label: Button, name: button, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+            ]}
+
+      - label: Galleries
+        name: djr-galleries
+        file: content/djr/galleries.json
+        fields:
+          - label: Editor guidance
+            name: _comment
+            widget: text
+            required: false
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Meta Description, name: description, widget: text }
+            ]}
+          - { label: Page Hero, name: hero, widget: object, fields: [
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text }
+            ]}
+          - { label: "\"All\" filter label", name: allLabel, widget: string, default: "All" }
+          - label: Categories (filter chips)
+            name: categories
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { label: "ID (lowercase, no spaces — used in links)", name: id, widget: string }
+              - { label: Label, name: label, widget: string }
+          - label: Galleries (Photo Gallery App albums)
+            name: galleries
+            widget: list
+            summary: "{{fields.title}} · {{fields.category}}"
+            hint: "Each entry links an album from the Photo Gallery App (albums.html). Copy the album ID from its URL: album.html?album=<ID>. Leave this list empty to automatically show ALL public albums."
+            fields:
+              - { label: Album ID, name: albumId, widget: string, hint: "From album.html?album=<ID>" }
+              - { label: "Title override (optional — defaults to album name)", name: title, widget: string, required: false }
+              - label: Category
+                name: category
+                widget: string
+                hint: "Must match a category ID above (e.g. wedding)"
+              - { label: Description (optional), name: description, widget: text, required: false }
+              - { label: "Cover image override (optional — defaults to the album's cover photo)", name: coverImage, widget: image, required: false }
+          - { label: Empty-state message, name: emptyMessage, widget: string }
+          - { label: No-match message, name: noMatchMessage, widget: string }
+
+      - label: Contact Page
+        name: djr-contact
+        file: content/djr/contact.json
+        fields:
+          - label: Editor guidance
+            name: _comment
+            widget: text
+            required: false
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Meta Description, name: description, widget: text }
+            ]}
+          - { label: Page Hero, name: hero, widget: object, fields: [
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text }
+            ]}
+          - { label: "Form endpoint (Formspree URL)", name: formAction, widget: string }
+          - { label: Session Types (dropdown options), name: sessionTypes, widget: list, field: { label: Option, name: option, widget: string } }
+          - { label: Sidebar, name: sidebar, widget: object, fields: [
+              { label: Availability Title, name: availabilityTitle, widget: string },
+              { label: Availability Body, name: availabilityBody, widget: text },
+              { label: Response Title, name: responseTitle, widget: string },
+              { label: Response Body, name: responseBody, widget: text }
+            ]}
+
   - name: stories
     label: Stories
     folder: content/stories

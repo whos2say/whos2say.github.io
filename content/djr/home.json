@@ -1,0 +1,82 @@
+{
+  "_comment": "DJR Photography homepage content. Edit via Decap CMS → DJR Photography → Homepage, or directly in this file.",
+  "meta": {
+    "title": "DJR Photography | David J. Richards — Capturing Moments. Creating Memories.",
+    "description": "DJR Photography by David J. Richards. Landscape, portrait, wedding, sports, event, and aerial photography based in Maine, USA."
+  },
+  "hero": {
+    "backgroundImage": "",
+    "tagline": "Capturing Moments. Creating Memories.",
+    "primaryButton": { "label": "View Galleries", "href": "/djr/galleries.html" },
+    "secondaryButton": { "label": "Book a Session", "href": "/djr/contact.html" }
+  },
+  "pictureOfTheWeek": {
+    "enabled": true,
+    "eyebrow": "Picture of the Week",
+    "title": "Guiding Light",
+    "body": "A peaceful reminder that even in the darkest moments, there is always a light to guide the way. Captured along the Maine coastline.",
+    "image": "",
+    "imageAlt": "Lighthouse on the Maine coastline at sunset",
+    "button": { "label": "View Full Gallery", "href": "/djr/galleries.html" }
+  },
+  "services": {
+    "eyebrow": "What I Do",
+    "title": "Photography Services",
+    "items": [
+      {
+        "icon": "🏞",
+        "title": "Landscape Photography",
+        "text": "Breathtaking landscapes that capture the beauty of nature.",
+        "image": "",
+        "href": "/djr/galleries.html?cat=landscape"
+      },
+      {
+        "icon": "👤",
+        "title": "Portrait Photography",
+        "text": "Natural, authentic portraits that tell your story.",
+        "image": "",
+        "href": "/djr/galleries.html?cat=portrait"
+      },
+      {
+        "icon": "💍",
+        "title": "Wedding Photography",
+        "text": "Timeless memories of your most important day.",
+        "image": "",
+        "href": "/djr/galleries.html?cat=wedding"
+      },
+      {
+        "icon": "🏈",
+        "title": "Sports Photography",
+        "text": "High-energy action shots that capture the moment.",
+        "image": "",
+        "href": "/djr/galleries.html?cat=sports"
+      },
+      {
+        "icon": "🎤",
+        "title": "Event Photography",
+        "text": "Professional coverage for events of any size.",
+        "image": "",
+        "href": "/djr/galleries.html?cat=event"
+      },
+      {
+        "icon": "🚁",
+        "title": "Aerial / Drone Photography",
+        "text": "Stunning aerial perspectives from a new point of view.",
+        "image": "",
+        "href": "/djr/galleries.html?cat=aerial"
+      }
+    ]
+  },
+  "about": {
+    "enabled": true,
+    "eyebrow": "About Me",
+    "title": "Behind the Lens",
+    "photo": "",
+    "body": "I'm David J. Richards, a photographer based in Maine with a passion for capturing the moments that matter — from sweeping coastal landscapes to the split-second energy of game day. Every shoot is a chance to tell a story, and I'd love to help tell yours."
+  },
+  "cta": {
+    "title": "Let's create something amazing together.",
+    "sub": "Whether it's a special moment or a big event, I'm here to capture it.",
+    "button": { "label": "Contact Me", "href": "/djr/contact.html" }
+  }
+}
