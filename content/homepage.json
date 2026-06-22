@@ -17,13 +17,13 @@
       "label": "Explore Programs",
       "href": "/programs.html",
       "style": "primary",
-      "external": true
+      "external": false
     },
     {
       "label": "📷 Photo Albums",
       "href": "/albums.html",
       "style": "primary",
-      "external": true
+      "external": false
     },
     {
       "label": "Donate",
@@ -43,7 +43,8 @@
       {
         "label": "Learn About Our Programs",
         "href": "/programs.html",
-        "style": "primary"
+        "style": "primary",
+        "external": false
       },
       {
         "label": "Donate to Support Inclusion",

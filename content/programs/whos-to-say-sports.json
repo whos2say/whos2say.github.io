@@ -3,14 +3,14 @@
   "pathKey": "sports",
   "meta": {
     "title": "Who's to Say Sports | Who's to Say ? Foundation",
-    "description": "Challenger Sports, fitness, outings, and sports storytelling for participants who love sports."
+    "description": "Sports, fitness, fan culture, media, and personal wellness for people who want to participate, connect, and grow through the power of sports."
   },
   "hero": {
     "breadcrumb": "Sports Path",
     "title": "Who's to Say Sports",
-    "subtitle": "Challenger Sports, fitness, outings, and sports storytelling—built around each participant's interests.",
-    "pills": ["Participation", "Media Crew", "Outings", "Confidence"],
-    "bestFor": "Participants who love sports and want to play, cheer, talk about the game, or be part of a media crew.",
+    "subtitle": "Sports, fitness, fan culture, media, and personal wellness — open to people who want to participate, connect, and grow through the power of sports.",
+    "pills": ["Participation", "Wellness", "Media", "Community"],
+    "bestFor": "People who enjoy sports, fitness, team culture, community events, sports media, or personal wellness goals — including individuals with IDD who benefit from flexible support, planning, and encouragement.",
     "image": "/assets/images/Matt-Conner.jpg"
   },
   "sections": [
@@ -19,35 +19,171 @@
       "blocks": [
         {
           "type": "paragraph",
-          "html": "<strong>Who's to Say Sports</strong> blends athletic leadership, sports media, and community engagement. It's for participants who love sports—whether they want to play, volunteer, talk about the game, or help create coverage as part of a \"media crew.\""
+          "html": "Who's to Say Sports is a community-based program for individuals who love sports in any form — playing, training, cheering, storytelling, volunteering, filming, interviewing, or simply being part of a team environment."
+        },
+        {
+          "type": "paragraph",
+          "html": "The program is designed for the general public and intentionally inclusive of individuals with intellectual and developmental disabilities. Participants may join as athletes, fans, media creators, team helpers, wellness learners, or community members looking for a positive way to build confidence, routine, communication, health, and belonging."
+        },
+        {
+          "type": "paragraph",
+          "html": "Who's to Say Sports uses sports and wellness as real-world settings for personal growth."
+        },
+        {
+          "type": "paragraph",
+          "html": "For some participants, that may mean joining inclusive sports programs, attending games, or helping with team activities. For others, it may mean building a personal workout routine, learning how to talk about sports, recording short commentary clips, practicing interviews, or creating content around a favorite team."
+        },
+        {
+          "type": "paragraph",
+          "html": "The goal is not only participation. The goal is helping people build confidence, independence, communication, healthy habits, and meaningful community connection."
         }
       ]
     },
     {
       "title": "Program Elements",
       "blocks": [
-        { "type": "h3", "text": "School Alumni Team Inclusion" },
-        { "type": "paragraph", "html": "Supports individuals who:" },
-        { "type": "ul", "items": ["Have aged out of the school district", "Previously held HS team roles", "Would lose access without insurance/support"] },
-        { "type": "paragraph", "html": "Services provided:" },
-        { "type": "ul", "items": ["Program definition and enrollment", "Defined role (manager, media, assistant)", "Insurance & liability coverage", "Optional 1:1 or small-group support"] },
-        { "type": "h3", "text": "Sports Media & Commentary" },
-        { "type": "ul", "items": ["Recording short game recaps or \"fan takes\"", "Interviewing teammates, coaches, or friends", "Learning how to film highlights on a phone", "Participating in simple \"Who's to Say Sports\" podcast segments"] },
-        { "type": "h3", "text": "Community & Events" },
-        { "type": "ul", "items": ["Group outings to games", "Spirit nights or watch parties", "Opportunities to meet teams or visit fields/arenas"] }
+        { "type": "h3", "text": "Sports Participation & Community Access" },
+        { "type": "paragraph", "html": "Participants may explore opportunities such as:" },
+        {
+          "type": "ul",
+          "items": [
+            "Inclusive sports programs, clinics, practices, or recreational activities",
+            "Challenger, alumni, adaptive, or community-based sports involvement",
+            "Team helper, manager, sideline, spirit, or media-support roles",
+            "Group outings to games, fields, gyms, tournaments, or sports-related events",
+            "Watch parties, fan nights, sports conversations, and community gatherings"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "html": "Who's to Say can help participants prepare for these experiences, understand expectations, build confidence, and reflect afterward on what went well and what they want to try next."
+        },
+        { "type": "h3", "text": "Personal Fitness & Health Planning" },
+        {
+          "type": "paragraph",
+          "html": "Sports Path may also include personal wellness planning for participants who want to build healthier routines. This can include:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Creating a simple personal fitness goal",
+            "Building a weekly movement or workout plan",
+            "Tracking progress in a positive, nonjudgmental way",
+            "Practicing gym readiness, stretching, hydration, nutrition awareness, and recovery habits",
+            "Learning how exercise supports energy, confidence, focus, and independence",
+            "Connecting fitness goals to sports interests, employment goals, or daily living routines"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "html": "This is not medical treatment, physical therapy, or clinical health care. Participants should follow guidance from their doctor, therapist, family, or approved care team when needed."
+        },
+        {
+          "type": "paragraph",
+          "html": "The Who's to Say role is to support motivation, planning, routine-building, encouragement, and real-world follow-through."
+        },
+        { "type": "h3", "text": "Sports Media & Storytelling" },
+        {
+          "type": "paragraph",
+          "html": "Participants who enjoy talking about sports, making videos, or creating content can explore sports media skills such as:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Recording short game recaps or \"fan takes\"",
+            "Interviewing teammates, coaches, family members, or friends",
+            "Filming highlights or behind-the-scenes moments on a phone",
+            "Creating simple sports commentary, podcast, or social media-style segments",
+            "Reviewing clips and practicing clear communication",
+            "Building a personal sports voice, brand, or storytelling style"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "html": "This gives participants another way to belong in sports culture, even if they do not want to compete on the field."
+        },
+        { "type": "h3", "text": "Confidence, Communication & Social Growth" },
+        {
+          "type": "paragraph",
+          "html": "Sports naturally create opportunities to practice real-world skills. Participants may work on:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Introducing themselves",
+            "Asking questions",
+            "Following a schedule",
+            "Preparing for an outing or workout",
+            "Managing excitement, nerves, or disappointment",
+            "Practicing teamwork and sportsmanship",
+            "Speaking on camera or in conversation",
+            "Reflecting on goals, choices, and progress"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "html": "These skills can support broader independence, community inclusion, employment exploration, and personal confidence."
+        }
+      ]
+    },
+    {
+      "title": "Example Activities",
+      "blocks": [
+        { "type": "paragraph", "html": "Participants may choose from activities such as:" },
+        {
+          "type": "ul",
+          "items": [
+            "Personal workout planning",
+            "Gym or fitness-readiness coaching",
+            "Walking, stretching, strength, or conditioning routines",
+            "Sports photography or video",
+            "Game recap videos",
+            "Team interviews",
+            "Sports podcasts or fan commentary",
+            "Challenger or inclusive sports participation",
+            "Alumni team roles",
+            "Community game outings",
+            "Watch parties and sports discussion groups",
+            "Goal-setting and progress check-ins"
+          ]
+        }
       ]
     },
     {
       "title": "Outcomes & Skills",
       "blocks": [
+        { "type": "paragraph", "html": "Who's to Say Sports is designed to help participants build:" },
         {
           "type": "ul",
           "items": [
-            "Social skills, teamwork, and confidence",
-            "Better understanding of health and movement",
-            "Communication skills through interviews and commentary",
-            "Stronger sense of belonging and community pride"
+            "Confidence and self-esteem",
+            "Social connection and belonging",
+            "Communication skills",
+            "Healthier routines and movement habits",
+            "Sportsmanship and teamwork",
+            "Self-advocacy",
+            "Planning and follow-through",
+            "Community access skills",
+            "Creative media and storytelling skills",
+            "Independence through real-world experiences"
           ]
+        }
+      ]
+    },
+    {
+      "title": "Who Can Participate",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "html": "Who's to Say Sports is open to people who are interested in sports, fitness, wellness, fan culture, or media storytelling."
+        },
+        {
+          "type": "paragraph",
+          "html": "The program is especially supportive for individuals who may benefit from encouragement, structure, flexible pacing, and inclusive community settings, including young adults and adults with intellectual and developmental disabilities."
+        },
+        {
+          "type": "paragraph",
+          "html": "Participants do not need to be competitive athletes. They only need an interest in sports, movement, wellness, media, or being part of a positive community."
         }
       ]
     }
@@ -55,11 +191,15 @@
   "sidebar": {
     "sessionStyle": {
       "title": "Session Style",
-      "items": ["Community-based outings", "Team participation + skill building", "Sports media projects"]
+      "items": [
+        "Individual & small-group sessions",
+        "Community outings & wellness planning",
+        "Sports media & storytelling projects"
+      ]
     },
     "getStarted": {
       "title": "Get Started",
-      "prompt": "Want to explore a Sports Path fit?",
+      "prompt": "Interested in sports, fitness, wellness, or sports storytelling? Who's to Say Sports can help you explore what role sports might play in your life — whether you want to move more, join a team, attend events, create media, build confidence, or become more connected to your community.",
       "primaryLabel": "Contact Us",
       "primaryHref": "/contact.html",
       "secondaryLabel": "Email",
@@ -72,44 +212,46 @@
         "blocks": [
           {
             "type": "paragraph",
-            "html": "In colaboration with local HS sports teams and community volunteers, we help expand the reach of existing programs and help create new ones.<br>\nWe focus on access, continuity, and skill development, helping individuals remain connected to sports culture while building communication, confidence, and real-world experience.<br>"
+            "html": "Who's to Say Sports can be offered through individual sessions, small groups, community outings, media projects, wellness planning, or partnerships with local teams and volunteers."
           },
-          { "type": "paragraph", "html": "Participation may include:" },
+          { "type": "paragraph", "html": "A participant's experience may include:" },
           {
             "type": "ul",
             "items": [
-              "Continued involvement with high school teams in defined alumni roles",
-              "Connection to Challenger or other inclusive sports programs",
-              "Sessions focused on filming, photography",
-              "Reviewing and editing content to practice communication and storytelling"
+              "A personal sports or wellness interest conversation",
+              "A simple goal plan",
+              "Preparation before a workout, event, practice, or outing",
+              "Participation in a sports, fitness, fan, or media activity",
+              "Reflection afterward",
+              "Optional media creation, journaling, or progress tracking",
+              "Continued planning for the next step"
             ]
           },
           {
             "type": "paragraph",
-            "html": "Supports are designed to wrap around participation, with planning, reflection, and skill-building occurring before or after activities, promoting independence and long-term growth."
+            "html": "Support is flexible. One participant may want help staying connected to a team. Another may want to start working out consistently. Another may want to become a sports podcaster, commentator, team photographer, or fan reporter."
           }
         ]
       },
       {
-        "summary": "Coordinator / DDD Summary",
+        "summary": "For Families, Coordinators & Support Teams",
         "open": false,
         "blocks": [
           {
             "type": "paragraph",
-            "html": "The Sports Pathway is a community-based support service that uses sports environments as a real-world context for skill development, not as the service itself.<br>\nSupports funded through DDD Goods &amp; Services may include:"
-          },
-          {
-            "type": "ul",
-            "items": [
-              "Pre- and post-activity support related to participation in Challenger or other inclusive sports programs",
-              "Planning, reminders, and reflection connected to team roles or community involvement",
-              "Communication, social, and vocational skill development in community settings",
-              "Sports media skill practice, including guided filming, commentary, interviews, and content review"
-            ]
+            "html": "Who's to Say Sports can support individualized goals related to community inclusion, communication, health routines, employment exploration, social development, and independence."
           },
           {
             "type": "paragraph",
-            "html": "DDD funding applies to individualized support services only and does not include supervision during practices or games, admission fees, or entertainment costs. All supports are aligned with ISP goals related to community inclusion, employment exploration, communication, and independence."
+            "html": "When applicable, supports may include planning, reminders, skill-building, reflection, guided participation, and personal development connected to sports, fitness, wellness, or sports media."
+          },
+          {
+            "type": "paragraph",
+            "html": "Funding, eligibility, and service structure depend on each individual's plan, goals, and approval process. Goods &amp; Services or other support funding should be used only for eligible individualized supports, not for general entertainment, admission fees, unrelated purchases, or supervision that is not part of an approved support plan."
+          },
+          {
+            "type": "paragraph",
+            "html": "Who's to Say is committed to clear documentation, appropriate boundaries, and programs that serve the broader community while remaining accessible and meaningful for individuals with IDD."
           }
         ]
       }
