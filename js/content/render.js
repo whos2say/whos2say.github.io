@@ -323,60 +323,6 @@
     else if (text !== undefined) el.textContent = text;
   }
 
-  function renderStoryBrendan(data) {
-    setMeta(data.meta && data.meta.title, data.meta && data.meta.description);
-
-    bindStoryText('.hero-eyebrow', data.hero.eyebrow);
-    bindStoryText('.hero-title', null, data.hero.titleHtml);
-    bindStoryText('.hero-lead', data.hero.lead);
-    bindStoryText('.hero-sticker', null, '&ldquo;' + data.hero.stickerQuote + '&rdquo;<small>' + data.hero.stickerAttribution + '</small>');
-
-    var heroImg = document.querySelector('.hero-portrait img');
-    if (heroImg) heroImg.alt = data.hero.portraitAlt;
-    bindStoryText('.hero-portrait-tag', data.hero.portraitTag);
-
-    bindStoryText('#story .meet-copy .eyebrow', data.meet.eyebrow);
-    bindStoryText('#story .meet-copy h2', data.meet.title);
-    var meetPs = document.querySelectorAll('#story .meet-copy p');
-    data.meet.paragraphs.forEach(function (p, i) {
-      if (meetPs[i]) meetPs[i].textContent = p;
-    });
-
-    var ed1 = data.editorial1;
-    bindStoryText('.section--soft .editorial-copy .eyebrow', ed1.eyebrow);
-    bindStoryText('.section--soft .editorial-copy h3', null, ed1.titleHtml);
-    var ed1Ps = document.querySelectorAll('.section--soft .editorial-copy p');
-    ed1.paragraphs.forEach(function (p, i) {
-      if (!ed1Ps[i]) return;
-      if (i === ed1.emphasisIndex) ed1Ps[i].innerHTML = p.replace('his communication is flourishing', '<strong>his communication is flourishing</strong>');
-      else ed1Ps[i].textContent = p;
-    });
-
-    var ed2 = data.editorial2;
-    var ed2Section = document.querySelector('.section .editorial.flip, .editorial.flip');
-    if (ed2Section) {
-      bindStoryText('.editorial.flip .eyebrow', ed2.eyebrow);
-      bindStoryText('.editorial.flip h3', null, ed2.titleHtml);
-      var ed2Ps = ed2Section.querySelectorAll('.editorial-copy p');
-      ed2.paragraphs.forEach(function (p, i) {
-        if (ed2Ps[i]) ed2Ps[i].textContent = p;
-      });
-    }
-
-    bindStoryText('.building-grid + .s-head h2, .s-head h2', null, data.pathway.titleHtml);
-    bindStoryText('.s-head .lead', data.pathway.lead);
-
-    bindStoryText('#give .s-head h2', null, data.donation.titleHtml);
-    bindStoryText('#give .s-head .lead', data.donation.lead);
-
-    bindStoryText('.final-cta h2', null, data.finalCta.titleHtml);
-    bindStoryText('.final-cta-answer', data.finalCta.answer, null);
-    bindStoryText('.final-cta .lead', data.finalCta.lead);
-
-    bindStoryText('.footer-brand > p', data.footer.brandBlurb);
-    bindStoryText('.footer-base span:last-child', data.footer.tagline);
-  }
-
   function initFromBody() {
     var page = document.body.getAttribute('data-content-page');
     if (!page) return Promise.resolve();
@@ -402,9 +348,6 @@
         renderContact(arr[0], arr[1], arr[2]);
       });
     }
-    if (page === 'story-brendan') {
-      return fetchJson('/content/stories/brendan.json').then(renderStoryBrendan);
-    }
     if (page.indexOf('programs/') === 0) {
       return fetchJson('/content/' + page + '.json').then(renderProgramPage);
     }
@@ -423,7 +366,6 @@
     renderHomepage: renderHomepage,
     renderProgramsIndex: renderProgramsIndex,
     renderContact: renderContact,
-    renderStoryBrendan: renderStoryBrendan,
     init: initFromBody,
   };
 

@@ -149,24 +149,23 @@ Draft pages (workshops, coordinators) are reachable by URL on staging but **not 
 
 ## Draft pages & production nav
 
-Controlled by `content/site.json` → `environment`:
+Navigation is controlled by **`content/navigation.json`**, rendered by `js/content/navigation.js`.
 
-```json
-"environment": {
-  "showDraftPagesInNav": true,
-  "showStagingBanner": true,
-  "draftNavLinks": [ ... ]
-}
-```
+Each nav item has an **`environment`** field:
 
-| Branch | `showDraftPagesInNav` | Effect |
-| --- | --- | --- |
-| `staging` | `true` | Header shows Creative Workshops + For Coordinators |
-| `main` | **`false`** | Production nav unchanged; pages still reachable by direct URL if merged |
+| Value | Visible on |
+| --- | --- |
+| `all` | Production and staging |
+| `staging` | Staging and local dev only |
+| `production` | Production only (rare) |
 
-`js/content/environment.js` also shows the staging banner on `staging.whostosay.org`.
+Draft pages (Creative Workshops, For Coordinators) use `"environment": "staging"` so they appear in the header on staging but **not** on www.whostosay.org.
 
-Story footers use `data-staging-only` so workshop links hide on production.
+The staging banner is separate: `content/site.json` → `environment.showStagingBanner` (set `true` on staging, **`false`** on main).
+
+`js/content/environment.js` also shows the staging banner on `staging.whostosay.org` regardless of the JSON flag.
+
+Page subnavs (in-page section links) use the same `environment` field — e.g. Pricing and Funding Note stay staging-only until compliance review.
 
 ---
 
@@ -178,8 +177,8 @@ Open PR: **`staging` → `main`**
 
 - [ ] Workshop/coordinator copy compliance-reviewed
 - [ ] Participant story copy approved
-- [ ] On **`main`**, set `content/site.json` → `environment.showDraftPagesInNav` **`false`**
-- [ ] On **`main`**, set `environment.showStagingBanner` **`false`**
+- [ ] On **`main`**, set `content/site.json` → `environment.showStagingBanner` **`false`**
+- [ ] Confirm draft nav items in `content/navigation.json` remain `"environment": "staging"` (not promoted to `"all"`)
 - [ ] Confirm production nav has **no** draft page links
 - [ ] If ready for public workshops: enable nav links intentionally (separate decision)
 - [ ] Merge PR
@@ -219,7 +218,7 @@ OAuth login locally still requires `npx decap-server` (see CONTENT_EDITING.md).
 | Staging `/admin/` commits to `main` | Check Vercel staging env: `DECAP_GIT_BRANCH=staging`; redeploy |
 | OAuth redirect mismatch on staging | Staging OAuth app callback must be `https://staging.whostosay.org/api/callback` |
 | Production OAuth broken after staging setup | Ensure Production env vars still use **production** OAuth credentials |
-| Draft links on www | Set `showDraftPagesInNav: false` in `content/site.json` on `main` |
+| Draft links on www | Check `content/navigation.json` — draft items must use `"environment": "staging"`, not `"all"` |
 | Feature preview CMS login fails | Expected — use staging.whostosay.org instead |
 
 ---
