@@ -157,6 +157,11 @@
       '<section class="program-section content-page-section" id="workshop-menu"><h2>Workshop Menu</h2><div class="program-grid content-page-grid">' +
       workshops +
       '</div></section>' +
+      '<section class="program-section content-page-section" id="class-sessions">' +
+      '<h2>' + (data.classSchedule ? data.classSchedule.title : 'Available Class Sessions') + '</h2>' +
+      '<p class="class-sessions-intro">' + (data.classSchedule ? data.classSchedule.intro : 'Open to adults with and without disabilities. Small class size, maximum 3 participants.') + '</p>' +
+      '<div id="class-sessions-list" class="class-sessions-list"></div>' +
+      '</section>' +
       '<section class="program-section content-page-section" id="pricing"><h2>' +
       data.pricing.title +
       '</h2><p>' +
@@ -217,6 +222,7 @@
       footerHtml();
 
     appendPageScripts();
+    document.dispatchEvent(new CustomEvent('w2s:page-rendered', { detail: { page: 'creative-workshops' } }));
   }
 
   function renderSupportCoordinators(data) {
