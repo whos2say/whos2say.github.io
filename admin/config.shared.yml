@@ -560,3 +560,24 @@
           { label: Title (HTML), name: titleHtml, widget: text },
           { label: Lead, name: lead, widget: text }
         ]}
+
+  - name: classes
+    label: Public Classes (Schedule)
+    hint: "Non-secret class metadata for the signup system. Calendar IDs and credentials are in env vars, not here."
+    files:
+      - label: Class Definitions
+        name: classes
+        file: content/classes.json
+        fields:
+          - label: Classes
+            name: classes
+            widget: list
+            hint: "Class IDs must match VALID_CLASS_IDS in lib/google-class-services.js"
+            fields:
+              - { label: ID (slug), name: id, widget: string, hint: "e.g. digital-content-production" }
+              - { label: Display Name, name: displayName, widget: string }
+              - { label: Description, name: description, widget: text }
+              - { label: Tuition Label, name: tuitionLabel, widget: string }
+              - { label: Active, name: active, widget: boolean, default: true }
+              - { label: Default Capacity, name: defaultCapacity, widget: number, default: 3, value_type: int }
+              - { label: Calendar Title Aliases, name: aliases, widget: list, field: { label: Alias, name: alias, widget: string }, hint: "Lowercase substrings matched against Google Calendar event titles" }

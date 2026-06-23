@@ -104,6 +104,11 @@
       "Skill-Building"
     ]
   },
+  "classSchedule": {
+    "title": "Available Class Sessions",
+    "intro": "Open to adults with and without disabilities. Small class size, maximum 3 participants.",
+    "signupEnabled": true
+  },
   "howSessionsWork": {
     "title": "How Sessions Work",
     "steps": [
