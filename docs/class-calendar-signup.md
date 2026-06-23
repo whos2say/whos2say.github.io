@@ -2,7 +2,8 @@
 
 Google Calendar is the source of truth for public class dates. The website
 reads upcoming events, maps them to class IDs, and lets visitors submit a
-signup request. Signups are recorded in a Google Sheet.
+signup request. Signups are recorded in a Google Sheet via a Google Apps Script
+Web App — no service account JSON keys required.
 
 ---
 
@@ -77,10 +78,15 @@ are excluded.
 
 ---
 
-## Google Sheets Setup
+## Google Sheets + Apps Script Setup
 
-1. Create a Google Sheet for signups (one per environment — see
-   Staging vs. Production below).
+Signup reads and writes go through a Google Apps Script Web App. This avoids
+service account JSON key creation, which may be blocked by
+`iam.disableServiceAccountKeyCreation` organization policy.
+
+### 1. Create the signup spreadsheet
+
+1. Create a Google Sheet (one per environment — see Staging vs. Production).
 2. Add a tab named **`Signups`** exactly (case-sensitive).
 3. Row 1 must be this header row (A–L):
 
@@ -93,17 +99,125 @@ are excluded.
    - `source` — always `web-form` for public signups; reserved for future channels
    - `metadata` — reserved; leave empty
 
-4. Create a **Google Cloud service account**:
-   - Cloud Console → IAM & Admin → Service Accounts → Create.
-   - Download the JSON key file.
-   - Share the spreadsheet with the service account email
-     (`something@project.iam.gserviceaccount.com`) as **Editor**.
-5. Set these env vars in Vercel:
-   - `GOOGLE_SIGNUPS_SHEET_ID` — the spreadsheet ID from the URL.
-   - `GOOGLE_SERVICE_ACCOUNT_EMAIL` — the service account email.
-   - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` — the `private_key` value from
-     the JSON key file. Paste it as one line in Vercel; the system
-     normalizes `\n` escape sequences at runtime.
+### 2. Create the Apps Script Web App
+
+1. In the spreadsheet: **Extensions → Apps Script**.
+2. Replace the default code with the sample below.
+3. Set `CONFIG.SPREADSHEET_ID` to the spreadsheet's ID (from its URL).
+4. Store the shared secret in **Script Properties** (not in the code):
+   - Apps Script editor → **Project Settings** (gear icon) → **Script Properties**
+   - Add property: `SHARED_SECRET` = a long random string (e.g. 32 hex chars)
+   - Use the same value for `GOOGLE_SIGNUPS_SHARED_SECRET` in Vercel.
+5. **Deploy** as a Web App:
+   - **Deploy** (top right) → **New deployment** → type: **Web app**
+   - Execute as: **Me**
+   - Who has access: **Anyone**
+   - Copy the **Web App URL** (ends in `/exec`) → set as `GOOGLE_SIGNUPS_WEBAPP_URL` in Vercel.
+6. When you edit the script later, deploy a **new version** — changes to an
+   existing version are not automatically live.
+
+### Apps Script code sample
+
+```javascript
+// ── Configuration ──────────────────────────────────────────────────────────
+// Set SPREADSHEET_ID to your signup sheet's spreadsheet ID (from the URL).
+// Store SHARED_SECRET in Script Properties (Extensions → Apps Script →
+// Project Settings → Script Properties), NOT hardcoded here.
+const CONFIG = {
+  SPREADSHEET_ID: 'YOUR_SPREADSHEET_ID_HERE',
+  SHEET_TAB:      'Signups',
+}
+
+// ── Entry points ───────────────────────────────────────────────────────────
+
+function doPost(e) {
+  try {
+    var payload = JSON.parse(e.postData.contents)
+
+    var secret = PropertiesService.getScriptProperties().getProperty('SHARED_SECRET')
+    if (!secret)                      return respond({ ok: false, error: 'SHARED_SECRET not configured in Script Properties' })
+    if (payload.secret !== secret)    return respond({ ok: false, error: 'Unauthorized' })
+
+    if (payload.action === 'list')    return handleList()
+    if (payload.action === 'signup')  return handleSignup(payload.row)
+
+    return respond({ ok: false, error: 'Unknown action: ' + payload.action })
+  } catch (err) {
+    return respond({ ok: false, error: 'Internal error: ' + err.message })
+  }
+}
+
+// Simple health check — lets you verify the URL is live without a secret.
+function doGet(e) {
+  return respond({ ok: true, status: 'Signups Web App is running' })
+}
+
+// ── Handlers ───────────────────────────────────────────────────────────────
+
+function handleList() {
+  var sheet   = getSheet()
+  var lastRow = sheet.getLastRow()
+
+  if (lastRow <= 1) return respond({ ok: true, rows: [] })
+
+  var values = sheet.getRange(2, 1, lastRow - 1, 12).getValues()
+  var rows   = values.map(function (r) {
+    return {
+      timestamp:  String(r[0]  || ''),
+      eventId:    String(r[1]  || ''),
+      classId:    String(r[2]  || ''),
+      classTitle: String(r[3]  || ''),
+      start:      String(r[4]  || ''),
+      name:       String(r[5]  || ''),
+      email:      String(r[6]  || ''),
+      phone:      String(r[7]  || ''),
+      notes:      String(r[8]  || ''),
+      status:     String(r[9]  || ''),
+      source:     String(r[10] || ''),
+      metadata:   String(r[11] || ''),
+    }
+  })
+
+  return respond({ ok: true, rows: rows })
+}
+
+function handleSignup(row) {
+  if (!row) return respond({ ok: false, error: 'Missing row data' })
+
+  getSheet().appendRow([
+    row.timestamp  || '',
+    row.eventId    || '',
+    row.classId    || '',
+    row.classTitle || '',
+    row.start      || '',
+    row.name       || '',
+    row.email      || '',
+    row.phone      || '',
+    row.notes      || '',
+    row.status     || '',
+    row.source     || '',
+    row.metadata   || '',
+  ])
+
+  return respond({ ok: true })
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function getSheet() {
+  var sheet = SpreadsheetApp
+    .openById(CONFIG.SPREADSHEET_ID)
+    .getSheetByName(CONFIG.SHEET_TAB)
+  if (!sheet) throw new Error('Sheet "' + CONFIG.SHEET_TAB + '" not found in spreadsheet ' + CONFIG.SPREADSHEET_ID)
+  return sheet
+}
+
+function respond(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON)
+}
+```
 
 ### Status values in the sheet
 
@@ -117,45 +231,47 @@ are excluded.
 The system writes only `pending` or `waitlist`. Staff manually update rows to
 `confirmed` or `cancelled`. Capacity is enforced against all rows where
 `status` is NOT `waitlist` — so `pending`, `confirmed`, and any other
-non-waitlist value all count. Update to `cancelled` (not deletion) to free a
-seat so the next waitlisted person can be moved up.
+non-waitlist value all count. Set a row to `cancelled` (not deletion) to free
+a seat so the next waitlisted person can be moved up.
 
 ---
 
 ## Environment Variables
 
-All six must be set in Vercel for the feature to function. Only
-`GOOGLE_CLASSES_CALENDAR_ID` and `GOOGLE_CALENDAR_API_KEY` are needed for
-availability reads; all six are needed for signup writes.
+Set these in Vercel → Project Settings → Environment Variables. Apply to
+**Production** and **Preview** (staging) separately with different values.
 
-```
-GOOGLE_CLASSES_CALENDAR_ID        e.g. abc123@group.calendar.google.com
-GOOGLE_CALENDAR_API_KEY            restricted API key (Calendar API only)
-GOOGLE_SIGNUPS_SHEET_ID            spreadsheet ID (from sheet URL)
-GOOGLE_SERVICE_ACCOUNT_EMAIL       service-account@project.iam.gserviceaccount.com
-GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY -----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
-CLASS_DEFAULT_CAPACITY             3
-```
+| Variable | Used by | Notes |
+|---|---|---|
+| `GOOGLE_CLASSES_CALENDAR_ID` | `api/class-availability` | Calendar ID, e.g. `abc@group.calendar.google.com` |
+| `GOOGLE_CALENDAR_API_KEY` | `api/class-availability` | API key restricted to Calendar API only |
+| `GOOGLE_SIGNUPS_WEBAPP_URL` | `api/class-signup`, `api/class-availability` | Apps Script Web App exec URL |
+| `GOOGLE_SIGNUPS_SHARED_SECRET` | `api/class-signup`, `api/class-availability` | Must match `SHARED_SECRET` Script Property |
+| `CLASS_DEFAULT_CAPACITY` | both | `3` — must not exceed program guidelines |
 
-Set each in Vercel → Project Settings → Environment Variables. Apply to
-**Production** and **Preview** (staging) separately with different values
-if you use separate calendars/sheets per environment (recommended).
+`GOOGLE_SIGNUPS_SHEET_ID` is **not** a Vercel env var. Set it inside the Apps
+Script `CONFIG.SPREADSHEET_ID` directly.
+
+The first two vars (`CALENDAR_ID` + `API_KEY`) are sufficient for availability
+reads only. All five are needed for signup writes.
 
 ---
 
 ## Staging vs. Production
 
-Use separate Google Calendars and Google Sheets for staging and production.
-This prevents test signups from polluting the production sheet.
+Use separate Google Calendars, separate Sheets, and separate Apps Script
+deployments for staging and production.
 
 | Setting | Staging | Production |
 |---|---|---|
-| Calendar | `staging-classes@group.calendar.google.com` | `prod-classes@group.calendar.google.com` |
+| Calendar | staging classes calendar | production classes calendar |
 | Sheet | Staging Signups sheet | Production Signups sheet |
+| Apps Script | Separate deployment with its own URL + secret | Separate deployment with its own URL + secret |
 | Vercel env scope | Preview | Production |
 
-In Vercel, set all six env vars once for Production and once for Preview
-(staging branch) with different values.
+Each Apps Script deployment gets its own `GOOGLE_SIGNUPS_WEBAPP_URL` and its
+own `SHARED_SECRET` Script Property. Use different `GOOGLE_SIGNUPS_SHARED_SECRET`
+values in Vercel for Production and Preview.
 
 ---
 
@@ -189,8 +305,8 @@ Returns upcoming sessions with seat counts.
 
 Status is `"available"` when `seatsRemaining > 0`, otherwise `"full"`.
 
-If Sheets is not configured, `confirmedCount` defaults to `0` (graceful
-degradation — sessions still appear with full capacity).
+If the Apps Script is not reachable, `confirmedCount` defaults to `0`
+(graceful degradation — sessions still appear, seat counts show as full capacity).
 
 ### `POST /api/class-signup`
 
@@ -201,7 +317,7 @@ Accepts a signup request.
 
 **Responses:**
 
-| Status | `result` | Meaning |
+| HTTP | `result` | Meaning |
 |---|---|---|
 | 201 | `pending` | Signup accepted, seat reserved |
 | 200 | `waitlist` | Session full, added to waitlist |
@@ -215,12 +331,22 @@ Accepts a signup request.
 
 Before going live, test each scenario against the staging environment:
 
+**Apps Script Web App (test independently first):**
+- [ ] `GET <WEBAPP_URL>` returns `{ ok: true, status: "Signups Web App is running" }`
+- [ ] `POST <WEBAPP_URL>` with wrong secret returns `{ ok: false, error: "Unauthorized" }`
+- [ ] `POST <WEBAPP_URL>` with `action: "list"` and correct secret returns `{ ok: true, rows: [] }` on empty sheet
+- [ ] `POST <WEBAPP_URL>` with `action: "signup"` and correct secret appends a row to the sheet
+
+**API endpoints:**
 - [ ] `/api/class-availability` returns sessions when calendar has upcoming events
 - [ ] `/api/class-availability` returns `sessions: []` when no upcoming events
 - [ ] `/api/class-availability` returns `503` gracefully when `GOOGLE_CALENDAR_API_KEY` is wrong
-- [ ] `/api/class-signup` accepts a valid POST and appends a row to the sheet
+- [ ] `/api/class-availability` returns sessions with `confirmedCount: 0` if Apps Script is unreachable
+- [ ] `/api/class-signup` accepts a valid POST and appends a row in the sheet with `status: pending`
 - [ ] `/api/class-signup` rejects a duplicate email + eventId with `result: duplicate`
-- [ ] `/api/class-signup` records `waitlist` when confirmedCount >= capacity
+- [ ] `/api/class-signup` records `status: waitlist` when active signups >= capacity
+
+**Frontend:**
 - [ ] Creative Workshops page shows "Loading available sessions…" briefly then renders cards
 - [ ] Session card shows correct date, time, location, and seat count
 - [ ] Signup form validates name and email client-side before submitting
