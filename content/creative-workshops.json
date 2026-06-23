@@ -105,8 +105,8 @@
     ]
   },
   "classSchedule": {
-    "title": "Available Class Sessions",
-    "intro": "Open to adults with and without disabilities. Small class size, maximum 3 participants.",
+    "title": "Weekly Class Availability",
+    "intro": "Open to adults with and without disabilities. Small class size — up to 3 participants per session.",
     "signupEnabled": true
   },
   "howSessionsWork": {
