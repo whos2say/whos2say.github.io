@@ -12,28 +12,28 @@
     "description": "Public creative project services and scheduled small-group workshops in digital storytelling, media production, design, audio, and community storytelling."
   },
   "pricing": {
-    "title": "Draft Public Service Options",
-    "intro": "Pricing should be quoted in writing before work begins. Quotes should identify participant-facing session time, participant-specific technical implementation, materials, project deliverables, cancellation terms, and any third-party payment requirements.",
+    "title": "Session Options",
+    "intro": "Pricing reflects session length, format, and materials. Contact us to match the right option to each participant's goals.",
     "tiers": [
       {
-        "name": "Intro / Project Fit Session",
-        "price": "$75 / 60 minutes",
-        "description": "A single public intake and project-fit session to understand interests, goals, accessibility needs, and whether a creative-service scope is appropriate."
+        "name": "Intro Session",
+        "price": "$25–$75",
+        "description": "A single creative studio visit or short skill-building session to explore fit and interests."
       },
       {
-        "name": "Individual Creator Project Session",
-        "price": "$125–$225 / working session",
-        "description": "Participant-facing creative project work in digital storytelling, design, audio, video, photography, or portfolio development. The quote should state session length and deliverables."
+        "name": "Workshop Block",
+        "price": "$95–$175",
+        "description": "A focused multi-visit block for a defined project — digital storytelling, design, or studio production."
       },
       {
-        "name": "Participant-Specific Technical Implementation",
-        "price": "Quoted in advance",
-        "description": "Website, account, template, editing, formatting, or setup work that is specific to the participant's approved project. This is not billed or documented as live session time."
+        "name": "Extended Project",
+        "price": "$225–$300",
+        "description": "A longer individualized creative media session series with portfolio or showcase goals."
       },
       {
-        "name": "Small-Group Public Workshop",
-        "price": "$35–$75 / participant",
-        "description": "Scheduled public workshop sessions when offered. Group workshops are distinct from individualized creator projects and should have their own date, topic, capacity, and public enrollment terms."
+        "name": "Community Studio Events",
+        "price": "Coming soon",
+        "description": "Intergenerational and community participation events as our studio capacity grows."
       }
     ]
   },
