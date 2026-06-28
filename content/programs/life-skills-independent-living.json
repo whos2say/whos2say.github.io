@@ -3,14 +3,14 @@
   "pathKey": "independence",
   "meta": {
     "title": "Life Skills & Independent Living | Who's to Say ? Foundation",
-    "description": "Everyday habits and routines that build independence—skills, confidence, and choices."
+    "description": "Mission-oriented independence preparation, routines, and everyday skill-building with appropriate service boundaries."
   },
   "hero": {
     "breadcrumb": "Independence Path",
     "title": "Life Skills & Independent Living Preparation",
-    "subtitle": "Everyday skills for confidence and independence—routines, home tasks, money basics, and community navigation.",
+    "subtitle": "Everyday skills for confidence and independence — organized as a mission or approved-provider lane, not a default public creative-service purchase.",
     "pills": ["Routines", "Home Skills", "Money Basics", "Navigation"],
-    "bestFor": "Young adults preparing for more independence at home and in the community.",
+    "bestFor": "People preparing for more independence at home and in the community, when the proper support lane and supervision plan are in place.",
     "image": "/assets/images/cooking1.png"
   },
   "sections": [
@@ -19,36 +19,31 @@
       "blocks": [
         {
           "type": "paragraph",
-          "html": "<strong>Life Skills &amp; Independent Living Preparation</strong> focuses on the everyday habits and routines that make independence possible. It's not about doing everything alone; it's about building skills, confidence, and choices."
+          "html": "<strong>Life Skills &amp; Independent Living Preparation</strong> focuses on everyday habits and routines that support independence. Because this work may involve direct support, supervision, or habilitative skill-building, it must be matched to the appropriate service lane before services begin."
         }
       ]
     },
     {
       "title": "Core Life Skill Areas",
       "blocks": [
-        { "type": "h3", "text": "Daily Routines" },
-        { "type": "ul", "items": ["Using calendars, alarms, or visual schedules"] },
-        { "type": "h3", "text": "Home & Kitchen Skills" },
-        { "type": "ul", "items": ["Simple meal prep and kitchen safety", "Cleaning up and organizing", "Using checklists to complete tasks"] },
-        { "type": "h3", "text": "Money & Shopping" },
-        { "type": "ul", "items": ["Handling cash and cards in real or practice scenarios", "Comparing prices, making simple budgets", "Practicing purchases in real stores when appropriate"] },
-        { "type": "h3", "text": "Community Navigation" },
-        { "type": "ul", "items": ["Using rides with family, paratransit, or rideshare safely", "Learning routes to familiar places (library, rec center, etc.)"] },
-        { "type": "h3", "text": "Social & Emotional Skills" },
-        { "type": "ul", "items": ["Practicing conversation and self-advocacy", "Managing frustration and asking for help", "Building positive self-talk and confidence"] }
+        {"type": "h3", "text": "Daily Routines"},
+        {"type": "ul", "items": ["Using calendars, alarms, or visual schedules", "Breaking a routine into clear steps", "Practicing follow-through with appropriate support"]},
+        {"type": "h3", "text": "Home & Kitchen Skills"},
+        {"type": "ul", "items": ["Simple meal-prep concepts and kitchen safety", "Cleaning up and organizing", "Using checklists to complete tasks"]},
+        {"type": "h3", "text": "Money & Shopping"},
+        {"type": "ul", "items": ["Budget concepts and practice scenarios", "Comparing prices and planning purchases", "Practicing purchases only when consent and service boundaries are clear"]},
+        {"type": "h3", "text": "Community Navigation"},
+        {"type": "ul", "items": ["Learning routes to familiar places", "Practicing safe planning before community activities", "Arranging direct support or transportation separately when required"]},
+        {"type": "h3", "text": "Communication & Self-Advocacy"},
+        {"type": "ul", "items": ["Practicing preferences and choices", "Asking for help", "Building confidence in familiar routines"]}
       ]
     },
     {
-      "title": "Outcomes & Skills",
+      "title": "Service Boundary",
       "blocks": [
         {
-          "type": "ul",
-          "items": [
-            "More predictable days and routines",
-            "Increased participation in home tasks",
-            "Improved comfort in stores and community spaces",
-            "Stronger communication and self-advocacy"
-          ]
+          "type": "paragraph",
+          "html": "This pathway should not be presented as a default Goods &amp; Services creative project. When the work is primarily life skills, community support, supervision, or habilitation, it should be routed to the appropriate approved service lane, provider partner, private-pay arrangement, grant, or mission-funded support."
         }
       ]
     }
@@ -56,11 +51,11 @@
   "sidebar": {
     "sessionStyle": {
       "title": "Session Style",
-      "items": ["Recurring, practical coaching sessions", "Goal-driven supports tied to daily life", "Community practice when appropriate"]
+      "items": ["Mission or approved-provider lane", "Goal-driven practical support", "Requires clear support and service boundaries"]
     },
     "getStarted": {
       "title": "Get Started",
-      "prompt": "Want to talk goals and supports for daily independence?",
+      "prompt": "Want to discuss the right lane for independence goals?",
       "primaryLabel": "Contact Us",
       "primaryHref": "/contact.html",
       "secondaryLabel": "Email",
@@ -73,17 +68,17 @@
         "blocks": [
           {
             "type": "paragraph",
-            "html": "Families can schedule recurring sessions where a mentor works alongside the participant on practical, goal-driven skills."
+            "html": "Families and teams should first identify whether the requested work is direct support, skill-building, supervision, a creative project, or another service. The correct lane should be chosen before scheduling begins."
           }
         ]
       },
       {
-        "summary": "Coordinator / DDD Summary",
+        "summary": "Coordinator / Scope Note",
         "open": false,
         "blocks": [
           {
             "type": "paragraph",
-            "html": "Life Skills &amp; Independent Living sessions are individualized supports funded through DDD Goods &amp; Services. Focus areas include daily routines, simple meal preparation, basic money skills, and community navigation. Supports are practical, goal-driven, and designed to increase the person's independence and participation at home and in the community."
+            "html": "Life-skills and independence supports may overlap with defined service categories. Use the proper approved provider, partner, or funding source when the support is not a public creative-service purchase."
           }
         ]
       }
