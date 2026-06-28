@@ -1,5 +1,5 @@
 {
-  "_comment": "Public Creative Workshops page copy. Page shell: creative-workshops.html (when published). Review pricing and funding language with leadership before publishing.",
+  "_comment": "Draft public creative-services page copy. This page should describe genuine public creative services, not DDD-specific supports. Review pricing, funding, privacy, and service boundaries before publishing.",
   "makerSpace": {
     "title": "Help Build the Studio",
     "body": "We are building toward a dedicated maker space — raising funds for equipment, accessibility, and a future community studio. This is a next-phase vision, not a current licensed facility.",
@@ -8,125 +8,121 @@
     "ctaExternal": true
   },
   "meta": {
-    "title": "Creative Workshops | Who's to Say ? Foundation",
-    "description": "Public-facing creative workshops and individualized creative media sessions in our creative studio — skill-building through digital storytelling and community participation."
+    "title": "Creative Project Services & Workshops | Who's to Say ? Foundation",
+    "description": "Public creative project services and scheduled small-group workshops in digital storytelling, media production, design, audio, and community storytelling."
   },
   "pricing": {
-    "title": "Session Options",
-    "intro": "Pricing reflects session length, format, and materials. Contact us to match the right option to each participant's goals.",
+    "title": "Draft Public Service Options",
+    "intro": "Pricing should be quoted in writing before work begins. Quotes should identify participant-facing session time, participant-specific technical implementation, materials, project deliverables, cancellation terms, and any third-party payment requirements.",
     "tiers": [
       {
-        "name": "Intro Session",
-        "price": "$25–$75",
-        "description": "A single creative studio visit or short skill-building session to explore fit and interests."
+        "name": "Intro / Project Fit Session",
+        "price": "$75 / 60 minutes",
+        "description": "A single public intake and project-fit session to understand interests, goals, accessibility needs, and whether a creative-service scope is appropriate."
       },
       {
-        "name": "Workshop Block",
-        "price": "$95–$175",
-        "description": "A focused multi-visit block for a defined project — digital storytelling, design, or studio production."
+        "name": "Individual Creator Project Session",
+        "price": "$125–$225 / working session",
+        "description": "Participant-facing creative project work in digital storytelling, design, audio, video, photography, or portfolio development. The quote should state session length and deliverables."
       },
       {
-        "name": "Extended Project",
-        "price": "$225–$300",
-        "description": "A longer individualized creative media session series with portfolio or showcase goals."
+        "name": "Participant-Specific Technical Implementation",
+        "price": "Quoted in advance",
+        "description": "Website, account, template, editing, formatting, or setup work that is specific to the participant's approved project. This is not billed or documented as live session time."
       },
       {
-        "name": "Community Studio Events",
-        "price": "Coming soon",
-        "description": "Intergenerational and community participation events as our studio capacity grows."
+        "name": "Small-Group Public Workshop",
+        "price": "$35–$75 / participant",
+        "description": "Scheduled public workshop sessions when offered. Group workshops are distinct from individualized creator projects and should have their own date, topic, capacity, and public enrollment terms."
       }
     ]
   },
   "workshops": [
     {
-      "title": "Intro to Video Editing",
-      "summary": "Import, trim, and share short clips using accessible tools."
+      "title": "Digital Storytelling Project",
+      "summary": "Plan, record, edit, and share a short participant-owned story or portfolio piece."
+    },
+    {
+      "title": "Video Editing Basics",
+      "summary": "Import, trim, caption, and export short clips using accessible tools."
     },
     {
       "title": "Podcast & Audio Basics",
-      "summary": "Microphone setup, recording, and simple editing for voice projects."
+      "summary": "Microphone setup, recording, voice practice, and simple editing for audio projects."
     },
     {
       "title": "Photography & Visual Storytelling",
-      "summary": "Compose, capture, and curate images for a personal portfolio."
+      "summary": "Compose, capture, and curate images for a personal portfolio or story."
     },
     {
       "title": "Canva & Digital Design",
-      "summary": "Graphics, stickers, and social visuals with readable layouts."
+      "summary": "Graphics, stickers, flyers, and social visuals with readable layouts."
     },
     {
       "title": "On-Camera Confidence",
-      "summary": "Short segments, intros, and teleprompter practice."
+      "summary": "Short intros, teleprompter practice, interview prompts, and presentation clips."
     },
     {
-      "title": "Music & Playlist Projects",
-      "summary": "Build and present playlists with introductions between tracks."
+      "title": "Sports Media Story Project",
+      "summary": "Game recaps, fan interviews, trading-card concepts, highlight commentary, or team-story media."
     },
     {
-      "title": "Sports Media Crew",
-      "summary": "Film highlights, fan takes, and simple game recaps."
-    },
-    {
-      "title": "Maker & Art Studio Sessions",
-      "summary": "Create prints, crafts, or digital art for showcases."
-    },
-    {
-      "title": "Independent Living Skills Labs",
-      "summary": "Practical routines: schedules, shopping practice, and navigation."
+      "title": "Art, Maker & Showcase Preparation",
+      "summary": "Create digital or physical pieces and prepare a low-pressure presentation or gallery-style display."
     }
   ],
   "fundingNote": {
-    "title": "Funding & Support Coordinators",
-    "body": "Some participants may be eligible for funding when approved through the individual's plan or funding source. Approval decisions are made by the applicable funding source, plan, or reviewer.",
+    "title": "Funding & Third-Party Payment",
+    "body": "Funding is not guaranteed. Any DDD, plan-based, or third-party-funded purchase must match the individual's documented need and must be approved in writing before services begin. The approved scope should identify the exact service, dates, rate, participant-facing time, any participant-specific technical implementation, and deliverables.",
     "linkLabel": "Information for Support Coordinators",
     "linkHref": "/support-coordinators.html"
   },
   "inclusiveSection": {
-    "title": "Inclusive & Intergenerational",
-    "body": "Our public-facing classes welcome participants of different ages and abilities. Sessions emphasize dignity, creativity, and community participation — never a transactional or clinical feel."
+    "title": "Public, Inclusive & Project-Based",
+    "body": "These creative services are designed for the broader community and are intentionally accessible to people with and without disabilities. Individualized projects are scoped separately from group workshops, direct support, therapy, case management, employment placement, and personal training."
   },
   "finalCta": {
-    "title": "Ready to explore a workshop?",
-    "body": "Tell us what excites you — we'll help find the right creative path.",
+    "title": "Ready to explore a creative project?",
+    "body": "Tell us what you want to make. We'll help determine whether the right next step is a public workshop, an individualized creator project, a mission-funded opportunity, or a referral to another support lane.",
     "primaryLabel": "Contact Us",
     "primaryHref": "/contact.html",
     "secondaryLabel": "View Programs",
     "secondaryHref": "/programs.html"
   },
   "hero": {
-    "kicker": "Public-Facing Classes",
-    "title": "Creative Workshops",
-    "subtitle": "Individualized creative media sessions and small-group workshops in a supportive creative studio — built around interests, not a one-size-fits-all schedule.",
+    "kicker": "Public Creative Services — Draft",
+    "title": "Creative Project Services & Workshops",
+    "subtitle": "Individualized creator projects and scheduled small-group workshops in digital storytelling, media production, design, audio, and community storytelling — scoped around real deliverables, not vague life coaching.",
     "pills": [
       "Digital Storytelling",
-      "Studio Skills",
-      "Community Participation",
-      "Skill-Building"
+      "Creator Projects",
+      "Public Workshops",
+      "Defined Deliverables"
     ]
   },
   "classSchedule": {
-    "title": "Weekly Class Availability",
-    "intro": "Open to adults with and without disabilities. Small class size — up to 3 participants per session.",
-    "signupEnabled": true
+    "title": "Workshop Availability",
+    "intro": "Live workshop availability is paused while we finalize the service catalog, pricing, privacy terms, and funding boundaries. Contact us to discuss a project or future public workshop.",
+    "signupEnabled": false
   },
   "howSessionsWork": {
-    "title": "How Sessions Work",
+    "title": "How Creative Projects Work",
     "steps": [
       {
-        "title": "Connect",
-        "body": "Reach out with interests, goals, and the best way to reach you."
+        "title": "Inquire",
+        "body": "Share the creative goal, preferred format, accessibility needs, timeline, and who should be involved in planning."
       },
       {
-        "title": "Match",
-        "body": "We suggest a workshop or individualized session format that fits."
+        "title": "Scope",
+        "body": "We define whether the work is a public workshop, an individualized creator project, a mission-funded opportunity, or outside our service lane."
       },
       {
         "title": "Create",
-        "body": "Sessions happen in our creative studio or community settings — project-based and interest-led."
+        "body": "Sessions focus on the participant-owned project and any approved technical implementation required to complete it."
       },
       {
-        "title": "Share",
-        "body": "Participants build skills and optional portfolio pieces they can share with family and supporters."
+        "title": "Close Out",
+        "body": "The participant receives the agreed deliverables, a plain-language handoff, and next-step recommendations when appropriate."
       }
     ]
   }
