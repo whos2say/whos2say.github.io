@@ -63,22 +63,22 @@
   ],
   "howPathways": {
     "title": "How Pathways Work",
-    "subtitle": "Flexible paths, clearer lanes.",
+    "subtitle": "Flexible paths for building confidence and independence.",
     "steps": [
       {
         "icon": "➜",
         "title": "Choose",
-        "body": "Start with what excites the person — interests lead the way."
+        "body": "Start with what excites you — interests lead the way."
       },
       {
         "icon": "✦",
-        "title": "Scope",
-        "body": "Define whether the idea is a creative project, workshop, mission opportunity, or support service."
+        "title": "Build",
+        "body": "Grow skills, routines, and confidence through real projects."
       },
       {
         "icon": "◎",
-        "title": "Build",
-        "body": "Use the right lane, documentation, consent, and boundaries before work begins."
+        "title": "Expand",
+        "body": "Paths can overlap and evolve toward work, community, and independence."
       }
     ]
   }
