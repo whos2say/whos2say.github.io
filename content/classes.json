@@ -1,32 +1,33 @@
 {
-  "_comment": "Public class metadata for the signup system. Non-secret display data only. Calendar IDs and service account credentials are in env vars. Class IDs here must match VALID_CLASS_IDS in lib/google-class-services.js.",
+  "_comment": "Public workshop metadata for the inquiry system. Non-secret display data only. Calendar IDs and credentials are in env vars. Do not use funding categories such as G&S as class aliases; events should map to the actual public workshop topic.",
   "classes": [
     {
       "id": "digital-content-production",
       "displayName": "Digital Content Production",
-      "description": "Create, edit, and share digital content — video, graphic design, photography, and studio production. Project-based sessions in a small-group creative studio setting.",
-      "tuitionLabel": "See Session Options",
+      "description": "Create, edit, and share digital content — video, graphic design, photography, and studio production. Project-based sessions in a small-group public workshop setting.",
+      "tuitionLabel": "See Public Service Options",
       "active": true,
       "defaultCapacity": 3,
       "aliases": [
         "digital content production",
         "digital content",
-        "content production"
+        "content production",
+        "digital storytelling workshop"
       ]
     },
     {
       "id": "sports-media-community",
       "displayName": "Sports Media & Community",
-      "description": "Film highlights, create fan content, and tell sports stories through community media. Small-group sessions combining community participation with media production skills.",
-      "tuitionLabel": "See Session Options",
+      "description": "Film highlights, create fan content, and tell sports stories through community media. Small-group public sessions combining community storytelling with media production skills.",
+      "tuitionLabel": "See Public Service Options",
       "active": true,
       "defaultCapacity": 3,
       "aliases": [
         "sports media & community",
         "sports media and community",
         "sports media",
-        "g&s class",
-        "g & s class"
+        "sports storytelling",
+        "sports media story project"
       ]
     }
   ]
