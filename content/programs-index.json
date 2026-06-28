@@ -5,26 +5,26 @@
   },
   "hero": {
     "title": "Who's to Say What's Possible?",
-    "subtitle": "Interest-driven programs designed to build confidence, skills, and community one pathway at a time."
+    "subtitle": "Interest-driven pathways that help people build confidence, skills, and community through clear projects"
   },
   "gridHeading": {
     "title": "The Possibility Paths",
-    "subtitle": "Participants can explore one or multiple pathways depending on their interests, strengths, and goals."
+    "subtitle": "Each pathway starts with interest, then gets scoped as a creative project, public workshop, mission opportunity, partner service, or separate support lane."
   },
   "programs": [
     {
       "id": "digital",
       "label": "Digital Path",
       "title": "Digital Content Creator Pathways",
-      "summary": "Video, design, photography, and production skills built one project at a time.",
+      "summary": "Video, design, photography, and production skills built through defined creative projects.",
       "href": "/programs/digital-content-creator.html",
       "image": "/assets/images/Modern_podcast_Studio_setup.png"
     },
     {
       "id": "sports",
       "label": "Sports Path",
-      "title": "Who's to Say Sports",
-      "summary": "Challenger Sports, fitness, outings, and sports storytelling.",
+      "title": "Who's to Say Sports Media",
+      "summary": "Sports storytelling, fan interviews, recaps, photography, and team-story media.",
       "href": "/programs/whos-to-say-sports.html",
       "image": "/assets/images/Turkey-Bowl.jpg"
     },
@@ -32,31 +32,31 @@
       "id": "independence",
       "label": "Independence Path",
       "title": "Life Skills & Independent Living",
-      "summary": "Everyday skills for confidence, independence, and routine.",
+      "summary": "Everyday independence goals routed through the proper service or mission lane.",
       "href": "/programs/life-skills-independent-living.html",
       "image": "/assets/images/cooking1.png"
     },
     {
       "id": "community",
       "label": "Community Path",
-      "title": "Community Integration & Advocacy",
-      "summary": "Show up, speak up, and be seen through supported community engagement.",
+      "title": "Community Leadership & Storytelling",
+      "summary": "Creative advocacy, storytelling, and presentation projects with direct support separated when needed.",
       "href": "/programs/community-integration-advocacy.html",
       "image": "/assets/images/Matt-Presentation.png"
     },
     {
       "id": "art",
       "label": "Art Path",
-      "title": "Art Studio & Events",
-      "summary": "Create, share, and celebrate work in supportive settings.",
+      "title": "Art Studio & Showcase Projects",
+      "summary": "Create, present, and celebrate participant-owned creative work with clear consent and showcase terms.",
       "href": "/programs/maker-market-events.html",
       "image": "/assets/images/Maker_space.png"
     },
     {
       "id": "entertainment",
       "label": "Entertainment Path",
-      "title": "Entertainment Pathways",
-      "summary": "On-camera confidence, acting basics, and voice work.",
+      "title": "Entertainment & On-Camera Projects",
+      "summary": "On-camera confidence, voice work, fandom, and mini-reel projects.",
       "href": "/programs/entertainment-pathways.html",
       "image": "/assets/images/Matt-Teleprompter.JPG"
     }
