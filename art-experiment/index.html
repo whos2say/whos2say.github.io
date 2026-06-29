@@ -1,765 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resonant Spectra — a light show in time</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --dark:#141413; --light:#faf9f5; --mid:#b0aea5; --lgray:#e8e6dc;
-            --org:#d97757; --blue:#6a9bcc; --green:#788c5d;
-        }
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--light) 0%,#f5f3ee 100%);min-height:100vh;color:var(--dark);}
-        .container{display:flex;min-height:100vh;padding:20px;gap:20px;}
-        .sidebar{width:320px;flex-shrink:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(20,20,19,.1);overflow-y:auto;overflow-x:hidden;}
-        .sidebar h1{font-family:'Lora',serif;font-size:24px;font-weight:500;color:var(--dark);margin-bottom:8px;}
-        .sidebar .subtitle{color:var(--mid);font-size:14px;margin-bottom:28px;line-height:1.45;}
-        .cs{margin-bottom:28px;}
-        .cs h3{font-size:16px;font-weight:600;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-        .cs h3::before{content:'•';color:var(--org);font-weight:bold;}
-        .seed-input{width:100%;background:var(--light);padding:12px;border-radius:8px;font-family:'Courier New',monospace;font-size:14px;margin-bottom:12px;border:1px solid var(--lgray);text-align:center;}
-        .seed-input:focus{outline:none;border-color:var(--org);}
-        .seed-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-        .cg{margin-bottom:18px;}
-        .cg label{display:block;font-size:14px;font-weight:500;color:var(--dark);margin-bottom:8px;}
-        .sc{display:flex;align-items:center;gap:12px;}
-        .sc input[type=range]{flex:1;height:4px;background:var(--lgray);border-radius:2px;outline:none;-webkit-appearance:none;}
-        .sc input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--org);border-radius:50%;cursor:pointer;}
-        .sc input[type=range]::-moz-range-thumb{width:16px;height:16px;background:var(--org);border-radius:50%;border:none;cursor:pointer;}
-        .vd{font-family:'Courier New',monospace;font-size:12px;color:var(--mid);min-width:52px;text-align:right;}
-        .col-grp{margin-bottom:14px;}
-        .col-grp label{display:block;font-size:12px;color:var(--mid);margin-bottom:4px;}
-        .cpc{display:flex;align-items:center;gap:8px;}
-        .cpc input[type=color]{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0;}
-        .cv{font-family:'Courier New',monospace;font-size:12px;color:var(--mid);}
-        .btn{background:var(--org);color:#fff;border:none;padding:10px 16px;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;width:100%;}
-        .btn:hover{background:#c86641;transform:translateY(-1px);}
-        .btn:active{transform:translateY(0);}
-        .btn.sec{background:var(--blue);}
-        .btn.sec:hover{background:#5a8bb8;}
-        .btn.ter{background:var(--green);}
-        .btn.ter:hover{background:#6b7b52;}
-        .btn.wide{margin-bottom:8px;}
-        .btn-row{display:flex;gap:8px;}
-        .btn-row .btn{flex:1;}
-        .canvas-area{flex:1;display:flex;align-items:center;justify-content:center;min-width:0;}
-        #cc{width:100%;max-width:1000px;border-radius:12px;overflow:hidden;box-shadow:0 20px 40px rgba(20,20,19,.18);background:#05060d;position:relative;}
-        #cc canvas{display:block;width:100%!important;height:auto!important;}
-        #bg-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease;pointer-events:none;mix-blend-mode:luminosity;}
-        .loading{display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--mid);padding:80px 0;}
-
-        /* Photo presets */
-        .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px;}
-        .pt{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:all .18s;opacity:.65;}
-        .pt:hover{opacity:1;border-color:var(--org);transform:scale(1.04);}
-        .pt.active{opacity:1;border-color:var(--org);box-shadow:0 0 0 2px rgba(217,119,87,.35);}
-        .cycle-bar-wrap{height:3px;background:var(--lgray);border-radius:2px;margin-top:6px;overflow:hidden;}
-        .cycle-bar{height:100%;width:0%;background:var(--org);transition:width .5s linear;border-radius:2px;}
-        .cycle-status{font-size:11px;color:var(--mid);margin-top:4px;}
-        .analysis-badge{display:inline-block;font-size:10px;color:var(--mid);background:var(--lgray);border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
-
-        /* Audio */
-        .audio-search{display:flex;gap:6px;margin-bottom:10px;}
-        .audio-search input{flex:1;padding:8px 10px;border:1px solid var(--lgray);border-radius:6px;font-size:13px;background:var(--light);color:var(--dark);outline:none;}
-        .audio-search input:focus{border-color:var(--org);}
-        .track-list{max-height:200px;overflow-y:auto;border:1px solid var(--lgray);border-radius:8px;margin-bottom:8px;display:none;}
-        .ti{padding:8px 10px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--lgray);transition:background .14s;}
-        .ti:last-child{border-bottom:none;}
-        .ti:hover{background:rgba(217,119,87,.07);}
-        .ti.playing{background:rgba(217,119,87,.14);font-weight:600;}
-        .ti-date{color:var(--dark);font-weight:500;}
-        .ti-venue{color:var(--mid);font-size:11px;}
-        .ti-dur{float:right;color:var(--mid);font-size:11px;margin-left:4px;}
-        .audio-status{font-size:12px;color:var(--mid);margin-bottom:6px;min-height:18px;}
-        .fft-bars{height:24px;background:rgba(0,0,0,.04);border-radius:4px;overflow:hidden;margin-bottom:8px;display:flex;align-items:flex-end;gap:1px;padding:2px;}
-        .fft-bar{flex:1;background:var(--org);border-radius:2px 2px 0 0;min-height:2px;}
-        .fft-bar.mid{background:var(--blue);}
-        .fft-bar.hi{background:var(--green);}
-        .disc{font-size:11px;color:var(--mid);margin-top:6px;line-height:1.9;}
-        .disc a{color:var(--blue);text-decoration:none;}
-        .disc a:hover{text-decoration:underline;}
-        .tap-wrap{display:none;}
-        .tap-wrap.show{display:block;}
-        .tap-btn{background:#555;color:#fff;border:none;padding:10px;border-radius:6px;font-size:18px;cursor:pointer;width:100%;margin-bottom:6px;}
-        .tap-btn:active{background:var(--org);}
-
-        @media(max-width:600px){.container{flex-direction:column;}.sidebar{width:100%;}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resonant Spectra — light grown from photographs</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--dark:#141413;--light:#faf9f5;--mid:#b0aea5;--lgray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--light),#f5f3ee);min-height:100vh;color:var(--dark)}
+.container{display:flex;min-height:100vh;padding:20px;gap:20px}
+.sidebar{width:320px;flex-shrink:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(20,20,19,.1);overflow-y:auto}
+.sidebar h1{font-family:'Lora',serif;font-size:23px;font-weight:500;margin-bottom:6px}
+.sidebar .subtitle{color:var(--mid);font-size:13.5px;margin-bottom:24px;line-height:1.45}
+.section{margin-bottom:26px}
+.section h3{font-size:15px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section h3::before{content:'•';color:var(--orange);font-weight:bold}
+.nowshow{background:var(--light);border:1px solid var(--lgray);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--dark);margin-bottom:12px;line-height:1.5}
+.nowshow .nm{font-weight:600}
+.nowshow .swatches{display:flex;gap:4px;margin-top:8px}
+.nowshow .sw{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.1)}
+.group{margin-bottom:16px}
+.group label{display:block;font-size:13.5px;font-weight:500;margin-bottom:7px}
+.slider{display:flex;align-items:center;gap:10px}
+.slider input[type=range]{flex:1;height:4px;background:var(--lgray);border-radius:2px;-webkit-appearance:none}
+.slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--orange);border-radius:50%;cursor:pointer}
+.val{font-family:'Courier New',monospace;font-size:12px;color:var(--mid);min-width:46px;text-align:right}
+.btn{background:var(--orange);color:#fff;border:none;padding:10px 14px;border-radius:6px;font-size:13.5px;font-weight:500;cursor:pointer;width:100%;transition:.15s}
+.btn:hover{background:#c86641;transform:translateY(-1px)}
+.btn.sec{background:var(--blue)}.btn.sec:hover{background:#5a8bb8}
+.btn.ter{background:var(--green)}.btn.ter:hover{background:#6b7b52}
+.btn.wide{margin-bottom:8px}
+.row{display:flex;gap:8px}.row .btn{flex:1}
+.toggle{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--light);border:1px solid var(--lgray);border-radius:8px;margin-bottom:8px;font-size:13.5px;cursor:pointer}
+.toggle .pill{width:38px;height:20px;border-radius:10px;background:var(--mid);position:relative;transition:.2s;flex-shrink:0}
+.toggle .pill::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s}
+.toggle.on .pill{background:var(--orange)}.toggle.on .pill::after{left:20px}
+.hint{font-size:11.5px;color:var(--mid);line-height:1.5;margin-top:6px}
+.canvas-area{flex:1;display:flex;align-items:center;justify-content:center;min-width:0}
+#cc{width:100%;max-width:1000px;border-radius:12px;overflow:hidden;box-shadow:0 20px 40px rgba(20,20,19,.18);background:#05060d}
+#cc canvas{display:block;width:100%!important;height:auto!important}
+.loading{display:flex;align-items:center;justify-content:center;color:var(--mid);padding:80px 0}
+input[type=file]{font-size:12px;width:100%}
+@media(max-width:600px){.container{flex-direction:column}.sidebar{width:100%}}
+</style>
 </head>
 <body>
 <div class="container">
   <div class="sidebar">
     <h1>Resonant Spectra</h1>
-    <div class="subtitle">Generative light driven by PHishy Art photos and live Phish recordings — palette extracted in-browser, groove locked to a 16-step funk figure.</div>
+    <div class="subtitle">Each photograph is analyzed — its colors, its brightest lights, the direction of its blur — and the light show is grown from what's actually in the frame. Photos cycle as short movements.</div>
 
-    <!-- Playback -->
-    <div class="cs">
+    <div class="section">
+      <h3>Now showing</h3>
+      <div class="nowshow" id="nowshow"><span class="nm">loading…</span></div>
+      <div class="row">
+        <button class="btn sec" onclick="prevPhoto()">&#8592; Prev</button>
+        <button class="btn sec" onclick="nextPhoto()">Next &#8594;</button>
+      </div>
+    </div>
+
+    <div class="section">
       <h3>Playback</h3>
       <button class="btn wide" id="playBtn" onclick="togglePlay()">&#9646;&#9646; Pause</button>
-      <div class="btn-row">
-        <button class="btn sec" onclick="restartPerf()">&#9198; Restart</button>
-        <button class="btn ter" id="gridBtn" onclick="toggleGrid()">Beat grid: on</button>
+      <div class="toggle on" id="cycleTog" onclick="toggleCycle()"><span>Cycle through photos</span><span class="pill"></span></div>
+      <div class="toggle" id="srcTog" onclick="toggleSource()"><span>Show source photo (faint)</span><span class="pill"></span></div>
+      <div class="group" style="margin-top:14px">
+        <label>Movement length (per photo)</label>
+        <div class="slider"><input type="range" id="photoDur" min="8" max="30" step="1" value="24" oninput="setP('photoDur',this.value)"><span class="val" id="photoDur-v">24s</span></div>
+        <div class="hint">Each photo loops as a movement no longer than 30 seconds.</div>
       </div>
     </div>
 
-    <!-- Audio -->
-    <div class="cs">
-      <h3>Audio &mdash; phish.in</h3>
-      <div class="audio-search">
-        <input type="text" id="song-q" placeholder="Song name (e.g. Tweezer)" value="Tweezer" onkeydown="if(event.key==='Enter')searchSong()">
-        <button class="btn sec" style="width:auto;padding:8px 12px" onclick="searchSong()">&#128269;</button>
+    <div class="section">
+      <h3>Music — phish.in</h3>
+      <div class="row" style="gap:6px">
+        <input id="q" type="text" placeholder="search a song, e.g. Tweezer" style="flex:1;padding:9px;border:1px solid var(--lgray);border-radius:8px;font-size:13px" onkeydown="if(event.key==='Enter')searchSong()">
+        <button class="btn" style="width:auto;padding:9px 12px" onclick="searchSong()">Go</button>
       </div>
-      <div class="track-list" id="track-list"></div>
-      <div class="audio-status" id="aud-status">Search a song to stream from phish.in.</div>
-      <div class="fft-bars" id="fft-bars"></div>
-      <div class="btn-row" style="margin-bottom:6px">
-        <button class="btn sec" id="aud-play-btn" onclick="toggleAudPlay()" style="display:none">&#9654; Play</button>
-        <button class="btn" id="aud-stop-btn" onclick="stopAudio()" style="display:none">&#9632; Stop</button>
-      </div>
-      <div class="tap-wrap" id="tap-wrap">
-        <button class="tap-btn" onclick="tap()">&#127925; Tap tempo</button>
-        <div class="audio-status" id="tap-status">Tap 4+ beats to lock BPM.</div>
-      </div>
-      <div class="disc">
-        <a href="https://phish.in" target="_blank" rel="noopener">phish.in</a> &middot;
-        <a href="https://phish.net" target="_blank" rel="noopener">phish.net</a> &middot;
-        <a href="https://livephish.com" target="_blank" rel="noopener">livephish.com</a>
-      </div>
+      <div id="results" style="margin-top:8px;max-height:180px;overflow:auto;font-size:12.5px"></div>
+      <div class="row" style="margin-top:8px"><button class="btn sec" id="aPlay" onclick="toggleAudio()" disabled>&#9654; Play</button></div>
+      <div id="np" class="hint"></div>
+      <div class="hint" style="margin-top:8px">…or load a local track:</div>
+      <input type="file" id="audioFile" accept="audio/*" onchange="loadLocal(this)">
+      <div class="hint">When audio plays, the visuals react to it (bass→plumes, mids→washes, highs→beams).</div>
     </div>
 
-    <!-- Photo presets + cycling -->
-    <div class="cs">
-      <h3>PHishy Art <span class="analysis-badge">live analysis</span></h3>
-      <div class="btn-row" style="margin-bottom:8px">
-        <button class="btn sec wide" id="cycleBtn" onclick="toggleCycle()" style="margin-bottom:0">&#9654; Auto-cycle</button>
-        <button class="btn ter" onclick="clearPhotoPreset()" style="width:auto;padding:10px 12px">&#10005; Clear</button>
-      </div>
-      <div class="cg" style="margin-bottom:8px">
-        <label>Cycle interval</label>
-        <div class="sc">
-          <input type="range" id="cycleInterval" min="5" max="30" step="5" value="20" oninput="updateCycleInterval(this.value)">
-          <span class="vd" id="cycleInterval-value">20s</span>
-        </div>
-      </div>
-      <div class="cycle-bar-wrap"><div class="cycle-bar" id="cycle-bar"></div></div>
-      <div class="cycle-status" id="cycle-status"></div>
-      <div class="photo-grid" id="photo-grid">
-        <div style="grid-column:1/-1;color:var(--mid);font-size:12px;padding:4px 0">Loading&hellip;</div>
-      </div>
+    <div class="section">
+      <h3>Look</h3>
+      <div class="group"><label>Intensity</label><div class="slider"><input type="range" id="intensity" min="0.3" max="2" step="0.05" value="1" oninput="setP('intensity',this.value)"><span class="val" id="intensity-v">1.00</span></div></div>
+      <div class="group"><label>Liquid flow</label><div class="slider"><input type="range" id="flow" min="0.2" max="3" step="0.1" value="1" oninput="setP('flow',this.value)"><span class="val" id="flow-v">1.0</span></div></div>
+      <div class="group"><label>Plumes</label><div class="slider"><input type="range" id="plumes" min="0" max="2" step="0.05" value="1" oninput="setP('plumes',this.value)"><span class="val" id="plumes-v">1.00</span></div></div>
+      <div class="group"><label>Beams</label><div class="slider"><input type="range" id="beams" min="0" max="2" step="0.05" value="1" oninput="setP('beams',this.value)"><span class="val" id="beams-v">1.00</span></div></div>
+      <div class="group"><label>Smear (motion blur)</label><div class="slider"><input type="range" id="smear" min="0" max="2" step="0.05" value="1" oninput="setP('smear',this.value)"><span class="val" id="smear-v">1.00</span></div></div>
+      <div class="group"><label>Trail persistence</label><div class="slider"><input type="range" id="trail" min="0.2" max="0.9" step="0.01" value="0.55" oninput="setP('trail',this.value)"><span class="val" id="trail-v">0.55</span></div></div>
     </div>
 
-    <!-- Seed -->
-    <div class="cs">
-      <h3>Seed</h3>
-      <input type="number" id="seed-input" class="seed-input" value="1992" onchange="updateSeed()">
-      <div class="seed-controls">
-        <button class="btn sec" onclick="prevSeed()">&larr; Prev</button>
-        <button class="btn sec" onclick="nextSeed()">Next &rarr;</button>
-      </div>
-      <button class="btn ter" style="margin-top:8px" onclick="rndSeed()">&#8635; Random staging</button>
-    </div>
-
-    <!-- Parameters -->
-    <div class="cs">
-      <h3>Parameters</h3>
-      <div class="cg"><label>Tempo (BPM)</label>
-        <div class="sc"><input type="range" id="bpm" min="70" max="140" step="1" value="104" oninput="upParam('bpm',this.value)"><span class="vd" id="bpm-v">104</span></div></div>
-      <div class="cg"><label>Groove punch</label>
-        <div class="sc"><input type="range" id="groove" min="0" max="2" step="0.05" value="1" oninput="upParam('groove',this.value)"><span class="vd" id="groove-v">1.00</span></div></div>
-      <div class="cg"><label>Liquid flow</label>
-        <div class="sc"><input type="range" id="flowSpeed" min="0.2" max="3" step="0.1" value="1" oninput="upParam('flowSpeed',this.value)"><span class="vd" id="flowSpeed-v">1.0</span></div></div>
-      <div class="cg"><label>Plumes (FFT: bass)</label>
-        <div class="sc"><input type="range" id="plumes" min="0" max="2" step="0.05" value="1" oninput="upParam('plumes',this.value)"><span class="vd" id="plumes-v">1.00</span></div></div>
-      <div class="cg"><label>Beams (FFT: treble)</label>
-        <div class="sc"><input type="range" id="beam" min="0" max="2" step="0.05" value="1" oninput="upParam('beam',this.value)"><span class="vd" id="beam-v">1.00</span></div></div>
-      <div class="cg"><label>Bloom response</label>
-        <div class="sc"><input type="range" id="bloom" min="0" max="2" step="0.05" value="1" oninput="upParam('bloom',this.value)"><span class="vd" id="bloom-v">1.00</span></div></div>
-      <div class="cg"><label>Trail persistence</label>
-        <div class="sc"><input type="range" id="trail" min="0.2" max="0.9" step="0.01" value="0.55" oninput="upParam('trail',this.value)"><span class="vd" id="trail-v">0.55</span></div></div>
-      <div class="cg"><label>Motion smear</label>
-        <div class="sc"><input type="range" id="smear" min="0" max="1" step="0.05" value="0.3" oninput="upParam('smear',this.value)"><span class="vd" id="smear-v">0.30</span></div></div>
-    </div>
-
-    <!-- Palette -->
-    <div class="cs">
-      <h3>Palette</h3>
-      <div class="col-grp"><label>Upper haze</label><div class="cpc"><input type="color" id="colTop" value="#23d36a" onchange="upColor('colTop',this.value)"><span class="cv" id="colTop-v">#23d36a</span></div></div>
-      <div class="col-grp"><label>Body</label><div class="cpc"><input type="color" id="colBase" value="#1b3cff" onchange="upColor('colBase',this.value)"><span class="cv" id="colBase-v">#1b3cff</span></div></div>
-      <div class="col-grp"><label>Depths</label><div class="cpc"><input type="color" id="colDeep" value="#7a2bd6" onchange="upColor('colDeep',this.value)"><span class="cv" id="colDeep-v">#7a2bd6</span></div></div>
-      <div class="col-grp"><label>Plumes</label><div class="cpc"><input type="color" id="colPlume" value="#ff2bd0" onchange="upColor('colPlume',this.value)"><span class="cv" id="colPlume-v">#ff2bd0</span></div></div>
-      <div class="col-grp"><label>Beams</label><div class="cpc"><input type="color" id="colBeam" value="#ffb13c" onchange="upColor('colBeam',this.value)"><span class="cv" id="colBeam-v">#ffb13c</span></div></div>
-    </div>
-
-    <!-- Actions -->
-    <div class="cs">
+    <div class="section">
       <h3>Actions</h3>
-      <button class="btn wide" onclick="saveFrame()">&#8659; Download still (PNG)</button>
-      <div class="btn-row">
-        <button class="btn sec" onclick="regenerate()">Regenerate</button>
-        <button class="btn" onclick="resetAll()">Reset</button>
-      </div>
-    </div>
-  </div><!-- /sidebar -->
-
-  <div class="canvas-area">
-    <div id="cc">
-      <img id="bg-photo" alt="">
-      <div class="loading">Initializing&hellip;</div>
+      <button class="btn wide" onclick="dl()">&#8595; Download still (PNG)</button>
+      <button class="btn ter" onclick="restart()">&#9198; Restart movement</button>
     </div>
   </div>
+  <div class="canvas-area"><div id="cc"><div class="loading">Analyzing photographs…</div></div></div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════════
-// RESONANT SPECTRA v2 — live photo-analysis · auto-cycling · phish.in proxy
-// ═══════════════════════════════════════════════════════════════════════════
+// Built-in fallback photo so analysis works before the album build runs.
+const FALLBACK_IMAGE = "data:image/jpeg;base64,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";
 
-// ── Params ──────────────────────────────────────────────────────────────────
-let P = {
-    seed:1992,bpm:104,groove:1,flowSpeed:1,plumes:1,beam:1,bloom:1,
-    trail:0.55,smear:0.3,
-    colTop:'#23d36a',colBase:'#1b3cff',colDeep:'#7a2bd6',
-    colPlume:'#ff2bd0',colBeam:'#ffb13c'
-};
-const P0 = Object.assign({},P);
+const CW=1200, CH=900, AW=96, AH=72, GX=8, GY=6, TRANS=1.4;
 
-// ── Rhythm ───────────────────────────────────────────────────────────────────
-const ACCENT = [1,.12,.22,.46,.16,.3,.72,.18,.86,.14,.4,.62,.2,.3,.74,.34];
-const BASS_STEPS=[0,6,8,14], BEAM_STEPS=[0,8];
-let playing=true,playTime=0,lastStep=-1,showGrid=true;
-let accEnv=0,beamEnv=0,curStep=0;
-let blobs=[],beams=[],plumes=[];
-let glowSpr,vignette,smearGfx;
-const CW=1200,CH=900;
+let params={intensity:1,flow:1,plumes:1,beams:1,smear:1,trail:.55,photoDur:24};
+let studies=[], curIdx=0, studyStart=0, pausedAt=0, prevStudy=null, prevSwitch=-9999;
+let playing=true, cycle=true, showSource=false;
+let plumes=[], glow, vignette;
 
-// ── FFT ──────────────────────────────────────────────────────────────────────
-let fftLow=0,fftMid=0,fftHi=0;
-let audioCtx=null,analyser=null,fftArr=null,audioEl=null,audioSrc=null,audPlaying=false;
-
-// ── Photo state ───────────────────────────────────────────────────────────────
-let manifest=null;
-let activeIdx=-1;
-let cycling=false;
-let cycleIntervalSec=20;
-let cycleStartTime=0;
-let analysisCache=new Map();
-
-// ── API base (same-origin Vercel proxy) ───────────────────────────────────────
-const API = '/api/phishin';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// p5 sketch
-// ═══════════════════════════════════════════════════════════════════════════
-function setup() {
-    let c = createCanvas(CW,CH);
-    c.parent('cc');
-    pixelDensity(1);
-    glowSpr  = makeGlow(360);
-    vignette = makeVignette();
-    smearGfx = createGraphics(CW,CH);
-    smearGfx.clear();
-    stageSeed(null);
-    document.querySelector('.loading').style.display='none';
-    loadManifest();
-    buildFftBars();
+function setup(){
+  let c=createCanvas(CW,CH); c.parent('cc'); pixelDensity(1);
+  glow=makeGlow(360); vignette=makeVignette();
+  const l=document.querySelector('.loading'); if(l) l.remove();
+  loadSources();
 }
 
-function makeGlow(sz) {
-    let g=createGraphics(sz,sz); g.clear();
-    let ctx=g.drawingContext,r=sz/2;
-    let gr=ctx.createRadialGradient(r,r,0,r,r,r);
-    gr.addColorStop(0,'rgba(255,255,255,1)');
-    gr.addColorStop(.18,'rgba(255,255,255,.85)');
-    gr.addColorStop(.45,'rgba(255,255,255,.3)');
-    gr.addColorStop(.75,'rgba(255,255,255,.06)');
-    gr.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle=gr; ctx.fillRect(0,0,sz,sz); return g;
-}
-function makeVignette() {
-    let g=createGraphics(CW,CH); g.clear();
-    let ctx=g.drawingContext;
-    let gr=ctx.createRadialGradient(CW*.5,CH*.55,CH*.25,CW*.5,CH*.55,CH*.95);
-    gr.addColorStop(0,'rgba(3,4,12,0)');
-    gr.addColorStop(.7,'rgba(3,4,12,.25)');
-    gr.addColorStop(1,'rgba(2,3,9,.78)');
-    ctx.fillStyle=gr; ctx.fillRect(0,0,CW,CH); return g;
-}
+function makeGlow(s){let g=createGraphics(s,s);g.clear();let x=g.drawingContext,r=s/2,gr=x.createRadialGradient(r,r,0,r,r,r);
+  gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.18,'rgba(255,255,255,.82)');gr.addColorStop(.45,'rgba(255,255,255,.28)');gr.addColorStop(.75,'rgba(255,255,255,.05)');gr.addColorStop(1,'rgba(255,255,255,0)');
+  x.fillStyle=gr;x.fillRect(0,0,s,s);return g;}
+function makeVignette(){let g=createGraphics(CW,CH);g.clear();let x=g.drawingContext,gr=x.createRadialGradient(CW*.5,CH*.55,CH*.25,CW*.5,CH*.55,CH*.95);
+  gr.addColorStop(0,'rgba(3,4,12,0)');gr.addColorStop(.7,'rgba(3,4,12,.25)');gr.addColorStop(1,'rgba(2,3,9,.8)');x.fillStyle=gr;x.fillRect(0,0,CW,CH);return g;}
 
-function hx(c){let v=color(c);return[red(v),green(v),blue(v)];}
+// — Load image sources: manifest first, fallback otherwise —————————————————
+async function loadSources(){
+  let sources=[];
+  try{
+    const r=await fetch('./photos/manifest.json',{cache:'no-store'});
+    if(r.ok){const m=await r.json(); if(m.photos&&m.photos.length){
+      sources=m.photos.map(p=>{ let file=p.file||('photos/'+(p.filename||''));
+        return {url:'./'+file, name:(p.filename||p.file||file).split('/').pop(), entry:p}; });
+    }}
+  }catch(e){}
+  if(!sources.length) sources=[{url:FALLBACK_IMAGE, name:'Source photo (built-in)', entry:null}];
+  let slots=new Array(sources.length).fill(undefined);
+  sources.forEach((s,i)=>{
+    loadImage(s.url, img=>{ slots[i]=buildStudy(img,s); commit(slots); },
+                      ()=>{ slots[i]=null; commit(slots); });
+  });
+}
+function commit(slots){ studies=slots.filter(v=>v); if(studies.length && studyStart===0){ curIdx=0; studyStart=millis(); updateHUD(); } else { updateHUD(); } }
 
-// ── Stage scene from current P ───────────────────────────────────────────────
-function stageSeed(preset) {
-    randomSeed(P.seed); noiseSeed(P.seed);
-    blobs=[]; plumes=[];
-    const cT=preset?hx(preset.colTop):hx(P.colTop);
-    const cB=preset?hx(preset.colBase):hx(P.colBase);
-    const cD=preset?hx(preset.colDeep):hx(P.colDeep);
-    for(let i=0;i<2+floor(random(2));i++) blobs.push(mkBlob(cT,random(.05,.95),random(.02,.3),random(.34,.5),.55,.35,i*11.3));
-    for(let i=0;i<3+floor(random(2));i++) blobs.push(mkBlob(cB,random(.05,.95),random(.3,.78),random(.42,.62),.72,.55,50+i*7.7));
-    for(let i=0;i<2+floor(random(2));i++) blobs.push(mkBlob(cD,random(.05,.95),random(.55,.98),random(.34,.5),.5,.45,120+i*9.1));
-    beams=[];
-    if(preset&&preset.hotspots&&preset.hotspots.length) {
-        preset.hotspots.slice(0,2).forEach(h=>beams.push({x:h.x,y:h.y,tilt:random(-.22,.08),phase:random(100)}));
-        if(beams.length<2) beams.push({x:.2+random(-.05,.06),y:.22,tilt:random(-.18,.08),phase:random(100)});
-    } else {
-        let bx1=constrain(.16+random(-.05,.06),.05,.4);
-        let bx2=constrain(bx1+.07+random(0,.04),.1,.5);
-        let by=constrain(.21+random(-.04,.05),.1,.35);
-        beams.push({x:bx1,y:by,tilt:random(-.22,.05),phase:random(100)});
-        beams.push({x:bx2,y:by+random(-.02,.03),tilt:random(-.18,.08),phase:random(100)});
-    }
+// — Per-photo ANALYSIS: this is where the image becomes a score —————————————
+function buildStudy(img, src){
+  let g=createGraphics(AW,AH); g.image(img,0,0,AW,AH); g.loadPixels();
+  let px=g.pixels;
+  const at=(x,y)=>{let i=4*(y*AW+x);return[px[i],px[i+1],px[i+2]];};
+  let regions=[];
+  for(let gy=0;gy<GY;gy++)for(let gx=0;gx<GX;gx++){
+    let x0=Math.floor(gx*AW/GX),x1=Math.floor((gx+1)*AW/GX),y0=Math.floor(gy*AH/GY),y1=Math.floor((gy+1)*AH/GY);
+    let r=0,gg=0,b=0,n=0;
+    for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){let c=at(x,y);r+=c[0];gg+=c[1];b+=c[2];n++;}
+    r/=n;gg/=n;b/=n; let l=.2126*r+.7152*gg+.0722*b;
+    regions.push({x:(gx+.5)/GX,y:(gy+.5)/GY,r,g:gg,b,l});
+  }
+  let lum=[]; for(let i=0;i<px.length;i+=4)lum.push(.2126*px[i]+.7152*px[i+1]+.0722*px[i+2]);
+  let sorted=[...lum].sort((a,b)=>a-b); let thr=sorted[Math.floor(sorted.length*.985)]||200;
+  let spots=[];
+  for(let p=0;p<lum.length;p++){ if(lum[p]<thr)continue;
+    let x=(p%AW)/AW,y=Math.floor(p/AW)/AH;
+    let near=spots.find(s=>Math.hypot(s.x-x,s.y-y)<.16);
+    if(near){near.x=(near.x*near.n+x)/(near.n+1);near.y=(near.y*near.n+y)/(near.n+1);near.n++;near.l=Math.max(near.l,lum[p]);}
+    else spots.push({x,y,l:lum[p],n:1});
+  }
+  spots=spots.sort((a,b)=>b.n-a.n).slice(0,3).map(s=>({x:s.x,y:s.y,intensity:Math.min(1,s.l/255)}));
+  let beamCol=[255,200,120];
+  if(spots[0]){let hx=Math.min(AW-1,Math.floor(spots[0].x*AW)),hy=Math.min(AH-1,Math.floor(spots[0].y*AH));beamCol=at(hx,hy);}
+  let plumeCol=[255,60,200], best=-1, wx=0,wy=0,wsum=0;
+  for(let c of regions){let hsv=rgb2hsv(c.r,c.g,c.b);let h=hsv[0],s=hsv[1],v=hsv[2];
+    let warm=(h>=265&&h<=345)?s*v:0; if(c.b>c.g&&c.r>c.g)warm=Math.max(warm,((c.r+c.b)/2-c.g)/255*.7);
+    if(warm>0){wx+=c.x*warm;wy+=c.y*warm;wsum+=warm;}
+    let score=(h>=265&&h<=350)?s*v:0; if(score>best){best=score;plumeCol=[c.r,c.g,c.b];}
+  }
+  let warm = wsum>0?{x:wx/wsum,y:wy/wsum}:{x:.5,y:.85};
+  let Jxx=0,Jyy=0,Jxy=0;
+  for(let y=1;y<AH-1;y++)for(let x=1;x<AW-1;x++){
+    let lx=lum[y*AW+x+1]-lum[y*AW+x-1], ly=lum[(y+1)*AW+x]-lum[(y-1)*AW+x];
+    Jxx+=lx*lx;Jyy+=ly*ly;Jxy+=lx*ly;
+  }
+  let smearAngle=0.5*Math.atan2(2*Jxy,(Jxx-Jyy));
+  let mean=lum.reduce((a,b)=>a+b,0)/lum.length, varr=lum.reduce((a,b)=>a+(b-mean)*(b-mean),0)/lum.length;
+  let energy=Math.min(1, Math.sqrt(varr)/70 + spots.length*0.12);
+  let pal=[...regions].filter(c=>c.l>20).sort((a,b)=>satv(b)-satv(a)).slice(0,5).map(c=>hex(c.r,c.g,c.b));
+  return {img,name:src.name,regions,spots,beamCol,plumeCol,warm,smearAngle,energy,palette:pal};
 }
-function mkBlob(col,x,y,r,br,beat,so){
-    return{col,hx:x,hy:y,r,bright:br,beat,off:so,dx:random(.4,1.1),dy:random(.3,.9),bSpd:random(.3,.8),bOff:random(100)};
-}
+function satv(c){let h=rgb2hsv(c.r,c.g,c.b);return h[1]*h[2];}
+function rgb2hsv(r,g,b){r/=255;g/=255;b/=255;let mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;
+  if(d){if(mx===r)h=((g-b)/d)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360;}
+  return[h,mx?d/mx:0,mx];}
+function hex(r,g,b){return'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,v|0)).toString(16).padStart(2,'0')).join('');}
+const ss=(a,b,x)=>{x=Math.max(0,Math.min(1,(x-a)/(b-a)));return x*x*(3-2*x);};
 
-function onStep(gStep,stepInBar,bar){
-    let thr=max(0,.9-bar*.25), jam=.15+.85*((bar%16)/16);
-    let raw=ACCENT[stepInBar];
-    let pass=raw>=thr?raw:raw*.18;
-    let acc=pass*P.groove*(.7+.5*jam)*(1+fftLow*1.8*P.plumes);
-    accEnv=min(2.2,accEnv+acc*.9);
-    if(BEAM_STEPS.includes(stepInBar)&&raw>=thr) beamEnv=min(2,beamEnv+acc*1.1*(1+fftHi*2*P.beam));
-    if(BASS_STEPS.includes(stepInBar)&&raw>=thr) {
-        let n=floor(random(1,3)*P.plumes*(.6+acc)*(1+fftLow*1.8));
-        for(let i=0;i<n;i++) spawnPlume(acc);
-    }
+// — Render one study at progress p∈[0,1] and overall alpha ——————————————————
+function renderStudy(st, p, alpha){
+  let t=millis()/1000;
+  let emerge=ss(0,.18,p), resolve=1-ss(.82,1,p), master=emerge*resolve*params.intensity*alpha;
+  let build=ss(.15,.5,p), peak=ss(.45,.7,p)*resolve;
+  let bass=1,mid=1,treb=1;
+  if(analyser){analyser.getByteFrequencyData(freq);let n=freq.length;
+    bass=0.4+avg(freq,0,n*.08)/140*1.3; mid=0.6+avg(freq,n*.08,n*.4)/130; treb=0.4+avg(freq,n*.4,n)/110*1.4;
+  } else { let pl=0.9+0.1*Math.sin(t*3); bass=pl;mid=pl;treb=0.85+0.15*Math.sin(t*5); }
+  let ang=st.smearAngle, el=1+1.1*params.smear;
+  // washes
+  push(); blendMode(ADD); imageMode(CENTER); noStroke();
+  for(let c of st.regions){ if(c.l<12)continue;
+    let nx=noise(c.x*3+1,c.y*3, t*0.05*params.flow), ny=noise(c.x*3+9,c.y*3+4,t*0.045*params.flow);
+    let x=(c.x*0.7+nx*0.3)*width, y=(c.y*0.7+ny*0.3)*height;
+    let breath=0.7+0.3*Math.sin(t*0.7+c.x*5+c.y*3);
+    let a=master*mid*(c.l/255)*breath*0.95;
+    if(a<=0.01)continue;
+    let base=Math.min(width,height)*0.30*(0.8+c.l/255*0.5);
+    tint(c.r,c.g,c.b,255*Math.min(1,a));
+    push();translate(x,y);rotate(ang);image(glow,0,0,base*el,base/el*0.9);pop();
+  }
+  pop();
+  // plumes
+  if(build>0 && Math.random()<0.5*build*params.plumes*st.energy*bass){
+    plumes.push({x:(st.warm.x+(Math.random()-.5)*.3)*width, y:height*(0.9+Math.random()*.12),
+      vy:-(70+Math.random()*120)*(0.7+bass*0.6), r:60+Math.random()*100, life:1,
+      decay:0.55+Math.random()*0.4, col:st.plumeCol, sway:Math.random()*100});
+  }
+  push(); blendMode(ADD); imageMode(CENTER); noStroke();
+  let dt=Math.min(deltaTime/1000,.05);
+  for(let i=plumes.length-1;i>=0;i--){let pl=plumes[i];
+    pl.y+=pl.vy*dt; pl.vy*=.992; pl.x+=Math.sin(t*1.5+pl.sway)*16*dt; pl.life-=dt*pl.decay;
+    if(pl.life<=0){plumes.splice(i,1);continue;}
+    let a=Math.sin(pl.life*Math.PI)*params.plumes*alpha*0.9;
+    tint(pl.col[0],pl.col[1],pl.col[2],255*Math.min(1,a));
+    let rr=pl.r*(1.3-.3*pl.life); image(glow,pl.x,pl.y,rr*1.4,rr*2.5);
+  }
+  pop();
+  // beams
+  push(); blendMode(ADD); imageMode(CENTER); noStroke();
+  st.spots.forEach((s,i)=>{
+    let ti=0.2+i*0.13, gate=ss(ti,ti+0.12,p)*peak;
+    let a=gate*params.beams*treb*(0.85+0.15*noise(i*7,t*3))*alpha*(0.5+s.intensity);
+    if(a<0.02)return;
+    let x=s.x*width,y=s.y*height; tint(st.beamCol[0],st.beamCol[1],st.beamCol[2],255*Math.min(1,a));
+    push();translate(x,y);rotate(ang);
+    image(glow,0,0,260*(0.8+a*0.5)*el,80*(0.8+a*0.3));
+    image(glow,0,0,90,90); pop();
+  });
+  pop();
+  // optional source underlay
+  if(showSource){push();tint(255,40*alpha);imageMode(CENTER);
+    let iw=width,ih=width*st.img.height/st.img.width; if(ih<height){ih=height;iw=height*st.img.width/st.img.height;}
+    image(st.img,width/2,height/2,iw,ih);pop();}
 }
-function spawnPlume(acc){
-    plumes.push({x:random(.08,.92)*width,y:height*random(.86,1.02),vy:-random(70,150)*(.7+acc),sway:random(100),r:random(60,150),life:1,decay:random(.55,.95),bright:(.6+acc)*P.plumes});
-}
+function avg(a,lo,hi){lo|=0;hi|=0;let s=0,n=0;for(let i=lo;i<hi;i++){s+=a[i];n++;}return n?s/n:0;}
 
 function draw(){
-    let dt=min(deltaTime/1000,.05);
-    if(playing) playTime+=dt;
-    tickFft();
-    tickCycle();
-
-    let beatDur=60/P.bpm, stepDur=beatDur/4;
-    let gStep=floor(playTime/stepDur);
-    curStep=((gStep%16)+16)%16;
-    let bar=floor(gStep/16);
-    if(gStep!==lastStep){onStep(gStep,curStep,bar);lastStep=gStep;}
-    accEnv*=Math.exp(-dt*5.5); beamEnv*=Math.exp(-dt*3.8);
-
-    // 1) Trail fade
-    let fade=map(P.trail,.2,.9,16,95);
-    push();blendMode(BLEND);noStroke();fill(4,5,13,fade);rect(0,0,width,height);pop();
-
-    // 2) Directional smear
-    if(P.smear>.02){
-        push();blendMode(BLEND);noStroke();
-        smearGfx.clear();
-        let sCtx=smearGfx.drawingContext;
-        sCtx.globalAlpha=.85;
-        sCtx.drawImage(drawingContext.canvas,1,1,CW-1,CH-1,0,0,CW,CH);
-        sCtx.globalAlpha=1;
-        tint(255,255,255,map(P.smear,0,1,0,80)*accEnv*10);
-        imageMode(CORNER); image(smearGfx,0,0,width,height);
-        pop();
+  if(!studies.length){return;}
+  let dur=params.photoDur*1000;
+  if(playing){
+    let p=(millis()-studyStart)/dur;
+    if(p>=1){
+      if(cycle && studies.length>1){ prevStudy=studies[curIdx]; prevSwitch=millis(); curIdx=(curIdx+1)%studies.length; }
+      studyStart=millis(); updateHUD();
     }
-
-    // 3) Base washes
-    let t=playTime*P.flowSpeed;
-    let bp=1+(accEnv*.5*P.bloom*(1+fftMid*1.2));
-    push();blendMode(ADD);noStroke();imageMode(CENTER);
-    for(let b of blobs){
-        let nx=noise(b.off,t*.06*b.dx),ny=noise(b.off+33.7,t*.05*b.dy);
-        let x=(b.hx*.55+nx*.45)*width,y=(b.hy*.6+ny*.4)*height;
-        let br=.6+.4*(.5+.5*Math.sin(t*b.bSpd+b.bOff));
-        let amp=b.bright*br*(1+b.beat*accEnv*.8*P.bloom*(1+fftMid*1.2));
-        let rr=b.r*Math.min(width,height)*1.7*(.92+.12*bp*b.beat);
-        tint(b.col[0],b.col[1],b.col[2],255*Math.min(1,amp));
-        image(glowSpr,x,y,rr,rr);
-    }
-    pop();
-
-    // 4) Plumes
-    push();blendMode(ADD);noStroke();imageMode(CENTER);
-    let pc=hx(P.colPlume);
-    for(let i=plumes.length-1;i>=0;i--){
-        let p=plumes[i];
-        p.y+=p.vy*dt; p.vy*=.992;
-        p.x+=Math.sin(playTime*1.5+p.sway)*18*dt*width*.002;
-        p.life-=dt*p.decay;
-        if(p.life<=0||p.y<-100){plumes.splice(i,1);continue;}
-        let a=Math.sin(p.life*Math.PI)*p.bright;
-        tint(pc[0],pc[1],pc[2],255*Math.min(1,a));
-        let rr=p.r*(1.4-.4*p.life);
-        image(glowSpr,p.x,p.y,rr*1.5,rr*2.6);
-    }
-    pop();
-
-    // 5) Beams
-    push();blendMode(ADD);noStroke();imageMode(CENTER);
-    let bc=hx(P.colBeam);
-    for(let bm of beams){
-        let flick=.85+.15*noise(bm.phase,playTime*3);
-        let a=beamEnv*P.beam*flick*(1+fftHi*2);
-        if(a<.02)continue;
-        let x=bm.x*width+Math.sin(playTime*.7+bm.phase)*6,y=bm.y*height;
-        tint(bc[0],bc[1],bc[2],255*Math.min(1,a));
-        push();translate(x,y);rotate(bm.tilt);
-        image(glowSpr,0,0,230*(.8+a*.4),70*(.8+a*.3));
-        image(glowSpr,0,0,90,90);
-        pop();
-    }
-    pop();
-
-    // 6) Vignette
-    push();blendMode(BLEND);imageMode(CORNER);image(vignette,0,0,width,height);pop();
-
-    // 7) Beat grid
-    if(showGrid)drawGrid(beatDur);
+  }
+  push();blendMode(BLEND);noStroke();fill(4,5,13,map(params.trail,.2,.9,16,95));rect(0,0,width,height);pop();
+  let st=studies[curIdx]; if(!st){return;}
+  let p=Math.min(1, (playing?(millis()-studyStart):pausedAt)/dur);
+  let fade=Math.max(0,1-(millis()-prevSwitch)/(TRANS*1000));
+  if(fade>0 && prevStudy && prevStudy!==st) renderStudy(prevStudy,1,fade);
+  renderStudy(st,p,1);
+  push();blendMode(BLEND);imageMode(CORNER);image(vignette,0,0,width,height);pop();
+  drawHUD(p);
 }
 
-function drawGrid(bd){
-    push();
-    let n=16,pad=28,gap=14,w=width-pad*2;
-    let cell=(w-gap*(n-1))/n,y=height-38;
-    for(let i=0;i<n;i++){
-        let x=pad+i*(cell+gap);
-        noStroke();fill(255,255,255,i===curStep?230:(ACCENT[i]>=.6?70:32));
-        let h=i===curStep?10:6; rect(x,y-h/2,cell,h,3);
-    }
-    let bp=(playTime%bd)/bd,pr=map(bp,0,1,26,8);
-    noFill();stroke(255,255,255,map(bp,0,1,180,0));strokeWeight(2);circle(width-44,44,pr*2);
-    noStroke();fill(255,220,120,200);circle(width-44,44,7);
-    pop();
+function drawHUD(p){
+  push();
+  let pad=28,w=width-pad*2,y=height-26;
+  noStroke();fill(255,255,255,40);rect(pad,y,w,4,2);fill(255,255,255,200);rect(pad,y,w*p,4,2);
+  if(studies.length>1){let n=studies.length,gap=Math.min(16,w/n);
+    for(let i=0;i<n;i++){fill(255,255,255,i===curIdx?230:50);circle(pad+i*gap+4,y-14,i===curIdx?7:4);}}
+  pop();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// IN-BROWSER PHOTO ANALYSIS ENGINE
-// Loads photo via p5.loadImage, samples pixels in a small offscreen buffer,
-// runs median-cut to extract dominant colours, caches the result.
-// Falls back immediately to manifest.palette while the image loads.
-// ═══════════════════════════════════════════════════════════════════════════
-function analyzePhoto(photo, onDone) {
-    const key = photo.filename;
-    if (analysisCache.has(key)) { onDone(analysisCache.get(key)); return; }
+// — HUD / controls —————————————————————————————————————————————————————————
+function updateHUD(){let st=studies[curIdx];if(!st){return;}
+  let el=document.getElementById('nowshow');
+  el.innerHTML='<span class="nm">'+st.name+'</span><br>'+(curIdx+1)+' / '+studies.length+
+    ' &middot; energy '+st.energy.toFixed(2)+' &middot; smear '+(st.smearAngle*180/Math.PI).toFixed(0)+'&deg;'+
+    '<div class="swatches">'+st.palette.map(h=>'<span class="sw" style="background:'+h+'"></span>').join('')+'</div>';
+}
+function setP(k,v){params[k]=parseFloat(v);let d=document.getElementById(k+'-v');
+  if(d)d.textContent=(k==='photoDur')?params[k]+'s':(k==='flow')?params[k].toFixed(1):(k==='trail')?params[k].toFixed(2):params[k].toFixed(2);}
+function togglePlay(){
+  if(playing){ pausedAt=millis()-studyStart; playing=false; }
+  else { studyStart=millis()-pausedAt; playing=true; }
+  document.getElementById('playBtn').textContent=playing?'&#9646;&#9646; Pause':'&#9654; Play';
+}
+function toggleCycle(){cycle=!cycle;document.getElementById('cycleTog').classList.toggle('on',cycle);}
+function toggleSource(){showSource=!showSource;document.getElementById('srcTog').classList.toggle('on',showSource);}
+function nextPhoto(){if(studies.length<2)return;prevStudy=studies[curIdx];prevSwitch=millis();curIdx=(curIdx+1)%studies.length;studyStart=millis();updateHUD();}
+function prevPhoto(){if(studies.length<2)return;prevStudy=studies[curIdx];prevSwitch=millis();curIdx=(curIdx-1+studies.length)%studies.length;studyStart=millis();updateHUD();}
+function restart(){studyStart=millis();pausedAt=0;plumes=[];}
+function dl(){saveCanvas('resonant_spectra','png');}
 
-    // Immediate fallback from pre-computed manifest palette
-    if (photo.palette) onDone(photo.palette);
+// — Audio: phish.in via same-origin proxy, or a local file. ————————————————
+const PROXY='/api/phishin';            // → phish.in/api/v2 (Vercel function)
+let audioEl=null, actx=null, analyser=null, freq=null, audioPlaying=false;
 
-    loadImage('photos/' + photo.filename, function(img) {
-        // Downsample to 60x60 for fast pixel extraction
-        let g = createGraphics(60, 60);
-        g.image(img, 0, 0, 60, 60);
-        g.loadPixels();
-        const d = g.pixels;
-        const pixels = [];
-        for (let i = 0; i < d.length; i += 4) {
-            if (d[i+3] > 0) pixels.push([d[i], d[i+1], d[i+2]]);
-        }
-        g.remove();
+function ensureCtx(){ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); }
+function setupAudio(url){
+  if(audioEl) audioEl.pause();
+  audioEl=new Audio(url); audioEl.crossOrigin='anonymous';
+  ensureCtx();
+  try{ let src=actx.createMediaElementSource(audioEl);
+    analyser=actx.createAnalyser(); analyser.fftSize=512; freq=new Uint8Array(analyser.frequencyBinCount);
+    src.connect(analyser); analyser.connect(actx.destination);
+  }catch(e){ analyser=null; }
+  document.getElementById('aPlay').disabled=false;
+}
+function loadLocal(inp){let f=inp.files[0];if(!f)return; setupAudio(URL.createObjectURL(f));
+  document.getElementById('np').textContent='Local file: '+f.name;
+  document.getElementById('aPlay').textContent='&#9654; Play'; audioPlaying=false; }
+function toggleAudio(){ if(!audioEl)return; ensureCtx(); actx.resume();
+  if(audioPlaying) audioEl.pause(); else audioEl.play().catch(()=>{});
+  audioPlaying=!audioPlaying; document.getElementById('aPlay').textContent=audioPlaying?'&#9646;&#9646; Pause':'&#9654; Play'; }
 
-        const palette = medianCut(pixels.slice(), 3); // 2^3 = 8 buckets
-        const sorted = palette.slice().sort(function(a,b){ return luma(b)-luma(a); });
-        const result = {
-            raw: palette.map(rgbHex),
-            colTop:   rgbHex(sorted[0]),
-            colBase:  rgbHex(sorted[1] || sorted[0]),
-            colDeep:  rgbHex(sorted[sorted.length-1]),
-            colPlume: rgbHex(palette[2] || palette[0]),
-            colBeam:  rgbHex(palette[1] || palette[0]),
-            hotspots: photo.hotspots || [{x:.2,y:.25},{x:.35,y:.22}],
-            live: true,
-        };
-        analysisCache.set(key, result);
-        onDone(result);
-    }, function() {
-        // Image load failed — manifest fallback already applied
+async function api(path){ const r=await fetch(PROXY+'/'+path,{headers:{accept:'application/json'}});
+  if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+async function searchSong(){
+  let term=document.getElementById('q').value.trim(); if(!term) return;
+  let box=document.getElementById('results'); box.textContent='Searching…';
+  try{
+    let data=null;
+    try{ data=await api('search/'+encodeURIComponent(term)); }
+    catch(e){ data=await api('songs?title='+encodeURIComponent(term)); }
+    let perf=collectTracks(data);
+    if(!perf.length){ box.innerHTML='<span style="color:var(--mid)">No playable tracks found.</span>'; return; }
+    box.innerHTML='';
+    perf.slice(0,40).forEach(t=>{
+      let d=document.createElement('div');
+      d.style.cssText='padding:7px 6px;border-bottom:1px solid var(--lgray);cursor:pointer';
+      d.textContent=[t.title,t.date,t.venue,t.dur].filter(Boolean).join(' · ');
+      d.onclick=()=>{ setupAudio(t.url); ensureCtx(); actx.resume();
+        audioEl.play().catch(()=>{}); audioPlaying=true;
+        document.getElementById('aPlay').disabled=false; document.getElementById('aPlay').textContent='&#9646;&#9646; Pause';
+        document.getElementById('np').textContent='♪ '+d.textContent; };
+      box.appendChild(d);
     });
+  }catch(e){ box.innerHTML='<span style="color:var(--mid)">Couldn\'t reach phish.in proxy. ('+e.message+')</span>'; }
 }
-
-function luma(pix){ return .299*pix[0]+.587*pix[1]+.114*pix[2]; }
-function rgbHex(pix){ return '#'+[pix[0],pix[1],pix[2]].map(function(v){return Math.round(v).toString(16).padStart(2,'0');}).join(''); }
-
-function medianCut(pixels, depth) {
-    if (!depth || !pixels.length) {
-        if (!pixels.length) return [[128,128,128]];
-        var r=0,g=0,b=0;
-        for(var k=0;k<pixels.length;k++){r+=pixels[k][0];g+=pixels[k][1];b+=pixels[k][2];}
-        var n=pixels.length;
-        return [[r/n,g/n,b/n]];
+function collectTracks(data){
+  let out=[], seen=new Set();
+  const mp3=o=>o&&(o.mp3_url||o.mp3||o.audio||o.url);
+  const walk=(node,ctx)=>{
+    if(Array.isArray(node)){node.forEach(n=>walk(n,ctx));return;}
+    if(node&&typeof node==='object'){
+      let nc=Object.assign({},ctx);
+      if(node.date||node.show_date) nc.date=node.date||node.show_date;
+      if(node.venue_name) nc.venue=node.venue_name;
+      else if(node.venue&&node.venue.name) nc.venue=node.venue.name;
+      else if(typeof node.venue==='string') nc.venue=node.venue;
+      if(node.title && !node.songs && !node.tracks) nc.title=node.title;
+      let u=mp3(node);
+      if(u && typeof u==='string' && /\.mp3|\/audio|stream/i.test(u) && !seen.has(u)){ seen.add(u);
+        out.push({url:u, title:node.title||nc.title, date:node.date||nc.date, venue:nc.venue,
+          dur:node.duration?fmt(node.duration):''}); }
+      Object.keys(node).forEach(k=>{ if(node[k]&&typeof node[k]==='object') walk(node[k],nc); });
     }
-    var minR=255,maxR=0,minG=255,maxG=0,minB=255,maxB=0;
-    for(var k=0;k<pixels.length;k++){
-        var px=pixels[k];
-        if(px[0]<minR)minR=px[0];if(px[0]>maxR)maxR=px[0];
-        if(px[1]<minG)minG=px[1];if(px[1]>maxG)maxG=px[1];
-        if(px[2]<minB)minB=px[2];if(px[2]>maxB)maxB=px[2];
-    }
-    var rR=maxR-minR,rG=maxG-minG,rB=maxB-minB;
-    var ch=rR>=rG&&rR>=rB?0:rG>=rB?1:2;
-    pixels.sort(function(a,b_){ return a[ch]-b_[ch]; });
-    var mid=Math.floor(pixels.length/2);
-    return medianCut(pixels.slice(0,mid),depth-1).concat(medianCut(pixels.slice(mid),depth-1));
+  };
+  walk(data,{}); return out;
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-// AUTO-CYCLING (max 30s per photo)
-// ═══════════════════════════════════════════════════════════════════════════
-function tickCycle() {
-    if (!cycling || !manifest || manifest.photos.length === 0) return;
-    var elapsed = (performance.now() - cycleStartTime) / 1000;
-    var pct = Math.min(1, elapsed / cycleIntervalSec);
-    document.getElementById('cycle-bar').style.width = (pct*100)+'%';
-    document.getElementById('cycle-status').textContent =
-        'Photo '+(activeIdx+1)+'/'+manifest.photos.length+' — next in '+Math.ceil(cycleIntervalSec-elapsed)+'s';
-    if (elapsed >= cycleIntervalSec) {
-        activatePhoto((activeIdx + 1) % manifest.photos.length);
-    }
-}
-
-function toggleCycle() {
-    if (!manifest || manifest.photos.length === 0) return;
-    cycling = !cycling;
-    document.getElementById('cycleBtn').textContent = cycling ? '⏸ Pause cycle' : '▶ Auto-cycle';
-    if (cycling) {
-        if (activeIdx < 0) activatePhoto(0);
-        else cycleStartTime = performance.now();
-    } else {
-        document.getElementById('cycle-bar').style.width = '0%';
-        document.getElementById('cycle-status').textContent = '';
-    }
-}
-
-function updateCycleInterval(v) {
-    cycleIntervalSec = parseInt(v);
-    document.getElementById('cycleInterval-value').textContent = v + 's';
-    if (cycling) cycleStartTime = performance.now();
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// MANIFEST + PHOTO GRID
-// ═══════════════════════════════════════════════════════════════════════════
-function loadManifest() {
-    fetch('photos/manifest.json')
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-            if (!data.photos || data.photos.length === 0) {
-                document.getElementById('photo-grid').innerHTML =
-                    '<div style="grid-column:1/-1;color:var(--mid);font-size:12px">No photos &mdash; run npm run build:photos.</div>';
-                return;
-            }
-            manifest = data;
-            buildGrid(data.photos);
-        })
-        .catch(function(){
-            document.getElementById('photo-grid').innerHTML =
-                '<div style="grid-column:1/-1;color:var(--mid);font-size:12px">Photos unavailable.</div>';
-        });
-}
-
-function buildGrid(photos) {
-    var grid = document.getElementById('photo-grid');
-    grid.innerHTML = '';
-    photos.forEach(function(p, i) {
-        var img = document.createElement('img');
-        img.className = 'pt';
-        img.src = 'photos/' + p.filename;
-        img.alt = 'Photo ' + (i+1);
-        img.loading = 'lazy';
-        img.onclick = (function(idx){ return function(){ activatePhoto(idx); }; })(i);
-        grid.appendChild(img);
-    });
-}
-
-function activatePhoto(idx) {
-    if (!manifest || idx < 0 || idx >= manifest.photos.length) return;
-    activeIdx = idx;
-    cycleStartTime = performance.now();
-    var photo = manifest.photos[idx];
-    var bg = document.getElementById('bg-photo');
-    bg.src = 'photos/' + photo.filename;
-    bg.style.opacity = '0.12';
-    document.querySelectorAll('.pt').forEach(function(el, i){ el.classList.toggle('active', i===idx); });
-    analyzePhoto(photo, function(pal) {
-        applyPaletteToUI(pal);
-        stageSeed(pal);
-    });
-}
-
-function clearPhotoPreset() {
-    activeIdx = -1; cycling = false;
-    document.getElementById('bg-photo').style.opacity = '0';
-    document.getElementById('cycleBtn').textContent = '▶ Auto-cycle';
-    document.getElementById('cycle-bar').style.width = '0%';
-    document.getElementById('cycle-status').textContent = '';
-    document.querySelectorAll('.pt').forEach(function(el){ el.classList.remove('active'); });
-    stageSeed(null);
-}
-
-function applyPaletteToUI(pal) {
-    var keys = ['colTop','colBase','colDeep','colPlume','colBeam'];
-    keys.forEach(function(k){
-        if (!pal[k]) return;
-        P[k] = pal[k];
-        document.getElementById(k).value = pal[k];
-        document.getElementById(k+'-v').textContent = pal[k];
-    });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// AUDIO — phish.in via same-origin proxy /api/phishin/...
-// Endpoints used:
-//   GET /api/phishin/tracks?song_slug={slug}&per_page=20&sort_dir=desc
-//   GET /api/phishin/search/{term}   (min 3 chars; used as fallback)
-// ═══════════════════════════════════════════════════════════════════════════
-var trackData=[], activeTrack=-1, tapTimes=[];
-
-function buildFftBars(){
-    var el=document.getElementById('fft-bars'); el.innerHTML='';
-    for(var i=0;i<16;i++){
-        var d=document.createElement('div');
-        d.className='fft-bar'+(i<5?'':i<11?' mid':' hi');
-        d.style.height='2px'; el.appendChild(d);
-    }
-}
-
-function tickFft(){
-    if(!analyser||!fftArr)return;
-    analyser.getByteFrequencyData(fftArr);
-    var n=fftArr.length, nyq=22050, bw=nyq/n;
-    var lE=Math.floor(250/bw), mE=Math.floor(4000/bw);
-    var sL=0,sM=0,sH=0,cL=0,cM=0,cH=0;
-    for(var i=0;i<n;i++){var v=fftArr[i]/255;if(i<lE){sL+=v;cL++;}else if(i<mE){sM+=v;cM++;}else{sH+=v;cH++;}}
-    fftLow=cL?sL/cL:0; fftMid=cM?sM/cM:0; fftHi=cH?sH/cH:0;
-    var bars=document.querySelectorAll('.fft-bar'), bpb=Math.max(1,Math.floor(n/bars.length));
-    bars.forEach(function(b,i){
-        var s=0; for(var j=0;j<bpb;j++) s+=fftArr[i*bpb+j]||0;
-        b.style.height=Math.max(2,Math.round(s/bpb/255*22))+'px';
-    });
-}
-
-function searchSong(){
-    var q=document.getElementById('song-q').value.trim(); if(!q)return;
-    setAudStatus('Searching…');
-    var slug=q.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-    fetch(API+'/tracks?song_slug='+encodeURIComponent(slug)+'&per_page=20&sort_dir=desc')
-        .then(function(r){ return r.ok?r.json():Promise.reject(r.status); })
-        .then(function(d){
-            var tracks=(d.tracks||[]).filter(function(t){return !!t.mp3_url;});
-            if(tracks.length){ renderTracks(tracks); setAudStatus(tracks.length+' version'+(tracks.length>1?'s':'')+' — pick one to stream.'); return; }
-            // Fallback: search endpoint
-            return fetch(API+'/search/'+encodeURIComponent(q))
-                .then(function(r){ return r.ok?r.json():Promise.reject(r.status); })
-                .then(function(sd){
-                    var songs=(sd.data&&sd.data.songs)||sd.songs||[];
-                    if(!songs.length){ setAudStatus('No recordings found for "'+q+'".'); return; }
-                    return fetch(API+'/tracks?song_slug='+encodeURIComponent(songs[0].slug)+'&per_page=20&sort_dir=desc')
-                        .then(function(r){ return r.ok?r.json():Promise.reject(r.status); })
-                        .then(function(td){
-                            var tracks=(td.tracks||[]).filter(function(t){return !!t.mp3_url;});
-                            if(tracks.length){ renderTracks(tracks); setAudStatus(tracks.length+' version'+(tracks.length>1?'s':'')+' — pick one to stream.'); }
-                            else setAudStatus('No recordings found for "'+q+'".');
-                        });
-                });
-        })
-        .catch(function(e){ setAudStatus('Error: '+(e.message||e)); });
-}
-
-function renderTracks(tracks){
-    trackData=tracks;
-    var el=document.getElementById('track-list'); el.innerHTML=''; el.style.display='block';
-    tracks.forEach(function(t,i){
-        var dur=t.duration?fmtMs(t.duration):'?:??';
-        var venue=(t.show&&t.show.venue_name)||t.venue_name||'';
-        var city=(t.show&&t.show.venue&&t.show.venue.city)||'';
-        var loc=[venue,city].filter(Boolean).join(', ');
-        var d=document.createElement('div');
-        d.className='ti'+(i===activeTrack?' playing':'');
-        d.innerHTML='<span class="ti-dur">'+dur+'</span><span class="ti-date">'+(t.show_date||t.date||'?')+'</span><br><span class="ti-venue">'+loc+'</span>';
-        d.onclick=(function(idx){ return function(){ playTrack(idx); }; })(i);
-        el.appendChild(d);
-    });
-}
-function fmtMs(ms){var s=Math.round(ms/1000);return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');}
-
-function playTrack(idx){
-    if(idx<0||idx>=trackData.length)return;
-    var t=trackData[idx]; activeTrack=idx; stopAudio(false);
-    if(!audioCtx){
-        audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-        analyser=audioCtx.createAnalyser(); analyser.fftSize=2048; analyser.smoothingTimeConstant=.85;
-        fftArr=new Uint8Array(analyser.frequencyBinCount); analyser.connect(audioCtx.destination);
-    }
-    if(audioCtx.state==='suspended') audioCtx.resume();
-    audioEl=new Audio(); audioEl.crossOrigin='anonymous'; audioEl.src=t.mp3_url; audioEl.preload='auto';
-    audioSrc=audioCtx.createMediaElementSource(audioEl); audioSrc.connect(analyser);
-    audioEl.play().then(function(){
-        audPlaying=true;
-        setAudStatus('▶ '+t.title+' — '+(t.show_date||''));
-        document.getElementById('aud-play-btn').style.display='none';
-        document.getElementById('aud-stop-btn').style.display='';
-        renderTracks(trackData);
-    }).catch(function(e){
-        setAudStatus('Playback blocked — tap tempo available.');
-        document.getElementById('tap-wrap').classList.add('show');
-    });
-    audioEl.onended=function(){
-        audPlaying=false;
-        setAudStatus('Ended — pick another or tap tempo.');
-        document.getElementById('aud-play-btn').style.display='';
-        document.getElementById('aud-stop-btn').style.display='none';
-    };
-}
-function toggleAudPlay(){if(!audioEl)return;audioEl.paused?audioEl.play():audioEl.pause();}
-function stopAudio(resetUI){
-    resetUI = resetUI !== false;
-    if(audioEl){audioEl.pause();audioEl.src='';}
-    if(audioSrc){try{audioSrc.disconnect();}catch(e){}}
-    audioEl=null;audioSrc=null;audPlaying=false;fftLow=0;fftMid=0;fftHi=0;
-    if(resetUI){setAudStatus('Stopped.');document.getElementById('aud-play-btn').style.display='none';document.getElementById('aud-stop-btn').style.display='none';}
-}
-function setAudStatus(m){document.getElementById('aud-status').textContent=m;}
-function tap(){
-    var now=performance.now(); tapTimes.push(now); if(tapTimes.length>8)tapTimes.shift();
-    if(tapTimes.length>=2){
-        var diffs=[]; for(var i=1;i<tapTimes.length;i++)diffs.push(tapTimes[i]-tapTimes[i-1]);
-        var bpm=Math.round(60000/(diffs.reduce(function(a,b){return a+b;},0)/diffs.length));
-        P.bpm=Math.max(60,Math.min(180,bpm)); document.getElementById('bpm').value=P.bpm;
-        document.getElementById('bpm-v').textContent=P.bpm; document.getElementById('tap-status').textContent='BPM: '+P.bpm;
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// UI HANDLERS
-// ═══════════════════════════════════════════════════════════════════════════
-function upParam(n,v){
-    P[n]=n==='bpm'?parseInt(v):parseFloat(v);
-    var el=document.getElementById(n+'-v'); if(!el)return;
-    el.textContent=n==='bpm'?P.bpm:n==='flowSpeed'?P[n].toFixed(1):P[n].toFixed(2);
-}
-function upColor(id,v){P[id]=v;document.getElementById(id+'-v').textContent=v;stageSeed(activeIdx>=0&&manifest?manifest.photos[activeIdx]:null);}
-function togglePlay(){playing=!playing;document.getElementById('playBtn').textContent=playing?'⏸ Pause':'▶ Play';}
-function toggleGrid(){showGrid=!showGrid;document.getElementById('gridBtn').textContent='Beat grid: '+(showGrid?'on':'off');}
-function restartPerf(){playTime=0;lastStep=-1;accEnv=0;beamEnv=0;plumes=[];background(4,5,13);}
-function saveFrame(){saveCanvas('resonant_spectra_'+P.seed,'png');}
-function regenerate(){stageSeed(activeIdx>=0&&manifest?manifest.photos[activeIdx]:null);}
-function updateSeedDisplay(){document.getElementById('seed-input').value=P.seed;}
-function updateSeed(){var v=parseInt(document.getElementById('seed-input').value);if(v&&v>0){P.seed=v;stageSeed(null);}else updateSeedDisplay();}
-function prevSeed(){P.seed=Math.max(1,P.seed-1);updateSeedDisplay();stageSeed(null);}
-function nextSeed(){P.seed++;updateSeedDisplay();stageSeed(null);}
-function rndSeed(){P.seed=Math.floor(Math.random()*999999)+1;updateSeedDisplay();stageSeed(null);}
-function resetAll(){
-    P=Object.assign({},P0);clearPhotoPreset();
-    ['bpm','groove','flowSpeed','plumes','beam','bloom','trail','smear'].forEach(function(k){
-        document.getElementById(k).value=P[k];
-        var d=document.getElementById(k+'-v');if(d)d.textContent=k==='bpm'?P.bpm:k==='flowSpeed'?P[k].toFixed(1):P[k].toFixed(2);
-    });
-    ['colTop','colBase','colDeep','colPlume','colBeam'].forEach(function(k){
-        document.getElementById(k).value=P[k];document.getElementById(k+'-v').textContent=P[k];
-    });
-    updateSeedDisplay();stageSeed(null);
-}
-window.addEventListener('load',updateSeedDisplay);
+function fmt(v){let s=Math.round(v>10000?v/1000:v);let m=Math.floor(s/60);return m+':'+String(s%60).padStart(2,'0');}
 </script>
 </body>
 </html>
