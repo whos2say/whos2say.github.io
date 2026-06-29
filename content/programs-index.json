@@ -4,7 +4,7 @@
     "title": "Programs | Who's to Say ? Foundation"
   },
   "hero": {
-    "title": "Who's to Say What's Possible.",
+    "title": "Who's to Say What's Possible?",
     "subtitle": "Interest-driven programs designed to build confidence, skills, and community one pathway at a time."
   },
   "gridHeading": {
@@ -65,9 +65,21 @@
     "title": "How Pathways Work",
     "subtitle": "Flexible paths for building confidence and independence.",
     "steps": [
-      { "icon": "➜", "title": "Choose", "body": "Start with what excites you — interests lead the way." },
-      { "icon": "✦", "title": "Build", "body": "Grow skills, routines, and confidence through real projects." },
-      { "icon": "◎", "title": "Expand", "body": "Paths can overlap and evolve toward work, community, and independence." }
+      {
+        "icon": "➜",
+        "title": "Choose",
+        "body": "Start with what excites you — interests lead the way."
+      },
+      {
+        "icon": "✦",
+        "title": "Build",
+        "body": "Grow skills, routines, and confidence through real projects."
+      },
+      {
+        "icon": "◎",
+        "title": "Expand",
+        "body": "Paths can overlap and evolve toward work, community, and independence."
+      }
     ]
   }
 }

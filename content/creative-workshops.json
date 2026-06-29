@@ -1,62 +1,89 @@
 {
   "_comment": "Public Creative Workshops page copy. Page shell: creative-workshops.html (when published). Review pricing and funding language with leadership before publishing.",
-  "meta": {
-    "title": "Creative Workshops | Who's to Say ? Foundation",
-    "description": "Public-facing creative workshops and individualized creative media sessions in our creative studio — skill-building through digital storytelling and community participation."
-  },
-  "hero": {
-    "kicker": "Public-Facing Classes",
-    "title": "Creative Workshops",
-    "subtitle": "Individualized creative media sessions and small-group workshops in a supportive creative studio — built around interests, not a one-size-fits-all schedule.",
-    "pills": ["Digital Storytelling", "Studio Skills", "Community Participation", "Skill-Building"]
-  },
-  "workshops": [
-    { "title": "Intro to Video Editing", "summary": "Import, trim, and share short clips using accessible tools." },
-    { "title": "Podcast & Audio Basics", "summary": "Microphone setup, recording, and simple editing for voice projects." },
-    { "title": "Photography & Visual Storytelling", "summary": "Compose, capture, and curate images for a personal portfolio." },
-    { "title": "Canva & Digital Design", "summary": "Graphics, stickers, and social visuals with readable layouts." },
-    { "title": "On-Camera Confidence", "summary": "Short segments, intros, and teleprompter practice." },
-    { "title": "Music & Playlist Projects", "summary": "Build and present playlists with introductions between tracks." },
-    { "title": "Sports Media Crew", "summary": "Film highlights, fan takes, and simple game recaps." },
-    { "title": "Maker & Art Studio Sessions", "summary": "Create prints, crafts, or digital art for showcases." },
-    { "title": "Community Story Projects", "summary": "Tell your story through video, writing, or art — your way." },
-    { "title": "Independent Living Skills Labs", "summary": "Practical routines: schedules, shopping practice, and navigation." }
-  ],
-  "pricing": {
-    "title": "Session Options",
-    "intro": "Pricing reflects session length, format, and materials. Contact us to match the right option to each participant's goals.",
-    "tiers": [
-      { "name": "Intro Session", "price": "$25–$75", "description": "A single creative studio visit or short skill-building session to explore fit and interests." },
-      { "name": "Workshop Block", "price": "$95–$175", "description": "A focused multi-visit block for a defined project — digital storytelling, design, or studio production." },
-      { "name": "Extended Project", "price": "$225–$300", "description": "A longer individualized creative media session series with portfolio or showcase goals." },
-      { "name": "Community Studio Events", "price": "Coming soon", "description": "Intergenerational and community participation events as our studio capacity grows." }
-    ]
-  },
-  "howSessionsWork": {
-    "title": "How Sessions Work",
-    "steps": [
-      { "title": "Connect", "body": "Reach out with interests, goals, and the best way to reach you." },
-      { "title": "Match", "body": "We suggest a workshop or individualized session format that fits." },
-      { "title": "Create", "body": "Sessions happen in our creative studio or community settings — project-based and interest-led." },
-      { "title": "Share", "body": "Participants build skills and optional portfolio pieces they can share with family and supporters." }
-    ]
-  },
-  "inclusiveSection": {
-    "title": "Inclusive & Intergenerational",
-    "body": "Our public-facing classes welcome participants of different ages and abilities. Sessions emphasize dignity, creativity, and community participation — never a transactional or clinical feel."
-  },
-  "fundingNote": {
-    "title": "Funding & Support Coordinators",
-    "body": "Some participants may be eligible for funding when approved through the individual's plan or funding source. Approval decisions are made by the applicable funding source, plan, or reviewer.",
-    "linkLabel": "Information for Support Coordinators",
-    "linkHref": "/support-coordinators.html"
-  },
   "makerSpace": {
     "title": "Help Build the Studio",
     "body": "We are building toward a dedicated maker space — raising funds for equipment, accessibility, and a future community studio. This is a next-phase vision, not a current licensed facility.",
     "ctaLabel": "Help Build the Studio",
     "ctaHref": "https://givebutter.com/whostosayfoundation",
     "ctaExternal": true
+  },
+  "meta": {
+    "title": "Creative Workshops | Who's to Say ? Foundation",
+    "description": "Public-facing creative workshops and individualized creative media sessions in our creative studio — skill-building through digital storytelling and community participation."
+  },
+  "pricing": {
+    "title": "Session Options",
+    "intro": "Pricing reflects session length, format, and materials. Contact us to match the right option to each participant's goals.",
+    "tiers": [
+      {
+        "name": "Intro Session",
+        "price": "$25–$75",
+        "description": "A single creative studio visit or short skill-building session to explore fit and interests."
+      },
+      {
+        "name": "Workshop Block",
+        "price": "$95–$175",
+        "description": "A focused multi-visit block for a defined project — digital storytelling, design, or studio production."
+      },
+      {
+        "name": "Extended Project",
+        "price": "$225–$300",
+        "description": "A longer individualized creative media session series with portfolio or showcase goals."
+      },
+      {
+        "name": "Community Studio Events",
+        "price": "Coming soon",
+        "description": "Intergenerational and community participation events as our studio capacity grows."
+      }
+    ]
+  },
+  "workshops": [
+    {
+      "title": "Intro to Video Editing",
+      "summary": "Import, trim, and share short clips using accessible tools."
+    },
+    {
+      "title": "Podcast & Audio Basics",
+      "summary": "Microphone setup, recording, and simple editing for voice projects."
+    },
+    {
+      "title": "Photography & Visual Storytelling",
+      "summary": "Compose, capture, and curate images for a personal portfolio."
+    },
+    {
+      "title": "Canva & Digital Design",
+      "summary": "Graphics, stickers, and social visuals with readable layouts."
+    },
+    {
+      "title": "On-Camera Confidence",
+      "summary": "Short segments, intros, and teleprompter practice."
+    },
+    {
+      "title": "Music & Playlist Projects",
+      "summary": "Build and present playlists with introductions between tracks."
+    },
+    {
+      "title": "Sports Media Crew",
+      "summary": "Film highlights, fan takes, and simple game recaps."
+    },
+    {
+      "title": "Maker & Art Studio Sessions",
+      "summary": "Create prints, crafts, or digital art for showcases."
+    },
+    {
+      "title": "Independent Living Skills Labs",
+      "summary": "Practical routines: schedules, shopping practice, and navigation."
+    }
+  ],
+  "fundingNote": {
+    "title": "Funding & Support Coordinators",
+    "body": "Some participants may be eligible for funding when approved through the individual's plan or funding source. Approval decisions are made by the applicable funding source, plan, or reviewer.",
+    "linkLabel": "Information for Support Coordinators",
+    "linkHref": "/support-coordinators.html"
+  },
+  "inclusiveSection": {
+    "title": "Inclusive & Intergenerational",
+    "body": "Our public-facing classes welcome participants of different ages and abilities. Sessions emphasize dignity, creativity, and community participation — never a transactional or clinical feel."
   },
   "finalCta": {
     "title": "Ready to explore a workshop?",
@@ -65,5 +92,42 @@
     "primaryHref": "/contact.html",
     "secondaryLabel": "View Programs",
     "secondaryHref": "/programs.html"
+  },
+  "hero": {
+    "kicker": "Public-Facing Classes",
+    "title": "Creative Workshops",
+    "subtitle": "Individualized creative media sessions and small-group workshops in a supportive creative studio — built around interests, not a one-size-fits-all schedule.",
+    "pills": [
+      "Digital Storytelling",
+      "Studio Skills",
+      "Community Participation",
+      "Skill-Building"
+    ]
+  },
+  "classSchedule": {
+    "title": "Weekly Class Availability",
+    "intro": "Open to adults with and without disabilities. Small class size — up to 3 participants per session.",
+    "signupEnabled": true
+  },
+  "howSessionsWork": {
+    "title": "How Sessions Work",
+    "steps": [
+      {
+        "title": "Connect",
+        "body": "Reach out with interests, goals, and the best way to reach you."
+      },
+      {
+        "title": "Match",
+        "body": "We suggest a workshop or individualized session format that fits."
+      },
+      {
+        "title": "Create",
+        "body": "Sessions happen in our creative studio or community settings — project-based and interest-led."
+      },
+      {
+        "title": "Share",
+        "body": "Participants build skills and optional portfolio pieces they can share with family and supporters."
+      }
+    ]
   }
 }
