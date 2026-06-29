@@ -1,6 +1,7 @@
 /**
  * Staging vs production UI — staging banner and data-staging-only elements.
  * Navigation is handled by js/content/navigation.js (content/navigation.json).
+ * Production hosts are explicitly protected from shared staging flags.
  */
 (function (global) {
   'use strict';
@@ -18,7 +19,7 @@
 
   function applyEnvironment(site) {
     var env = (site && site.environment) || {};
-    var showBanner = env.showStagingBanner === true || isStagingHost();
+    var showBanner = !isProductionHost() && (env.showStagingBanner === true || isStagingHost());
 
     if (showBanner && !document.getElementById('w2s-staging-banner')) {
       var banner = document.createElement('div');
