@@ -20,7 +20,7 @@
     "copyright": "Who's to Say ? Foundation"
   },
   "environment": {
-    "_comment": "Staging banner only. Nav visibility is controlled by content/navigation.json.",
-    "showStagingBanner": true
+    "_comment": "Set true only on staging. Production hosts are also protected in js/content/environment.js.",
+    "showStagingBanner": false
   }
 }
