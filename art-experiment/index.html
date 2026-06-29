@@ -43,7 +43,15 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--li
 #cc canvas{display:block;width:100%!important;height:auto!important}
 .loading{display:flex;align-items:center;justify-content:center;color:var(--mid);padding:80px 0}
 input[type=file]{font-size:12px;width:100%}
-@media(max-width:600px){.container{flex-direction:column}.sidebar{width:100%}}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:280px;overflow-y:auto;padding:2px;margin-top:4px}
+.gallery .thumb{position:relative;width:100%;aspect-ratio:3/4;border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0b0c14;transition:.15s}
+.gallery .thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.78;transition:.15s}
+.gallery .thumb:hover img{opacity:1}
+.gallery .thumb:hover{transform:translateY(-1px)}
+.gallery .thumb.active{border-color:var(--orange)}
+.gallery .thumb.active img{opacity:1}
+.gallery .thumb .idx{position:absolute;left:3px;top:2px;font-size:9px;font-family:'Courier New',monospace;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.9);pointer-events:none}
+@media(max-width:600px){.container{flex-direction:column}.sidebar{width:100%}.gallery{grid-template-columns:repeat(6,1fr);max-height:160px}}
 </style>
 </head>
 <body>
@@ -59,6 +67,12 @@ input[type=file]{font-size:12px;width:100%}
         <button class="btn sec" onclick="prevPhoto()">← Prev</button>
         <button class="btn sec" onclick="nextPhoto()">Next →</button>
       </div>
+    </div>
+
+    <div class="section">
+      <h3>Gallery</h3>
+      <div class="gallery" id="gallery"></div>
+      <div class="hint">Click a photo to jump to its movement.</div>
     </div>
 
     <div class="section">
@@ -147,7 +161,7 @@ async function loadSources(){
                       ()=>{ slots[i]=null; commit(slots); });
   });
 }
-function commit(slots){ studies=slots.filter(v=>v); if(studies.length && studyStart===0){ curIdx=0; studyStart=millis(); updateHUD(); } else { updateHUD(); } }
+function commit(slots){ studies=slots.filter(v=>v); buildGallery(); if(studies.length && studyStart===0){ curIdx=0; studyStart=millis(); updateHUD(); } else { updateHUD(); } }
 
 // ── Per-photo ANALYSIS: this is where the image becomes a score ───────────
 function buildStudy(img, src){
@@ -190,7 +204,7 @@ function buildStudy(img, src){
   let mean=lum.reduce((a,b)=>a+b,0)/lum.length, varr=lum.reduce((a,b)=>a+(b-mean)*(b-mean),0)/lum.length;
   let energy=Math.min(1, Math.sqrt(varr)/70 + spots.length*0.12);
   let pal=[...regions].filter(c=>c.l>20).sort((a,b)=>satv(b)-satv(a)).slice(0,5).map(c=>hex(c.r,c.g,c.b));
-  return {img,name:src.name,regions,spots,beamCol,plumeCol,warm,smearAngle,energy,palette:pal};
+  return {img,name:src.name,url:src.url,regions,spots,beamCol,plumeCol,warm,smearAngle,energy,palette:pal};
 }
 function satv(c){let h=rgb2hsv(c.r,c.g,c.b);return h[1]*h[2];}
 function rgb2hsv(r,g,b){r/=255;g/=255;b/=255;let mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;
@@ -334,7 +348,25 @@ function updateHUD(){let st=studies[curIdx];if(!st){return;}
   el.innerHTML='<span class="nm">'+st.name+'</span><br>'+(curIdx+1)+' / '+studies.length+
     ' · energy '+st.energy.toFixed(2)+' · smear '+(st.smearAngle*180/Math.PI).toFixed(0)+'°'+
     '<div class="swatches">'+st.palette.map(h=>'<span class="sw" style="background:'+h+'"></span>').join('')+'</div>';
+  highlightGallery();
 }
+// ── Gallery strip: clickable thumbnails of every source photo ──
+let galleryN=-1;
+function buildGallery(){
+  let g=document.getElementById('gallery'); if(!g) return;
+  if(galleryN===studies.length){ highlightGallery(); return; }   // already built for this set
+  galleryN=studies.length; g.innerHTML='';
+  studies.forEach((st,i)=>{
+    let d=document.createElement('div'); d.className='thumb'+(i===curIdx?' active':''); d.title=st.name||('Photo '+(i+1));
+    let im=document.createElement('img'); im.loading='lazy'; im.src=st.url||''; im.alt=st.name||('Photo '+(i+1));
+    let n=document.createElement('span'); n.className='idx'; n.textContent=i+1;
+    d.appendChild(im); d.appendChild(n); d.onclick=()=>selectPhoto(i); g.appendChild(d);
+  });
+}
+function highlightGallery(){ let g=document.getElementById('gallery'); if(!g) return;
+  [...g.children].forEach((c,i)=>c.classList.toggle('active', i===curIdx)); }
+function selectPhoto(i){ if(!studies.length||i===curIdx||!studies[i]) return;
+  prevStudy=studies[curIdx]; prevSwitch=millis(); curIdx=i; studyStart=millis(); updateHUD(); }
 function setP(k,v){params[k]=parseFloat(v);let d=document.getElementById(k+'-v');
   if(d)d.textContent=(k==='photoDur')?params[k]+'s':(k==='flow')?params[k].toFixed(1):(k==='trail')?params[k].toFixed(2):params[k].toFixed(2);}
 function togglePlay(){
