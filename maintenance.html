@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Site Maintenance | Who's to Say ? Foundation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Who's to Say ? Foundation is temporarily updating the website. Contact information remains available for programs, partnerships, donations, and general inquiries." />
+  <meta name="robots" content="index,follow" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-46JBLZ3YPT');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+
+  <style>
+    :root {
+      --maintenance-accent: #63f5e6;
+      --maintenance-bg: #070910;
+      --maintenance-panel: rgba(17, 19, 31, 0.9);
+      --maintenance-border: rgba(255, 255, 255, 0.12);
+      --maintenance-muted: rgba(255, 255, 255, 0.68);
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(99, 245, 230, 0.16), transparent 32rem),
+        radial-gradient(circle at 82% 18%, rgba(139, 92, 246, 0.12), transparent 28rem),
+        linear-gradient(180deg, #080910 0%, #05060a 100%);
+    }
+
+    .maintenance-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-left: auto;
+    }
+
+    .maintenance-nav a {
+      color: rgba(255, 255, 255, 0.72);
+      font-family: var(--font-body, Inter, sans-serif);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 0.72rem 1rem;
+      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .maintenance-nav a:hover {
+      border-color: rgba(99, 245, 230, 0.55);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .maintenance-page {
+      min-height: calc(100vh - 96px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(2rem, 7vw, 6rem) 1.25rem;
+    }
+
+    .maintenance-card {
+      width: min(940px, 100%);
+      border: 1px solid var(--maintenance-border);
+      border-radius: 32px;
+      background: var(--maintenance-panel);
+      box-shadow: 0 28px 100px rgba(0, 0, 0, 0.42);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .maintenance-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(99, 245, 230, 0.1), transparent 38%),
+        radial-gradient(circle at 88% 12%, rgba(99, 245, 230, 0.14), transparent 18rem);
+      pointer-events: none;
+    }
+
+    .maintenance-inner {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: clamp(1.5rem, 4vw, 3rem);
+      padding: clamp(2rem, 6vw, 4.5rem);
+      align-items: stretch;
+    }
+
+    .maintenance-kicker {
+      color: var(--maintenance-accent);
+      font-family: var(--font-body, Inter, sans-serif);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      margin: 0 0 1rem;
+      text-transform: uppercase;
+    }
+
+    .maintenance-card h1 {
+      color: #fff;
+      font-family: var(--font-heading, Poppins, sans-serif);
+      font-size: clamp(2.35rem, 7vw, 5rem);
+      line-height: 0.98;
+      letter-spacing: -0.06em;
+      margin: 0 0 1.2rem;
+      max-width: 680px;
+    }
+
+    .maintenance-lede {
+      color: rgba(255, 255, 255, 0.78);
+      font-family: var(--font-body, Inter, sans-serif);
+      font-size: clamp(1rem, 2.4vw, 1.25rem);
+      line-height: 1.75;
+      margin: 0 0 1.8rem;
+      max-width: 650px;
+    }
+
+    .maintenance-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin: 2rem 0 0;
+    }
+
+    .maintenance-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      border-radius: 999px;
+      font-family: var(--font-body, Inter, sans-serif);
+      font-size: 0.88rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      padding: 0.78rem 1.2rem;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .maintenance-btn.primary {
+      background: var(--maintenance-accent);
+      color: #061012;
+      box-shadow: 0 12px 36px rgba(99, 245, 230, 0.22);
+    }
+
+    .maintenance-btn.secondary {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .maintenance-contact {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.055);
+      padding: 1.45rem;
+      align-self: center;
+    }
+
+    .maintenance-contact h2 {
+      color: #fff;
+      font-family: var(--font-heading, Poppins, sans-serif);
+      font-size: 1.2rem;
+      margin: 0 0 1rem;
+    }
+
+    .maintenance-contact p,
+    .maintenance-note,
+    .maintenance-tax {
+      color: var(--maintenance-muted);
+      font-family: var(--font-body, Inter, sans-serif);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .maintenance-contact-list {
+      display: grid;
+      gap: 0.95rem;
+      margin: 1.15rem 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .maintenance-contact-list li {
+      color: rgba(255, 255, 255, 0.72);
+      font-family: var(--font-body, Inter, sans-serif);
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .maintenance-contact-list strong {
+      display: block;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+
+    .maintenance-contact-list a {
+      color: #fff;
+      font-weight: 800;
+      text-decoration-color: rgba(99, 245, 230, 0.5);
+      text-underline-offset: 0.2em;
+    }
+
+    .maintenance-tax {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.48);
+      font-size: 0.78rem;
+      margin-top: 1.2rem;
+      padding-top: 1rem;
+    }
+
+    @media (max-width: 760px) {
+      .maintenance-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .maintenance-nav a[href*="givebutter"] {
+        display: none;
+      }
+
+      .maintenance-card {
+        border-radius: 24px;
+      }
+    }
+  </style>
+</head>
+<body data-content-page="homepage">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="Who’s to Say ? Foundation Home">
+        <img class="brand-logo logo-dark" src="/assets/images/logo-white-dark.png" alt="Who’s to Say ? Foundation logo" />
+        <img class="brand-logo logo-light" src="/assets/images/logo-black-light.png" alt="Who’s to Say ? Foundation logo" />
+      </a>
+
+      <nav class="maintenance-nav" aria-label="Maintenance page quick links">
+        <a href="/contact.html">Contact</a>
+        <a href="https://givebutter.com/whostosayfoundation" target="_blank" rel="noopener">Donate</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false"></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="maintenance-page">
+    <section class="maintenance-card" aria-labelledby="maintenance-title">
+      <div class="maintenance-inner">
+        <div>
+          <p class="maintenance-kicker">Temporary site maintenance</p>
+          <h1 id="maintenance-title">Website updates are in progress.</h1>
+          <p class="maintenance-lede">
+            Who’s to Say ? Foundation is making a few behind-the-scenes updates to the website. Our contact channels remain open for program questions, partnerships, donations, and general inquiries.
+          </p>
+          <p class="maintenance-note">
+            Thank you for your patience — we’ll be back online shortly.
+          </p>
+
+          <div class="maintenance-actions" aria-label="Primary contact actions">
+            <a class="maintenance-btn primary" href="mailto:info@whostosay.org">Email Us</a>
+            <a class="maintenance-btn secondary" href="tel:+17323141943">Call (732) 314-1943</a>
+            <a class="maintenance-btn secondary" href="/contact.html">Open Contact Form</a>
+          </div>
+        </div>
+
+        <aside class="maintenance-contact" aria-label="Contact information">
+          <h2>Contact Who’s to Say</h2>
+          <p>For time-sensitive messages, email or call directly.</p>
+
+          <ul class="maintenance-contact-list">
+            <li>
+              <strong>Email</strong>
+              <a href="mailto:info@whostosay.org">info@whostosay.org</a>
+            </li>
+            <li>
+              <strong>Phone</strong>
+              <a href="tel:+17323141943">(732) 314-1943</a>
+            </li>
+            <li>
+              <strong>Location</strong>
+              Ocean County, New Jersey
+            </li>
+          </ul>
+
+          <p class="maintenance-tax">
+            EIN: 33-3826585<br />501(c)(3) Public Charity · United States
+          </p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/content/environment.js" defer></script>
+  <!-- Maintenance guard: if maintenance has been turned OFF, send visitors to the live site. -->
+  <script type="module">import { enforce } from '/js/maintenance.js'; enforce('maintenance');</script>
+</body>
+</html>

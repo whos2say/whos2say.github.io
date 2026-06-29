@@ -1,7 +1,12 @@
-# Decap CMS admin
+# Admin
 
-- **Production admin:** https://www.whostosay.org/admin/ → commits to `main`
-- **Staging admin:** https://staging.whostosay.org/admin/ → commits to `staging`
+- **Admin dashboard:** https://www.whostosay.org/admin/ → project links + maintenance toggle (login required)
+- **Content CMS (Decap):** https://www.whostosay.org/admin/cms/ → commits to `main`
+- **Staging CMS:** https://staging.whostosay.org/admin/cms/ → commits to `staging`
+
+The CMS loads its config from `/admin/config.yml` via a `cms-config-url` link in `cms/index.html`.
+The maintenance toggle reads/writes the `maintenance_enabled` row in Supabase `site_settings`
+(public read, admin-only write); the homepage and `/maintenance.html` honor it via `/js/maintenance.js`.
 
 ## Config files
 

@@ -1,24 +1,143 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Who's to Say CMS</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Admin · Who's to Say ? Foundation</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script src="/assets/js/theme.js"></script>
+  <style>
+    :root { --ok:#51cf66; --warn:#ffb84d; --line:rgba(255,255,255,.12); }
+    body { background: radial-gradient(circle at 18% 12%, rgba(99,245,230,.10), transparent 30rem),
+                       linear-gradient(180deg,#080910,#05060a); min-height:100vh; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:2rem; flex-wrap:wrap; }
+    .topbar h1 { font-family:var(--font-heading,Poppins,sans-serif); font-size:1.5rem; font-weight:800; letter-spacing:.02em; }
+    .who { font-size:.82rem; color:var(--text-muted,rgba(255,255,255,.6)); }
+    .btn-link { background:none; border:1px solid var(--line); color:rgba(255,255,255,.8); border-radius:999px;
+                padding:.5rem .9rem; font-size:.8rem; font-weight:700; cursor:pointer; text-decoration:none; }
+    .btn-link:hover { border-color:rgba(255,255,255,.4); }
+    .card { background:rgba(17,19,31,.85); border:1px solid var(--line); border-radius:14px; padding:1.4rem 1.5rem; margin-bottom:1.5rem; }
+    .card h2 { font-size:.78rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-muted,rgba(255,255,255,.6)); margin-bottom:1rem; }
+    /* maintenance toggle */
+    .maint-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+    .pill { display:inline-flex; align-items:center; gap:.5rem; font-weight:800; font-size:.85rem; padding:.45rem .9rem; border-radius:999px; }
+    .pill::before { content:''; width:9px; height:9px; border-radius:50%; }
+    .pill.live { color:var(--ok); background:color-mix(in srgb,var(--ok) 14%,transparent); } .pill.live::before{ background:var(--ok); }
+    .pill.maint { color:var(--warn); background:color-mix(in srgb,var(--warn) 16%,transparent); } .pill.maint::before{ background:var(--warn); }
+    .pill.unknown { color:rgba(255,255,255,.6); background:rgba(255,255,255,.08); } .pill.unknown::before{ background:rgba(255,255,255,.4); }
+    .toggle-btn { border:none; border-radius:10px; padding:.7rem 1.2rem; font-weight:800; font-size:.9rem; cursor:pointer; color:#06210f; background:var(--warn); transition:.15s; }
+    .toggle-btn.to-live { background:var(--ok); }
+    .toggle-btn:hover { transform:translateY(-1px); } .toggle-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+    .note { font-size:.8rem; color:var(--text-muted,rgba(255,255,255,.6)); margin-top:.8rem; line-height:1.5; }
+    .note.err { color:#ff6b6b; }
+    /* project grid */
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:.9rem; }
+    .tile { display:block; text-decoration:none; color:inherit; border:1px solid var(--line); border-radius:12px; padding:1rem 1.1rem; transition:.15s; background:rgba(255,255,255,.02); }
+    .tile:hover { border-color:rgba(99,245,230,.5); transform:translateY(-2px); }
+    .tile .nm { font-weight:800; font-size:1rem; margin-bottom:.25rem; }
+    .tile .ds { font-size:.8rem; color:var(--text-muted,rgba(255,255,255,.6)); line-height:1.45; }
+    .tile.disabled { opacity:.55; cursor:default; } .tile.disabled:hover { transform:none; border-color:var(--line); }
+    .tag { display:inline-block; font-size:.62rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+           padding:.15rem .45rem; border-radius:6px; background:rgba(255,255,255,.1); margin-left:.4rem; vertical-align:middle; }
+    #gate { text-align:center; padding:5rem 1rem; color:var(--text-muted,rgba(255,255,255,.6)); }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+  <div id="gate">Checking sign-in…</div>
 
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com;
-        style-src 'self' 'unsafe-inline' https://unpkg.com;
-        img-src 'self' data: blob: https:;
-        font-src 'self' data: https:;
-        connect-src 'self' https://api.github.com https://github.com https://raw.githubusercontent.com https://unpkg.com;
-        frame-src 'self' https://github.com;
-      "
-    />
-  </head>
-  <body>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  </body>
+  <div id="app" class="wrap hidden">
+    <div class="topbar">
+      <h1>Foundation Admin</h1>
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <span class="who" id="who"></span>
+        <button class="btn-link" id="logout">Sign out</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Site maintenance</h2>
+      <div class="maint-row">
+        <div>
+          <span class="pill unknown" id="maintPill">Checking…</span>
+          <div class="note" id="maintWhat">When ON, public visitors to the homepage see the maintenance page.</div>
+        </div>
+        <button class="toggle-btn" id="maintBtn" disabled>…</button>
+      </div>
+      <div class="note err hidden" id="maintErr"></div>
+    </div>
+
+    <div class="card">
+      <h2>Projects</h2>
+      <div class="grid">
+        <a class="tile" href="/" target="_blank" rel="noopener"><div class="nm">Who's to Say (main site)</div><div class="ds">Public homepage / Coming Soon.</div></a>
+        <a class="tile" href="/art-experiment/" target="_blank" rel="noopener"><div class="nm">Resonant Spectra</div><div class="ds">Music-driven concert light show (art-experiment).</div></a>
+        <a class="tile" href="/djr/" target="_blank" rel="noopener"><div class="nm">DJR Photography</div><div class="ds">Photographer site.</div></a>
+        <a class="tile" href="/wdsd-2026.html" target="_blank" rel="noopener"><div class="nm">WDSD 2026</div><div class="ds">World Down Syndrome Day 2026 page.</div></a>
+        <a class="tile" href="/wdsd-event/" target="_blank" rel="noopener"><div class="nm">WDSD Event microsite</div><div class="ds">Standalone event microsite.</div></a>
+        <div class="tile disabled"><div class="nm">RT Davies Estimates <span class="tag">dev</span></div><div class="ds">Next.js app — not deployed on this static host.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Tools</h2>
+      <div class="grid">
+        <a class="tile" href="/admin/cms/" target="_blank" rel="noopener"><div class="nm">Content CMS</div><div class="ds">Decap CMS — edit site content (commits to GitHub).</div></a>
+        <a class="tile" href="/albums.html" target="_blank" rel="noopener"><div class="nm">Photo Albums</div><div class="ds">Album management / uploads.</div></a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from '/js/supabase.js'
+    import { readFlag, writeFlag } from '/js/maintenance.js'
+
+    const ADMIN_EMAILS = ['joe@whostosay.org']
+    const $ = (id) => document.getElementById(id)
+    let current = null, isAdmin = false
+
+    function renderFlag(on) {
+      current = on
+      const pill = $('maintPill'), btn = $('maintBtn')
+      pill.className = 'pill ' + (on === null ? 'unknown' : on ? 'maint' : 'live')
+      pill.textContent = on === null ? 'Unknown' : on ? 'Maintenance ON' : 'Site is LIVE'
+      $('maintWhat').textContent = on === null
+        ? 'Could not reach the database. Try reloading.'
+        : on ? 'Public visitors to the homepage are being redirected to the maintenance page.'
+             : 'The public homepage is live and visible to everyone.'
+      btn.textContent = on ? 'Turn maintenance OFF' : 'Turn maintenance ON'
+      btn.className = 'toggle-btn ' + (on ? 'to-live' : '')
+      btn.disabled = (on === null) || !isAdmin
+    }
+
+    $('maintBtn').addEventListener('click', async () => {
+      const btn = $('maintBtn'); btn.disabled = true; $('maintErr').classList.add('hidden')
+      try {
+        const next = !current
+        await writeFlag(next)
+        renderFlag(next)
+      } catch (e) {
+        $('maintErr').textContent = 'Could not update: ' + (e.message || e) + (isAdmin ? '' : ' (your account is not an admin).')
+        $('maintErr').classList.remove('hidden')
+        btn.disabled = false
+      }
+    })
+
+    $('logout').addEventListener('click', async () => {
+      await supabase.auth.signOut()
+      location.href = '/login.html?redirect=/admin/'
+    })
+
+    ;(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { location.replace('/login.html?redirect=/admin/'); return }
+      isAdmin = ADMIN_EMAILS.includes((user.email || '').toLowerCase())
+      $('who').textContent = user.email + (isAdmin ? '' : ' · read-only')
+      $('gate').classList.add('hidden'); $('app').classList.remove('hidden')
+      renderFlag(await readFlag())
+    })()
+  </script>
+</body>
 </html>
