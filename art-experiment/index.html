@@ -10,501 +10,776 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --anthropic-dark: #141413;
-            --anthropic-light: #faf9f5;
-            --anthropic-mid-gray: #b0aea5;
-            --anthropic-light-gray: #e8e6dc;
-            --anthropic-orange: #d97757;
-            --anthropic-blue: #6a9bcc;
-            --anthropic-green: #788c5d;
+            --dark:  #141413; --light: #faf9f5;
+            --mid:   #b0aea5; --lgray: #e8e6dc;
+            --org:   #d97757; --blue:  #6a9bcc;
+            --green: #788c5d;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--anthropic-light) 0%, #f5f3ee 100%);
-            min-height: 100vh;
-            color: var(--anthropic-dark);
-        }
-        .container { display: flex; min-height: 100vh; padding: 20px; gap: 20px; }
-        .sidebar {
-            width: 320px; flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 24px; border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(20, 20, 19, 0.1);
-            overflow-y: auto; overflow-x: hidden;
-        }
-        .sidebar h1 { font-family: 'Lora', serif; font-size: 24px; font-weight: 500; color: var(--anthropic-dark); margin-bottom: 8px; }
-        .sidebar .subtitle { color: var(--anthropic-mid-gray); font-size: 14px; margin-bottom: 28px; line-height: 1.45; }
-        .control-section { margin-bottom: 28px; }
-        .control-section h3 { font-size: 16px; font-weight: 600; color: var(--anthropic-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .control-section h3::before { content: '•'; color: var(--anthropic-orange); font-weight: bold; }
-        .seed-input { width: 100%; background: var(--anthropic-light); padding: 12px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 14px; margin-bottom: 12px; border: 1px solid var(--anthropic-light-gray); text-align: center; }
-        .seed-input:focus { outline: none; border-color: var(--anthropic-orange); box-shadow: 0 0 0 2px rgba(217, 119, 87, 0.1); background: white; }
-        .seed-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-        .regen-button { margin-bottom: 0; }
-        .control-group { margin-bottom: 20px; }
-        .control-group label { display: block; font-size: 14px; font-weight: 500; color: var(--anthropic-dark); margin-bottom: 8px; }
-        .slider-container { display: flex; align-items: center; gap: 12px; }
-        .slider-container input[type="range"] { flex: 1; height: 4px; background: var(--anthropic-light-gray); border-radius: 2px; outline: none; -webkit-appearance: none; }
-        .slider-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--anthropic-orange); border-radius: 50%; cursor: pointer; transition: all 0.2s ease; }
-        .slider-container input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); background: #c86641; }
-        .slider-container input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; background: var(--anthropic-orange); border-radius: 50%; border: none; cursor: pointer; }
-        .value-display { font-family: 'Courier New', monospace; font-size: 12px; color: var(--anthropic-mid-gray); min-width: 52px; text-align: right; }
-        .color-group { margin-bottom: 14px; }
-        .color-group label { display: block; font-size: 12px; color: var(--anthropic-mid-gray); margin-bottom: 4px; }
-        .color-picker-container { display: flex; align-items: center; gap: 8px; }
-        .color-picker-container input[type="color"] { width: 32px; height: 32px; border: none; border-radius: 6px; cursor: pointer; background: none; padding: 0; }
-        .color-value { font-family: 'Courier New', monospace; font-size: 12px; color: var(--anthropic-mid-gray); }
-        .button { background: var(--anthropic-orange); color: white; border: none; padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; width: 100%; }
-        .button:hover { background: #c86641; transform: translateY(-1px); }
-        .button:active { transform: translateY(0); }
-        .button.secondary { background: var(--anthropic-blue); }
-        .button.secondary:hover { background: #5a8bb8; }
-        .button.tertiary { background: var(--anthropic-green); }
-        .button.tertiary:hover { background: #6b7b52; }
-        .button.wide { margin-bottom: 8px; }
-        .button-row { display: flex; gap: 8px; }
-        .button-row .button { flex: 1; }
-        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
-        #canvas-container { width: 100%; max-width: 1000px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(20, 20, 19, 0.18); background: #05060d; }
-        #canvas-container canvas { display: block; width: 100% !important; height: auto !important; }
-        .loading { display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--anthropic-mid-gray); padding: 80px 0; }
-        @media (max-width: 600px) { .container { flex-direction: column; } .sidebar { width: 100%; } .canvas-area { padding: 20px; } }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Poppins',sans-serif; background:linear-gradient(135deg,var(--light) 0%,#f5f3ee 100%); min-height:100vh; color:var(--dark); }
+        .container { display:flex; min-height:100vh; padding:20px; gap:20px; }
+        .sidebar { width:320px; flex-shrink:0; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); padding:24px; border-radius:12px; box-shadow:0 10px 30px rgba(20,20,19,0.1); overflow-y:auto; overflow-x:hidden; }
+        .sidebar h1 { font-family:'Lora',serif; font-size:24px; font-weight:500; color:var(--dark); margin-bottom:8px; }
+        .sidebar .subtitle { color:var(--mid); font-size:14px; margin-bottom:28px; line-height:1.45; }
+        .control-section { margin-bottom:28px; }
+        .control-section h3 { font-size:16px; font-weight:600; color:var(--dark); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .control-section h3::before { content:'•'; color:var(--org); font-weight:bold; }
+        .seed-input { width:100%; background:var(--light); padding:12px; border-radius:8px; font-family:'Courier New',monospace; font-size:14px; margin-bottom:12px; border:1px solid var(--lgray); text-align:center; }
+        .seed-input:focus { outline:none; border-color:var(--org); box-shadow:0 0 0 2px rgba(217,119,87,0.1); background:white; }
+        .seed-controls { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+        .regen-button { margin-bottom:0; }
+        .control-group { margin-bottom:20px; }
+        .control-group label { display:block; font-size:14px; font-weight:500; color:var(--dark); margin-bottom:8px; }
+        .slider-container { display:flex; align-items:center; gap:12px; }
+        .slider-container input[type="range"] { flex:1; height:4px; background:var(--lgray); border-radius:2px; outline:none; -webkit-appearance:none; }
+        .slider-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; background:var(--org); border-radius:50%; cursor:pointer; transition:all .2s; }
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover { transform:scale(1.1); background:#c86641; }
+        .slider-container input[type="range"]::-moz-range-thumb { width:16px; height:16px; background:var(--org); border-radius:50%; border:none; cursor:pointer; }
+        .value-display { font-family:'Courier New',monospace; font-size:12px; color:var(--mid); min-width:52px; text-align:right; }
+        .color-group { margin-bottom:14px; }
+        .color-group label { display:block; font-size:12px; color:var(--mid); margin-bottom:4px; }
+        .color-picker-container { display:flex; align-items:center; gap:8px; }
+        .color-picker-container input[type="color"] { width:32px; height:32px; border:none; border-radius:6px; cursor:pointer; background:none; padding:0; }
+        .color-value { font-family:'Courier New',monospace; font-size:12px; color:var(--mid); }
+        .button { background:var(--org); color:white; border:none; padding:10px 16px; border-radius:6px; font-size:14px; font-weight:500; cursor:pointer; transition:all .2s; width:100%; }
+        .button:hover { background:#c86641; transform:translateY(-1px); }
+        .button:active { transform:translateY(0); }
+        .button.secondary { background:var(--blue); }
+        .button.secondary:hover { background:#5a8bb8; }
+        .button.tertiary { background:var(--green); }
+        .button.tertiary:hover { background:#6b7b52; }
+        .button.wide { margin-bottom:8px; }
+        .button-row { display:flex; gap:8px; }
+        .button-row .button { flex:1; }
+        .canvas-area { flex:1; display:flex; align-items:center; justify-content:center; min-width:0; }
+        #canvas-container { width:100%; max-width:1000px; border-radius:12px; overflow:hidden; box-shadow:0 20px 40px rgba(20,20,19,0.18); background:#05060d; position:relative; }
+        #canvas-container canvas { display:block; width:100% !important; height:auto !important; }
+        #bg-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1.2s ease; pointer-events:none; mix-blend-mode:luminosity; }
+        .loading { display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--mid); padding:80px 0; }
+
+        /* ── Photo presets ── */
+        .photo-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:10px; }
+        .photo-thumb { width:100%; aspect-ratio:1; object-fit:cover; border-radius:5px; cursor:pointer; border:2px solid transparent; transition:all .18s; opacity:.7; }
+        .photo-thumb:hover { opacity:1; border-color:var(--org); transform:scale(1.04); }
+        .photo-thumb.active { opacity:1; border-color:var(--org); box-shadow:0 0 0 2px rgba(217,119,87,0.35); }
+        .photo-none-btn { grid-column:1/-1; }
+
+        /* ── Audio / phish.in ── */
+        .audio-search { display:flex; gap:6px; margin-bottom:10px; }
+        .audio-search input { flex:1; padding:8px 10px; border:1px solid var(--lgray); border-radius:6px; font-size:13px; background:var(--light); color:var(--dark); outline:none; }
+        .audio-search input:focus { border-color:var(--org); }
+        .track-list { max-height:220px; overflow-y:auto; border:1px solid var(--lgray); border-radius:8px; margin-bottom:10px; display:none; }
+        .track-item { padding:8px 10px; cursor:pointer; font-size:12px; border-bottom:1px solid var(--lgray); transition:background .14s; }
+        .track-item:last-child { border-bottom:none; }
+        .track-item:hover { background:rgba(217,119,87,0.07); }
+        .track-item.playing { background:rgba(217,119,87,0.14); font-weight:600; }
+        .track-date { color:var(--dark); font-weight:500; }
+        .track-venue { color:var(--mid); font-size:11px; }
+        .track-dur { float:right; color:var(--mid); font-size:11px; margin-left:4px; }
+        .audio-status { font-size:12px; color:var(--mid); margin-bottom:8px; min-height:18px; }
+        .fft-bars { height:24px; background:rgba(0,0,0,0.04); border-radius:4px; overflow:hidden; margin-bottom:8px; display:flex; align-items:flex-end; gap:1px; padding:2px; }
+        .fft-bar { flex:1; background:var(--org); border-radius:2px 2px 0 0; min-height:2px; transition:height .05s; }
+        .fft-bar.mid  { background:var(--blue); }
+        .fft-bar.high { background:var(--green); }
+        .tap-section { display:none; }
+        .tap-section.visible { display:block; }
+        .tap-btn { background:#555; color:white; border:none; padding:10px; border-radius:6px; font-size:18px; cursor:pointer; width:100%; margin-bottom:6px; transition:background .1s; }
+        .tap-btn:active { background:var(--org); }
+        .discovery-links { font-size:11px; color:var(--mid); margin-top:8px; line-height:1.8; }
+        .discovery-links a { color:var(--blue); text-decoration:none; }
+        .discovery-links a:hover { text-decoration:underline; }
+
+        @media (max-width:600px) { .container { flex-direction:column; } .sidebar { width:100%; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <h1>Resonant Spectra</h1>
-            <div class="subtitle">A generative light show poured into darkness and locked to a slinky funk groove in A — the sparse intro arriving, then the main riff taking hold. Press play and watch the pulse seize the color.</div>
+<div class="container">
+  <div class="sidebar">
+    <h1>Resonant Spectra</h1>
+    <div class="subtitle">A generative light show locked to a slinky funk groove in A — now driven by real Phish concert photography and live audio from phish.in.</div>
 
-            <!-- Playback (drives the rhythm clock) -->
-            <div class="control-section">
-                <h3>Playback</h3>
-                <button class="button wide" id="playBtn" onclick="togglePlay()">⏸ Pause</button>
-                <div class="button-row">
-                    <button class="button secondary" onclick="restartPerformance()">⏮ Restart</button>
-                    <button class="button tertiary" id="gridBtn" onclick="toggleGrid()">Beat grid: on</button>
-                </div>
-            </div>
-
-            <!-- Seed (FIXED) -->
-            <div class="control-section">
-                <h3>Seed</h3>
-                <input type="number" id="seed-input" class="seed-input" value="1992" onchange="updateSeed()">
-                <div class="seed-controls">
-                    <button class="button secondary" onclick="previousSeed()">← Prev</button>
-                    <button class="button secondary" onclick="nextSeed()">Next →</button>
-                </div>
-                <button class="button tertiary regen-button" onclick="randomSeedAndUpdate()">↻ Random staging</button>
-            </div>
-
-            <!-- Parameters -->
-            <div class="control-section">
-                <h3>Parameters</h3>
-                <div class="control-group">
-                    <label>Tempo (BPM)</label>
-                    <div class="slider-container">
-                        <input type="range" id="bpm" min="70" max="140" step="1" value="104" oninput="updateParam('bpm', this.value)">
-                        <span class="value-display" id="bpm-value">104</span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label>Groove punch</label>
-                    <div class="slider-container">
-                        <input type="range" id="groove" min="0" max="2" step="0.05" value="1" oninput="updateParam('groove', this.value)">
-                        <span class="value-display" id="groove-value">1.00</span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label>Liquid flow</label>
-                    <div class="slider-container">
-                        <input type="range" id="flowSpeed" min="0.2" max="3" step="0.1" value="1" oninput="updateParam('flowSpeed', this.value)">
-                        <span class="value-display" id="flowSpeed-value">1.0</span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label>Magenta plumes</label>
-                    <div class="slider-container">
-                        <input type="range" id="plumes" min="0" max="2" step="0.05" value="1" oninput="updateParam('plumes', this.value)">
-                        <span class="value-display" id="plumes-value">1.00</span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label>Amber beams</label>
-                    <div class="slider-container">
-                        <input type="range" id="beam" min="0" max="2" step="0.05" value="1" oninput="updateParam('beam', this.value)">
-                        <span class="value-display" id="beam-value">1.00</span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label>Bloom response</label>
-                    <div class="slider-container">
-                        <input type="range" id="bloom" min="0" max="2" step="0.05" value="1" oninput="updateParam('bloom', this.value)">
-                        <span class="value-display" id="bloom-value">1.00</span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label>Trail persistence</label>
-                    <div class="slider-container">
-                        <input type="range" id="trail" min="0.2" max="0.9" step="0.01" value="0.55" oninput="updateParam('trail', this.value)">
-                        <span class="value-display" id="trail-value">0.55</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Colors -->
-            <div class="control-section">
-                <h3>Palette</h3>
-                <div class="color-group"><label>Upper haze (green)</label><div class="color-picker-container"><input type="color" id="colTop" value="#23d36a" onchange="updateColor('colTop', this.value)"><span class="color-value" id="colTop-value">#23d36a</span></div></div>
-                <div class="color-group"><label>Body (electric blue)</label><div class="color-picker-container"><input type="color" id="colBase" value="#1b3cff" onchange="updateColor('colBase', this.value)"><span class="color-value" id="colBase-value">#1b3cff</span></div></div>
-                <div class="color-group"><label>Depths (violet)</label><div class="color-picker-container"><input type="color" id="colDeep" value="#7a2bd6" onchange="updateColor('colDeep', this.value)"><span class="color-value" id="colDeep-value">#7a2bd6</span></div></div>
-                <div class="color-group"><label>Plumes (magenta)</label><div class="color-picker-container"><input type="color" id="colPlume" value="#ff2bd0" onchange="updateColor('colPlume', this.value)"><span class="color-value" id="colPlume-value">#ff2bd0</span></div></div>
-                <div class="color-group"><label>Beams (amber)</label><div class="color-picker-container"><input type="color" id="colBeam" value="#ffb13c" onchange="updateColor('colBeam', this.value)"><span class="color-value" id="colBeam-value">#ffb13c</span></div></div>
-            </div>
-
-            <!-- Actions (FIXED) -->
-            <div class="control-section">
-                <h3>Actions</h3>
-                <button class="button wide" onclick="downloadFrame()">⬇ Download still (PNG)</button>
-                <div class="button-row">
-                    <button class="button secondary" onclick="regenerate()">Regenerate</button>
-                    <button class="button" onclick="resetParameters()">Reset</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="canvas-area">
-            <div id="canvas-container">
-                <div class="loading">Initializing light show…</div>
-            </div>
-        </div>
+    <!-- Playback -->
+    <div class="control-section">
+      <h3>Playback</h3>
+      <button class="button wide" id="playBtn" onclick="togglePlay()">⏸ Pause</button>
+      <div class="button-row">
+        <button class="button secondary" onclick="restartPerformance()">⏮ Restart</button>
+        <button class="button tertiary" id="gridBtn" onclick="toggleGrid()">Beat grid: on</button>
+      </div>
     </div>
 
-    <script>
-    // ════════════════════════════════════════════════════════════════
-    // RESONANT SPECTRA — a seeded liquid light show locked to a groove
-    // ════════════════════════════════════════════════════════════════
+    <!-- Audio -->
+    <div class="control-section">
+      <h3>Audio — phish.in</h3>
+      <div class="audio-search">
+        <input type="text" id="song-query" placeholder="Search song… (e.g. Tweezer)" value="Tweezer" onkeydown="if(event.key==='Enter')searchSong()">
+        <button class="button secondary" style="width:auto;padding:8px 12px" onclick="searchSong()">🔍</button>
+      </div>
+      <div class="track-list" id="track-list"></div>
+      <div class="audio-status" id="audio-status">Enter a song name and search.</div>
+      <div class="fft-bars" id="fft-bars"></div>
+      <div class="button-row" style="margin-bottom:8px">
+        <button class="button secondary" id="audio-play-btn" onclick="toggleAudioPlay()" style="display:none">▶ Play</button>
+        <button class="button" id="audio-stop-btn" onclick="stopAudio()" style="display:none">■ Stop</button>
+      </div>
+      <!-- Tap-tempo fallback (shown when CORS blocks direct stream) -->
+      <div class="tap-section" id="tap-section">
+        <button class="tap-btn" id="tap-btn" onclick="tap()">🎵 Tap tempo</button>
+        <div class="audio-status" id="tap-status">Tap 4+ beats to lock the groove.</div>
+      </div>
+      <div class="discovery-links">
+        Find more:
+        <a href="https://phish.in" target="_blank" rel="noopener">phish.in</a> ·
+        <a href="https://phish.net" target="_blank" rel="noopener">phish.net</a> ·
+        <a href="https://livephish.com" target="_blank" rel="noopener">livephish.com</a>
+      </div>
+    </div>
 
-    let params = {
-        seed: 1992,          // staging seed (Tweezer lives on A Picture of Nectar, 1992)
-        bpm: 104,            // slinky funk tempo
-        groove: 1.0,         // accent punch
-        flowSpeed: 1.0,      // liquid morph rate
-        plumes: 1.0,         // magenta plume density
-        beam: 1.0,           // amber beam brightness
-        bloom: 1.0,          // global glow response
-        trail: 0.55,         // trail persistence (lower = longer trails)
-        colTop:  '#23d36a',
-        colBase: '#1b3cff',
-        colDeep: '#7a2bd6',
-        colPlume:'#ff2bd0',
-        colBeam: '#ffb13c'
+    <!-- Photo presets -->
+    <div class="control-section">
+      <h3>PHishy Art presets</h3>
+      <div class="photo-grid" id="photo-grid">
+        <div style="grid-column:1/-1;color:var(--mid);font-size:12px">Loading photos…</div>
+      </div>
+    </div>
+
+    <!-- Seed -->
+    <div class="control-section">
+      <h3>Seed</h3>
+      <input type="number" id="seed-input" class="seed-input" value="1992" onchange="updateSeed()">
+      <div class="seed-controls">
+        <button class="button secondary" onclick="previousSeed()">← Prev</button>
+        <button class="button secondary" onclick="nextSeed()">Next →</button>
+      </div>
+      <button class="button tertiary regen-button" onclick="randomSeedAndUpdate()">↻ Random staging</button>
+    </div>
+
+    <!-- Parameters -->
+    <div class="control-section">
+      <h3>Parameters</h3>
+      <div class="control-group">
+        <label>Tempo (BPM)</label>
+        <div class="slider-container">
+          <input type="range" id="bpm" min="70" max="140" step="1" value="104" oninput="updateParam('bpm',this.value)">
+          <span class="value-display" id="bpm-value">104</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Groove punch</label>
+        <div class="slider-container">
+          <input type="range" id="groove" min="0" max="2" step="0.05" value="1" oninput="updateParam('groove',this.value)">
+          <span class="value-display" id="groove-value">1.00</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Liquid flow</label>
+        <div class="slider-container">
+          <input type="range" id="flowSpeed" min="0.2" max="3" step="0.1" value="1" oninput="updateParam('flowSpeed',this.value)">
+          <span class="value-display" id="flowSpeed-value">1.0</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Plumes (FFT: bass)</label>
+        <div class="slider-container">
+          <input type="range" id="plumes" min="0" max="2" step="0.05" value="1" oninput="updateParam('plumes',this.value)">
+          <span class="value-display" id="plumes-value">1.00</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Beams (FFT: treble)</label>
+        <div class="slider-container">
+          <input type="range" id="beam" min="0" max="2" step="0.05" value="1" oninput="updateParam('beam',this.value)">
+          <span class="value-display" id="beam-value">1.00</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Bloom response</label>
+        <div class="slider-container">
+          <input type="range" id="bloom" min="0" max="2" step="0.05" value="1" oninput="updateParam('bloom',this.value)">
+          <span class="value-display" id="bloom-value">1.00</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Trail persistence</label>
+        <div class="slider-container">
+          <input type="range" id="trail" min="0.2" max="0.9" step="0.01" value="0.55" oninput="updateParam('trail',this.value)">
+          <span class="value-display" id="trail-value">0.55</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Motion smear (directional blur)</label>
+        <div class="slider-container">
+          <input type="range" id="smear" min="0" max="1" step="0.05" value="0.3" oninput="updateParam('smear',this.value)">
+          <span class="value-display" id="smear-value">0.30</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Palette -->
+    <div class="control-section">
+      <h3>Palette</h3>
+      <div class="color-group"><label>Upper haze (green)</label><div class="color-picker-container"><input type="color" id="colTop" value="#23d36a" onchange="updateColor('colTop',this.value)"><span class="color-value" id="colTop-value">#23d36a</span></div></div>
+      <div class="color-group"><label>Body (electric blue)</label><div class="color-picker-container"><input type="color" id="colBase" value="#1b3cff" onchange="updateColor('colBase',this.value)"><span class="color-value" id="colBase-value">#1b3cff</span></div></div>
+      <div class="color-group"><label>Depths (violet)</label><div class="color-picker-container"><input type="color" id="colDeep" value="#7a2bd6" onchange="updateColor('colDeep',this.value)"><span class="color-value" id="colDeep-value">#7a2bd6</span></div></div>
+      <div class="color-group"><label>Plumes (magenta)</label><div class="color-picker-container"><input type="color" id="colPlume" value="#ff2bd0" onchange="updateColor('colPlume',this.value)"><span class="color-value" id="colPlume-value">#ff2bd0</span></div></div>
+      <div class="color-group"><label>Beams (amber)</label><div class="color-picker-container"><input type="color" id="colBeam" value="#ffb13c" onchange="updateColor('colBeam',this.value)"><span class="color-value" id="colBeam-value">#ffb13c</span></div></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="control-section">
+      <h3>Actions</h3>
+      <button class="button wide" onclick="downloadFrame()">⬇ Download still (PNG)</button>
+      <div class="button-row">
+        <button class="button secondary" onclick="regenerate()">Regenerate</button>
+        <button class="button" onclick="resetParameters()">Reset</button>
+      </div>
+    </div>
+  </div><!-- end sidebar -->
+
+  <div class="canvas-area">
+    <div id="canvas-container">
+      <img id="bg-photo" alt="">
+      <div class="loading">Initializing light show…</div>
+    </div>
+  </div>
+</div><!-- end container -->
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// RESONANT SPECTRA — seeded liquid light show + PHishy Art photo presets
+//                  + phish.in audio with FFT-reactive visuals
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Params ──────────────────────────────────────────────────────────────────
+let params = {
+    seed:1992, bpm:104, groove:1.0, flowSpeed:1.0,
+    plumes:1.0, beam:1.0, bloom:1.0, trail:0.55, smear:0.3,
+    colTop:'#23d36a', colBase:'#1b3cff', colDeep:'#7a2bd6',
+    colPlume:'#ff2bd0', colBeam:'#ffb13c'
+};
+let defaultParams = {...params};
+
+// ── Rhythm ───────────────────────────────────────────────────────────────────
+const accentPattern = [
+    1.00,0.12,0.22,0.46, 0.16,0.30,0.72,0.18,
+    0.86,0.14,0.40,0.62, 0.20,0.30,0.74,0.34
+];
+const bassSteps = [0,6,8,14];
+const beamSteps = [0,8];
+let playing=true, playTime=0, lastStep=-1, showGrid=true;
+let accentEnv=0, beamEnv=0, lastAccent=0, curStepInBar=0;
+let blobs=[], beams=[], plumes=[];
+let glowSprite, vignette, smearLayer;
+const CW=1200, CH=900;
+
+// ── FFT / audio reactivity ───────────────────────────────────────────────────
+let fftLow=0, fftMid=0, fftHigh=0;  // 0-1 normalised energy per band
+let audioCtx=null, analyser=null, fftDataArray=null;
+let audioEl=null, audioSrc=null;     // <audio> element + Web Audio source node
+let audioPlaying=false;
+
+// ── Photo manifest ────────────────────────────────────────────────────────────
+let manifest = null;
+let activePhotoIdx = -1;  // -1 = no photo (seed/auto-groove mode)
+
+// ── p5 setup ─────────────────────────────────────────────────────────────────
+function setup() {
+    let c = createCanvas(CW, CH);
+    c.parent('canvas-container');
+    pixelDensity(1);
+    glowSprite = makeGlow(360);
+    vignette   = makeVignette();
+    smearLayer = createGraphics(CW, CH);
+    smearLayer.clear();
+    stageSeed();
+    document.querySelector('.loading').style.display = 'none';
+    loadManifest();
+    buildFftBars();
+}
+
+function makeGlow(size) {
+    let g=createGraphics(size,size); g.clear();
+    let ctx=g.drawingContext, r=size/2;
+    let grad=ctx.createRadialGradient(r,r,0,r,r,r);
+    grad.addColorStop(0,'rgba(255,255,255,1)');
+    grad.addColorStop(0.18,'rgba(255,255,255,0.85)');
+    grad.addColorStop(0.45,'rgba(255,255,255,0.3)');
+    grad.addColorStop(0.75,'rgba(255,255,255,0.06)');
+    grad.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=grad; ctx.fillRect(0,0,size,size);
+    return g;
+}
+function makeVignette() {
+    let g=createGraphics(CW,CH); g.clear();
+    let ctx=g.drawingContext;
+    let grad=ctx.createRadialGradient(CW*.5,CH*.55,CH*.25,CW*.5,CH*.55,CH*.95);
+    grad.addColorStop(0,'rgba(3,4,12,0)');
+    grad.addColorStop(0.7,'rgba(3,4,12,0.25)');
+    grad.addColorStop(1,'rgba(2,3,9,0.78)');
+    ctx.fillStyle=grad; ctx.fillRect(0,0,CW,CH);
+    return g;
+}
+
+function hx(c){ let v=color(c); return [red(v),green(v),blue(v)]; }
+
+function stageSeed(preset) {
+    randomSeed(params.seed); noiseSeed(params.seed);
+    blobs=[]; plumes=[];
+    if (preset) {
+        // Use photo palette colours for each layer
+        const p = preset.palette;
+        const cTop  = hx(p.colTop);
+        const cBase = hx(p.colBase);
+        const cDeep = hx(p.colDeep);
+        let nTop=2+floor(random(2));
+        for(let i=0;i<nTop;i++) blobs.push(makeBlob(cTop, random(0.05,0.95),random(0.02,0.30),random(0.34,0.5),0.55,0.35,i*11.3));
+        let nBlue=3+floor(random(2));
+        for(let i=0;i<nBlue;i++) blobs.push(makeBlob(cBase,random(0.05,0.95),random(0.30,0.78),random(0.42,0.62),0.72,0.55,50+i*7.7));
+        let nDeep=2+floor(random(2));
+        for(let i=0;i<nDeep;i++) blobs.push(makeBlob(cDeep,random(0.05,0.95),random(0.55,0.98),random(0.34,0.5),0.5,0.45,120+i*9.1));
+        // Beam emitters from photo hotspots
+        beams = (preset.hotspots||[]).slice(0,2).map((h,i)=>({
+            x:h.x, y:h.y,
+            tilt:random(-0.22,0.08),
+            phase:random(100)
+        }));
+        if(beams.length<2) beams.push({x:0.2+random(-0.05,0.06),y:0.22+random(-0.04,0.04),tilt:random(-0.18,0.08),phase:random(100)});
+        // Apply photo palette to color pickers
+        applyPaletteToUI(p);
+    } else {
+        const cTop=hx(params.colTop), cBase=hx(params.colBase), cDeep=hx(params.colDeep);
+        let nTop=2+floor(random(2));
+        for(let i=0;i<nTop;i++) blobs.push(makeBlob(cTop,random(0.05,0.95),random(0.02,0.30),random(0.34,0.5),0.55,0.35,i*11.3));
+        let nBlue=3+floor(random(2));
+        for(let i=0;i<nBlue;i++) blobs.push(makeBlob(cBase,random(0.05,0.95),random(0.30,0.78),random(0.42,0.62),0.72,0.55,50+i*7.7));
+        let nDeep=2+floor(random(2));
+        for(let i=0;i<nDeep;i++) blobs.push(makeBlob(cDeep,random(0.05,0.95),random(0.55,0.98),random(0.34,0.5),0.5,0.45,120+i*9.1));
+        beams=[];
+        let bx1=constrain(0.16+random(-0.05,0.06),0.05,0.4);
+        let bx2=constrain(bx1+0.07+random(0,0.04),0.1,0.5);
+        let by=constrain(0.21+random(-0.04,0.05),0.1,0.35);
+        beams.push({x:bx1,y:by,tilt:random(-0.22,0.05),phase:random(100)});
+        beams.push({x:bx2,y:by+random(-0.02,0.03),tilt:random(-0.18,0.08),phase:random(100)});
+    }
+}
+function makeBlob(col,x,y,r,bright,beat,seedoff){
+    return{col,hx:x,hy:y,r,bright,beat,off:seedoff,dx:random(0.4,1.1),dy:random(0.3,0.9),breathSpd:random(0.3,0.8),breathOff:random(100)};
+}
+
+// ── Rhythm step ──────────────────────────────────────────────────────────────
+function onStep(gStep,stepInBar,barIndex){
+    let thr=max(0,0.9-barIndex*0.25);
+    let jam=0.15+0.85*((barIndex%16)/16);
+    let raw=accentPattern[stepInBar];
+    let pass=raw>=thr?raw:raw*0.18;
+    // FFT: bass boosts plume accent, treble boosts beam accent
+    let bassBoost = 1 + fftLow * 1.8 * params.plumes;
+    let accent=pass*params.groove*(0.7+0.5*jam)*bassBoost;
+    lastAccent=pass;
+    accentEnv=min(2.2,accentEnv+accent*0.9);
+    if(beamSteps.includes(stepInBar)&&raw>=thr){
+        let trebleBoost = 1 + fftHigh * 2.0 * params.beam;
+        beamEnv=min(2.0,beamEnv+accent*1.1*trebleBoost);
+    }
+    if(bassSteps.includes(stepInBar)&&raw>=thr){
+        let n=floor(random(1,3)*params.plumes*(0.6+accent)*bassBoost);
+        for(let i=0;i<n;i++) spawnPlume(accent);
+    }
+}
+
+function spawnPlume(accent){
+    plumes.push({
+        x:random(0.08,0.92)*width, y:height*random(0.86,1.02),
+        vy:-random(70,150)*(0.7+accent),
+        sway:random(100), r:random(60,150),
+        life:1, decay:random(0.55,0.95),
+        bright:(0.6+accent)*params.plumes
+    });
+}
+
+// ── Main draw ────────────────────────────────────────────────────────────────
+function draw(){
+    let dt=min(deltaTime/1000,0.05);
+    if(playing) playTime+=dt;
+    tickFft();
+
+    let beatDur=60/params.bpm, stepDur=beatDur/4;
+    let gStep=floor(playTime/stepDur);
+    curStepInBar=((gStep%16)+16)%16;
+    let barIndex=floor(gStep/16);
+    if(gStep!==lastStep){onStep(gStep,curStepInBar,barIndex);lastStep=gStep;}
+
+    accentEnv*=Math.exp(-dt*5.5);
+    beamEnv  *=Math.exp(-dt*3.8);
+
+    // Mid-freq wash multiplier
+    let midWash = 1 + fftMid * 1.2;
+
+    // 1) Fade → trails
+    let fade=map(params.trail,0.2,0.9,16,95);
+    push();blendMode(BLEND);noStroke();fill(4,5,13,fade);rect(0,0,width,height);pop();
+
+    // 2) Directional smear layer (motion blur)
+    if(params.smear>0.02){
+        let smearAlpha=map(params.smear,0,1,0,80);
+        push();blendMode(BLEND);noStroke();
+        // smear previous smearLayer diagonally
+        smearLayer.clear();
+        let sCtx=smearLayer.drawingContext;
+        sCtx.globalAlpha=0.85;
+        sCtx.drawImage(drawingContext.canvas,1,1,CW-1,CH-1,0,0,CW,CH);
+        sCtx.globalAlpha=1;
+        tint(255,255,255,smearAlpha*accentEnv*10);
+        imageMode(CORNER);
+        image(smearLayer,0,0,width,height);
+        pop();
+    }
+
+    // 3) Base washes (additive)
+    push();blendMode(ADD);noStroke();imageMode(CENTER);
+    let t=playTime*params.flowSpeed;
+    let beatPulse=1+(accentEnv*0.5*params.bloom*midWash);
+    for(let b of blobs){
+        let nx=noise(b.off,t*0.06*b.dx), ny=noise(b.off+33.7,t*0.05*b.dy);
+        let x=(b.hx*0.55+nx*0.45)*width, y=(b.hy*0.6+ny*0.4)*height;
+        let breath=0.6+0.4*(0.5+0.5*Math.sin(t*b.breathSpd+b.breathOff));
+        let amp=b.bright*breath*(1+b.beat*accentEnv*0.8*params.bloom*midWash);
+        let rr=b.r*Math.min(width,height)*1.7*(0.92+0.12*beatPulse*b.beat);
+        tint(b.col[0],b.col[1],b.col[2],255*Math.min(1,amp));
+        image(glowSprite,x,y,rr,rr);
+    }
+    pop();
+
+    // 4) Magenta plumes
+    push();blendMode(ADD);noStroke();imageMode(CENTER);
+    let pc=hx(params.colPlume);
+    for(let i=plumes.length-1;i>=0;i--){
+        let p=plumes[i];
+        p.y+=p.vy*dt; p.vy*=0.992;
+        p.x+=Math.sin(playTime*1.5+p.sway)*18*dt*width*0.002;
+        p.life-=dt*p.decay;
+        if(p.life<=0||p.y<-100){plumes.splice(i,1);continue;}
+        let a=Math.sin(p.life*Math.PI)*p.bright;
+        tint(pc[0],pc[1],pc[2],255*Math.min(1,a));
+        let rr=p.r*(1.4-0.4*p.life);
+        image(glowSprite,p.x,p.y,rr*1.5,rr*2.6);
+    }
+    pop();
+
+    // 5) Amber beams
+    push();blendMode(ADD);noStroke();imageMode(CENTER);
+    let bc=hx(params.colBeam);
+    for(let bm of beams){
+        let flick=0.85+0.15*noise(bm.phase,playTime*3);
+        let a=beamEnv*params.beam*flick*(1+fftHigh*2);
+        if(a<0.02)continue;
+        let x=bm.x*width+Math.sin(playTime*0.7+bm.phase)*6, y=bm.y*height;
+        tint(bc[0],bc[1],bc[2],255*Math.min(1,a));
+        push();translate(x,y);rotate(bm.tilt);
+        image(glowSprite,0,0,230*(0.8+a*0.4),70*(0.8+a*0.3));
+        image(glowSprite,0,0,90,90);
+        pop();
+    }
+    pop();
+
+    // 6) Vignette
+    push();blendMode(BLEND);imageMode(CORNER);image(vignette,0,0,width,height);pop();
+
+    // 7) Beat grid
+    if(showGrid)drawGrid(beatDur);
+}
+
+function drawGrid(beatDur){
+    push();
+    let n=16,pad=28,gap=14;
+    let w=width-pad*2, cell=(w-gap*(n-1))/n, y=height-38;
+    for(let i=0;i<n;i++){
+        let x=pad+i*(cell+gap);
+        let strong=accentPattern[i]>=0.6, on=i===curStepInBar;
+        noStroke();fill(255,255,255,on?230:(strong?70:32));
+        let h=on?10:6; rect(x,y-h/2,cell,h,3);
+    }
+    let beatPhase=(playTime%beatDur)/beatDur;
+    let pr=map(beatPhase,0,1,26,8);
+    noFill();stroke(255,255,255,map(beatPhase,0,1,180,0));strokeWeight(2);
+    circle(width-44,44,pr*2);
+    noStroke();fill(255,220,120,200);circle(width-44,44,7);
+    pop();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// AUDIO — phish.in streaming + Web Audio FFT
+// ════════════════════════════════════════════════════════════════════════════
+
+const PHISHIN_API = 'https://phish.in/api/v2';
+let trackListData = [];
+let activeTrackIdx = -1;
+
+function buildFftBars(){
+    const el=document.getElementById('fft-bars');
+    el.innerHTML='';
+    for(let i=0;i<16;i++){
+        const d=document.createElement('div');
+        d.className='fft-bar'+(i<5?' ':i<11?' mid':' high');
+        d.style.height='2px';
+        el.appendChild(d);
+    }
+}
+
+function tickFft(){
+    if(!analyser||!fftDataArray)return;
+    analyser.getByteFrequencyData(fftDataArray);
+    const n=fftDataArray.length;
+    // Bands: low 0-250Hz, mid 250-4kHz, high 4k-20kHz
+    // Nyquist ≈ sampleRate/2; bin width = Nyquist/n
+    const nyq=44100/2, binW=nyq/n;
+    const lowEnd=Math.floor(250/binW), midEnd=Math.floor(4000/binW);
+    let sumL=0,sumM=0,sumH=0,cL=0,cM=0,cH=0;
+    for(let i=0;i<n;i++){
+        const v=fftDataArray[i]/255;
+        if(i<lowEnd){sumL+=v;cL++;}
+        else if(i<midEnd){sumM+=v;cM++;}
+        else{sumH+=v;cH++;}
+    }
+    fftLow  = cL>0?sumL/cL:0;
+    fftMid  = cM>0?sumM/cM:0;
+    fftHigh = cH>0?sumH/cH:0;
+    // Update bar display
+    const bars=document.querySelectorAll('.fft-bar');
+    const binsPerBar=Math.max(1,Math.floor(n/bars.length));
+    bars.forEach((b,i)=>{
+        let s=0;
+        for(let j=0;j<binsPerBar;j++) s+=fftDataArray[i*binsPerBar+j]||0;
+        const h=Math.max(2,Math.round((s/binsPerBar/255)*22));
+        b.style.height=h+'px';
+    });
+}
+
+async function searchSong(){
+    const q=document.getElementById('song-query').value.trim();
+    if(!q)return;
+    setAudioStatus('Searching…');
+    try{
+        const slug=q.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+        const r=await fetch(`${PHISHIN_API}/tracks?song_slug=${encodeURIComponent(slug)}&per_page=20&sort_dir=desc`);
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        const data=await r.json();
+        const tracks=(data.tracks||[]).filter(t=>t.mp3_url);
+        if(tracks.length===0){setAudioStatus('No results for "'+q+'".');return;}
+        trackListData=tracks;
+        renderTrackList(tracks);
+        setAudioStatus(tracks.length+' versions found — pick one to stream.');
+    }catch(e){
+        setAudioStatus('Error: '+e.message);
+    }
+}
+
+function renderTrackList(tracks){
+    const el=document.getElementById('track-list');
+    el.innerHTML='';
+    el.style.display='block';
+    tracks.forEach((t,i)=>{
+        const dur=t.duration?fmtMs(t.duration):'?:??';
+        const venue=t.show?.venue_name||'';
+        const city=t.show?.venue?.city||'';
+        const loc=[venue,city].filter(Boolean).join(', ');
+        const d=document.createElement('div');
+        d.className='track-item'+(i===activeTrackIdx?' playing':'');
+        d.innerHTML=`<span class="track-dur">${dur}</span><span class="track-date">${t.show_date||t.date||'?'}</span><br><span class="track-venue">${loc}</span>`;
+        d.onclick=()=>playTrack(i);
+        el.appendChild(d);
+    });
+}
+
+function fmtMs(ms){
+    const s=Math.round(ms/1000);
+    return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');
+}
+
+function playTrack(idx){
+    if(idx<0||idx>=trackListData.length)return;
+    const t=trackListData[idx];
+    activeTrackIdx=idx;
+    stopAudio(false);
+    if(!audioCtx){
+        audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+        analyser=audioCtx.createAnalyser();
+        analyser.fftSize=2048;
+        analyser.smoothingTimeConstant=0.85;
+        fftDataArray=new Uint8Array(analyser.frequencyBinCount);
+        analyser.connect(audioCtx.destination);
+    }
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    audioEl=new Audio();
+    audioEl.crossOrigin='anonymous';
+    audioEl.src=t.mp3_url;
+    audioEl.preload='auto';
+    audioSrc=audioCtx.createMediaElementSource(audioEl);
+    audioSrc.connect(analyser);
+    audioEl.play().then(()=>{
+        audioPlaying=true;
+        setAudioStatus('▶ '+t.title+' — '+(t.show_date||''));
+        document.getElementById('audio-play-btn').style.display='none';
+        document.getElementById('audio-stop-btn').style.display='';
+        renderTrackList(trackListData);
+    }).catch(e=>{
+        setAudioStatus('Playback error: '+e.message);
+        showTapTempo();
+    });
+    audioEl.onended=()=>{
+        audioPlaying=false;
+        setAudioStatus('Ended — pick another or tap tempo.');
+        document.getElementById('audio-play-btn').style.display='';
+        document.getElementById('audio-stop-btn').style.display='none';
     };
-    let defaultParams = {...params};
+}
 
-    // ── The riff as rhythm: a syncopated 16-step funk figure (one bar) ──
-    // Strong "one", ghosted off-beat pushes, back-half accent, descending
-    // turnaround. The MAIN RIFF is this loop; the BEGINNING is it arriving.
-    const accentPattern = [
-        1.00, 0.12, 0.22, 0.46,   // beat 1  — the one, then a push
-        0.16, 0.30, 0.72, 0.18,   // beat 2  — syncopated kick on the "a"
-        0.86, 0.14, 0.40, 0.62,   // beat 3  — backbeat + push
-        0.20, 0.30, 0.74, 0.34    // beat 4  — descending turnaround
-    ];
-    const bassSteps = [0, 6, 8, 14]; // steps that birth magenta plumes
-    const beamSteps = [0, 8];        // steps that can detonate amber beams
-
-    // playback clock
-    let playing = true;
-    let playTime = 0;     // seconds of musical time elapsed
-    let lastStep = -1;
-    let showGrid = true;
-
-    // live envelopes (decay each frame)
-    let accentEnv = 0;    // global bloom kick
-    let beamEnv = 0;      // amber beam flash
-    let lastAccent = 0;   // most recent step accent (for grid display)
-    let curStepInBar = 0;
-
-    // staged elements (rebuilt on seed change)
-    let blobs = [];
-    let beams = [];
-    let plumes = [];
-    let glowSprite, vignette;
-
-    const CW = 1200, CH = 900;
-
-    function setup() {
-        let c = createCanvas(CW, CH);
-        c.parent('canvas-container');
-        pixelDensity(1);
-        glowSprite = makeGlow(360);
-        vignette = makeVignette();
-        stageSeed();
-        const l = document.querySelector('.loading'); if (l) l.style.display = 'none';
+function toggleAudioPlay(){
+    if(!audioEl)return;
+    if(audioEl.paused){audioEl.play();audioPlaying=true;}
+    else{audioEl.pause();audioPlaying=false;}
+}
+function stopAudio(reset=true){
+    if(audioEl){audioEl.pause();audioEl.src='';}
+    if(audioSrc){try{audioSrc.disconnect();}catch(e){}}
+    audioEl=null;audioSrc=null;audioPlaying=false;
+    fftLow=0;fftMid=0;fftHigh=0;
+    if(reset){
+        setAudioStatus('Stopped.');
+        document.getElementById('audio-play-btn').style.display='none';
+        document.getElementById('audio-stop-btn').style.display='none';
     }
+}
+function setAudioStatus(msg){document.getElementById('audio-status').textContent=msg;}
+function showTapTempo(){document.getElementById('tap-section').classList.add('visible');}
 
-    // soft radial white glow used for every emitted volume of light
-    function makeGlow(size) {
-        let g = createGraphics(size, size);
-        g.clear();
-        let ctx = g.drawingContext;
-        let r = size / 2;
-        let grad = ctx.createRadialGradient(r, r, 0, r, r, r);
-        grad.addColorStop(0.0, 'rgba(255,255,255,1.0)');
-        grad.addColorStop(0.18, 'rgba(255,255,255,0.85)');
-        grad.addColorStop(0.45, 'rgba(255,255,255,0.30)');
-        grad.addColorStop(0.75, 'rgba(255,255,255,0.06)');
-        grad.addColorStop(1.0, 'rgba(255,255,255,0.0)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, size, size);
-        return g;
+// ── Tap tempo ────────────────────────────────────────────────────────────────
+let tapTimes=[];
+function tap(){
+    const now=performance.now();
+    tapTimes.push(now);
+    if(tapTimes.length>8)tapTimes.shift();
+    if(tapTimes.length>=2){
+        const diffs=[];
+        for(let i=1;i<tapTimes.length;i++) diffs.push(tapTimes[i]-tapTimes[i-1]);
+        const avg=diffs.reduce((a,b)=>a+b,0)/diffs.length;
+        const bpm=Math.round(60000/avg);
+        params.bpm=Math.max(60,Math.min(180,bpm));
+        document.getElementById('bpm').value=params.bpm;
+        document.getElementById('bpm-value').textContent=params.bpm;
+        document.getElementById('tap-status').textContent='BPM: '+params.bpm;
     }
+    // Flash tap button
+    const btn=document.getElementById('tap-btn');
+    btn.style.background='var(--org)';
+    setTimeout(()=>btn.style.background='#555',120);
+}
 
-    // dark frame: transparent center, dark edges (matches the photo's dark corners)
-    function makeVignette() {
-        let g = createGraphics(CW, CH);
-        g.clear();
-        let ctx = g.drawingContext;
-        let grad = ctx.createRadialGradient(CW*0.5, CH*0.55, CH*0.25, CW*0.5, CH*0.55, CH*0.95);
-        grad.addColorStop(0, 'rgba(3,4,12,0)');
-        grad.addColorStop(0.7, 'rgba(3,4,12,0.25)');
-        grad.addColorStop(1, 'rgba(2,3,9,0.78)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, CW, CH);
-        return g;
-    }
+// ════════════════════════════════════════════════════════════════════════════
+// PHOTO PRESETS — load manifest and build thumbnail grid
+// ════════════════════════════════════════════════════════════════════════════
 
-    function hx(c){ let v=color(c); return [red(v),green(v),blue(v)]; }
-
-    // Build the staging for the current seed: wash positions, colors, beam spots
-    function stageSeed() {
-        randomSeed(params.seed);
-        noiseSeed(params.seed);
-        blobs = []; plumes = [];
-
-        const cTop = hx(params.colTop), cBase = hx(params.colBase), cDeep = hx(params.colDeep);
-        // upper green haze (2-3)
-        let nTop = 2 + floor(random(2));
-        for (let i = 0; i < nTop; i++)
-            blobs.push(makeBlob(cTop, random(0.05,0.95), random(0.02,0.30), random(0.34,0.5), 0.55, 0.35, i*11.3));
-        // electric-blue body — the dominant mass (3-4)
-        let nBlue = 3 + floor(random(2));
-        for (let i = 0; i < nBlue; i++)
-            blobs.push(makeBlob(cBase, random(0.05,0.95), random(0.30,0.78), random(0.42,0.62), 0.72, 0.55, 50+i*7.7));
-        // violet depths (2-3)
-        let nDeep = 2 + floor(random(2));
-        for (let i = 0; i < nDeep; i++)
-            blobs.push(makeBlob(cDeep, random(0.05,0.95), random(0.55,0.98), random(0.34,0.5), 0.5, 0.45, 120+i*9.1));
-
-        // two amber beam emitters, biased to the upper-left like the photo,
-        // with a little seeded scatter so each staging differs
-        beams = [];
-        let bx1 = constrain(0.16 + random(-0.05,0.06), 0.05, 0.4);
-        let bx2 = constrain(bx1 + 0.07 + random(0,0.04), 0.1, 0.5);
-        let by  = constrain(0.21 + random(-0.04,0.05), 0.1, 0.35);
-        beams.push({x:bx1, y:by, tilt:random(-0.22,0.05), phase:random(100)});
-        beams.push({x:bx2, y:by+random(-0.02,0.03), tilt:random(-0.18,0.08), phase:random(100)});
-    }
-
-    function makeBlob(col, x, y, r, bright, beat, seedoff) {
-        return { col, hx:x, hy:y, r, bright, beat, off:seedoff,
-                 dx:random(0.4,1.1), dy:random(0.3,0.9), breathSpd:random(0.3,0.8), breathOff:random(100) };
-    }
-
-    // Called once per 16th-note step — this is where the rhythm bites
-    function onStep(gStep, stepInBar, barIndex) {
-        // intro: only the strongest hits survive at first, the figure fills in
-        let thr = max(0, 0.9 - barIndex * 0.25);          // bars 0..3 gate it open
-        let jam = 0.15 + 0.85 * ((barIndex % 16) / 16);   // long swell, then reset
-        let raw = accentPattern[stepInBar];
-        let pass = raw >= thr ? raw : raw * 0.18;          // gated ghosts stay faint
-        let accent = pass * params.groove * (0.7 + 0.5 * jam);
-        lastAccent = pass;
-
-        accentEnv = min(2.2, accentEnv + accent * 0.9);
-
-        if (beamSteps.includes(stepInBar) && raw >= thr)
-            beamEnv = min(2.0, beamEnv + accent * 1.1);
-
-        if (bassSteps.includes(stepInBar) && raw >= thr) {
-            let n = floor(random(1, 3) * params.plumes * (0.6 + accent));
-            for (let i = 0; i < n; i++) spawnPlume(accent);
+async function loadManifest(){
+    try{
+        const r=await fetch('photos/manifest.json');
+        const data=await r.json();
+        if(!data.photos||data.photos.length===0){
+            document.getElementById('photo-grid').innerHTML='<div style="grid-column:1/-1;color:var(--mid);font-size:12px">No photos — run npm run build:photos.</div>';
+            return;
         }
+        manifest=data;
+        buildPhotoGrid(data.photos);
+    }catch(e){
+        document.getElementById('photo-grid').innerHTML='<div style="grid-column:1/-1;color:var(--mid);font-size:12px">Photos unavailable.</div>';
     }
+}
 
-    function spawnPlume(accent) {
-        plumes.push({
-            x: random(0.08, 0.92) * width,
-            y: height * random(0.86, 1.02),
-            vy: -random(70, 150) * (0.7 + accent),
-            sway: random(100),
-            r: random(60, 150),
-            life: 1, decay: random(0.55, 0.95),
-            bright: (0.6 + accent) * params.plumes
-        });
+function buildPhotoGrid(photos){
+    const grid=document.getElementById('photo-grid');
+    grid.innerHTML='<button class="button secondary photo-none-btn wide" onclick="clearPhotoPreset()">↺ Auto-groove (no photo)</button>';
+    photos.forEach((p,i)=>{
+        const img=document.createElement('img');
+        img.className='photo-thumb';
+        img.src='photos/'+p.filename;
+        img.alt='Photo '+(i+1);
+        img.title='Photo '+(i+1);
+        img.loading='lazy';
+        img.onclick=()=>activatePhoto(i);
+        grid.appendChild(img);
+    });
+}
+
+function activatePhoto(idx){
+    if(!manifest||idx<0||idx>=manifest.photos.length)return;
+    activePhotoIdx=idx;
+    const p=manifest.photos[idx];
+    // Faint background
+    const bgImg=document.getElementById('bg-photo');
+    bgImg.src='photos/'+p.filename;
+    bgImg.style.opacity='0.12';
+    // Update active thumb highlight
+    document.querySelectorAll('.photo-thumb').forEach((el,i)=>{
+        el.classList.toggle('active',i===idx);
+    });
+    // Re-stage with photo palette + hotspots
+    stageSeed(p);
+}
+
+function clearPhotoPreset(){
+    activePhotoIdx=-1;
+    document.getElementById('bg-photo').style.opacity='0';
+    document.querySelectorAll('.photo-thumb').forEach(el=>el.classList.remove('active'));
+    stageSeed(null);
+}
+
+function applyPaletteToUI(p){
+    const map={colTop:p.colTop,colBase:p.colBase,colDeep:p.colDeep,colPlume:p.colPlume,colBeam:p.colBeam};
+    for(const[k,v]of Object.entries(map)){
+        params[k]=v;
+        document.getElementById(k).value=v;
+        document.getElementById(k+'-value').textContent=v;
     }
+}
 
-    function draw() {
-        let dt = min(deltaTime / 1000, 0.05);
-        if (playing) playTime += dt;
-
-        let beatDur = 60 / params.bpm;
-        let stepDur = beatDur / 4;
-        let gStep = floor(playTime / stepDur);
-        curStepInBar = ((gStep % 16) + 16) % 16;
-        let barIndex = floor(gStep / 16);
-        if (gStep !== lastStep) { onStep(gStep, curStepInBar, barIndex); lastStep = gStep; }
-
-        // decay envelopes
-        accentEnv *= Math.exp(-dt * 5.5);
-        beamEnv   *= Math.exp(-dt * 3.8);
-
-        // 1) fade previous frame → liquid trails
-        let fade = map(params.trail, 0.2, 0.9, 16, 95);
-        push(); blendMode(BLEND); noStroke();
-        fill(4, 5, 13, fade); rect(0, 0, width, height); pop();
-
-        // 2) base liquid washes (additive)
-        push(); blendMode(ADD); noStroke(); imageMode(CENTER);
-        let t = playTime * params.flowSpeed;
-        let beatPulse = 1 + (accentEnv * 0.5 * params.bloom);
-        for (let b of blobs) {
-            let nx = noise(b.off, t * 0.06 * b.dx);
-            let ny = noise(b.off + 33.7, t * 0.05 * b.dy);
-            let x = (b.hx * 0.55 + nx * 0.45) * width;
-            let y = (b.hy * 0.6 + ny * 0.4) * height;
-            let breath = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * b.breathSpd + b.breathOff));
-            let amp = b.bright * breath * (1 + b.beat * accentEnv * 0.8 * params.bloom);
-            let rr = b.r * Math.min(width, height) * 1.7 * (0.92 + 0.12 * beatPulse * b.beat);
-            tint(b.col[0], b.col[1], b.col[2], 255 * Math.min(1, amp));
-            image(glowSprite, x, y, rr, rr);
-        }
-        pop();
-
-        // 3) magenta plumes rising on bass accents (additive)
-        push(); blendMode(ADD); noStroke(); imageMode(CENTER);
-        let pc = hx(params.colPlume);
-        for (let i = plumes.length - 1; i >= 0; i--) {
-            let p = plumes[i];
-            p.y += p.vy * dt;
-            p.vy *= 0.992;
-            p.x += Math.sin(playTime * 1.5 + p.sway) * 18 * dt * width * 0.002;
-            p.life -= dt * p.decay;
-            if (p.life <= 0 || p.y < -100) { plumes.splice(i, 1); continue; }
-            let a = Math.sin(p.life * Math.PI) * p.bright; // born→peak→fade
-            tint(pc[0], pc[1], pc[2], 255 * Math.min(1, a));
-            let rr = p.r * (1.4 - 0.4 * p.life);
-            image(glowSprite, p.x, p.y, rr * 1.5, rr * 2.6);
-        }
-        pop();
-
-        // 4) two amber beams — the warmest, rarest light, fired on hits
-        push(); blendMode(ADD); noStroke(); imageMode(CENTER);
-        let bc = hx(params.colBeam);
-        for (let bm of beams) {
-            let flick = 0.85 + 0.15 * noise(bm.phase, playTime * 3);
-            let a = beamEnv * params.beam * flick;
-            if (a < 0.02) continue;
-            let x = bm.x * width + Math.sin(playTime * 0.7 + bm.phase) * 6;
-            let y = bm.y * height;
-            tint(bc[0], bc[1], bc[2], 255 * Math.min(1, a));
-            push(); translate(x, y); rotate(bm.tilt);
-            image(glowSprite, 0, 0, 230 * (0.8 + a * 0.4), 70 * (0.8 + a * 0.3)); // streak
-            image(glowSprite, 0, 0, 90, 90);                                       // hot core
-            pop();
-        }
-        pop();
-
-        // 5) dark frame
-        push(); blendMode(BLEND); imageMode(CORNER); image(vignette, 0, 0, width, height); pop();
-
-        // 6) optional beat grid so you can SEE it locking to the riff
-        if (showGrid) drawGrid(beatDur);
+// ════════════════════════════════════════════════════════════════════════════
+// UI HANDLERS
+// ════════════════════════════════════════════════════════════════════════════
+function updateParam(name,value){
+    params[name]=(name==='bpm')?parseInt(value):parseFloat(value);
+    const el=document.getElementById(name+'-value');
+    if(el)el.textContent=(name==='bpm')?params.bpm:(name==='flowSpeed')?params[name].toFixed(1):(name==='trail'||name==='smear')?params[name].toFixed(2):params[name].toFixed(2);
+}
+function updateColor(id,value){
+    params[id]=value;
+    document.getElementById(id+'-value').textContent=value;
+    stageSeed(activePhotoIdx>=0&&manifest?manifest.photos[activePhotoIdx]:null);
+}
+function togglePlay(){playing=!playing;document.getElementById('playBtn').textContent=playing?'⏸ Pause':'▶ Play';}
+function toggleGrid(){showGrid=!showGrid;document.getElementById('gridBtn').textContent='Beat grid: '+(showGrid?'on':'off');}
+function restartPerformance(){playTime=0;lastStep=-1;accentEnv=0;beamEnv=0;plumes=[];background(4,5,13);}
+function downloadFrame(){saveCanvas('resonant_spectra_seed'+params.seed,'png');}
+function regenerate(){stageSeed(activePhotoIdx>=0&&manifest?manifest.photos[activePhotoIdx]:null);}
+function updateSeedDisplay(){document.getElementById('seed-input').value=params.seed;}
+function updateSeed(){let v=parseInt(document.getElementById('seed-input').value);if(v&&v>0){params.seed=v;stageSeed(activePhotoIdx>=0&&manifest?manifest.photos[activePhotoIdx]:null);}else updateSeedDisplay();}
+function previousSeed(){params.seed=Math.max(1,params.seed-1);updateSeedDisplay();stageSeed(activePhotoIdx>=0&&manifest?manifest.photos[activePhotoIdx]:null);}
+function nextSeed(){params.seed+=1;updateSeedDisplay();stageSeed(activePhotoIdx>=0&&manifest?manifest.photos[activePhotoIdx]:null);}
+function randomSeedAndUpdate(){params.seed=Math.floor(Math.random()*999999)+1;updateSeedDisplay();stageSeed(activePhotoIdx>=0&&manifest?manifest.photos[activePhotoIdx]:null);}
+function resetParameters(){
+    params={...defaultParams};
+    clearPhotoPreset();
+    for(let k of['bpm','groove','flowSpeed','plumes','beam','bloom','trail','smear']){
+        let s=document.getElementById(k);if(s)s.value=params[k];
+        let d=document.getElementById(k+'-value');
+        if(d)d.textContent=(k==='bpm')?params.bpm:(k==='flowSpeed')?params[k].toFixed(1):(k==='trail'||k==='smear')?params[k].toFixed(2):params[k].toFixed(2);
     }
-
-    function drawGrid(beatDur) {
-        push();
-        let n = 16, pad = 28, gap = 14;
-        let w = width - pad * 2;
-        let cell = (w - gap * (n - 1)) / n;
-        let y = height - 38;
-        for (let i = 0; i < n; i++) {
-            let x = pad + i * (cell + gap);
-            let strong = accentPattern[i] >= 0.6;
-            let on = i === curStepInBar;
-            noStroke();
-            fill(255, 255, 255, on ? 230 : (strong ? 70 : 32));
-            let h = on ? 10 : 6;
-            rect(x, y - h/2, cell, h, 3);
-        }
-        // downbeat pulse ring, top-right
-        let beatPhase = (playTime % beatDur) / beatDur;
-        let pr = map(beatPhase, 0, 1, 26, 8);
-        noFill(); stroke(255, 255, 255, map(beatPhase, 0, 1, 180, 0)); strokeWeight(2);
-        circle(width - 44, 44, pr * 2);
-        noStroke(); fill(255, 220, 120, 200); circle(width - 44, 44, 7);
-        pop();
+    for(let k of['colTop','colBase','colDeep','colPlume','colBeam']){
+        document.getElementById(k).value=params[k];
+        document.getElementById(k+'-value').textContent=params[k];
     }
-
-    // ── UI handlers ──
-    function updateParam(name, value) {
-        params[name] = (name === 'bpm') ? parseInt(value) : parseFloat(value);
-        let el = document.getElementById(name + '-value');
-        if (el) el.textContent = (name === 'bpm') ? params[name] : params[name].toFixed(2).replace(/0$/, '');
-        if (name === 'bpm') el.textContent = params.bpm;
-        if (name === 'flowSpeed') el.textContent = params.flowSpeed.toFixed(1);
-        if (name === 'trail') el.textContent = params.trail.toFixed(2);
-    }
-    function updateColor(id, value) {
-        params[id] = value;
-        document.getElementById(id + '-value').textContent = value;
-        stageSeed(); // restage so washes adopt new palette positions/colors
-    }
-    function togglePlay() {
-        playing = !playing;
-        document.getElementById('playBtn').textContent = playing ? '⏸ Pause' : '▶ Play';
-    }
-    function toggleGrid() {
-        showGrid = !showGrid;
-        document.getElementById('gridBtn').textContent = 'Beat grid: ' + (showGrid ? 'on' : 'off');
-    }
-    function restartPerformance() {
-        playTime = 0; lastStep = -1; accentEnv = 0; beamEnv = 0;
-        plumes = [];
-        background(4, 5, 13);
-    }
-    function downloadFrame() { saveCanvas('resonant_spectra_seed' + params.seed, 'png'); }
-    function regenerate() { stageSeed(); }
-
-    // ── Seed controls (fixed) ──
-    function updateSeedDisplay() { document.getElementById('seed-input').value = params.seed; }
-    function updateSeed() {
-        let v = parseInt(document.getElementById('seed-input').value);
-        if (v && v > 0) { params.seed = v; stageSeed(); } else updateSeedDisplay();
-    }
-    function previousSeed() { params.seed = Math.max(1, params.seed - 1); updateSeedDisplay(); stageSeed(); }
-    function nextSeed() { params.seed += 1; updateSeedDisplay(); stageSeed(); }
-    function randomSeedAndUpdate() { params.seed = Math.floor(Math.random() * 999999) + 1; updateSeedDisplay(); stageSeed(); }
-
-    function resetParameters() {
-        params = {...defaultParams};
-        for (let k of ['bpm','groove','flowSpeed','plumes','beam','bloom','trail']) {
-            let s = document.getElementById(k); if (s) s.value = params[k];
-            let d = document.getElementById(k + '-value');
-            if (d) d.textContent = (k==='bpm') ? params.bpm : (k==='flowSpeed'||k==='trail') ? params[k].toFixed(k==='trail'?2:1) : params[k].toFixed(2);
-        }
-        for (let k of ['colTop','colBase','colDeep','colPlume','colBeam']) {
-            document.getElementById(k).value = params[k];
-            document.getElementById(k + '-value').textContent = params[k];
-        }
-        updateSeedDisplay();
-        stageSeed();
-    }
-
-    window.addEventListener('load', updateSeedDisplay);
-    </script>
+    updateSeedDisplay();
+    stageSeed(null);
+}
+window.addEventListener('load',updateSeedDisplay);
+</script>
 </body>
 </html>
