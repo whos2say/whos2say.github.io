@@ -528,6 +528,248 @@
               { label: Body, name: body, widget: text }
             ]}
 
+  - name: djr
+    label: DJR Photography
+    files:
+      - label: Site Settings
+        name: djr-site
+        file: content/djr/site.json
+        fields:
+          - { label: Editor Guidance, name: _comment, widget: text, required: false }
+          - { label: Brand, name: brand, widget: object, fields: [
+              { label: Wordmark, name: wordmark, widget: string },
+              { label: Name, name: name, widget: string },
+              { label: Tagline, name: tagline, widget: string }
+            ]}
+          - label: Navigation
+            name: nav
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: href, widget: string }
+              - { label: Page Key, name: key, widget: string, required: false }
+          - { label: Book Button, name: bookButton, widget: object, fields: [
+              { label: Label, name: label, widget: string },
+              { label: URL, name: href, widget: string }
+            ]}
+          - { label: Contact, name: contact, widget: object, fields: [
+              { label: Phone, name: phone, widget: string },
+              { label: Phone Tel Link, name: phoneTel, widget: string },
+              { label: Email, name: email, widget: string },
+              { label: Location, name: location, widget: string }
+            ]}
+          - label: Social Links
+            name: social
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: Icon/Text, name: icon, widget: string }
+              - { label: URL, name: href, widget: string }
+          - label: Footer Quick Links
+            name: quickLinks
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: href, widget: string }
+          - { label: Partner Logo, name: partner, widget: object, fields: [
+              { label: Show, name: enabled, widget: boolean, required: false, default: true },
+              { label: Label, name: label, widget: string },
+              { label: Logo, name: logo, widget: image, required: false },
+              { label: Link URL, name: href, widget: string },
+              { label: Alt Text, name: alt, widget: string }
+            ]}
+          - { label: Footer Copyright, name: footerCopyright, widget: string }
+
+      - label: Homepage
+        name: djr-home
+        file: content/djr/home.json
+        fields:
+          - { label: Editor Guidance, name: _comment, widget: text, required: false }
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Description, name: description, widget: text }
+            ]}
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Background Image, name: backgroundImage, widget: image, required: false },
+              { label: Logo Image, name: logoImage, widget: image, required: false },
+              { label: Logo Alt Text, name: logoAlt, widget: string, required: false },
+              { label: Tagline, name: tagline, widget: string },
+              { label: Primary Button, name: primaryButton, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]},
+              { label: Secondary Button, name: secondaryButton, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+            ]}
+          - { label: Personal Story, name: story, widget: object, fields: [
+              { label: Show, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Lead, name: lead, widget: text },
+              { label: Body, name: body, widget: text },
+              { label: Quote, name: quote, widget: string },
+              { label: Images, name: images, widget: list, summary: "{{fields.caption}}", fields: [
+                  { label: Image, name: src, widget: image },
+                  { label: Alt Text, name: alt, widget: string },
+                  { label: Caption, name: caption, widget: string, required: false }
+                ]}
+            ]}
+          - { label: Featured Story, name: pictureOfTheWeek, widget: object, fields: [
+              { label: Show, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text },
+              { label: Image, name: image, widget: image, required: false },
+              { label: Image Alt Text, name: imageAlt, widget: string, required: false },
+              { label: Button, name: button, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+            ]}
+          - { label: Services, name: services, widget: object, fields: [
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Cards, name: items, widget: list, summary: "{{fields.title}}", fields: [
+                  { label: Icon/Text, name: icon, widget: string },
+                  { label: Title, name: title, widget: string },
+                  { label: Text, name: text, widget: text },
+                  { label: Image, name: image, widget: image, required: false },
+                  { label: Link URL, name: href, widget: string }
+                ]}
+            ]}
+          - { label: Creative Feature, name: creativeFeature, widget: object, fields: [
+              { label: Show, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text },
+              { label: Images, name: images, widget: list, summary: "{{fields.alt}}", fields: [
+                  { label: Image, name: src, widget: image },
+                  { label: Alt Text, name: alt, widget: string }
+                ]}
+            ]}
+          - { label: About, name: about, widget: object, fields: [
+              { label: Show, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Photo, name: photo, widget: image, required: false },
+              { label: Body, name: body, widget: text }
+            ]}
+          - { label: Bottom CTA, name: cta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Subtitle, name: sub, widget: text },
+              { label: Button, name: button, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+            ]}
+
+      - label: Galleries
+        name: djr-galleries
+        file: content/djr/galleries.json
+        fields:
+          - { label: Editor Guidance, name: _comment, widget: text, required: false }
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Description, name: description, widget: text }
+            ]}
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text }
+            ]}
+          - { label: All Filter Label, name: allLabel, widget: string, default: All }
+          - label: Categories
+            name: categories
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Label, name: label, widget: string }
+          - label: Gallery Cards
+            name: galleries
+            widget: list
+            summary: "{{fields.title}} · {{fields.sourceType}}"
+            hint: "Use Photo Gallery App album IDs for the site viewer or Google Photos shared URLs for external albums."
+            fields:
+              - label: Source Type
+                name: sourceType
+                widget: select
+                options:
+                  - { label: Photo Gallery App album, value: photoGallery }
+                  - { label: Google Photos shared album, value: googlePhotos }
+                default: photoGallery
+              - { label: Photo Gallery App Album ID, name: albumId, widget: string, required: false, hint: "From album.html?album=<ID>" }
+              - { label: Google Photos Shared Album URL, name: googlePhotosAlbumUrl, widget: string, required: false }
+              - { label: Title Override, name: title, widget: string, required: false }
+              - { label: Category ID, name: category, widget: string }
+              - { label: Description, name: description, widget: text, required: false }
+              - { label: Cover Image, name: coverImage, widget: image, required: false }
+          - { label: Empty Message, name: emptyMessage, widget: string }
+          - { label: No Match Message, name: noMatchMessage, widget: string }
+
+      - label: Section Gallery Mapper
+        name: djr-section-gallery-map
+        file: content/djr/section-gallery-map.json
+        fields:
+          - { label: Editor Guidance, name: _comment, widget: text, required: false }
+          - label: Section Mappings
+            name: sections
+            widget: list
+            summary: "{{fields.label}} · {{fields.sourceType}}"
+            hint: "Map homepage sections to Photo Gallery App albums or Google Photos shared album links."
+            fields:
+              - label: Webpage Section
+                name: sectionId
+                widget: select
+                options:
+                  - { label: "David's Story", value: story }
+                  - { label: Featured Story, value: featured }
+                  - { label: Services, value: services }
+                  - { label: "Eye to Eye / Creative Feature", value: creative }
+                  - { label: About David, value: about }
+                  - { label: Bottom CTA, value: cta }
+              - { label: Admin Label, name: label, widget: string }
+              - { label: Show Mapping, name: enabled, widget: boolean, required: false, default: true }
+              - label: Source Type
+                name: sourceType
+                widget: select
+                options:
+                  - { label: Photo Gallery App album, value: photoGallery }
+                  - { label: Google Photos shared album, value: googlePhotos }
+                default: photoGallery
+              - { label: Photo Gallery App Album ID, name: photoGalleryAlbumId, widget: string, required: false }
+              - { label: Google Photos Shared Album URL, name: googlePhotosAlbumUrl, widget: string, required: false }
+              - { label: Card Title, name: title, widget: string }
+              - { label: Card Description, name: description, widget: text, required: false }
+              - { label: Cover Image, name: coverImage, widget: image, required: false }
+              - { label: Button Label, name: buttonLabel, widget: string, default: "Open Album" }
+
+      - label: Contact Page
+        name: djr-contact
+        file: content/djr/contact.json
+        fields:
+          - { label: Editor Guidance, name: _comment, widget: text, required: false }
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Description, name: description, widget: text }
+            ]}
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text }
+            ]}
+          - { label: Form Endpoint, name: formAction, widget: string }
+          - { label: Session Types, name: sessionTypes, widget: list, field: { label: Option, name: option, widget: string } }
+          - { label: Sidebar, name: sidebar, widget: object, fields: [
+              { label: Availability Title, name: availabilityTitle, widget: string },
+              { label: Availability Body, name: availabilityBody, widget: text },
+              { label: Response Title, name: responseTitle, widget: string },
+              { label: Response Body, name: responseBody, widget: text }
+            ]}
+
   - name: stories
     label: Stories
     folder: content/stories

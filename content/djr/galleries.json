@@ -1,0 +1,23 @@
+{
+  "_comment": "DJR Photography galleries. Each gallery can link to either a Photo Gallery App album (album.html?album=<ID>) or a Google Photos shared album URL. Photo Gallery App albums can auto-load their cover; Google Photos entries should include a cover image. Edit via Decap CMS -> DJR Photography -> Galleries.",
+  "meta": {
+    "title": "Galleries | DJR Photography",
+    "description": "Browse DJR Photography galleries - story, portrait, sports, creative, and event photography."
+  },
+  "hero": {
+    "eyebrow": "Portfolio",
+    "title": "Galleries",
+    "intro": "Browse David's work by story category. Each card can open the full Photo Gallery App viewer or a shared Google Photos album."
+  },
+  "allLabel": "All",
+  "categories": [
+    { "id": "story", "label": "Story" },
+    { "id": "sports", "label": "Sports" },
+    { "id": "portrait", "label": "Portrait" },
+    { "id": "creative", "label": "Creative" },
+    { "id": "event", "label": "Event" }
+  ],
+  "galleries": [],
+  "emptyMessage": "Galleries are being curated - check back soon.",
+  "noMatchMessage": "No galleries in this category yet."
+}
