@@ -108,6 +108,7 @@ input[type=file]{font-size:12px;width:100%}
       <div class="group"><label>Plumes</label><div class="slider"><input type="range" id="plumes" min="0" max="2" step="0.05" value="1" oninput="setP('plumes',this.value)"><span class="val" id="plumes-v">1.00</span></div></div>
       <div class="group"><label>Beams</label><div class="slider"><input type="range" id="beams" min="0" max="2" step="0.05" value="1" oninput="setP('beams',this.value)"><span class="val" id="beams-v">1.00</span></div></div>
       <div class="group"><label>Smear (motion blur)</label><div class="slider"><input type="range" id="smear" min="0" max="2" step="0.05" value="1" oninput="setP('smear',this.value)"><span class="val" id="smear-v">1.00</span></div></div>
+      <div class="group"><label>Beam motion (concert sweep)</label><div class="slider"><input type="range" id="sweep" min="0" max="2" step="0.05" value="1" oninput="setP('sweep',this.value)"><span class="val" id="sweep-v">1.00</span></div><div class="hint">How much the beams sweep & fan like moving-head fixtures.</div></div>
       <div class="group"><label>Trail persistence</label><div class="slider"><input type="range" id="trail" min="0.2" max="0.9" step="0.01" value="0.55" oninput="setP('trail',this.value)"><span class="val" id="trail-v">0.55</span></div></div>
     </div>
 
@@ -126,7 +127,7 @@ const FALLBACK_IMAGE = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
 
 const CW=1200, CH=900, AW=96, AH=72, GX=8, GY=6, TRANS=1.4;
 
-let params={intensity:1,flow:1,plumes:1,beams:1,smear:1,trail:.55,photoDur:24};
+let params={intensity:1,flow:1,plumes:1,beams:1,smear:1,sweep:1,trail:.55,photoDur:24};
 let studies=[], curIdx=0, studyStart=0, pausedAt=0, prevStudy=null, prevSwitch=-9999;
 let playing=true, cycle=true, showSource=false;
 let plumes=[], glow, vignette;
@@ -185,7 +186,15 @@ function buildStudy(img, src){
     if(near){near.x=(near.x*near.n+x)/(near.n+1);near.y=(near.y*near.n+y)/(near.n+1);near.n++;near.l=Math.max(near.l,lum[p]);}
     else spots.push({x,y,l:lum[p],n:1});
   }
-  spots=spots.sort((a,b)=>b.n-a.n).slice(0,3).map(s=>({x:s.x,y:s.y,intensity:Math.min(1,s.l/255)}));
+  // For each light, sample the LOCAL streak direction (windowed structure tensor) so every
+  // beam knows which way its light points, and how directional ("aniso") that light is.
+  const localOrient=(cx,cy,rad)=>{ let xx=0,yy=0,xy=0;
+    let x0=Math.max(1,Math.floor(cx*AW)-rad),x1=Math.min(AW-1,Math.floor(cx*AW)+rad);
+    let y0=Math.max(1,Math.floor(cy*AH)-rad),y1=Math.min(AH-1,Math.floor(cy*AH)+rad);
+    for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){ let lx=lum[y*AW+x+1]-lum[y*AW+x-1], ly=lum[(y+1)*AW+x]-lum[(y-1)*AW+x]; xx+=lx*lx;yy+=ly*ly;xy+=lx*ly; }
+    return {ang:0.5*Math.atan2(2*xy,(xx-yy)), coh:(xx+yy)>1e-6?Math.hypot(xx-yy,2*xy)/(xx+yy):0}; };
+  spots=spots.sort((a,b)=>b.n-a.n).slice(0,5).map(s=>{ let o=localOrient(s.x,s.y,Math.round(AW/8));
+    return {x:s.x,y:s.y,intensity:Math.min(1,s.l/255),ang:o.ang,aniso:o.coh}; });
   let beamCol=[255,200,120];
   if(spots[0]){let hx=Math.min(AW-1,Math.floor(spots[0].x*AW)),hy=Math.min(AH-1,Math.floor(spots[0].y*AH));beamCol=at(hx,hy);}
   let plumeCol=[255,60,200], best=-1, wx=0,wy=0,wsum=0;
@@ -201,10 +210,11 @@ function buildStudy(img, src){
     Jxx+=lx*lx;Jyy+=ly*ly;Jxy+=lx*ly;
   }
   let smearAngle=0.5*Math.atan2(2*Jxy,(Jxx-Jyy));
+  let flowCoh=(Jxx+Jyy)>1e-6?Math.hypot(Jxx-Jyy,2*Jxy)/(Jxx+Jyy):0;   // how strongly directional the whole frame is
   let mean=lum.reduce((a,b)=>a+b,0)/lum.length, varr=lum.reduce((a,b)=>a+(b-mean)*(b-mean),0)/lum.length;
   let energy=Math.min(1, Math.sqrt(varr)/70 + spots.length*0.12);
   let pal=[...regions].filter(c=>c.l>20).sort((a,b)=>satv(b)-satv(a)).slice(0,5).map(c=>hex(c.r,c.g,c.b));
-  return {img,name:src.name,url:src.url,regions,spots,beamCol,plumeCol,warm,smearAngle,energy,palette:pal};
+  return {img,name:src.name,url:src.url,regions,spots,beamCol,plumeCol,warm,smearAngle,flowCoh,energy,palette:pal};
 }
 function satv(c){let h=rgb2hsv(c.r,c.g,c.b);return h[1]*h[2];}
 function rgb2hsv(r,g,b){r/=255;g/=255;b/=255;let mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;
@@ -225,7 +235,10 @@ function renderStudy(st, alpha, entrance){
   for(let c of st.regions){ if(c.l<12)continue;
     let nx=noise(c.x*3+1,c.y*3, t*0.05*flow), ny=noise(c.x*3+9,c.y*3+4,t*0.045*flow);
     let wander=0.28+0.27*build;              // composition holds the photo, drifts more at peak
-    let x=(c.x*(1-wander)+nx*wander)*width, y=(c.y*(1-wander)+ny*wander)*height;
+    // slide along the photo's dominant light direction so motion reads as coherent flow, not random jitter
+    let drift=(0.05+0.16*build)*st.flowCoh*Math.sin(t*(0.35+0.5*build)*flow + c.x*4 + c.y*2);
+    let x=(c.x*(1-wander)+nx*wander + Math.cos(ang)*drift)*width,
+        y=(c.y*(1-wander)+ny*wander + Math.sin(ang)*drift)*height;
     let breath=0.7+0.3*Math.sin(t*(0.7+build*1.3)+c.x*5+c.y*3);
     let a=master*mid*(c.l/255)*breath*(0.8+0.4*build);
     if(a<=0.01)continue;
@@ -250,16 +263,27 @@ function renderStudy(st, alpha, entrance){
     let rr=pl.r*(1.3-.3*pl.life); image(glow,pl.x,pl.y,rr*1.4,rr*2.5);
   }
   pop();
-  // beams — ignite in sequence as the jam climbs (driven by build, not a timer); sweep at peak
+  // beams — moving-head shafts: each ignites in sequence as the jam climbs, points along the
+  // light direction sampled from the photo, then sweeps & fans like concert fixtures at the peak.
   push(); blendMode(ADD); imageMode(CENTER); noStroke();
+  let N=st.spots.length||1, swp=params.sweep||1, midI=(N-1)/2;
   st.spots.forEach((s,i)=>{
-    let thr=0.28+i*0.16, gate=ss(thr,thr+0.18,build);
+    let thr=0.20+i*0.14, gate=ss(thr,thr+0.18,build);
     let a=gate*params.beams*treb*(0.85+0.15*noise(i*7,t*3))*master*(0.5+s.intensity);
     if(a<0.02)return;
-    let x=s.x*width,y=s.y*height; tint(st.beamCol[0],st.beamCol[1],st.beamCol[2],255*Math.min(1,a));
-    push();translate(x,y);rotate(ang+build*0.4*Math.sin(t*0.6+i));
-    image(glow,0,0,260*(0.8+a*0.5)*el,80*(0.8+a*0.3));
-    image(glow,0,0,90,90); pop();
+    let x=s.x*width,y=s.y*height;
+    let bAng=(typeof s.ang==='number'?s.ang:ang);                       // direction the photo's light points
+    let sweep=swp*(0.12+0.55*build)*Math.sin(t*(0.5+0.9*build)+i*1.7);   // moving-head oscillation
+    let fan=(i-midI)*(0.10+0.55*build)*swp;                             // beams fan apart as the jam peaks
+    let angle=bAng+sweep+fan;
+    let tight=0.45+0.55*(s.aniso||0.3);                                 // sharper light → longer, tighter shaft
+    let len=Math.min(width,height)*(0.34+0.5*build)*tight*el;
+    let thick=Math.max(16,len*0.16/(0.6+0.8*tight));
+    tint(st.beamCol[0],st.beamCol[1],st.beamCol[2],255*Math.min(1,a));
+    push(); translate(x,y); rotate(angle);
+    image(glow,len*0.5,0,len,thick);                                   // shaft projects outward from the fixture
+    image(glow,0,0,90,90);                                             // bright source at the emitter
+    pop();
   });
   pop();
   if(showSource){push();tint(255,40*alpha);imageMode(CENTER);
