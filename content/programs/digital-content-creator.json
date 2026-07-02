@@ -123,16 +123,6 @@
             "html": "Sessions are scoped around a defined creative project. A participant might edit a gaming clip, design a logo, record a podcast segment, take photos, or build a short portfolio piece."
           }
         ]
-      },
-      {
-        "summary": "Funding & Scope Note",
-        "open": false,
-        "blocks": [
-          {
-            "type": "paragraph",
-            "html": "Funding is not guaranteed. Any third-party or plan-funded purchase must be individually reviewed and approved in writing before services begin. The approved scope should identify the exact service, dates, rate, participant-facing time, any participant-specific technical implementation, and deliverables."
-          }
-        ]
       }
     ]
   }
