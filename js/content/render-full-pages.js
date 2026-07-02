@@ -97,6 +97,16 @@
     var fundingNoteEnabled = data.fundingNote.enabled !== false;
     var finalCtaEnabled = data.finalCta.enabled !== false;
 
+    global.W2SPageSectionVisibility = {
+      page: 'creative-workshops',
+      sections: {
+        'workshop-menu': workshopsEnabled,
+        pricing: pricingEnabled,
+        funding: fundingNoteEnabled,
+        'final-cta': finalCtaEnabled,
+      },
+    };
+
     var workshops = workshopsEnabled ? data.workshops
       .map(function (w) {
         return (

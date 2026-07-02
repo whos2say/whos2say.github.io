@@ -65,6 +65,22 @@
     });
   }
 
+  function sectionIdFromHash(href) {
+    if (!href || href.charAt(0) !== '#') return '';
+    return href.slice(1);
+  }
+
+  function filterByPageSectionVisibility(items, pageId) {
+    var visibility = global.W2SPageSectionVisibility;
+    if (!visibility || visibility.page !== pageId || !visibility.sections) return items;
+
+    return items.filter(function (item) {
+      var sectionId = sectionIdFromHash(item.href);
+      if (!sectionId) return true;
+      return visibility.sections[sectionId] !== false;
+    });
+  }
+
   function escapeAttr(value) {
     return String(value || '')
       .replace(/&/g, '&amp;')
@@ -154,7 +170,8 @@
   }
 
   function renderSubnav(container, items, envKey) {
-    var visible = filterItems(items, envKey);
+    var pageId = document.body && document.body.getAttribute('data-content-page');
+    var visible = filterByPageSectionVisibility(filterItems(items, envKey), pageId);
     if (!visible.length) {
       container.hidden = true;
       container.innerHTML = '';
