@@ -9,6 +9,7 @@
   'use strict';
 
   var NAV_URL = '/content/navigation.json';
+  var PROGRAMS_INDEX_URL = '/content/programs-index.json';
   var STAGING_HOST = 'staging.whostosay.org';
   var PRODUCTION_HOSTS = { 'www.whostosay.org': true, 'whostosay.org': true };
   var LOCAL_DEV_HOSTS = { localhost: true, '127.0.0.1': true };
@@ -65,6 +66,43 @@
     });
   }
 
+  function normalizePath(href) {
+    return String(href || '').split('#')[0].replace(/\/index\.html$/, '/').replace(/\/+$/, '');
+  }
+
+  function buildProgramVisibility(programsIndex) {
+    var visibility = {};
+    ((programsIndex && programsIndex.programs) || []).forEach(function (program) {
+      if (!program || !program.href) return;
+      visibility[normalizePath(program.href)] = program.visible !== false;
+    });
+    return visibility;
+  }
+
+  function filterHiddenProgramLinks(items, programVisibility) {
+    if (!programVisibility) return items;
+    return items.filter(function (item) {
+      var path = normalizePath(item.href);
+      return programVisibility[path] !== false;
+    });
+  }
+
+  function sectionIdFromHash(href) {
+    if (!href || href.charAt(0) !== '#') return '';
+    return href.slice(1);
+  }
+
+  function filterByPageSectionVisibility(items, pageId) {
+    var visibility = global.W2SPageSectionVisibility;
+    if (!visibility || visibility.page !== pageId || !visibility.sections) return items;
+
+    return items.filter(function (item) {
+      var sectionId = sectionIdFromHash(item.href);
+      if (!sectionId) return true;
+      return visibility.sections[sectionId] !== false;
+    });
+  }
+
   function escapeAttr(value) {
     return String(value || '')
       .replace(/&/g, '&amp;')
@@ -80,9 +118,9 @@
     return attrs;
   }
 
-  function renderPrimaryItem(item, envKey) {
+  function renderPrimaryItem(item, envKey, programVisibility) {
     if (item.children && item.children.length) {
-      var visibleChildren = filterItems(item.children, envKey);
+      var visibleChildren = filterHiddenProgramLinks(filterItems(item.children, envKey), programVisibility);
       if (!visibleChildren.length) {
         return (
           '<a class="nav-link" data-nav="programs"' + linkAttrs(item) + '>' +
@@ -121,14 +159,14 @@
     return '<a class="' + cls + '"' + dataNav + linkAttrs(item) + '>' + item.label + '</a>';
   }
 
-  function renderPrimaryNav(container, items, envKey) {
+  function renderPrimaryNav(container, items, envKey, programVisibility) {
     var visible = filterItems(items, envKey);
     if (!visible.length) return;
 
     container.setAttribute('data-nav-generated', 'true');
     container.classList.add('site-nav--generated');
     container.innerHTML = visible.map(function (item) {
-      return renderPrimaryItem(item, envKey);
+      return renderPrimaryItem(item, envKey, programVisibility);
     }).join('');
   }
 
@@ -154,7 +192,8 @@
   }
 
   function renderSubnav(container, items, envKey) {
-    var visible = filterItems(items, envKey);
+    var pageId = document.body && document.body.getAttribute('data-content-page');
+    var visible = filterByPageSectionVisibility(filterItems(items, envKey), pageId);
     if (!visible.length) {
       container.hidden = true;
       container.innerHTML = '';
@@ -218,11 +257,12 @@
     });
   }
 
-  function applyNavigation(data) {
+  function applyNavigation(data, programsIndex) {
     var envKey = currentEnvironmentKey();
+    var programVisibility = buildProgramVisibility(programsIndex);
 
     document.querySelectorAll('.site-header .site-nav, .site-nav[data-nav-primary]').forEach(function (nav) {
-      renderPrimaryNav(nav, data.primary, envKey);
+      renderPrimaryNav(nav, data.primary, envKey, programVisibility);
     });
 
     document.querySelectorAll('[data-footer-nav]').forEach(function (footerNav) {
@@ -252,13 +292,24 @@
   function init() {
     if (!global.fetch) return Promise.resolve();
 
-    return global
-      .fetch(NAV_URL, { cache: 'no-cache' })
+    var navRequest = global.fetch(NAV_URL, { cache: 'no-cache' })
       .then(function (res) {
         if (!res.ok) throw new Error('navigation.json HTTP ' + res.status);
         return res.json();
+      });
+    var programsRequest = global.fetch(PROGRAMS_INDEX_URL, { cache: 'no-cache' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('programs-index.json HTTP ' + res.status);
+        return res.json();
       })
-      .then(applyNavigation)
+      .catch(function () {
+        return null;
+      });
+
+    return Promise.all([navRequest, programsRequest])
+      .then(function (arr) {
+        applyNavigation(arr[0], arr[1]);
+      })
       .catch(function (err) {
         console.warn('[W2SNavigation] Using static HTML nav fallback:', err.message);
       });

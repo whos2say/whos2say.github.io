@@ -10,6 +10,7 @@
   'use strict';
 
   var CACHE = {};
+  var PROGRAMS_INDEX_URL = '/content/programs-index.json';
 
   function fetchJson(url) {
     if (CACHE[url]) return Promise.resolve(CACHE[url]);
@@ -70,6 +71,38 @@
       .join('\n');
   }
 
+  function visiblePrograms(programs) {
+    return (programs || []).filter(function (program) {
+      return program.visible !== false;
+    });
+  }
+
+  function chipLabel(program) {
+    return String(program.label || program.title || '').replace(/\s+Path$/, '');
+  }
+
+  function renderPathwaysRibbon(programsIndex, currentPathKey) {
+    var grid = document.querySelector('.pathways-chip-grid');
+    if (!grid || !programsIndex || !programsIndex.programs) return;
+
+    grid.innerHTML = visiblePrograms(programsIndex.programs)
+      .map(function (program) {
+        var active = program.id === currentPathKey;
+        return (
+          '<a class="pathway-chip' + (active ? ' is-active' : '') + '" data-path="' +
+          program.id +
+          '" href="' +
+          program.href +
+          '"' +
+          (active ? ' aria-current="page"' : '') +
+          '>' +
+          chipLabel(program) +
+          '</a>'
+        );
+      })
+      .join('');
+  }
+
   function renderProgramSidebar(sidebar) {
     if (!sidebar) return '';
     var gs = sidebar.getStarted || {};
@@ -106,8 +139,9 @@
     );
   }
 
-  function renderProgramPage(data) {
+  function renderProgramPage(data, programsIndex) {
     setMeta(data.meta && data.meta.title, data.meta && data.meta.description);
+    renderPathwaysRibbon(programsIndex, data.pathKey);
 
     var hero = data.hero;
     var heroMedia = document.querySelector('.program-hero-media img, .program-hero .program-hero-media img');
@@ -209,7 +243,7 @@
 
     var grid = document.querySelector('.program-grid');
     if (grid && data.programs) {
-      grid.innerHTML = data.programs
+      grid.innerHTML = visiblePrograms(data.programs)
         .map(function (p) {
           return (
             '<a class="program-card" id="' + p.id + '" data-path="' + p.id + '" href="' + p.href + '">' +
@@ -337,7 +371,7 @@
       });
     }
     if (page === 'programs-index') {
-      return fetchJson('/content/programs-index.json').then(renderProgramsIndex);
+      return fetchJson(PROGRAMS_INDEX_URL).then(renderProgramsIndex);
     }
     if (page === 'contact') {
       return Promise.all([
@@ -349,7 +383,15 @@
       });
     }
     if (page.indexOf('programs/') === 0) {
-      return fetchJson('/content/' + page + '.json').then(renderProgramPage);
+      return fetchJson('/content/' + page + '.json').then(function (data) {
+        return fetchJson(PROGRAMS_INDEX_URL)
+          .then(function (programsIndex) {
+            renderProgramPage(data, programsIndex);
+          })
+          .catch(function () {
+            renderProgramPage(data);
+          });
+      });
     }
     if (page === 'creative-workshops' || page === 'support-coordinators') {
       return fetchJson('/content/' + page + '.json').then(function (data) {

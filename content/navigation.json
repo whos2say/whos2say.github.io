@@ -36,7 +36,7 @@
         {
           "label": "Independence Path",
           "href": "/programs/life-skills-independent-living.html",
-          "enabled": true,
+          "enabled": false,
           "environment": "all",
           "order": 30,
           "external": false
@@ -70,7 +70,7 @@
     {
       "label": "Stories",
       "href": "/stories/",
-      "enabled": true,
+      "enabled": false,
       "environment": "all",
       "order": 25,
       "external": false,
@@ -97,7 +97,7 @@
     {
       "label": "Donate",
       "href": "https://givebutter.com/whostosayfoundation",
-      "enabled": true,
+      "enabled": false,
       "environment": "all",
       "order": 80,
       "external": true

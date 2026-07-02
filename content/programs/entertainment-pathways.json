@@ -2,15 +2,20 @@
   "slug": "entertainment-pathways",
   "pathKey": "entertainment",
   "meta": {
-    "title": "Entertainment Pathways | Who's to Say ? Foundation",
-    "description": "On-camera confidence, performance basics, and voice work in a supportive, affirming environment."
+    "title": "Entertainment & On-Camera Projects | Who's to Say ? Foundation",
+    "description": "On-camera confidence, voice work, and media projects with defined creative scope and participant-owned outputs."
   },
   "hero": {
     "breadcrumb": "Entertainment Path",
-    "title": "Entertainment Pathways",
-    "subtitle": "On-camera confidence, acting basics, and voice work—turning performance into communication skills.",
-    "pills": ["On-Camera", "Voice", "Fandom", "Mini Reel"],
-    "bestFor": "Anyone who loves performing, acting, or being on camera—or wants to build confidence presenting.",
+    "title": "Entertainment & On-Camera Projects",
+    "subtitle": "On-camera confidence, voice work, and media creation — turning performance interests into communication and storytelling projects.",
+    "pills": [
+      "On-Camera",
+      "Voice",
+      "Fandom",
+      "Mini Reel"
+    ],
+    "bestFor": "People who love performing, acting, music, fandom, or being on camera — or who want to build confidence presenting.",
     "image": "/assets/images/Matt-Teleprompter.JPG"
   },
   "sections": [
@@ -19,21 +24,61 @@
       "blocks": [
         {
           "type": "paragraph",
-          "html": "<strong>Entertainment Pathways</strong> is for participants who light up in front of a microphone or camera — or want to. It focuses on on-camera confidence, performance basics, and entertainment-related skills in a supportive environment."
+          "html": "<strong>Entertainment &amp; On-Camera Projects</strong> is for people who light up in front of a microphone or camera — or want to. It focuses on on-camera confidence, voice practice, and entertainment-related creative projects in a supportive environment."
         }
       ]
     },
     {
       "title": "Core Components",
       "blocks": [
-        { "type": "h3", "text": "On-Camera Performance" },
-        { "type": "ul", "items": ["Reading from a teleprompter", "Practicing short intros, outros, and segments", "Simple acting scenes or role-play"] },
-        { "type": "h3", "text": "Music Appreciation & Vocal Training" },
-        { "type": "ul", "items": ["Basic song writing and recording", "Karoke and voice recording", "Character voices", "Podcast-style conversations"] },
-        { "type": "h3", "text": "Fandom & Media Literacy" },
-        { "type": "ul", "items": ["Discussing favorite movies, shows, or streamers", "Learning about actors with disabilities and representation", "Turning fandom into creative projects (reviews, reaction videos, \"top 5\" lists)"] },
-        { "type": "h3", "text": "Portfolio Building" },
-        { "type": "ul", "items": ["Taking simple headshots", "Collecting short clips into a \"mini reel\"", "Helping families understand how to store and share these safely"] }
+        {
+          "type": "h3",
+          "text": "On-Camera Performance"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Reading from a teleprompter",
+            "Practicing short intros, outros, and segments",
+            "Simple acting scenes or role-play for creative practice"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Music, Voice & Audio Projects"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Simple song introductions, playlist segments, and recording practice",
+            "Karaoke, voice recording, character voices, or podcast-style conversations",
+            "Learning how to listen back, choose favorites, and improve the next take"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Fandom & Media Literacy"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Discussing favorite movies, shows, musicians, or teams",
+            "Turning fandom into creative projects such as reviews, reaction videos, or top-5 lists",
+            "Practicing safe, respectful sharing with consent and review"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Portfolio Building"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Taking simple headshots or promotional photos",
+            "Collecting short clips into a mini reel or private portfolio",
+            "Helping families understand how to store and share materials safely"
+          ]
+        }
       ]
     },
     {
@@ -45,7 +90,7 @@
             "Increased comfort speaking and presenting",
             "Better understanding of media and representation",
             "Fun, affirming experiences in front of the camera",
-            "Materials that can be used for future opportunities (theater, advocacy, creative projects)"
+            "Creative materials that can be reviewed, stored, and shared safely when appropriate"
           ]
         }
       ]
@@ -54,11 +99,15 @@
   "sidebar": {
     "sessionStyle": {
       "title": "Session Style",
-      "items": ["Teleprompter practice + short segments", "Voice & audio skills in a safe environment", "Portfolio / reel building over time"]
+      "items": [
+        "Defined creative-media projects",
+        "Voice, audio, and on-camera practice",
+        "Portfolio / reel building over time"
+      ]
     },
     "getStarted": {
       "title": "Get Started",
-      "prompt": "Want to explore an Entertainment Path fit?",
+      "prompt": "Want to explore an Entertainment Path project?",
       "primaryLabel": "Contact Us",
       "primaryHref": "/contact.html",
       "secondaryLabel": "Email",
@@ -71,17 +120,7 @@
         "blocks": [
           {
             "type": "paragraph",
-            "html": "Sessions may be 1:1 or small group, and may include coaching, practice, and simple content creation."
-          }
-        ]
-      },
-      {
-        "summary": "Coordinator / DDD Summary",
-        "open": false,
-        "blocks": [
-          {
-            "type": "paragraph",
-            "html": "Entertainment Pathways offers Goods &amp; Services-funded sessions focused on communication and performance skills: reading from a teleprompter, speaking on camera, basic acting and voice work, and media literacy. Outcomes include improved self-expression, social confidence, and a small set of media clips or photos that reflect the person's interests."
+            "html": "Sessions may be individual creator projects or small-group workshops, depending on the scope. Each engagement should have a defined purpose, deliverable, privacy plan, and consent process before public sharing."
           }
         ]
       }
