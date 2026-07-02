@@ -9,7 +9,12 @@
     "breadcrumb": "Entertainment Path",
     "title": "Entertainment & On-Camera Projects",
     "subtitle": "On-camera confidence, voice work, and media creation — turning performance interests into communication and storytelling projects.",
-    "pills": ["On-Camera", "Voice", "Fandom", "Mini Reel"],
+    "pills": [
+      "On-Camera",
+      "Voice",
+      "Fandom",
+      "Mini Reel"
+    ],
     "bestFor": "People who love performing, acting, music, fandom, or being on camera — or who want to build confidence presenting.",
     "image": "/assets/images/Matt-Teleprompter.JPG"
   },
@@ -17,33 +22,88 @@
     {
       "title": "Purpose",
       "blocks": [
-        {"type": "paragraph", "html": "<strong>Entertainment &amp; On-Camera Projects</strong> is for people who light up in front of a microphone or camera — or want to. It focuses on on-camera confidence, voice practice, and entertainment-related creative projects in a supportive environment."}
+        {
+          "type": "paragraph",
+          "html": "<strong>Entertainment &amp; On-Camera Projects</strong> is for people who light up in front of a microphone or camera — or want to. It focuses on on-camera confidence, voice practice, and entertainment-related creative projects in a supportive environment."
+        }
       ]
     },
     {
       "title": "Core Components",
       "blocks": [
-        {"type": "h3", "text": "On-Camera Performance"},
-        {"type": "ul", "items": ["Reading from a teleprompter", "Practicing short intros, outros, and segments", "Simple acting scenes or role-play for creative practice"]},
-        {"type": "h3", "text": "Music, Voice & Audio Projects"},
-        {"type": "ul", "items": ["Simple song introductions, playlist segments, and recording practice", "Karaoke, voice recording, character voices, or podcast-style conversations", "Learning how to listen back, choose favorites, and improve the next take"]},
-        {"type": "h3", "text": "Fandom & Media Literacy"},
-        {"type": "ul", "items": ["Discussing favorite movies, shows, musicians, or teams", "Turning fandom into creative projects such as reviews, reaction videos, or top-5 lists", "Practicing safe, respectful sharing with consent and review"]},
-        {"type": "h3", "text": "Portfolio Building"},
-        {"type": "ul", "items": ["Taking simple headshots or promotional photos", "Collecting short clips into a mini reel or private portfolio", "Helping families understand how to store and share materials safely"]}
+        {
+          "type": "h3",
+          "text": "On-Camera Performance"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Reading from a teleprompter",
+            "Practicing short intros, outros, and segments",
+            "Simple acting scenes or role-play for creative practice"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Music, Voice & Audio Projects"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Simple song introductions, playlist segments, and recording practice",
+            "Karaoke, voice recording, character voices, or podcast-style conversations",
+            "Learning how to listen back, choose favorites, and improve the next take"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Fandom & Media Literacy"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Discussing favorite movies, shows, musicians, or teams",
+            "Turning fandom into creative projects such as reviews, reaction videos, or top-5 lists",
+            "Practicing safe, respectful sharing with consent and review"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Portfolio Building"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Taking simple headshots or promotional photos",
+            "Collecting short clips into a mini reel or private portfolio",
+            "Helping families understand how to store and share materials safely"
+          ]
+        }
       ]
     },
     {
       "title": "Outcomes & Skills",
       "blocks": [
-        {"type": "ul", "items": ["Increased comfort speaking and presenting", "Better understanding of media and representation", "Fun, affirming experiences in front of the camera", "Creative materials that can be reviewed, stored, and shared safely when appropriate"]}
+        {
+          "type": "ul",
+          "items": [
+            "Increased comfort speaking and presenting",
+            "Better understanding of media and representation",
+            "Fun, affirming experiences in front of the camera",
+            "Creative materials that can be reviewed, stored, and shared safely when appropriate"
+          ]
+        }
       ]
     }
   ],
   "sidebar": {
     "sessionStyle": {
       "title": "Session Style",
-      "items": ["Defined creative-media projects", "Voice, audio, and on-camera practice", "Portfolio / reel building over time"]
+      "items": [
+        "Defined creative-media projects",
+        "Voice, audio, and on-camera practice",
+        "Portfolio / reel building over time"
+      ]
     },
     "getStarted": {
       "title": "Get Started",
@@ -58,14 +118,10 @@
         "summary": "How It Works",
         "open": true,
         "blocks": [
-          {"type": "paragraph", "html": "Sessions may be individual creator projects or small-group workshops, depending on the scope. Each engagement should have a defined purpose, deliverable, privacy plan, and consent process before public sharing."}
-        ]
-      },
-      {
-        "summary": "Funding & Scope Note",
-        "open": false,
-        "blocks": [
-          {"type": "paragraph", "html": "Funding is not guaranteed. Any third-party or plan-funded purchase must be individually reviewed and approved in writing before services begin. The scope should distinguish creative production from therapy, employment placement, direct support, and general life coaching."}
+          {
+            "type": "paragraph",
+            "html": "Sessions may be individual creator projects or small-group workshops, depending on the scope. Each engagement should have a defined purpose, deliverable, privacy plan, and consent process before public sharing."
+          }
         ]
       }
     ]
