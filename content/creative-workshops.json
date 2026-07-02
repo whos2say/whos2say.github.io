@@ -12,6 +12,7 @@
     "description": "Public creative project services and scheduled small-group workshops in digital storytelling, media production, design, audio, and community storytelling."
   },
   "pricing": {
+    "enabled": true,
     "title": "Session Options",
     "intro": "Pricing reflects session length, format, and materials. Contact us to match the right option to each participant's goals.",
     "tiers": [
@@ -37,6 +38,7 @@
       }
     ]
   },
+  "workshopsEnabled": true,
   "workshops": [
     {
       "title": "Digital Storytelling Project",
@@ -72,6 +74,7 @@
     }
   ],
   "fundingNote": {
+    "enabled": true,
     "title": "Funding & Third-Party Payment",
     "body": "Funding is not guaranteed. Any DDD, plan-based, or third-party-funded purchase must match the individual's documented need and must be approved in writing before services begin. The approved scope should identify the exact service, dates, rate, participant-facing time, any participant-specific technical implementation, and deliverables.",
     "linkLabel": "Information for Support Coordinators",
@@ -82,6 +85,7 @@
     "body": "These creative services are designed for the broader community and are intentionally accessible to people with and without disabilities. Individualized projects are scoped separately from group workshops, direct support, therapy, case management, employment placement, and personal training."
   },
   "finalCta": {
+    "enabled": true,
     "title": "Ready to explore a creative project?",
     "body": "Tell us what you want to make. We'll help determine whether the right next step is a public workshop, an individualized creator project, a mission-funded opportunity, or a referral to another support lane.",
     "primaryLabel": "Contact Us",
