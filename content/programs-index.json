@@ -32,7 +32,7 @@
     },
     {
       "id": "independence",
-      "visible": true,
+      "visible": false,
       "label": "Independence Path",
       "title": "Life Skills & Independent Living",
       "summary": "Everyday independence goals routed through the proper service or mission lane.",
