@@ -1,0 +1,139 @@
+{
+  "slug": "digital-content-creator",
+  "pathKey": "digital",
+  "meta": {
+    "title": "Digital Content Creator Pathways | Who's to Say ? Foundation",
+    "description": "Build confidence and practical media skills through defined digital storytelling, design, photography, and production projects."
+  },
+  "hero": {
+    "breadcrumb": "Digital Path",
+    "title": "Digital Content Creator Pathways",
+    "subtitle": "Video, design, photography, and production skills — built one project at a time with defined creative deliverables.",
+    "pills": [
+      "Video",
+      "Design",
+      "Photography",
+      "Studio Skills"
+    ],
+    "bestFor": "People interested in content creation, storytelling, portfolio projects, and practical digital media skills.",
+    "image": "/assets/images/Modern_podcast_Studio_setup.png"
+  },
+  "sections": [
+    {
+      "title": "Purpose",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "html": "<strong>Digital Content Creator Pathways</strong> helps people build confidence and practical skills in digital media, design, and technology through defined creative projects. The focus is project-based learning, participant-owned work, and clear deliverables."
+        }
+      ]
+    },
+    {
+      "title": "Core Areas of Learning",
+      "blocks": [
+        {
+          "type": "h3",
+          "text": "Video & Content Creation"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Recording, importing, and editing video",
+            "Creating clips, using templates, adding captions, and applying simple effects",
+            "Exporting and safely sharing finished videos"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Digital Art & Design"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Creating graphics in Canva or similar tools",
+            "Designing stickers, simple posters, portfolio graphics, and social media images",
+            "Understanding basic visual branding concepts such as color, layout, readability, and consistency"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Photography & Media Basics"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Using a smartphone or DSLR camera",
+            "Photo-assistant basics, lighting, framing, and simple editing",
+            "Building a small portfolio of images for a personal project or showcase"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Studio & Production Skills"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Basics of microphones, lighting, and camera setup",
+            "Being on camera vs. behind the camera",
+            "Working through a simple creative brief from idea to finished piece"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Outcomes & Skills",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "Increased comfort with technology and media tools",
+            "Improved communication, sequencing, planning, and project completion",
+            "A small digital portfolio or finished creative asset that can be shared when appropriate",
+            "Experience working toward a defined project goal and deadline"
+          ]
+        }
+      ]
+    }
+  ],
+  "sidebar": {
+    "sessionStyle": {
+      "title": "Session Style",
+      "items": [
+        "Individual creator projects or small-group workshops",
+        "Project-based, interest-led learning",
+        "Portfolio or deliverable growth over time"
+      ]
+    },
+    "getStarted": {
+      "title": "Get Started",
+      "prompt": "Want to explore a Digital Path project?",
+      "primaryLabel": "Contact Us",
+      "primaryHref": "/contact.html",
+      "secondaryLabel": "Email",
+      "secondaryHref": "mailto:info@whostosay.org"
+    },
+    "accordions": [
+      {
+        "summary": "How It Works",
+        "open": true,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "Sessions are scoped around a defined creative project. A participant might edit a gaming clip, design a logo, record a podcast segment, take photos, or build a short portfolio piece."
+          }
+        ]
+      },
+      {
+        "summary": "Funding & Scope Note",
+        "open": false,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "html": "Funding is not guaranteed. Any third-party or plan-funded purchase must be individually reviewed and approved in writing before services begin. The approved scope should identify the exact service, dates, rate, participant-facing time, any participant-specific technical implementation, and deliverables."
+          }
+        ]
+      }
+    ]
+  }
+}
