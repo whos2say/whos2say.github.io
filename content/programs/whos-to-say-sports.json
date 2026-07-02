@@ -9,7 +9,12 @@
     "breadcrumb": "Sports Path",
     "title": "Who's to Say Sports Media",
     "subtitle": "Sports storytelling, fan culture, interviews, recaps, and media projects — with event costs, transportation, and support handled separately when needed.",
-    "pills": ["Sports Media", "Storytelling", "Fan Culture", "Community"],
+    "pills": [
+      "Sports Media",
+      "Storytelling",
+      "Fan Culture",
+      "Community"
+    ],
     "bestFor": "People who love sports, teams, fan culture, interviews, photography, recaps, or sports storytelling.",
     "image": "/assets/images/Matt-Conner.jpg"
   },
@@ -17,45 +22,111 @@
     {
       "title": "Purpose",
       "blocks": [
-        {"type": "paragraph", "html": "Who's to Say Sports Media uses sports as a setting for storytelling, communication, creative media, and community connection."},
-        {"type": "paragraph", "html": "Participants may create game recaps, fan interviews, trading-card concepts, commentary clips, photo stories, or short videos around teams and sports experiences they care about."},
-        {"type": "paragraph", "html": "This creative-media lane is separate from athletic instruction, event admission, transportation, supervision, or direct support."}
+        {
+          "type": "paragraph",
+          "html": "Who's to Say Sports Media uses sports as a setting for storytelling, communication, creative media, and community connection."
+        },
+        {
+          "type": "paragraph",
+          "html": "Participants may create game recaps, fan interviews, trading-card concepts, commentary clips, photo stories, or short videos around teams and sports experiences they care about."
+        },
+        {
+          "type": "paragraph",
+          "html": "This creative-media lane is separate from athletic instruction, event admission, transportation, supervision, or direct support."
+        }
       ]
     },
     {
       "title": "Creative Sports Media Projects",
       "blocks": [
-        {"type": "h3", "text": "Sports Media & Storytelling"},
-        {"type": "ul", "items": ["Recording short game recaps or fan takes", "Interviewing teammates, coaches, family members, volunteers, or friends with consent", "Filming highlights or behind-the-scenes moments on a phone", "Creating simple sports commentary, podcast, or social media-style segments", "Reviewing clips and practicing clear communication", "Building a personal sports voice, brand, or storytelling style"]},
-        {"type": "h3", "text": "Sports Photography & Design"},
-        {"type": "ul", "items": ["Taking team or event photos when permission is clear", "Creating trading-card concepts, player spotlights, or recap graphics", "Preparing a small portfolio or story package"]},
-        {"type": "h3", "text": "Community Connection"},
-        {"type": "ul", "items": ["Preparing questions for interviews", "Practicing introductions and appreciation for coaches or volunteers", "Reflecting afterward on what went well and what story should be told next"]}
+        {
+          "type": "h3",
+          "text": "Sports Media & Storytelling"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Recording short game recaps or fan takes",
+            "Interviewing teammates, coaches, family members, volunteers, or friends with consent",
+            "Filming highlights or behind-the-scenes moments on a phone",
+            "Creating simple sports commentary, podcast, or social media-style segments",
+            "Reviewing clips and practicing clear communication",
+            "Building a personal sports voice, brand, or storytelling style"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Sports Photography & Design"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Taking team or event photos when permission is clear",
+            "Creating trading-card concepts, player spotlights, or recap graphics",
+            "Preparing a small portfolio or story package"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Community Connection"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Preparing questions for interviews",
+            "Practicing introductions and appreciation for coaches or volunteers",
+            "Reflecting afterward on what went well and what story should be told next"
+          ]
+        }
       ]
     },
     {
       "title": "What This Lane Does Not Include",
       "blocks": [
-        {"type": "ul", "items": ["Athletic instruction, conditioning plans, workout coaching, or nutrition coaching", "Admission tickets, entertainment costs, or unrelated purchases", "Transportation, supervision, or community accompaniment unless separately arranged through the proper support lane", "Using participant work mainly as Foundation marketing or fundraising without clear consent and ownership terms"]}
+        {
+          "type": "ul",
+          "items": [
+            "Athletic instruction, conditioning plans, workout coaching, or nutrition coaching",
+            "Admission tickets, entertainment costs, or unrelated purchases",
+            "Transportation, supervision, or community accompaniment unless separately arranged through the proper support lane",
+            "Using participant work mainly as Foundation marketing or fundraising without clear consent and ownership terms"
+          ]
+        }
       ]
     },
     {
       "title": "Outcomes & Skills",
       "blocks": [
-        {"type": "ul", "items": ["Communication and interview skills", "Planning, sequencing, and follow-through", "Creative media and storytelling skills", "Confidence participating in sports culture as a fan, storyteller, photographer, or media helper", "Participant-owned photos, clips, recaps, or story assets"]}
+        {
+          "type": "ul",
+          "items": [
+            "Communication and interview skills",
+            "Planning, sequencing, and follow-through",
+            "Creative media and storytelling skills",
+            "Confidence participating in sports culture as a fan, storyteller, photographer, or media helper",
+            "Participant-owned photos, clips, recaps, or story assets"
+          ]
+        }
       ]
     },
     {
       "title": "Who Can Participate",
       "blocks": [
-        {"type": "paragraph", "html": "Who's to Say Sports Media is open to people who are interested in sports, fan culture, community storytelling, or sports media. Participants do not need to be competitive athletes."}
+        {
+          "type": "paragraph",
+          "html": "Who's to Say Sports Media is open to people who are interested in sports, fan culture, community storytelling, or sports media. Participants do not need to be competitive athletes."
+        }
       ]
     }
   ],
   "sidebar": {
     "sessionStyle": {
       "title": "Session Style",
-      "items": ["Sports media & storytelling projects", "Individual creator projects or small groups", "Direct support and event costs handled separately"]
+      "items": [
+        "Sports media & storytelling projects",
+        "Individual creator projects or small groups",
+        "Direct support and event costs handled separately"
+      ]
     },
     "getStarted": {
       "title": "Get Started",
@@ -70,14 +141,10 @@
         "summary": "How It Works",
         "open": true,
         "blocks": [
-          {"type": "paragraph", "html": "A sports-media project starts with the participant's interest: a team, player, memory, event, or role. We then define the creative output, consent needs, session plan, and any separate support arrangements needed for community settings."}
-        ]
-      },
-      {
-        "summary": "Funding & Scope Note",
-        "open": false,
-        "blocks": [
-          {"type": "paragraph", "html": "Funding is not guaranteed. Sports media work should be separated from athletic instruction, event admission, entertainment, transportation, supervision, and direct support. Any plan-funded purchase must be reviewed and approved in writing before services begin."}
+          {
+            "type": "paragraph",
+            "html": "A sports-media project starts with the participant's interest: a team, player, memory, event, or role. We then define the creative output, consent needs, session plan, and any separate support arrangements needed for community settings."
+          }
         ]
       }
     ]
