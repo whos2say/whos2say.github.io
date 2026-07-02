@@ -470,6 +470,7 @@
               { label: Subtitle, name: subtitle, widget: text },
               { label: Pills, name: pills, widget: list, field: { label: Pill, name: pill, widget: string } }
             ]}
+          - { label: Show section, name: workshopsEnabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." }
           - label: Workshops
             name: workshops
             widget: list
@@ -477,6 +478,7 @@
               - { label: Title, name: title, widget: string }
               - { label: Summary, name: summary, widget: text }
           - { label: Pricing, name: pricing, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
               { label: Title, name: title, widget: string },
               { label: Intro, name: intro, widget: text },
               { label: Tiers, name: tiers, widget: list, fields: [
@@ -486,10 +488,12 @@
                 ]}
             ]}
           - { label: Funding Note, name: fundingNote, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
               { label: Title, name: title, widget: string },
               { label: Body, name: body, widget: text, hint: "Use conditional funding language only" }
             ]}
           - { label: Final CTA, name: finalCta, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
               { label: Title, name: title, widget: string },
               { label: Body, name: body, widget: text },
               { label: Primary Label, name: primaryLabel, widget: string },

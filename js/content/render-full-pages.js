@@ -92,7 +92,12 @@
 
     document.body.classList.add('content-page');
 
-    var workshops = data.workshops
+    var workshopsEnabled = data.workshopsEnabled !== false;
+    var pricingEnabled = data.pricing.enabled !== false;
+    var fundingNoteEnabled = data.fundingNote.enabled !== false;
+    var finalCtaEnabled = data.finalCta.enabled !== false;
+
+    var workshops = workshopsEnabled ? data.workshops
       .map(function (w) {
         return (
           '<div class="program-card program-card--static">' +
@@ -103,9 +108,9 @@
           '</p></div></div>'
         );
       })
-      .join('');
+      .join('') : '';
 
-    var tiers = data.pricing.tiers
+    var tiers = pricingEnabled ? data.pricing.tiers
       .map(function (t) {
         return (
           '<div class="how-card">' +
@@ -120,7 +125,7 @@
           '</p></div>'
         );
       })
-      .join('');
+      .join('') : '';
 
     var steps = data.howSessionsWork.steps
       .map(function (s, i) {
@@ -154,22 +159,22 @@
       }) +
       '<section class="program-shell content-page-shell">' +
       '<article class="program-content">' +
-      '<section class="program-section content-page-section" id="workshop-menu"><h2>Workshop Menu</h2><div class="program-grid content-page-grid">' +
+      (workshopsEnabled ? '<section class="program-section content-page-section" id="workshop-menu"><h2>Workshop Menu</h2><div class="program-grid content-page-grid">' +
       workshops +
-      '</div></section>' +
+      '</div></section>' : '') +
       '<section class="program-section content-page-section" id="class-sessions">' +
       '<h2>' + (data.classSchedule ? data.classSchedule.title : 'Available Class Sessions') + '</h2>' +
       '<p class="class-sessions-intro">' + (data.classSchedule ? data.classSchedule.intro : 'Open to adults with and without disabilities. Small class size, maximum 3 participants.') + '</p>' +
       '<div id="class-sessions-list" class="class-sessions-list"></div>' +
       '</section>' +
-      '<section class="program-section content-page-section" id="pricing"><h2>' +
+      (pricingEnabled ? '<section class="program-section content-page-section" id="pricing"><h2>' +
       data.pricing.title +
       '</h2><p>' +
       data.pricing.intro +
       '</p>' +
       '<div class="how-grid how-grid--4">' +
       tiers +
-      '</div></section>' +
+      '</div></section>' : '') +
       '<section class="program-section content-page-section" id="session-flow"><h2>' +
       data.howSessionsWork.title +
       '</h2>' +
@@ -181,7 +186,7 @@
       '</h2><p>' +
       data.inclusiveSection.body +
       '</p></section>' +
-      '<section class="program-section content-page-section cw-note" id="funding"><h2>' +
+      (fundingNoteEnabled ? '<section class="program-section content-page-section cw-note" id="funding"><h2>' +
       data.fundingNote.title +
       '</h2><p>' +
       data.fundingNote.body +
@@ -190,7 +195,7 @@
       data.fundingNote.linkHref +
       '">' +
       data.fundingNote.linkLabel +
-      '</a></section>' +
+      '</a></section>' : '') +
       '<section class="program-section content-page-section"><h2>' +
       data.makerSpace.title +
       '</h2><p>' +
@@ -203,7 +208,7 @@
       '>' +
       data.makerSpace.ctaLabel +
       '</a></section>' +
-      '<section class="program-section content-page-section cw-cta"><h2>' +
+      (finalCtaEnabled ? '<section class="program-section content-page-section cw-cta"><h2>' +
       data.finalCta.title +
       '</h2><p>' +
       data.finalCta.body +
@@ -217,7 +222,7 @@
       data.finalCta.secondaryHref +
       '">' +
       data.finalCta.secondaryLabel +
-      '</a></section>' +
+      '</a></section>' : '') +
       '</article></section></main>' +
       footerHtml();
 
