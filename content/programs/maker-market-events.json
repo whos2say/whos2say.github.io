@@ -9,7 +9,12 @@
     "breadcrumb": "Art Path",
     "title": "Art Studio & Showcase Projects",
     "subtitle": "Create, share, and celebrate work in supportive settings — confidence, presentation, and participant-owned creative output first.",
-    "pills": ["Create", "Present", "Confidence", "Showcase"],
+    "pills": [
+      "Create",
+      "Present",
+      "Confidence",
+      "Showcase"
+    ],
     "bestFor": "Creators who light up when people see and appreciate what they make.",
     "image": "/assets/images/studio-team.png"
   },
@@ -17,32 +22,80 @@
     {
       "title": "Purpose",
       "blocks": [
-        {"type": "paragraph", "html": "<strong>Art Studio &amp; Showcase Projects</strong> helps creators design, make, and present digital or physical work. Projects may include digital art, photography, crafts, prints, simple products, or showcase displays."},
-        {"type": "paragraph", "html": "The focus is creative expression, presentation practice, and pride in completed work. Commercial sales, custody of inventory, fundraising use, and public display should be handled only with clear consent and written terms."}
+        {
+          "type": "paragraph",
+          "html": "<strong>Art Studio &amp; Showcase Projects</strong> helps creators design, make, and present digital or physical work. Projects may include digital art, photography, crafts, prints, simple products, or showcase displays."
+        },
+        {
+          "type": "paragraph",
+          "html": "The focus is creative expression, presentation practice, and pride in completed work. Commercial sales, custody of inventory, fundraising use, and public display should be handled only with clear consent and written terms."
+        }
       ]
     },
     {
       "title": "Core Areas of Learning",
       "blocks": [
-        {"type": "h3", "text": "Creation Sessions"},
-        {"type": "ul", "items": ["Design sessions for digital or physical pieces", "Simple projects such as stickers, prints, keychains, small crafts, or photo collections", "Building a set of items for a future display table, online gallery, or personal portfolio"]},
-        {"type": "h3", "text": "Presentation & Showcase Practice"},
-        {"type": "ul", "items": ["Learning how to set up a table or display", "Practicing how to talk about creative work", "Participating in low-pressure showcases or markets when available and appropriate"]},
-        {"type": "h3", "text": "Value & Ownership Concepts"},
-        {"type": "ul", "items": ["Understanding that creative work has value", "Discussing gifting, display, sale, or donation options only with the right consent", "Keeping participant ownership and permission clear"]}
+        {
+          "type": "h3",
+          "text": "Creation Sessions"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Design sessions for digital or physical pieces",
+            "Simple projects such as stickers, prints, keychains, small crafts, or photo collections",
+            "Building a set of items for a future display table, online gallery, or personal portfolio"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Presentation & Showcase Practice"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Learning how to set up a table or display",
+            "Practicing how to talk about creative work",
+            "Participating in low-pressure showcases or markets when available and appropriate"
+          ]
+        },
+        {
+          "type": "h3",
+          "text": "Value & Ownership Concepts"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Understanding that creative work has value",
+            "Discussing gifting, display, sale, or donation options only with the right consent",
+            "Keeping participant ownership and permission clear"
+          ]
+        }
       ]
     },
     {
       "title": "Outcomes & Skills",
       "blocks": [
-        {"type": "ul", "items": ["Pride in completed creative work", "Improved communication and presentation skills", "Early exposure to showcase and entrepreneurship concepts", "Positive public experiences and recognition"]}
+        {
+          "type": "ul",
+          "items": [
+            "Pride in completed creative work",
+            "Improved communication and presentation skills",
+            "Early exposure to showcase and entrepreneurship concepts",
+            "Positive public experiences and recognition"
+          ]
+        }
       ]
     }
   ],
   "sidebar": {
     "sessionStyle": {
       "title": "Session Style",
-      "items": ["Project-based creation sessions", "Presentation practice", "Showcase terms handled separately"]
+      "items": [
+        "Project-based creation sessions",
+        "Presentation practice",
+        "Showcase terms handled separately"
+      ]
     },
     "getStarted": {
       "title": "Get Started",
@@ -57,14 +110,10 @@
         "summary": "How It Works",
         "open": true,
         "blocks": [
-          {"type": "paragraph", "html": "Participants create art, prints, and small projects, then practice sharing them at events and showcases. Any public display, sale, or fundraising use should have a separate consent and ownership record."}
-        ]
-      },
-      {
-        "summary": "Funding & Scope Note",
-        "open": false,
-        "blocks": [
-          {"type": "paragraph", "html": "Funding is not guaranteed. Any third-party or plan-funded purchase must be individually reviewed and approved in writing before services begin. The scope should separate creative sessions from event fees, retail inventory, fundraising assets, supervision, and transportation."}
+          {
+            "type": "paragraph",
+            "html": "Participants create art, prints, and small projects, then practice sharing them at events and showcases. Any public display, sale, or fundraising use should have a separate consent and ownership record."
+          }
         ]
       }
     ]
