@@ -97,7 +97,7 @@
     {
       "label": "Donate",
       "href": "https://givebutter.com/whostosayfoundation",
-      "enabled": true,
+      "enabled": false,
       "environment": "all",
       "order": 80,
       "external": true
