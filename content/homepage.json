@@ -2,12 +2,12 @@
   "_comment": "Homepage hero, featured section, and CTAs. Edit via Decap CMS → Homepage or directly in this file.",
   "meta": {
     "title": "Who's to Say ? Foundation | Coming Soon",
-    "description": "Who's to Say ? Foundation is a 501(c)(3) nonprofit creating creative, community-centered programs and a future live/work residence for neurodiverse young adults. Full site coming soon."
+    "description": "WHo's to Say"
   },
   "hero": {
-    "kicker": "Official Site - COMING SOON",
+    "kicker": "Official Site",
     "title": "Who's to Say ? Foundation",
-    "subhead": "Creativity without comparison. Building possibility paths for young adults with diverse abilities.",
+    "subhead": "Creativity without comparison. Building possibility paths for teens and young adults with diverse abilities.",
     "subheadHtml": "Creativity without comparison. <br>Building possibility paths for young adults with diverse abilities.",
     "note": "More updates coming soon. For partnerships, reach us via the Contact link in the header.",
     "legalLine": "EIN: 33-3826585  <br> Status: 501(c)(3) Public Charity · United States ."
