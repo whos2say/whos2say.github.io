@@ -115,16 +115,6 @@
             "html": "Projects may include story planning, interviews, a short presentation, a community partner feature, or a media piece. Outings and supervision should be scoped and funded separately when required."
           }
         ]
-      },
-      {
-        "summary": "Funding & Scope Note",
-        "open": false,
-        "blocks": [
-          {
-            "type": "paragraph",
-            "html": "Funding is not guaranteed. Creative advocacy projects should be separated from transportation, supervision, community accompaniment, and other direct support services."
-          }
-        ]
       }
     ]
   }
