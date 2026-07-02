@@ -80,7 +80,7 @@
       "label": "Creative Workshops",
       "href": "/creative-workshops.html",
       "enabled": true,
-      "environment": "staging",
+      "environment": "production",
       "order": 30,
       "external": false,
       "note": "Draft/staging page. Do not promote to production without leadership/compliance review."
