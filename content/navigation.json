@@ -36,7 +36,7 @@
         {
           "label": "Independence Path",
           "href": "/programs/life-skills-independent-living.html",
-          "enabled": true,
+          "enabled": false,
           "environment": "all",
           "order": 30,
           "external": false
