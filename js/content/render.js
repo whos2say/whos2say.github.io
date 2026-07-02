@@ -209,7 +209,10 @@
 
     var grid = document.querySelector('.program-grid');
     if (grid && data.programs) {
-      grid.innerHTML = data.programs
+      var visiblePrograms = data.programs.filter(function (program) {
+        return program.visible !== false;
+      });
+      grid.innerHTML = visiblePrograms
         .map(function (p) {
           return (
             '<a class="program-card" id="' + p.id + '" data-path="' + p.id + '" href="' + p.href + '">' +

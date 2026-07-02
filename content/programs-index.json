@@ -14,6 +14,7 @@
   "programs": [
     {
       "id": "digital",
+      "visible": true,
       "label": "Digital Path",
       "title": "Digital Content Creator Pathways",
       "summary": "Video, design, photography, and production skills built through defined creative projects.",
@@ -22,6 +23,7 @@
     },
     {
       "id": "sports",
+      "visible": true,
       "label": "Sports Path",
       "title": "Who's to Say Sports Media",
       "summary": "Sports storytelling, fan interviews, recaps, photography, and team-story media.",
@@ -30,6 +32,7 @@
     },
     {
       "id": "independence",
+      "visible": true,
       "label": "Independence Path",
       "title": "Life Skills & Independent Living",
       "summary": "Everyday independence goals routed through the proper service or mission lane.",
@@ -38,6 +41,7 @@
     },
     {
       "id": "community",
+      "visible": true,
       "label": "Community Path",
       "title": "Community Leadership & Storytelling",
       "summary": "Creative advocacy, storytelling, and presentation projects with direct support separated when needed.",
@@ -46,6 +50,7 @@
     },
     {
       "id": "art",
+      "visible": true,
       "label": "Art Path",
       "title": "Art Studio & Showcase Projects",
       "summary": "Create, present, and celebrate participant-owned creative work with clear consent and showcase terms.",
@@ -54,6 +59,7 @@
     },
     {
       "id": "entertainment",
+      "visible": true,
       "label": "Entertainment Path",
       "title": "Entertainment & On-Camera Projects",
       "summary": "On-camera confidence, voice work, fandom, and mini-reel projects.",

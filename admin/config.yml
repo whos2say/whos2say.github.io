@@ -350,6 +350,7 @@ collections:
             widget: list
             fields:
               - { label: ID, name: id, widget: string }
+              - { label: Visible, name: visible, widget: boolean, required: false, default: true, hint: "Turn off to hide this program card from the public Programs page without deleting it." }
               - { label: Label, name: label, widget: string }
               - { label: Title, name: title, widget: string }
               - { label: Summary, name: summary, widget: text }
