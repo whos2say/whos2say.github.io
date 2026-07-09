@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "DJR Photography | Who's to Say Foundation",
+    "description": "DJR Photography highlights creative photography services and behind-the-scenes work from David and the Who's to Say Foundation media team."
+  },
+  "hero": {
+    "kicker": "DJR Photography",
+    "title": "Stories, portraits, and community moments through David's lens.",
+    "subtitle": "A creative photography pathway from Who's to Say Foundation, built around real assignments, visible work, and reusable image collections."
+  },
+  "sections": [
+    {
+      "type": "story",
+      "id": "story",
+      "eyebrow": "Story",
+      "title": "David behind the lens",
+      "body": "DJR Photography gives David a real creative identity: camera in hand, assignments to prepare for, and a growing library of images that can be used across pages, stories, and campaigns."
+    },
+    {
+      "type": "story_slideshow",
+      "id": "behind-the-lens",
+      "eyebrow": "Featured album",
+      "title": "David Behind the Lens",
+      "body": "This section is powered by a reusable CMS album. Editors can update the album once and place it on any DJR page by using its album ID.",
+      "album_id": "david-behind-the-lens"
+    },
+    {
+      "type": "services",
+      "id": "services",
+      "eyebrow": "Services",
+      "title": "Photography services",
+      "items": [
+        {
+          "title": "Event coverage",
+          "body": "Community events, sports days, celebrations, and program milestones."
+        },
+        {
+          "title": "Portrait moments",
+          "body": "Simple, warm portraits for stories, profiles, cards, and campaigns."
+        },
+        {
+          "title": "Image libraries",
+          "body": "Reusable photo collections organized by album, participant, category, tag, and usage notes."
+        }
+      ]
+    },
+    {
+      "type": "image_grid",
+      "id": "gallery",
+      "eyebrow": "Gallery",
+      "title": "Reusable DJR gallery",
+      "body": "The same album can also render as a responsive grid.",
+      "album_id": "david-behind-the-lens"
+    },
+    {
+      "type": "contact",
+      "id": "contact",
+      "eyebrow": "Contact",
+      "title": "Plan a DJR Photography project",
+      "body": "Reach out to discuss community events, story photography, or a future image collection for your page.",
+      "button_label": "Contact Who's to Say",
+      "button_href": "/contact.html"
+    }
+  ]
+}

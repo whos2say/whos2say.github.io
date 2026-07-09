@@ -1,0 +1,20 @@
+{
+  "album_id": "david-behind-the-lens",
+  "title": "David Behind the Lens",
+  "description": "Starter CMS album for the DJR Photography page. Replace or expand these sample images in Decap CMS as David's photography library grows.",
+  "cover_image": "/assets/images/uploads/DSC_6968.JPG",
+  "images": [
+    {
+      "image": "/assets/images/uploads/DSC_6968.JPG",
+      "alt": "A baseball field display with red, white, and blue balloons and a Play Ball sign.",
+      "caption": "Sample event image for the DJR Photography album system.",
+      "credit": "Who's to Say Foundation",
+      "tags": [
+        "sample",
+        "event",
+        "baseball"
+      ],
+      "orientation": "landscape"
+    }
+  ]
+}

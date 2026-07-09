@@ -478,6 +478,189 @@ collections:
               { label: Best For Items, name: bestForItems, widget: list, field: { label: Item, name: item, widget: string } }
             ]}
 
+  - name: djr-page
+    label: DJR Photography Page
+    files:
+      - label: DJR Photography
+        name: djr
+        file: content/djr.json
+        fields:
+          - { label: SEO, name: meta, widget: object, fields: [
+              { label: Title, name: title, widget: string },
+              { label: Description, name: description, widget: text }
+            ]}
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Kicker, name: kicker, widget: string },
+              { label: Headline, name: title, widget: string },
+              { label: Subtitle, name: subtitle, widget: text }
+            ]}
+          - label: Page Sections
+            name: sections
+            widget: list
+            summary: "{{fields.title}} · {{fields.type}}"
+            hint: "Use album_id to reuse albums from DJR Gallery Albums. The album ID must match exactly, for example david-behind-the-lens."
+            types:
+              - label: Story Copy
+                name: story
+                widget: object
+                fields:
+                  - { label: Section ID, name: id, widget: string, hint: "Used for #anchor links, e.g. story" }
+                  - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+                  - { label: Title, name: title, widget: string }
+                  - { label: Body, name: body, widget: text }
+              - label: Gallery Album Slideshow
+                name: gallery_album
+                widget: object
+                fields:
+                  - { label: Section ID, name: id, widget: string }
+                  - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+                  - { label: Title, name: title, widget: string }
+                  - { label: Intro, name: body, widget: text, required: false }
+                  - label: Album ID
+                    name: album_id
+                    widget: relation
+                    collection: djr-gallery-albums
+                    search_fields: [title, album_id]
+                    value_field: album_id
+                    display_fields: [title, album_id]
+                    hint: "Choose the reusable album to show here."
+              - label: Featured Image
+                name: featured_image
+                widget: object
+                fields:
+                  - { label: Section ID, name: id, widget: string }
+                  - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+                  - { label: Title, name: title, widget: string }
+                  - { label: Body, name: body, widget: text, required: false }
+                  - { label: Image, name: image, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr }
+                  - { label: Alt Text, name: alt, widget: string, hint: "Describe the image for people using screen readers." }
+                  - { label: Caption, name: caption, widget: string, required: false }
+              - label: Story Slideshow
+                name: story_slideshow
+                widget: object
+                fields:
+                  - { label: Section ID, name: id, widget: string }
+                  - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+                  - { label: Title, name: title, widget: string }
+                  - { label: Intro, name: body, widget: text, required: false }
+                  - label: Album ID
+                    name: album_id
+                    widget: relation
+                    collection: djr-gallery-albums
+                    search_fields: [title, album_id]
+                    value_field: album_id
+                    display_fields: [title, album_id]
+              - label: Image Grid
+                name: image_grid
+                widget: object
+                fields:
+                  - { label: Section ID, name: id, widget: string }
+                  - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+                  - { label: Title, name: title, widget: string }
+                  - { label: Intro, name: body, widget: text, required: false }
+                  - label: Album ID
+                    name: album_id
+                    widget: relation
+                    collection: djr-gallery-albums
+                    search_fields: [title, album_id]
+                    value_field: album_id
+                    display_fields: [title, album_id]
+              - label: Services
+                name: services
+                widget: object
+                fields:
+                  - { label: Section ID, name: id, widget: string }
+                  - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+                  - { label: Title, name: title, widget: string }
+                  - label: Service Cards
+                    name: items
+                    widget: list
+                    fields:
+                      - { label: Title, name: title, widget: string }
+                      - { label: Body, name: body, widget: text }
+              - label: Contact CTA
+                name: contact
+                widget: object
+                fields:
+                  - { label: Section ID, name: id, widget: string }
+                  - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+                  - { label: Title, name: title, widget: string }
+                  - { label: Body, name: body, widget: text }
+                  - { label: Button Label, name: button_label, widget: string }
+                  - { label: Button URL, name: button_href, widget: string }
+
+  - name: djr-gallery-albums
+    label: DJR Gallery Albums
+    folder: content/djr-albums
+    extension: json
+    format: json
+    create: true
+    slug: "{{album_id}}"
+    identifier_field: title
+    summary: "{{title}} · {{album_id}}"
+    fields:
+      - { label: Album ID, name: album_id, widget: string, hint: "Stable ID used on pages. Use lowercase letters, numbers, and hyphens, e.g. david-behind-the-lens." }
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text, required: false }
+      - { label: Cover Image, name: cover_image, widget: image, required: false, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr, hint: "Used in hero/album previews. Upload DJR images here so they stay organized." }
+      - label: Images
+        name: images
+        widget: list
+        summary: "{{fields.caption}}"
+        fields:
+          - { label: Image, name: image, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr }
+          - { label: Alt Text, name: alt, widget: string, hint: "Required for accessibility. Describe what is visible, not SEO keywords." }
+          - { label: Caption, name: caption, widget: string, required: false }
+          - { label: Credit, name: credit, widget: string, required: false }
+          - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string }, hint: "Examples: behind-the-scenes, portrait, event, baseball, fundraiser" }
+          - label: Orientation
+            name: orientation
+            widget: select
+            required: false
+            options:
+              - landscape
+              - portrait
+              - square
+              - panorama
+              - mixed
+
+  - name: djr-image-registry
+    label: DJR Image Registry
+    folder: content/djr-images
+    extension: json
+    format: json
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}} · {{participant}} · {{album}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Image, name: image, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr, hint: "Upload reusable DJR images under assets/images/uploads/djr." }
+      - { label: Participant, name: participant, widget: string, required: false, hint: "Example: David" }
+      - label: Album
+        name: album
+        widget: relation
+        collection: djr-gallery-albums
+        search_fields: [title, album_id]
+        value_field: album_id
+        display_fields: [title, album_id]
+        required: false
+      - { label: Category, name: category, widget: string, required: false, hint: "Example: event, portrait, behind-the-scenes, service" }
+      - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string } }
+      - { label: Alt Text, name: alt, widget: string, hint: "Describe the image for screen readers." }
+      - { label: Caption, name: caption, widget: string, required: false }
+      - { label: Usage Notes, name: usage_notes, widget: text, required: false, hint: "Where this image works best, consent notes, or pages where it is already used." }
+      - label: Orientation
+        name: orientation
+        widget: select
+        required: false
+        options:
+          - landscape
+          - portrait
+          - square
+          - panorama
+          - mixed
+
   - name: creative-workshops
     label: Public Pricing / Classes
     files:
@@ -502,6 +685,12 @@ collections:
             fields:
               - { label: Title, name: title, widget: string }
               - { label: Summary, name: summary, widget: text }
+          - { label: Workshop Availability, name: classSchedule, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
+              { label: Title, name: title, widget: string },
+              { label: Intro, name: intro, widget: text },
+              { label: Signup Enabled, name: signupEnabled, widget: boolean, required: false, default: false }
+            ]}
           - { label: Pricing, name: pricing, widget: object, fields: [
               { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
               { label: Title, name: title, widget: string },
@@ -515,14 +704,39 @@ collections:
           - { label: Funding Note, name: fundingNote, widget: object, fields: [
               { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
               { label: Title, name: title, widget: string },
-              { label: Body, name: body, widget: text, hint: "Use conditional funding language only" }
+              { label: Body, name: body, widget: text, hint: "Use conditional funding language only" },
+              { label: Link Label, name: linkLabel, widget: string },
+              { label: Link URL, name: linkHref, widget: string }
+            ]}
+          - { label: Inclusive Section, name: inclusiveSection, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text }
+            ]}
+          - { label: How Sessions Work, name: howSessionsWork, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
+              { label: Title, name: title, widget: string },
+              { label: Steps, name: steps, widget: list, fields: [
+                  { label: Title, name: title, widget: string },
+                  { label: Body, name: body, widget: text }
+                ]}
+            ]}
+          - { label: Maker Space, name: makerSpace, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
+              { label: Title, name: title, widget: string },
+              { label: Body, name: body, widget: text },
+              { label: CTA Label, name: ctaLabel, widget: string },
+              { label: CTA URL, name: ctaHref, widget: string },
+              { label: CTA External Link, name: ctaExternal, widget: boolean, required: false, default: false }
             ]}
           - { label: Final CTA, name: finalCta, widget: object, fields: [
               { label: Show section, name: enabled, widget: boolean, required: false, default: true, hint: "Turn off to hide this section from the public page without deleting its content." },
               { label: Title, name: title, widget: string },
               { label: Body, name: body, widget: text },
               { label: Primary Label, name: primaryLabel, widget: string },
-              { label: Primary URL, name: primaryHref, widget: string }
+              { label: Primary URL, name: primaryHref, widget: string },
+              { label: Secondary Label, name: secondaryLabel, widget: string },
+              { label: Secondary URL, name: secondaryHref, widget: string }
             ]}
 
   - name: support-coordinators

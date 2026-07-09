@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DJR Photography | Who's to Say Foundation</title>
+<meta name="description" content="DJR Photography highlights creative photography services and behind-the-scenes work from David and the Who's to Say Foundation media team." />
+<meta name="robots" content="index,follow" />
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-46JBLZ3YPT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-46JBLZ3YPT');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/css/story-base.css" />
+<link rel="stylesheet" href="/assets/css/djr.css" />
+<link rel="icon" href="/assets/images/stories/brand/wts-logo-icon.svg" />
+</head>
+
+<body class="djr-page" data-content-page="djr">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="djr-topbar" role="banner">
+  <div class="djr-topbar-inner">
+    <a class="djr-brand" href="/" aria-label="Who's to Say Foundation home">
+      <img src="/assets/images/logo-black-light.png" alt="Who's to Say Foundation" />
+      <span><strong>DJR Photography</strong> David's creative media pathway</span>
+    </a>
+    <nav class="djr-nav" aria-label="Primary">
+      <a href="#story">Story</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#services">Services</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="djr-hero" data-djr-hero>
+    <div class="djr-hero-copy">
+      <p class="djr-eyebrow">DJR Photography</p>
+      <h1>Stories, portraits, and community moments through David's lens.</h1>
+      <p>Loading DJR Photography content...</p>
+    </div>
+  </section>
+  <div data-djr-sections></div>
+</main>
+
+<footer class="djr-footer">
+  <span>&copy; <span id="year"></span> Who's to Say Foundation</span>
+  <a href="/contact.html">Contact</a>
+</footer>
+
+<script>
+  (function () {
+    var el = document.getElementById('year');
+    if (el) el.textContent = new Date().getFullYear();
+  })();
+</script>
+<script src="/js/djr-gallery.js" defer></script>
+</body>
+</html>
