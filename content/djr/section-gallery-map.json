@@ -1,0 +1,54 @@
+{
+  "_comment": "DJR section gallery mapping. Edit in Decap CMS -> DJR Photography -> Section Gallery Mapper. Map a webpage section to either a Photo Gallery App album ID or a Google Photos shared album URL. For Google Photos, use a public/shared album URL and set a cover image because the site cannot reliably read private Google Photos album contents without Google auth.",
+  "sections": [
+    {
+      "sectionId": "story",
+      "label": "David's Story",
+      "enabled": true,
+      "sourceType": "cmsAlbum",
+      "album_id": "david-behind-the-lens",
+      "photoGalleryAlbumId": "",
+      "googlePhotosAlbumUrl": "",
+      "title": "David Behind the Lens",
+      "description": "A curated album for the personal story section.",
+      "coverImage": "/assets/images/djr/david-camera-close.png",
+      "buttonLabel": "CMS Gallery"
+    },
+    {
+      "sectionId": "featured",
+      "label": "Featured Story",
+      "enabled": true,
+      "sourceType": "photoGallery",
+      "photoGalleryAlbumId": "",
+      "googlePhotosAlbumUrl": "",
+      "title": "Sideline Work",
+      "description": "Map this to a sports or sideline Photo Gallery App album.",
+      "coverImage": "/assets/images/djr/david-sideline.png",
+      "buttonLabel": "Open Featured Album"
+    },
+    {
+      "sectionId": "creative",
+      "label": "Eye to Eye / Creative Feature",
+      "enabled": true,
+      "sourceType": "googlePhotos",
+      "photoGalleryAlbumId": "",
+      "googlePhotosAlbumUrl": "",
+      "title": "Eye to Eye Concepts",
+      "description": "Paste a shared Google Photos album URL here when there is a public concept-art album.",
+      "coverImage": "/assets/images/djr/eye-to-eye-poster.png",
+      "buttonLabel": "Open Google Photos Album"
+    },
+    {
+      "sectionId": "about",
+      "label": "About David",
+      "enabled": true,
+      "sourceType": "photoGallery",
+      "photoGalleryAlbumId": "",
+      "googlePhotosAlbumUrl": "",
+      "title": "About David",
+      "description": "Map this to a profile or behind-the-scenes album.",
+      "coverImage": "/assets/images/djr/david-selfie-track.png",
+      "buttonLabel": "Open About Album"
+    }
+  ]
+}

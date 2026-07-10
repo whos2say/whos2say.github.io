@@ -558,6 +558,40 @@ collections:
               { label: Body, name: body, widget: text }
             ]}
 
+  - name: djr-gallery-albums
+    label: DJR Gallery Albums
+    folder: content/djr-albums
+    extension: json
+    format: json
+    create: true
+    slug: "{{album_id}}"
+    identifier_field: title
+    summary: "{{title}} · {{album_id}}"
+    fields:
+      - { label: Album ID, name: album_id, widget: string, hint: "Stable ID used by DJR page mappings. Use lowercase letters, numbers, and hyphens, e.g. david-behind-the-lens." }
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text, required: false }
+      - { label: Cover Image, name: cover_image, widget: image, required: false, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr, hint: "Optional. If omitted, the first album image is used." }
+      - label: Images
+        name: images
+        widget: list
+        summary: "{{fields.caption}}"
+        fields:
+          - { label: Image, name: image, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr }
+          - { label: Alt Text, name: alt, widget: string, hint: "Describe the image for accessibility." }
+          - { label: Caption, name: caption, widget: string, required: false }
+          - { label: Credit, name: credit, widget: string, required: false }
+          - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string } }
+          - label: Orientation
+            name: orientation
+            widget: select
+            required: false
+            options:
+              - landscape
+              - portrait
+              - square
+              - panorama
+
   - name: stories
     label: Stories
     folder: content/stories

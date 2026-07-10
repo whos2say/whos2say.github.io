@@ -1,0 +1,142 @@
+{
+  "_comment": "DJR Photography homepage content. Edit via Decap CMS -> DJR Photography -> Homepage.",
+  "meta": {
+    "title": "DJR Photography | David J. Richards - Eye to Eye With the Moment",
+    "description": "DJR Photography tells the story of David J. Richards behind the lens: sports, family, creative studio work, and the moments that reveal a person."
+  },
+  "creativeFeature": {
+    "enabled": true,
+    "eyebrow": "Eye to Eye",
+    "title": "Based on a true story of perseverance and a camera.",
+    "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
+    "images": [
+      {
+        "src": "/assets/images/djr/eye-to-eye-poster.png",
+        "alt": "Eye to Eye movie poster concept"
+      },
+      {
+        "src": "/assets/images/djr/david-pixar-press.png",
+        "alt": "Stylized David with camera and press pass"
+      }
+    ]
+  },
+  "about": {
+    "enabled": true,
+    "eyebrow": "About David",
+    "title": "Not just a gallery. A point of view.",
+    "photo": "/assets/images/djr/david-selfie-track.png",
+    "body": "David J. Richards is building his voice as a photographer one frame at a time. His work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss."
+  },
+  "cta": {
+    "title": "Help David keep building the story.",
+    "sub": "Book a session, invite him to cover a game or event, or follow along as DJR Photography grows from a dream into a body of work.",
+    "button": {
+      "label": "Contact DJR",
+      "href": "/djr/contact.html"
+    }
+  },
+  "pictureOfTheWeek": {
+    "enabled": true,
+    "eyebrow": "Featured Story",
+    "title": "The Sideline Becomes the Studio",
+    "body": "David does not just take pictures from the edge of the action. He studies the field, waits for the face, the posture, the light, and the split second where a person becomes the story.",
+    "image": "/assets/images/djr/david-sideline.png",
+    "imageAlt": "David J. Richards holding a camera on the football sideline",
+    "button": {
+      "label": "See the Work",
+      "href": "https://www.whostosay.org/album.html?album=fe027096-7084-4f96-974a-315b98b484b2"
+    }
+  },
+  "story": {
+    "enabled": true,
+    "eyebrow": "The Photographer",
+    "title": "A camera became David's way of stepping into the world.",
+    "lead": "DJR Photography is not a polished brand invented in a boardroom. It is a real person learning to look closely, move with purpose, and tell people, places, games, and family stories through the lens.",
+    "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
+    "quote": "The dream. The hard work. The moment. The capture.",
+    "images": [
+      {
+        "src": "/assets/images/djr/david-camera-close.png",
+        "alt": "David composing a photo with a Nikon camera",
+        "caption": "Learning the frame"
+      },
+      {
+        "src": "/assets/images/djr/field-photographers.png",
+        "alt": "David and another photographer working on a sports field",
+        "caption": "On the field"
+      },
+      {
+        "src": "/assets/images/djr/camera-mirror.png",
+        "alt": "David photographing himself in a mirror",
+        "caption": "Finding the angle"
+      },
+      {
+        "src": "/assets/images/djr/sunglasses-reflection.png",
+        "alt": "Camera reflected in blue sunglasses",
+        "caption": "Seeing differently"
+      }
+    ]
+  },
+  "hero": {
+    "backgroundImage": "/assets/images/djr/DJR-Studio.png",
+    "logoImage": "/assets/images/djr/djr-logo.png",
+    "logoAlt": "DJR David J. Richards Photography logo",
+    "tagline": "Eye to eye with the moment.",
+    "primaryButton": {
+      "label": "View Galleries",
+      "href": "/djr/galleries.html"
+    },
+    "secondaryButton": {
+      "label": "Meet David",
+      "href": "/djr/#story"
+    }
+  },
+  "services": {
+    "eyebrow": "What David Sees",
+    "title": "Photography With a Point of View",
+    "items": [
+      {
+        "icon": "Camera",
+        "title": "Behind the Lens",
+        "text": "Portraits of the process: practice, focus, and the confidence that grows with every shot.",
+        "image": "/assets/images/djr/david-camera-close.png",
+        "href": "/djr/galleries.html?cat=story"
+      },
+      {
+        "icon": "People",
+        "title": "Human Moments",
+        "text": "Warm, honest images where connection matters more than posing.",
+        "image": "/assets/images/djr/family-moment.png",
+        "href": "https://www.whostosay.org/album.html?album=0bb2946f-dcbc-483a-84d1-00a65783ed4c"
+      },
+      {
+        "icon": "Art",
+        "title": "Creative Details",
+        "text": "Color, texture, reflection, and small visual surprises that make a scene feel personal.",
+        "image": "/assets/images/djr/rainbow-detail.png",
+        "href": "/djr/galleries.html?cat=creative"
+      },
+      {
+        "icon": "Sports",
+        "title": "Sports Energy",
+        "text": "Sideline focus, game-day atmosphere, and the emotion around the play.",
+        "image": "/assets/images/djr/telephoto-action.png",
+        "href": "/djr/galleries.html?cat=sports"
+      },
+      {
+        "icon": "Film",
+        "title": "The Bigger Dream",
+        "text": "Poster-style storytelling and imagined scenes that turn a personal journey into cinema.",
+        "image": "/assets/images/djr/eye-to-eye-poster.png",
+        "href": "/djr/galleries.html?cat=creative"
+      },
+      {
+        "icon": "View",
+        "title": "Point of View",
+        "text": "Self-portraits, reflections, and experiments with how a photographer sees himself.",
+        "image": "/assets/images/djr/sunglasses-reflection.png",
+        "href": "/djr/galleries.html?cat=story"
+      }
+    ]
+  }
+}

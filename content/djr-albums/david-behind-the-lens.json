@@ -1,0 +1,44 @@
+{
+  "album_id": "david-behind-the-lens",
+  "title": "David Behind the Lens",
+  "description": "A starter CMS album for the existing David Behind the Lens card on the DJR Photography page.",
+  "cover_image": "/assets/images/djr/david-camera-close.png",
+  "images": [
+    {
+      "image": "/assets/images/djr/david-camera-close.png",
+      "alt": "David composing a photo with a Nikon camera.",
+      "caption": "Learning the frame.",
+      "credit": "Who's to Say Foundation",
+      "tags": [
+        "behind-the-lens",
+        "camera",
+        "story"
+      ],
+      "orientation": "landscape"
+    },
+    {
+      "image": "/assets/images/djr/field-photographers.png",
+      "alt": "David and another photographer working on a sports field.",
+      "caption": "On the field.",
+      "credit": "Who's to Say Foundation",
+      "tags": [
+        "behind-the-lens",
+        "sports",
+        "field"
+      ],
+      "orientation": "landscape"
+    },
+    {
+      "image": "/assets/images/djr/camera-mirror.png",
+      "alt": "David photographing himself in a mirror.",
+      "caption": "Finding the angle.",
+      "credit": "Who's to Say Foundation",
+      "tags": [
+        "behind-the-lens",
+        "reflection",
+        "story"
+      ],
+      "orientation": "portrait"
+    }
+  ]
+}
