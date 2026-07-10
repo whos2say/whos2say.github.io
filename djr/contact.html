@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Contact | DJR Photography</title>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Book a session with DJR Photography." name="description"/>
+<meta content="index,follow" name="robots"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Archivo+Black&amp;display=swap" rel="stylesheet"/>
+<link href="/djr/assets/djr.css" rel="stylesheet"/>
+</head>
+<body class="djr" data-djr-page="contact">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="djr-header">
+  <div class="djr-header-inner">
+    <a aria-label="DJR Photography Home" class="djr-brand" href="/djr/">
+      <span class="djr-wordmark">DJR</span>
+      <span class="djr-brand-sub">David J. Richards Photography</span>
+    </a>
+    <button aria-controls="djr-nav" aria-expanded="false" aria-label="Toggle navigation" class="djr-nav-toggle" type="button">Menu</button>
+    <nav aria-label="Primary navigation" class="djr-nav" id="djr-nav"></nav>
+    <a class="djr-btn djr-header-cta" href="/djr/contact.html">Book a Session</a>
+  </div>
+</header>
+<main id="main">
+  <section class="djr-page-hero">
+    <div class="djr-container">
+      <p class="djr-eyebrow">Get in Touch</p>
+      <h1 class="djr-h2">Book a Session</h1>
+      <p>Tell me a little about what you have in mind and I'll get back to you within 1-2 business days.</p>
+    </div>
+  </section>
+  <section class="djr-section" style="padding-top:1rem">
+    <div class="djr-container">
+      <div class="djr-contact-grid">
+        <form action="https://formspree.io/f/xlggrjqy" class="djr-form" method="POST">
+          <input name="_subject" type="hidden" value="DJR Photography - booking inquiry"/>
+          <div class="djr-form-row">
+            <div class="djr-field">
+              <label for="djr-name">Name</label>
+              <input autocomplete="name" id="djr-name" name="name" required type="text"/>
+            </div>
+            <div class="djr-field">
+              <label for="djr-email">Email</label>
+              <input autocomplete="email" id="djr-email" name="email" required type="email"/>
+            </div>
+          </div>
+          <div class="djr-form-row">
+            <div class="djr-field">
+              <label for="djr-phone">Phone (optional)</label>
+              <input autocomplete="tel" id="djr-phone" name="phone" type="tel"/>
+            </div>
+            <div class="djr-field">
+              <label for="djr-session-type">Session Type</label>
+              <select id="djr-session-type" name="session_type">
+                <option value="Story / behind-the-scenes">Story / behind-the-scenes</option>
+                <option value="Sports coverage">Sports coverage</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="djr-field">
+            <label for="djr-date">Preferred Date (optional)</label>
+            <input id="djr-date" name="preferred_date" type="date"/>
+          </div>
+          <div class="djr-field">
+            <label for="djr-message">Tell me about your shoot</label>
+            <textarea id="djr-message" name="message" required></textarea>
+          </div>
+          <button class="djr-btn djr-btn--solid" type="submit">Send Inquiry</button>
+        </form>
+        <aside class="djr-contact-aside">
+          <div class="djr-info-card">
+            <h3>Contact</h3>
+            <p><a href="tel:+12071234567">(207) 123-4567</a></p>
+            <p><a href="mailto:djrphotography@outlook.com">djrphotography@outlook.com</a></p>
+            <p>Maine, USA</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="djr-footer"></footer>
+<script defer src="/djr/js/djr-content.js"></script>
+</body>
+</html>
