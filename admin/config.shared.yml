@@ -533,6 +533,52 @@
               { label: Body, name: body, widget: text }
             ]}
 
+  - name: djr-participant-copy
+    label: DJR Participant Copy
+    files:
+      - label: DJR Homepage Copy
+        name: djr-participant-copy
+        file: content/djr/participant-copy.json
+        fields:
+          - label: Editor guidance
+            name: _comment
+            widget: text
+            required: false
+            hint: "Participant-editable copy only. Links, routing, form actions, album IDs, navigation, footer, and layout structure stay admin-only."
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Tagline, name: tagline, widget: string }
+            ]}
+          - { label: Story, name: story, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Lead, name: lead, widget: text },
+              { label: Body, name: body, widget: text },
+              { label: Quote, name: quote, widget: string }
+            ]}
+          - { label: About, name: about, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Portrait, name: photo, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr },
+              { label: Body, name: body, widget: text }
+            ]}
+          - label: Creative Feature
+            name: creativeFeature
+            widget: object
+            fields:
+              - { label: Show section, name: enabled, widget: boolean, required: false, default: true }
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: text }
+              - label: Images
+                name: images
+                widget: list
+                required: false
+                fields:
+                  - { label: Image, name: src, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr }
+                  - { label: Alt Text, name: alt, widget: string }
+
   - name: djr-gallery-albums
     label: DJR Gallery Albums
     folder: content/djr-albums

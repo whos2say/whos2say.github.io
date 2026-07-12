@@ -16,12 +16,77 @@
       });
   }
 
+  function fetchOptionalJson(url) {
+    if (CACHE[url]) return Promise.resolve(CACHE[url]);
+    return fetch(url, { cache: 'no-cache' })
+      .then(function (res) {
+        if (res.status === 404) return {};
+        if (!res.ok) throw new Error('Failed to load ' + url + ' (' + res.status + ')');
+        return res.json();
+      })
+      .then(function (data) {
+        CACHE[url] = data || {};
+        return CACHE[url];
+      });
+  }
+
   function esc(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function applyString(target, source, key) {
+    if (typeof source[key] === 'string') target[key] = source[key];
+  }
+
+  function applyBoolean(target, source, key) {
+    if (typeof source[key] === 'boolean') target[key] = source[key];
+  }
+
+  function overlayTextSection(target, source, fields) {
+    if (!source || typeof source !== 'object') return;
+    fields.forEach(function (field) {
+      if (field === 'enabled') applyBoolean(target, source, field);
+      else applyString(target, source, field);
+    });
+  }
+
+  function overlayParticipantCopy(base, copy) {
+    var data = clone(base);
+    copy = copy || {};
+
+    data.hero = data.hero || {};
+    if (copy.hero && typeof copy.hero === 'object') {
+      applyString(data.hero, copy.hero, 'tagline');
+    }
+
+    data.story = data.story || {};
+    overlayTextSection(data.story, copy.story, ['enabled', 'eyebrow', 'title', 'lead', 'body', 'quote']);
+
+    data.about = data.about || {};
+    overlayTextSection(data.about, copy.about, ['enabled', 'eyebrow', 'title', 'photo', 'body']);
+
+    data.creativeFeature = data.creativeFeature || {};
+    overlayTextSection(data.creativeFeature, copy.creativeFeature, ['enabled', 'eyebrow', 'title', 'body']);
+    if (copy.creativeFeature && Array.isArray(copy.creativeFeature.images)) {
+      data.creativeFeature.images = copy.creativeFeature.images
+        .filter(function (image) { return image && typeof image.src === 'string'; })
+        .map(function (image) {
+          return {
+            src: image.src,
+            alt: typeof image.alt === 'string' ? image.alt : ''
+          };
+        });
+    }
+
+    return data;
   }
 
   function setMeta(meta) {
@@ -251,7 +316,12 @@
     if (!page) return Promise.resolve();
     return fetchJson('/content/djr/site.json').then(function (site) {
       renderChrome(site);
-      if (page === 'home') return fetchJson('/content/djr/home.json').then(renderHome);
+      if (page === 'home') {
+        return fetchJson('/content/djr/home.json').then(function (home) {
+          return fetchOptionalJson('/content/djr/participant-copy.json')
+            .then(function (copy) { renderHome(overlayParticipantCopy(home, copy)); });
+        });
+      }
       if (page === 'galleries') return fetchJson('/content/djr/galleries.json').then(renderGalleriesPage);
       if (page === 'contact') return fetchJson('/content/djr/contact.json').then(function (data) { renderContact(data, site); });
     });
