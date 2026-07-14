@@ -1,0 +1,37 @@
+{
+  "_comment": "Participant-editable DJR homepage copy. This file overlays allowlisted fields from content/djr/home.json only; links, routing, form actions, album IDs, navigation, and layout structure stay admin-only.",
+  "hero": {
+    "tagline": "Eye to eye with the moment."
+  },
+  "story": {
+    "enabled": true,
+    "eyebrow": "The Photographer",
+    "title": "A camera became David's way of stepping into the world.",
+    "lead": "DJR Photography is not a polished brand invented in a boardroom. It is a real person learning to look closely, move with purpose, and tell people, places, games, and family stories through the lens.",
+    "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
+    "quote": "The dream. The hard work. The moment. The capture."
+  },
+  "about": {
+    "enabled": true,
+    "eyebrow": "About David",
+    "title": "Not just a gallery. A point of view.",
+    "photo": "/assets/images/djr/david-selfie-track.png",
+    "body": "David J. Richards is building his voice as a photographer one frame at a time. His work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss."
+  },
+  "creativeFeature": {
+    "enabled": true,
+    "eyebrow": "Eye to Eye",
+    "title": "Based on a true story of perseverance and a camera.",
+    "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
+    "images": [
+      {
+        "src": "/assets/images/djr/eye-to-eye-poster.png",
+        "alt": "Eye to Eye movie poster concept"
+      },
+      {
+        "src": "/assets/images/djr/david-pixar-press.png",
+        "alt": "Stylized David with camera and press pass"
+      }
+    ]
+  }
+}

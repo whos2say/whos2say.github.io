@@ -558,39 +558,92 @@ collections:
               { label: Body, name: body, widget: text }
             ]}
 
-  - name: djr-gallery-albums
-    label: DJR Gallery Albums
-    folder: content/djr-albums
-    extension: json
-    format: json
-    create: true
-    slug: "{{album_id}}"
-    identifier_field: title
-    summary: "{{title}} · {{album_id}}"
-    fields:
-      - { label: Album ID, name: album_id, widget: string, hint: "Stable ID used by DJR page mappings. Use lowercase letters, numbers, and hyphens, e.g. david-behind-the-lens." }
-      - { label: Title, name: title, widget: string }
-      - { label: Description, name: description, widget: text, required: false }
-      - { label: Cover Image, name: cover_image, widget: image, required: false, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr, hint: "Optional. If omitted, the first album image is used." }
-      - label: Images
-        name: images
-        widget: list
-        summary: "{{fields.caption}}"
+  - name: participant-pages
+    label: Participant Pages
+    files:
+      - label: DJR Participant Page
+        name: djr
+        file: content/participant-pages/djr.json
         fields:
-          - { label: Image, name: image, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr }
-          - { label: Alt Text, name: alt, widget: string, hint: "Describe the image for accessibility." }
-          - { label: Caption, name: caption, widget: string, required: false }
-          - { label: Credit, name: credit, widget: string, required: false }
-          - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string } }
-          - label: Orientation
-            name: orientation
-            widget: select
+          - label: Editor guidance
+            name: _comment
+            widget: text
             required: false
+            hint: "Create/manage albums in /albums.html, then paste Supabase album UUIDs here. This does not upload media or change page layout."
+          - { label: Participant Name, name: name, widget: string }
+          - { label: Slug, name: slug, widget: string, hint: "Use djr for the current DJR page." }
+          - label: Template
+            name: template
+            widget: select
             options:
-              - landscape
-              - portrait
-              - square
-              - panorama
+              - djr-photography
+          - { label: Default Album ID, name: defaultAlbumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps existing page images." }
+          - label: Section Album Overrides
+            name: sections
+            widget: object
+            fields:
+              - { label: Story, name: story, widget: object, fields: [
+                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                ]}
+              - { label: Featured, name: featured, widget: object, fields: [
+                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                ]}
+              - { label: About, name: about, widget: object, fields: [
+                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                ]}
+              - { label: Creative, name: creative, widget: object, fields: [
+                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                ]}
+
+  - name: djr-participant-copy
+    label: DJR Participant Copy
+    files:
+      - label: DJR Homepage Copy
+        name: djr-participant-copy
+        file: content/djr/participant-copy.json
+        fields:
+          - label: Editor guidance
+            name: _comment
+            widget: text
+            required: false
+            hint: "Participant-editable copy only. Links, routing, form actions, album IDs, navigation, footer, and layout structure stay admin-only."
+          - { label: Hero, name: hero, widget: object, fields: [
+              { label: Tagline, name: tagline, widget: string }
+            ]}
+          - { label: Story, name: story, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Lead, name: lead, widget: text },
+              { label: Body, name: body, widget: text },
+              { label: Quote, name: quote, widget: string }
+            ]}
+          - { label: About, name: about, widget: object, fields: [
+              { label: Show section, name: enabled, widget: boolean, required: false, default: true },
+              { label: Eyebrow, name: eyebrow, widget: string },
+              { label: Title, name: title, widget: string },
+              { label: Portrait, name: photo, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr },
+              { label: Body, name: body, widget: text }
+            ]}
+          - label: Creative Feature
+            name: creativeFeature
+            widget: object
+            fields:
+              - { label: Show section, name: enabled, widget: boolean, required: false, default: true }
+              - { label: Eyebrow, name: eyebrow, widget: string }
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: text }
+              - label: Images
+                name: images
+                widget: list
+                required: false
+                fields:
+                  - { label: Image, name: src, widget: image, media_folder: assets/images/uploads/djr, public_folder: /assets/images/uploads/djr }
+                  - { label: Alt Text, name: alt, widget: string }
 
   - name: stories
     label: Stories
