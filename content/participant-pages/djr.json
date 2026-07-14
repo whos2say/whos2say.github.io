@@ -1,0 +1,25 @@
+{
+  "_comment": "DJR participant page settings. Create/manage albums in /albums.html, then paste Supabase album UUIDs here. Blank section album IDs fall back to defaultAlbumId; blank/default failures preserve existing DJR content.",
+  "name": "David J. Richards",
+  "slug": "djr",
+  "template": "djr-photography",
+  "defaultAlbumId": "fe027096-7084-4f96-974a-315b98b484b2",
+  "sections": {
+    "story": {
+      "enabled": true,
+      "albumId": ""
+    },
+    "featured": {
+      "enabled": true,
+      "albumId": ""
+    },
+    "about": {
+      "enabled": true,
+      "albumId": ""
+    },
+    "creative": {
+      "enabled": true,
+      "albumId": ""
+    }
+  }
+}

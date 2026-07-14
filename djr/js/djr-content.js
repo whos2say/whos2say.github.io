@@ -16,12 +16,164 @@
       });
   }
 
+  function fetchOptionalJson(url) {
+    if (CACHE[url]) return Promise.resolve(CACHE[url]);
+    return fetch(url, { cache: 'no-cache' })
+      .then(function (res) {
+        if (res.status === 404) return {};
+        if (!res.ok) throw new Error('Failed to load ' + url + ' (' + res.status + ')');
+        return res.json();
+      })
+      .then(function (data) {
+        CACHE[url] = data || {};
+        return CACHE[url];
+      });
+  }
+
   function esc(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function applyString(target, source, key) {
+    if (typeof source[key] === 'string') target[key] = source[key];
+  }
+
+  function applyBoolean(target, source, key) {
+    if (typeof source[key] === 'boolean') target[key] = source[key];
+  }
+
+  function overlayTextSection(target, source, fields) {
+    if (!source || typeof source !== 'object') return;
+    fields.forEach(function (field) {
+      if (field === 'enabled') applyBoolean(target, source, field);
+      else applyString(target, source, field);
+    });
+  }
+
+  function overlayParticipantCopy(base, copy) {
+    var data = clone(base);
+    copy = copy || {};
+
+    data.hero = data.hero || {};
+    if (copy.hero && typeof copy.hero === 'object') {
+      applyString(data.hero, copy.hero, 'tagline');
+    }
+
+    data.story = data.story || {};
+    overlayTextSection(data.story, copy.story, ['enabled', 'eyebrow', 'title', 'lead', 'body', 'quote']);
+
+    data.about = data.about || {};
+    overlayTextSection(data.about, copy.about, ['enabled', 'eyebrow', 'title', 'photo', 'body']);
+
+    data.creativeFeature = data.creativeFeature || {};
+    overlayTextSection(data.creativeFeature, copy.creativeFeature, ['enabled', 'eyebrow', 'title', 'body']);
+    if (copy.creativeFeature && Array.isArray(copy.creativeFeature.images)) {
+      data.creativeFeature.images = copy.creativeFeature.images
+        .filter(function (image) { return image && typeof image.src === 'string'; })
+        .map(function (image) {
+          return {
+            src: image.src,
+            alt: typeof image.alt === 'string' ? image.alt : ''
+          };
+        });
+    }
+
+    return data;
+  }
+
+  function getSectionAlbumId(config, sectionKey) {
+    if (!config || typeof config !== 'object') return '';
+    var section = config.sections && config.sections[sectionKey];
+    if (section && section.enabled === false) return '';
+    return (section && section.albumId) || config.defaultAlbumId || '';
+  }
+
+  function applyParticipantSectionToggles(data, config) {
+    var sections = (config && config.sections) || {};
+    if (sections.story && typeof sections.story.enabled === 'boolean') {
+      data.story = data.story || {};
+      data.story.enabled = sections.story.enabled;
+    }
+    if (sections.featured && typeof sections.featured.enabled === 'boolean') {
+      data.pictureOfTheWeek = data.pictureOfTheWeek || {};
+      data.pictureOfTheWeek.enabled = sections.featured.enabled;
+    }
+    if (sections.about && typeof sections.about.enabled === 'boolean') {
+      data.about = data.about || {};
+      data.about.enabled = sections.about.enabled;
+    }
+    if (sections.creative && typeof sections.creative.enabled === 'boolean') {
+      data.creativeFeature = data.creativeFeature || {};
+      data.creativeFeature.enabled = sections.creative.enabled;
+    }
+  }
+
+  function mergeImages(albumImages, fallbackImages, count) {
+    var fallback = Array.isArray(fallbackImages) ? fallbackImages : [];
+    if (!Array.isArray(albumImages) || !albumImages.length) return fallback;
+    return albumImages.slice(0, count).concat(fallback.slice(albumImages.length, count));
+  }
+
+  function firstImage(albumImages) {
+    return Array.isArray(albumImages) && albumImages.length ? albumImages[0] : null;
+  }
+
+  async function overlayParticipantAlbums(base, config) {
+    if (!config || typeof config !== 'object') return base;
+    try {
+      var helper = await import('/js/participant-pages/albumImages.js');
+      var data = clone(base);
+      applyParticipantSectionToggles(data, config);
+      var sectionIds = {
+        story: getSectionAlbumId(config, 'story'),
+        featured: getSectionAlbumId(config, 'featured'),
+        about: getSectionAlbumId(config, 'about'),
+        creative: getSectionAlbumId(config, 'creative')
+      };
+      var results = await Promise.all([
+        helper.loadPublicAlbumImages(sectionIds.story, { fallbackAlt: 'David story photo' }),
+        helper.loadPublicAlbumImages(sectionIds.featured, { fallbackAlt: 'David featured photo' }),
+        helper.loadPublicAlbumImages(sectionIds.about, { fallbackAlt: 'David portrait photo' }),
+        helper.loadPublicAlbumImages(sectionIds.creative, { fallbackAlt: 'David creative photo' })
+      ]);
+      var storyImages = results[0];
+      var featuredImages = results[1];
+      var aboutImages = results[2];
+      var creativeImages = results[3];
+      var image;
+
+      data.story = data.story || {};
+      data.story.images = mergeImages(storyImages, data.story.images, 4);
+
+      image = firstImage(featuredImages);
+      if (image) {
+        data.pictureOfTheWeek = data.pictureOfTheWeek || {};
+        data.pictureOfTheWeek.image = image.src;
+        data.pictureOfTheWeek.imageAlt = image.alt;
+      }
+
+      image = firstImage(aboutImages);
+      if (image) {
+        data.about = data.about || {};
+        data.about.photo = image.src;
+      }
+
+      data.creativeFeature = data.creativeFeature || {};
+      data.creativeFeature.images = mergeImages(creativeImages, data.creativeFeature.images, 2);
+
+      return data;
+    } catch (err) {
+      console.warn('[DJRContent] Participant album overlay skipped:', err.message);
+      return base;
+    }
   }
 
   function setMeta(meta) {
@@ -251,7 +403,18 @@
     if (!page) return Promise.resolve();
     return fetchJson('/content/djr/site.json').then(function (site) {
       renderChrome(site);
-      if (page === 'home') return fetchJson('/content/djr/home.json').then(renderHome);
+      if (page === 'home') {
+        return fetchJson('/content/djr/home.json').then(function (home) {
+          return fetchOptionalJson('/content/djr/participant-copy.json')
+            .then(function (copy) {
+              return fetchOptionalJson('/content/participant-pages/djr.json')
+                .then(function (config) {
+                  return overlayParticipantAlbums(overlayParticipantCopy(home, copy), config);
+                })
+                .then(renderHome);
+            });
+        });
+      }
       if (page === 'galleries') return fetchJson('/content/djr/galleries.json').then(renderGalleriesPage);
       if (page === 'contact') return fetchJson('/content/djr/contact.json').then(function (data) { renderContact(data, site); });
     });
