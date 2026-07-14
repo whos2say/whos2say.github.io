@@ -1,14 +1,15 @@
 (function () {
   'use strict';
 
-  var CMS = window.CMS;
-  var React = window.React;
-  var h = (React && React.createElement) || window.h;
-  var createClass = window.createClass;
+  var h = null;
+  var createClass = null;
+  var registered = false;
+  var attempts = 0;
+  var maxAttempts = 60;
+  var retryDelay = 100;
+  var stylePath = '/admin/preview-templates/participant-page-preview.css?v=participant-preview-2';
 
-  if (!CMS || !h) return;
-
-  CMS.registerPreviewStyle('/admin/preview-templates/participant-page-preview.css');
+  console.info('[Participant Pages Preview] script loaded');
 
   var SECTION_ORDER = [
     {
@@ -194,8 +195,9 @@
     );
   }
 
-  var ParticipantPagePreview = createClass
-    ? createClass({
+  function buildPreviewComponent() {
+    return createClass
+      ? createClass({
         getInitialState: function () {
           return { fallbackHome: {}, fallbackLoaded: false };
         },
@@ -210,9 +212,46 @@
           return renderPreview(this.props, this.state);
         }
       })
-    : function ParticipantPagePreviewFunction(props) {
+      : function ParticipantPagePreviewFunction(props) {
         return renderPreview(props, { fallbackHome: {}, fallbackLoaded: false });
       };
+  }
 
-  CMS.registerPreviewTemplate('participant-pages', ParticipantPagePreview);
+  function findCreateElement() {
+    return window.h || (window.React && window.React.createElement);
+  }
+
+  function findCreateClass() {
+    return window.createClass || (window.React && window.React.createClass) || null;
+  }
+
+  function registerParticipantPagePreview() {
+    var CMS = window.CMS;
+    h = findCreateElement();
+    createClass = findCreateClass();
+
+    if (registered) return;
+
+    if (!CMS || !h) {
+      attempts += 1;
+      if (attempts >= maxAttempts) {
+        console.warn('[Participant Pages Preview] registration failed after retries; CMS or preview render helper unavailable');
+        return;
+      }
+      window.setTimeout(registerParticipantPagePreview, retryDelay);
+      return;
+    }
+
+    try {
+      CMS.registerPreviewStyle(stylePath);
+      var ParticipantPagePreview = buildPreviewComponent();
+      CMS.registerPreviewTemplate('participant-pages', ParticipantPagePreview);
+      registered = true;
+      console.info('[Participant Pages Preview] registered for participant-pages');
+    } catch (err) {
+      console.warn('[Participant Pages Preview] registration failed:', err);
+    }
+  }
+
+  registerParticipantPagePreview();
 })();

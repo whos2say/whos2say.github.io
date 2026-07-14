@@ -121,7 +121,7 @@ assert(indexHtml.includes('/djr/js/djr-content.js'), '/djr/ does not load DJR co
 assert(!indexHtml.includes('/djr/js/djr-section-galleries.js'), '/djr/ must not load the old JSON CMS album card renderer')
 assert(indexHtml.includes('David J. Richards') || indexHtml.includes('DJR Photography'), '/djr/ lacks DJR identity in baseline HTML')
 assert(cmsIndexHtml.includes('/admin/config.yml'), '/admin/cms/ must load the generated Decap config')
-assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js'), '/admin/cms/ must load the Participant Pages preview template')
+assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js?v=participant-preview-2'), '/admin/cms/ must load the cache-busted Participant Pages preview template')
 
 const site = readJson('content/djr/site.json')
 const home = readJson('content/djr/home.json')
@@ -245,6 +245,12 @@ assert(albumImageHelper.includes('is_private'), 'Participant album helper should
 
 const participantPreview = readText('admin/preview-templates/participant-page-preview.js')
 assert(participantPreview.includes('registerPreviewTemplate') && participantPreview.includes('participant-pages'), 'Participant Pages preview template must register with Decap')
+assert(participantPreview.includes("CMS.registerPreviewTemplate('participant-pages'"), 'Participant Pages preview template should register exactly for the participant-pages collection')
+assert(participantPreview.includes('registerParticipantPagePreview'), 'Participant Pages preview should retry registration when Decap globals load late')
+assert(participantPreview.includes('window.setTimeout(registerParticipantPagePreview'), 'Participant Pages preview should wait for Decap globals instead of exiting permanently')
+assert(!participantPreview.includes('if (!CMS || !h) return'), 'Participant Pages preview must not permanently return before registration retry')
+assert(participantPreview.includes('console.info') && participantPreview.includes('console.warn'), 'Participant Pages preview should include admin-only registration logging')
+assert(participantPreview.includes('participant-page-preview.css?v=participant-preview-2'), 'Participant Pages preview should cache-bust its preview CSS')
 assert(participantPreview.includes('/content/djr/home.json'), 'Participant Pages preview should load DJR fallback context when possible')
 assert(participantPreview.includes('Blank - live page keeps default DJR content.'), 'Participant Pages preview should show fallback notes for blank fields')
 assert(participantPreview.includes('Images come from /albums.html using this Supabase album UUID.'), 'Participant Pages preview should show album source helper text')
