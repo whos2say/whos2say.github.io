@@ -115,10 +115,13 @@ function validateImageLimit(value, label) {
 }
 
 const indexHtml = readText('djr/index.html')
+const cmsIndexHtml = readText('admin/cms/index.html')
 assert(indexHtml.includes('data-djr-page="home"'), '/djr/ entrypoint is not marked as the DJR home page')
 assert(indexHtml.includes('/djr/js/djr-content.js'), '/djr/ does not load DJR content renderer')
 assert(!indexHtml.includes('/djr/js/djr-section-galleries.js'), '/djr/ must not load the old JSON CMS album card renderer')
 assert(indexHtml.includes('David J. Richards') || indexHtml.includes('DJR Photography'), '/djr/ lacks DJR identity in baseline HTML')
+assert(cmsIndexHtml.includes('/admin/config.yml'), '/admin/cms/ must load the generated Decap config')
+assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js'), '/admin/cms/ must load the Participant Pages preview template')
 
 const site = readJson('content/djr/site.json')
 const home = readJson('content/djr/home.json')
@@ -239,6 +242,14 @@ assert(albumImageHelper.includes('getAlbumById'), 'Participant album helper shou
 assert(albumImageHelper.includes('getOrderedAlbumPhotos'), 'Participant album helper should fetch ordered Supabase photos')
 assert(albumImageHelper.includes('getPublicUrl'), 'Participant album helper should map storage paths to public URLs')
 assert(albumImageHelper.includes('is_private'), 'Participant album helper should reject private albums')
+
+const participantPreview = readText('admin/preview-templates/participant-page-preview.js')
+assert(participantPreview.includes('registerPreviewTemplate') && participantPreview.includes('participant-pages'), 'Participant Pages preview template must register with Decap')
+assert(participantPreview.includes('/content/djr/home.json'), 'Participant Pages preview should load DJR fallback context when possible')
+assert(participantPreview.includes('Blank - live page keeps default DJR content.'), 'Participant Pages preview should show fallback notes for blank fields')
+assert(participantPreview.includes('Images come from /albums.html using this Supabase album UUID.'), 'Participant Pages preview should show album source helper text')
+assert(!participantPreview.includes('getAlbumById'), 'Participant Pages preview must not fetch Supabase album metadata')
+assert(!participantPreview.includes('widget: image'), 'Participant Pages preview must not introduce upload widgets')
 
 const cmsConfig = readText('admin/config.shared.yml')
 const participantPagesCollection = extractCollection(cmsConfig, 'participant-pages')

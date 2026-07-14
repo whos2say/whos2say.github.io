@@ -33,6 +33,8 @@ That screen exposes grouped DJR page sections where a participant or support per
 - Allow or block participant album overrides per section.
 - Paste Supabase album UUIDs from `/albums.html`.
 
+The Decap preview pane for Participant Pages uses `admin/preview-templates/participant-page-preview.js` and scoped preview CSS. It renders the DJR participant page as section-by-section editing context, including status badges, safe text fields, album UUID references, image limits, and fallback notes for blank fields. The preview may load `/content/djr/home.json` for default copy context, but it does not fetch Supabase albums or render live thumbnails.
+
 The old `DJR Photography` collection is hidden and labeled as an advanced/admin legacy fallback. It is not the normal participant editing workflow.
 
 ## Media model
