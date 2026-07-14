@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
 
 const errors = []
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 function fail(message) {
   errors.push(message)
@@ -92,21 +93,34 @@ function extractCollection(config, collectionName) {
   return config.match(new RegExp(`- name: ${escaped}[\\s\\S]*?(?=\\n  - name: |\\n?$)`))?.[0] || ''
 }
 
+function isBlankOrUuid(value) {
+  return value === '' || (typeof value === 'string' && UUID_RE.test(value))
+}
+
+function validateAlbumIdField(value, label) {
+  assert(typeof value === 'string', `${label} must be a string`)
+  assert(isBlankOrUuid(value), `${label} must be blank or a Supabase album UUID`)
+  assert(!/^https?:\/\//i.test(value), `${label} must not be a URL`)
+  assert(!value.includes('/album.html'), `${label} must not be an album page URL`)
+  assert(!/photos\.app\.goo\.gl|photos\.google\.com/i.test(value), `${label} must not be a Google Photos URL`)
+}
+
 const indexHtml = readText('djr/index.html')
 assert(indexHtml.includes('data-djr-page="home"'), '/djr/ entrypoint is not marked as the DJR home page')
 assert(indexHtml.includes('/djr/js/djr-content.js'), '/djr/ does not load DJR content renderer')
-assert(indexHtml.includes('/djr/js/djr-section-galleries.js'), '/djr/ does not load section gallery renderer')
+assert(!indexHtml.includes('/djr/js/djr-section-galleries.js'), '/djr/ must not load the old JSON CMS album card renderer')
 assert(indexHtml.includes('David J. Richards') || indexHtml.includes('DJR Photography'), '/djr/ lacks DJR identity in baseline HTML')
 
 const site = readJson('content/djr/site.json')
 const home = readJson('content/djr/home.json')
 const participantCopy = readJson('content/djr/participant-copy.json')
-const sectionMap = readJson('content/djr/section-gallery-map.json')
+const participantPage = readJson('content/participant-pages/djr.json')
 assert(site?.brand?.wordmark === 'DJR', 'content/djr/site.json must identify the DJR brand')
 assert(site?.brand?.name === 'David J. Richards', 'content/djr/site.json must identify David J. Richards')
 assert(home?.hero?.tagline, 'content/djr/home.json must provide a hero tagline')
 assert(home?.story?.title && home?.about?.body, 'content/djr/home.json must provide participant story/about content')
 assert(participantCopy, 'content/djr/participant-copy.json must exist')
+assert(participantPage, 'content/participant-pages/djr.json must exist')
 
 const participantCopyAllowedPaths = new Set([
   '_comment',
@@ -145,46 +159,81 @@ for (const forbiddenKey of ['href', 'formAction', 'photoGalleryAlbumId', 'google
 }
 assert(!collectPaths(participantCopy).some((participantPath) => /html/i.test(participantPath)), 'participant-copy.json must not expose raw HTML fields')
 
+const participantPageAllowedPaths = new Set([
+  '_comment',
+  'name',
+  'slug',
+  'template',
+  'defaultAlbumId',
+  'sections',
+  'sections.story',
+  'sections.story.enabled',
+  'sections.story.albumId',
+  'sections.featured',
+  'sections.featured.enabled',
+  'sections.featured.albumId',
+  'sections.about',
+  'sections.about.enabled',
+  'sections.about.albumId',
+  'sections.creative',
+  'sections.creative.enabled',
+  'sections.creative.albumId',
+])
+
+for (const participantPath of collectPaths(participantPage)) {
+  assert(participantPageAllowedPaths.has(participantPath), `participant page config exposes non-allowlisted field: ${participantPath}`)
+}
+
+assert(participantPage?.name === 'David J. Richards', 'DJR participant page config must identify David J. Richards')
+assert(participantPage?.slug === 'djr', 'DJR participant page config slug must be djr')
+assert(participantPage?.template === 'djr-photography', 'DJR participant page config must use the djr-photography template')
+validateAlbumIdField(participantPage?.defaultAlbumId, 'defaultAlbumId')
+for (const sectionKey of ['story', 'featured', 'about', 'creative']) {
+  const section = participantPage?.sections?.[sectionKey]
+  assert(section && typeof section === 'object', `participant page section ${sectionKey} must exist`)
+  assert(typeof section.enabled === 'boolean', `participant page section ${sectionKey}.enabled must be boolean`)
+  validateAlbumIdField(section.albumId, `sections.${sectionKey}.albumId`)
+}
+
+for (const invalidId of ['david-behind-the-lens', '/album.html?album=fe027096-7084-4f96-974a-315b98b484b2', 'https://photos.google.com/share/example', 'https://www.whostosay.org/album.html?album=fe027096-7084-4f96-974a-315b98b484b2']) {
+  assert(!isBlankOrUuid(invalidId), `album ID validator must reject ${invalidId}`)
+}
+
 for (const relativePath of listJsonFiles('content/djr')) {
   const data = readJson(relativePath)
   collectImageRefs(data).forEach(({ url, key }) => localAssetExists(url, `${relativePath}.${key}`))
 }
 
-const albumFiles = listJsonFiles('content/djr-albums')
-assert(albumFiles.length > 0, 'Expected at least one DJR CMS album fixture in content/djr-albums')
+const djrContent = readText('djr/js/djr-content.js')
+assert(djrContent.includes('fetchOptionalJson'), 'DJR content renderer should preserve behavior when optional JSON files are missing')
+assert(djrContent.includes('overlayParticipantCopy'), 'DJR content renderer should overlay participant copy through an allowlisted helper')
+assert(djrContent.includes('/content/participant-pages/djr.json'), 'DJR content renderer should load the participant page config')
+assert(djrContent.includes('overlayParticipantAlbums'), 'DJR content renderer should overlay Supabase album images before rendering')
+assert(djrContent.includes('applyParticipantSectionToggles'), 'DJR content renderer should apply participant section toggles')
+assert(djrContent.includes('/js/participant-pages/albumImages.js'), 'DJR content renderer should use the participant album image helper')
+assert(!djrContent.includes('content/djr-albums'), 'DJR content renderer must not depend on JSON CMS albums')
 
-const albumsById = new Map()
-for (const relativePath of albumFiles) {
-  const album = readJson(relativePath)
-  if (!album) continue
-  assert(/^[a-z0-9-]+$/.test(album.album_id || ''), `${relativePath} has an invalid album_id`)
-  assert(album.title, `${relativePath} is missing title`)
-  assert(Array.isArray(album.images), `${relativePath} images must be a list, even when empty`)
-  albumsById.set(album.album_id, { album, relativePath })
-  collectImageRefs(album).forEach(({ url, key }) => localAssetExists(url, `${relativePath}.${key}`))
-  for (const [index, image] of (album.images || []).entries()) {
-    assert(image.image, `${relativePath} image ${index + 1} is missing image`)
-    assert(image.alt, `${relativePath} image ${index + 1} is missing alt text`)
-  }
-}
-
-const enabledCmsMappings = (sectionMap?.sections || []).filter((section) => section.enabled && (section.sourceType === 'cmsAlbum' || section.album_id))
-assert(enabledCmsMappings.length > 0, 'Expected at least one enabled CMS album mapping for the DJR page')
-for (const mapping of enabledCmsMappings) {
-  const match = albumsById.get(mapping.album_id)
-  assert(match, `Section mapping "${mapping.sectionId}" points to missing CMS album "${mapping.album_id}"`)
-  if (match) {
-    assert(match.album.images.length > 0, `Mapped CMS album "${mapping.album_id}" must contain at least one image for public rendering`)
-  }
-}
-
-const sectionRenderer = readText('djr/js/djr-section-galleries.js')
-assert(sectionRenderer.includes('Album has no images'), 'DJR section renderer should show a safe empty-album fallback')
-assert(sectionRenderer.includes('CMS album unavailable'), 'DJR section renderer should show a safe missing-album fallback')
-assert(readText('djr/js/djr-content.js').includes('fetchOptionalJson'), 'DJR content renderer should preserve behavior when participant-copy.json is missing')
-assert(readText('djr/js/djr-content.js').includes('overlayParticipantCopy'), 'DJR content renderer should overlay participant copy through an allowlisted helper')
+const albumImageHelper = readText('js/participant-pages/albumImages.js')
+assert(albumImageHelper.includes('UUID_RE'), 'Participant album helper should validate UUID album IDs')
+assert(albumImageHelper.includes('getAlbumById'), 'Participant album helper should fetch Supabase album metadata')
+assert(albumImageHelper.includes('getOrderedAlbumPhotos'), 'Participant album helper should fetch ordered Supabase photos')
+assert(albumImageHelper.includes('getPublicUrl'), 'Participant album helper should map storage paths to public URLs')
+assert(albumImageHelper.includes('is_private'), 'Participant album helper should reject private albums')
 
 const cmsConfig = readText('admin/config.shared.yml')
+const participantPagesCollection = extractCollection(cmsConfig, 'participant-pages')
+assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')
+if (participantPagesCollection) {
+  assert(participantPagesCollection.includes('file: content/participant-pages/djr.json'), 'Participant Pages collection must expose content/participant-pages/djr.json')
+  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'story', 'featured', 'about', 'creative', 'enabled', 'albumId']) {
+    assert(participantPagesCollection.includes(`name: ${expectedField}`), `Participant Pages collection is missing field: ${expectedField}`)
+  }
+  for (const forbiddenField of ['href', 'formAction', 'photoGalleryAlbumId', 'googlePhotosAlbumUrl', 'album_id', 'nav', 'partner', 'button', 'primaryButton', 'secondaryButton', 'sourceType', 'sectionId', 'html', 'image', 'src']) {
+    assert(!participantPagesCollection.includes(`name: ${forbiddenField}`), `Participant Pages collection must not expose field: ${forbiddenField}`)
+  }
+  assert(!participantPagesCollection.includes('widget: image'), 'Participant Pages collection must not expose media upload widgets')
+}
+
 const djrCopyCollection = extractCollection(cmsConfig, 'djr-participant-copy')
 assert(djrCopyCollection, 'Decap shared config is missing the djr-participant-copy collection')
 if (djrCopyCollection) {
@@ -201,17 +250,8 @@ if (djrCopyCollection) {
 }
 
 const djrCollectionMatch = extractCollection(cmsConfig, 'djr-gallery-albums')
-assert(djrCollectionMatch, 'Decap shared config is missing the djr-gallery-albums collection')
-if (djrCollectionMatch) {
-  const collection = djrCollectionMatch
-  assert(collection.includes('folder: content/djr-albums'), 'DJR participant album collection must be scoped to content/djr-albums')
-  for (const forbiddenPath of ['content/site.json', 'content/navigation.json', 'content/homepage.json', 'content/programs', 'content/stories']) {
-    assert(!collection.includes(forbiddenPath), `DJR participant collection must not expose global/admin path: ${forbiddenPath}`)
-  }
-  for (const expectedField of ['album_id', 'title', 'description', 'cover_image', 'images', 'alt', 'caption', 'credit', 'tags', 'orientation']) {
-    assert(collection.includes(`name: ${expectedField}`), `DJR participant album collection is missing safe field: ${expectedField}`)
-  }
-}
+assert(!djrCollectionMatch, 'Decap shared config must not expose the old JSON DJR album media collection')
+assert(!cmsConfig.includes('folder: content/djr-albums'), 'Decap shared config must not expose content/djr-albums as participant media')
 
 if (errors.length) {
   console.error('DJR content contract failed:')
@@ -220,4 +260,4 @@ if (errors.length) {
 }
 
 console.log('DJR content contract passed')
-console.log(`Checked /djr/, ${albumFiles.length} CMS album file(s), and ${enabledCmsMappings.length} enabled CMS album mapping(s).`)
+console.log('Checked /djr/, participant page album config, and Decap participant-page scope.')
