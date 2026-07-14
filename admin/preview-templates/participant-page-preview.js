@@ -1,15 +1,15 @@
 (function () {
   'use strict';
 
+  window.__participantPagesPreviewLoaded = true;
+  console.log('[Participant Pages Preview] script loaded v4');
+
   var h = null;
-  var createClass = null;
   var registered = false;
   var attempts = 0;
   var maxAttempts = 60;
   var retryDelay = 100;
-  var stylePath = '/admin/preview-templates/participant-page-preview.css?v=participant-preview-2';
-
-  console.info('[Participant Pages Preview] script loaded');
+  var stylePath = '/admin/preview-templates/participant-page-preview.css?v=participant-preview-4';
 
   var SECTION_ORDER = [
     {
@@ -187,7 +187,7 @@
             meta('Slug', data.slug),
             meta('Template', data.template),
             meta('Default Album UUID', data.defaultAlbumId),
-            meta('Fallback copy', state && state.fallbackLoaded ? 'Loaded from /content/djr/home.json' : 'Fallback notices shown')
+            meta('Fallback copy', 'Fallback notices shown')
           ])
         ]),
         sections
@@ -195,47 +195,31 @@
     );
   }
 
-  function buildPreviewComponent() {
-    return createClass
-      ? createClass({
-        getInitialState: function () {
-          return { fallbackHome: {}, fallbackLoaded: false };
-        },
-        componentDidMount: function () {
-          var self = this;
-          fetch('/content/djr/home.json', { cache: 'no-cache' })
-            .then(function (res) { return res.ok ? res.json() : {}; })
-            .then(function (data) { self.setState({ fallbackHome: data || {}, fallbackLoaded: true }); })
-            .catch(function () { self.setState({ fallbackHome: {}, fallbackLoaded: false }); });
-        },
-        render: function () {
-          return renderPreview(this.props, this.state);
-        }
-      })
-      : function ParticipantPagePreviewFunction(props) {
-        return renderPreview(props, { fallbackHome: {}, fallbackLoaded: false });
-      };
+  function ParticipantPagePreview(props) {
+    return renderPreview(props, { fallbackHome: {}, fallbackLoaded: false });
   }
 
   function findCreateElement() {
     return window.h || (window.React && window.React.createElement);
   }
 
-  function findCreateClass() {
-    return window.createClass || (window.React && window.React.createClass) || null;
-  }
-
   function registerParticipantPagePreview() {
     var CMS = window.CMS;
     h = findCreateElement();
-    createClass = findCreateClass();
 
     if (registered) return;
 
     if (!CMS || !h) {
       attempts += 1;
       if (attempts >= maxAttempts) {
-        console.warn('[Participant Pages Preview] registration failed after retries; CMS or preview render helper unavailable');
+        window.__participantPagesPreviewRegistrationFailed = true;
+        console.warn('[Participant Pages Preview] registration failed after retries v4', {
+          hasCMS: Boolean(window.CMS),
+          hasH: Boolean(window.h),
+          hasReact: Boolean(window.React),
+          hasReactCreateElement: Boolean(window.React && window.React.createElement),
+          hasCreateClass: Boolean(window.createClass)
+        });
         return;
       }
       window.setTimeout(registerParticipantPagePreview, retryDelay);
@@ -244,12 +228,12 @@
 
     try {
       CMS.registerPreviewStyle(stylePath);
-      var ParticipantPagePreview = buildPreviewComponent();
-      CMS.registerPreviewTemplate('participant-pages', ParticipantPagePreview);
+      CMS.registerPreviewTemplate("participant-pages", ParticipantPagePreview);
       registered = true;
-      console.info('[Participant Pages Preview] registered for participant-pages');
+      window.__participantPagesPreviewRegistered = true;
+      console.log('[Participant Pages Preview] registered for participant-pages v4');
     } catch (err) {
-      console.warn('[Participant Pages Preview] registration failed:', err);
+      console.warn('[Participant Pages Preview] registration failed v4:', err);
     }
   }
 
