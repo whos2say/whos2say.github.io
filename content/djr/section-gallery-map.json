@@ -3,51 +3,51 @@
   "sections": [
     {
       "sectionId": "story",
-      "label": "David's Story",
       "enabled": true,
-      "sourceType": "photoGallery",
-      "photoGalleryAlbumId": "",
-      "googlePhotosAlbumUrl": "",
-      "title": "David Behind the Lens",
-      "description": "A curated album for the personal story section.",
+      "buttonLabel": "Open Story Album",
       "coverImage": "/assets/images/djr/david-camera-close.png",
-      "buttonLabel": "Open Story Album"
+      "photoGalleryAlbumId": "",
+      "label": "David's Story",
+      "sourceType": "photoGallery",
+      "title": "David Behind the Lens",
+      "googlePhotosAlbumUrl": "",
+      "description": "A curated album for the personal story section."
     },
     {
       "sectionId": "featured",
-      "label": "Featured Story",
       "enabled": true,
-      "sourceType": "photoGallery",
-      "photoGalleryAlbumId": "",
-      "googlePhotosAlbumUrl": "",
-      "title": "Sideline Work",
-      "description": "Map this to a sports or sideline Photo Gallery App album.",
+      "buttonLabel": "Open Featured Album",
       "coverImage": "/assets/images/djr/david-sideline.png",
-      "buttonLabel": "Open Featured Album"
+      "photoGalleryAlbumId": "",
+      "label": "Featured Story",
+      "sourceType": "photoGallery",
+      "title": "Sideline Work",
+      "googlePhotosAlbumUrl": "",
+      "description": "Map this to a sports or sideline Photo Gallery App album."
     },
     {
       "sectionId": "creative",
-      "label": "Eye to Eye / Creative Feature",
       "enabled": true,
-      "sourceType": "googlePhotos",
-      "photoGalleryAlbumId": "",
-      "googlePhotosAlbumUrl": "",
-      "title": "Eye to Eye Concepts",
-      "description": "Paste a shared Google Photos album URL here when there is a public concept-art album.",
+      "buttonLabel": "Open Google Photos Album",
       "coverImage": "/assets/images/djr/eye-to-eye-poster.png",
-      "buttonLabel": "Open Google Photos Album"
+      "photoGalleryAlbumId": "",
+      "label": "Eye to Eye / Creative Feature",
+      "sourceType": "googlePhotos",
+      "title": "Eye to Eye Concepts",
+      "googlePhotosAlbumUrl": "https://photos.google.com/share/AF1QipPqYozcd8baj25Ik5DkHmGR21JTVnSSsKDiQk7zfNrAs6XHwA89e80PyckT6eB97A",
+      "description": "Paste a shared Google Photos album URL here when there is a public concept-art album."
     },
     {
       "sectionId": "about",
-      "label": "About David",
       "enabled": true,
-      "sourceType": "photoGallery",
-      "photoGalleryAlbumId": "",
-      "googlePhotosAlbumUrl": "",
-      "title": "About David",
-      "description": "Map this to a profile or behind-the-scenes album.",
+      "buttonLabel": "Open About Album",
       "coverImage": "/assets/images/djr/david-selfie-track.png",
-      "buttonLabel": "Open About Album"
+      "photoGalleryAlbumId": "",
+      "label": "About David",
+      "sourceType": "photoGallery",
+      "title": "About David",
+      "googlePhotosAlbumUrl": "",
+      "description": "Map this to a profile or behind-the-scenes album."
     }
   ]
 }
