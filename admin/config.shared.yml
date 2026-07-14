@@ -552,26 +552,30 @@
             widget: select
             options:
               - djr-photography
-          - { label: Default Album ID, name: defaultAlbumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps existing page images." }
+          - { label: Default Album ID, name: defaultAlbumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Section Album UUID fields control the current DJR overlay behavior." }
           - label: Section Album Overrides
             name: sections
             widget: object
             fields:
               - { label: Story, name: story, widget: object, fields: [
-                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                  { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
                 ]}
               - { label: Featured, name: featured, widget: object, fields: [
-                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                  { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
                 ]}
               - { label: About, name: about, widget: object, fields: [
-                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                  { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
                 ]}
               - { label: Creative, name: creative, widget: object, fields: [
-                  { label: Show section, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Album ID override, name: albumId, widget: string, required: false, hint: "Optional. Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                  { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
                 ]}
 
   - name: djr

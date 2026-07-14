@@ -93,7 +93,8 @@
     if (!config || typeof config !== 'object') return '';
     var section = config.sections && config.sections[sectionKey];
     if (section && section.enabled === false) return '';
-    return (section && section.albumId) || config.defaultAlbumId || '';
+    if (!section || section.allowParticipantAlbum !== true) return '';
+    return section.albumId || '';
   }
 
   function applyParticipantSectionToggles(data, config) {

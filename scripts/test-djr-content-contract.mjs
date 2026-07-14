@@ -99,7 +99,7 @@ function isBlankOrUuid(value) {
 
 function validateAlbumIdField(value, label) {
   assert(typeof value === 'string', `${label} must be a string`)
-  assert(isBlankOrUuid(value), `${label} must be blank or a Supabase album UUID`)
+  assert(isBlankOrUuid(value), `${label} must be blank or, when provided, a Supabase album UUID`)
   assert(!/^https?:\/\//i.test(value), `${label} must not be a URL`)
   assert(!value.includes('/album.html'), `${label} must not be an album page URL`)
   assert(!/photos\.app\.goo\.gl|photos\.google\.com/i.test(value), `${label} must not be a Google Photos URL`)
@@ -129,15 +129,19 @@ const participantPageAllowedPaths = new Set([
   'sections',
   'sections.story',
   'sections.story.enabled',
+  'sections.story.allowParticipantAlbum',
   'sections.story.albumId',
   'sections.featured',
   'sections.featured.enabled',
+  'sections.featured.allowParticipantAlbum',
   'sections.featured.albumId',
   'sections.about',
   'sections.about.enabled',
+  'sections.about.allowParticipantAlbum',
   'sections.about.albumId',
   'sections.creative',
   'sections.creative.enabled',
+  'sections.creative.allowParticipantAlbum',
   'sections.creative.albumId',
 ])
 
@@ -153,6 +157,7 @@ for (const sectionKey of ['story', 'featured', 'about', 'creative']) {
   const section = participantPage?.sections?.[sectionKey]
   assert(section && typeof section === 'object', `participant page section ${sectionKey} must exist`)
   assert(typeof section.enabled === 'boolean', `participant page section ${sectionKey}.enabled must be boolean`)
+  assert(typeof section.allowParticipantAlbum === 'boolean', `participant page section ${sectionKey}.allowParticipantAlbum must be boolean`)
   validateAlbumIdField(section.albumId, `sections.${sectionKey}.albumId`)
 }
 
@@ -171,6 +176,7 @@ assert(djrContent.includes('overlayParticipantCopy'), 'DJR content renderer shou
 assert(djrContent.includes('/content/participant-pages/djr.json'), 'DJR content renderer should load the participant page config')
 assert(djrContent.includes('overlayParticipantAlbums'), 'DJR content renderer should overlay Supabase album images before rendering')
 assert(djrContent.includes('applyParticipantSectionToggles'), 'DJR content renderer should apply participant section toggles')
+assert(djrContent.includes('allowParticipantAlbum !== true'), 'DJR content renderer must only apply section album overlays when allowParticipantAlbum is true')
 assert(djrContent.includes('/js/participant-pages/albumImages.js'), 'DJR content renderer should use the participant album image helper')
 assert(!djrContent.includes('content/djr-albums'), 'DJR content renderer must not depend on JSON CMS albums')
 
@@ -186,7 +192,7 @@ const participantPagesCollection = extractCollection(cmsConfig, 'participant-pag
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')
 if (participantPagesCollection) {
   assert(participantPagesCollection.includes('file: content/participant-pages/djr.json'), 'Participant Pages collection must expose content/participant-pages/djr.json')
-  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'story', 'featured', 'about', 'creative', 'enabled', 'albumId']) {
+  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'story', 'featured', 'about', 'creative', 'enabled', 'allowParticipantAlbum', 'albumId']) {
     assert(participantPagesCollection.includes(`name: ${expectedField}`), `Participant Pages collection is missing field: ${expectedField}`)
   }
   for (const forbiddenField of ['href', 'formAction', 'photoGalleryAlbumId', 'googlePhotosAlbumUrl', 'album_id', 'nav', 'partner', 'button', 'primaryButton', 'secondaryButton', 'sourceType', 'sectionId', 'html', 'image', 'src']) {
