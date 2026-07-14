@@ -535,6 +535,7 @@
 
   - name: participant-pages
     label: Participant Pages
+    description: "Primary participant-facing editor for participant microsites. Use /albums.html to manage media, then paste Supabase album UUIDs here."
     files:
       - label: DJR Participant Page
         name: djr
@@ -544,7 +545,7 @@
             name: _comment
             widget: text
             required: false
-            hint: "Create/manage albums in /albums.html, then paste Supabase album UUIDs here. This does not upload media or change page layout."
+            hint: "Use Participant Pages for participant-facing edits. Create/manage albums in /albums.html, then paste Supabase album UUIDs here."
           - { label: Participant Name, name: name, widget: string }
           - { label: Slug, name: slug, widget: string, hint: "Use djr for the current DJR page." }
           - label: Template
@@ -552,34 +553,74 @@
             widget: select
             options:
               - djr-photography
-          - { label: Default Album ID, name: defaultAlbumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Section Album UUID fields control the current DJR overlay behavior." }
-          - label: Section Album Overrides
+          - { label: Default Album ID, name: defaultAlbumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Section Album UUIDs override this when provided." }
+          - label: Page Sections
             name: sections
             widget: object
             fields:
+              - { label: Hero, name: hero, widget: object, fields: [
+                  { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Tagline, name: tagline, widget: string, required: false, hint: "Blank keeps the default DJR hero tagline." },
+                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: false },
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
+                ]}
               - { label: Story, name: story, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Lead, name: lead, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Quote, name: quote, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
-                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Limit, name: imageLimit, widget: number, required: false, default: 4, value_type: int }
                 ]}
               - { label: Featured, name: featured, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Button Label, name: buttonLabel, widget: string, required: false, hint: "Blank keeps the default button label. Button URLs stay admin-owned." },
                   { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
-                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: About, name: about, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
-                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Creative, name: creative, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
-                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank keeps the default section images." }
+                  { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Limit, name: imageLimit, widget: number, required: false, default: 2, value_type: int }
+                ]}
+              - { label: CTA / Contact, name: cta, widget: object, fields: [
+                  { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
+                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Supporting Text, name: sub, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
+                  { label: Button Label, name: buttonLabel, widget: string, required: false, hint: "Blank keeps the default button label. Button URLs stay admin-owned." }
                 ]}
 
   - name: djr
-    label: DJR Photography
+    label: DJR Photography - Advanced/Admin Legacy
+    hide: true
+    description: "Use Participant Pages for participant-facing edits. This hidden collection remains as advanced/admin fallback content."
     files:
       - label: Site Settings
         name: djr-site
@@ -760,16 +801,16 @@
           - { label: Empty Message, name: emptyMessage, widget: string }
           - { label: No Match Message, name: noMatchMessage, widget: string }
 
-      - label: Section Gallery Mapper
+      - label: Section Gallery Mapper - Legacy/Admin
         name: djr-section-gallery-map
         file: content/djr/section-gallery-map.json
         fields:
-          - { label: Editor Guidance, name: _comment, widget: text, required: false }
+          - { label: Editor Guidance, name: _comment, widget: text, required: false, hint: "Legacy/admin fallback only. Use Participant Pages and /albums.html for participant section images." }
           - label: Section Mappings
             name: sections
             widget: list
             summary: "{{fields.label}} · {{fields.sourceType}}"
-            hint: "Map homepage sections to Photo Gallery App albums or Google Photos shared album links."
+            hint: "Legacy/admin fallback only. Normal participant image management uses Participant Pages with Supabase album UUIDs from /albums.html."
             fields:
               - label: Webpage Section
                 name: sectionId

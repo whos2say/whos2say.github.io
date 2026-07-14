@@ -93,6 +93,11 @@ function extractCollection(config, collectionName) {
   return config.match(new RegExp(`- name: ${escaped}[\\s\\S]*?(?=\\n  - name: |\\n?$)`))?.[0] || ''
 }
 
+function hasFieldName(config, fieldName) {
+  const escaped = fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`name:\\s*${escaped}(?:\\s|,|\\]|\\})`).test(config)
+}
+
 function isBlankOrUuid(value) {
   return value === '' || (typeof value === 'string' && UUID_RE.test(value))
 }
@@ -103,6 +108,10 @@ function validateAlbumIdField(value, label) {
   assert(!/^https?:\/\//i.test(value), `${label} must not be a URL`)
   assert(!value.includes('/album.html'), `${label} must not be an album page URL`)
   assert(!/photos\.app\.goo\.gl|photos\.google\.com/i.test(value), `${label} must not be a Google Photos URL`)
+}
+
+function validateImageLimit(value, label) {
+  assert(Number.isInteger(value) && value > 0, `${label} must be a positive integer`)
 }
 
 const indexHtml = readText('djr/index.html')
@@ -127,22 +136,58 @@ const participantPageAllowedPaths = new Set([
   'template',
   'defaultAlbumId',
   'sections',
+  'sections.hero',
+  'sections.hero.enabled',
+  'sections.hero.allowParticipantEdit',
+  'sections.hero.tagline',
+  'sections.hero.allowParticipantAlbum',
+  'sections.hero.albumId',
+  'sections.hero.imageLimit',
   'sections.story',
   'sections.story.enabled',
+  'sections.story.allowParticipantEdit',
+  'sections.story.eyebrow',
+  'sections.story.title',
+  'sections.story.lead',
+  'sections.story.body',
+  'sections.story.quote',
   'sections.story.allowParticipantAlbum',
   'sections.story.albumId',
+  'sections.story.imageLimit',
   'sections.featured',
   'sections.featured.enabled',
+  'sections.featured.allowParticipantEdit',
+  'sections.featured.eyebrow',
+  'sections.featured.title',
+  'sections.featured.body',
+  'sections.featured.buttonLabel',
   'sections.featured.allowParticipantAlbum',
   'sections.featured.albumId',
+  'sections.featured.imageLimit',
   'sections.about',
   'sections.about.enabled',
+  'sections.about.allowParticipantEdit',
+  'sections.about.eyebrow',
+  'sections.about.title',
+  'sections.about.body',
   'sections.about.allowParticipantAlbum',
   'sections.about.albumId',
+  'sections.about.imageLimit',
   'sections.creative',
   'sections.creative.enabled',
+  'sections.creative.allowParticipantEdit',
+  'sections.creative.eyebrow',
+  'sections.creative.title',
+  'sections.creative.body',
   'sections.creative.allowParticipantAlbum',
   'sections.creative.albumId',
+  'sections.creative.imageLimit',
+  'sections.cta',
+  'sections.cta.enabled',
+  'sections.cta.allowParticipantEdit',
+  'sections.cta.title',
+  'sections.cta.sub',
+  'sections.cta.buttonLabel',
 ])
 
 for (const participantPath of collectPaths(participantPage)) {
@@ -153,12 +198,16 @@ assert(participantPage?.name === 'David J. Richards', 'DJR participant page conf
 assert(participantPage?.slug === 'djr', 'DJR participant page config slug must be djr')
 assert(participantPage?.template === 'djr-photography', 'DJR participant page config must use the djr-photography template')
 validateAlbumIdField(participantPage?.defaultAlbumId, 'defaultAlbumId')
-for (const sectionKey of ['story', 'featured', 'about', 'creative']) {
+for (const sectionKey of ['hero', 'story', 'featured', 'about', 'creative', 'cta']) {
   const section = participantPage?.sections?.[sectionKey]
   assert(section && typeof section === 'object', `participant page section ${sectionKey} must exist`)
   assert(typeof section.enabled === 'boolean', `participant page section ${sectionKey}.enabled must be boolean`)
-  assert(typeof section.allowParticipantAlbum === 'boolean', `participant page section ${sectionKey}.allowParticipantAlbum must be boolean`)
-  validateAlbumIdField(section.albumId, `sections.${sectionKey}.albumId`)
+  assert(typeof section.allowParticipantEdit === 'boolean', `participant page section ${sectionKey}.allowParticipantEdit must be boolean`)
+  if (sectionKey !== 'cta') {
+    assert(typeof section.allowParticipantAlbum === 'boolean', `participant page section ${sectionKey}.allowParticipantAlbum must be boolean`)
+    validateAlbumIdField(section.albumId, `sections.${sectionKey}.albumId`)
+    validateImageLimit(section.imageLimit, `sections.${sectionKey}.imageLimit`)
+  }
 }
 
 for (const invalidId of ['david-behind-the-lens', '/album.html?album=fe027096-7084-4f96-974a-315b98b484b2', 'https://photos.google.com/share/example', 'https://www.whostosay.org/album.html?album=fe027096-7084-4f96-974a-315b98b484b2']) {
@@ -175,8 +224,12 @@ assert(djrContent.includes('fetchOptionalJson'), 'DJR content renderer should pr
 assert(djrContent.includes('overlayParticipantCopy'), 'DJR content renderer should overlay participant copy through an allowlisted helper')
 assert(djrContent.includes('/content/participant-pages/djr.json'), 'DJR content renderer should load the participant page config')
 assert(djrContent.includes('overlayParticipantAlbums'), 'DJR content renderer should overlay Supabase album images before rendering')
+assert(djrContent.includes('overlayParticipantPageContent'), 'DJR content renderer should overlay safe Participant Pages copy')
+assert(djrContent.includes('allowParticipantEdit !== true'), 'DJR content renderer must only apply participant text overlays when allowParticipantEdit is true')
+assert(djrContent.includes('applyNonEmptyString'), 'DJR content renderer must preserve fallback content for blank participant fields')
 assert(djrContent.includes('applyParticipantSectionToggles'), 'DJR content renderer should apply participant section toggles')
 assert(djrContent.includes('allowParticipantAlbum !== true'), 'DJR content renderer must only apply section album overlays when allowParticipantAlbum is true')
+assert(djrContent.includes('section.albumId || config.defaultAlbumId'), 'DJR content renderer should use section album IDs before defaultAlbumId')
 assert(djrContent.includes('/js/participant-pages/albumImages.js'), 'DJR content renderer should use the participant album image helper')
 assert(!djrContent.includes('content/djr-albums'), 'DJR content renderer must not depend on JSON CMS albums')
 
@@ -192,14 +245,19 @@ const participantPagesCollection = extractCollection(cmsConfig, 'participant-pag
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')
 if (participantPagesCollection) {
   assert(participantPagesCollection.includes('file: content/participant-pages/djr.json'), 'Participant Pages collection must expose content/participant-pages/djr.json')
-  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'story', 'featured', 'about', 'creative', 'enabled', 'allowParticipantAlbum', 'albumId']) {
-    assert(participantPagesCollection.includes(`name: ${expectedField}`), `Participant Pages collection is missing field: ${expectedField}`)
+  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
+    assert(hasFieldName(participantPagesCollection, expectedField), `Participant Pages collection is missing field: ${expectedField}`)
   }
   for (const forbiddenField of ['href', 'formAction', 'photoGalleryAlbumId', 'googlePhotosAlbumUrl', 'album_id', 'nav', 'partner', 'button', 'primaryButton', 'secondaryButton', 'sourceType', 'sectionId', 'html', 'image', 'src']) {
-    assert(!participantPagesCollection.includes(`name: ${forbiddenField}`), `Participant Pages collection must not expose field: ${forbiddenField}`)
+    assert(!hasFieldName(participantPagesCollection, forbiddenField), `Participant Pages collection must not expose field: ${forbiddenField}`)
   }
   assert(!participantPagesCollection.includes('widget: image'), 'Participant Pages collection must not expose media upload widgets')
 }
+
+const djrCollection = extractCollection(cmsConfig, 'djr')
+assert(djrCollection.includes('hide: true'), 'DJR Photography advanced/admin fallback collection should be hidden from the participant-facing sidebar')
+assert(djrCollection.includes('Advanced/Admin Legacy'), 'DJR Photography collection should be labeled as advanced/admin legacy')
+assert(djrCollection.includes('Section Gallery Mapper - Legacy/Admin'), 'Legacy section gallery mapper should be labeled as legacy/admin')
 
 const djrCollectionMatch = extractCollection(cmsConfig, 'djr-gallery-albums')
 assert(!djrCollectionMatch, 'Decap shared config must not expose the old JSON DJR album media collection')

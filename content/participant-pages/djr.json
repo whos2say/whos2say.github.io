@@ -1,29 +1,67 @@
 {
-  "_comment": "DJR participant page settings. Create/manage albums in /albums.html, then paste Supabase album UUIDs here. Section album overlays apply only when allowParticipantAlbum is true and albumId is a valid UUID; blank/default failures preserve existing DJR content.",
+  "_comment": "DJR participant page settings. Participant Pages is the main CMS workflow. Blank copy fields preserve content/djr/home.json. Create/manage albums in /albums.html, then paste Supabase album UUIDs here.",
   "name": "David J. Richards",
   "slug": "djr",
   "template": "djr-photography",
   "defaultAlbumId": "fe027096-7084-4f96-974a-315b98b484b2",
   "sections": {
+    "hero": {
+      "enabled": true,
+      "allowParticipantEdit": true,
+      "tagline": "",
+      "allowParticipantAlbum": false,
+      "albumId": "",
+      "imageLimit": 1
+    },
     "story": {
       "enabled": true,
+      "allowParticipantEdit": true,
+      "eyebrow": "",
+      "title": "",
+      "lead": "",
+      "body": "",
+      "quote": "",
       "allowParticipantAlbum": true,
-      "albumId": ""
+      "albumId": "",
+      "imageLimit": 4
     },
     "featured": {
       "enabled": true,
+      "allowParticipantEdit": true,
+      "eyebrow": "",
+      "title": "",
+      "body": "",
+      "buttonLabel": "",
       "allowParticipantAlbum": true,
-      "albumId": ""
+      "albumId": "",
+      "imageLimit": 1
     },
     "about": {
       "enabled": true,
+      "allowParticipantEdit": true,
+      "eyebrow": "",
+      "title": "",
+      "body": "",
       "allowParticipantAlbum": true,
-      "albumId": ""
+      "albumId": "",
+      "imageLimit": 1
     },
     "creative": {
       "enabled": true,
+      "allowParticipantEdit": true,
+      "eyebrow": "",
+      "title": "",
+      "body": "",
       "allowParticipantAlbum": true,
-      "albumId": ""
+      "albumId": "",
+      "imageLimit": 2
+    },
+    "cta": {
+      "enabled": true,
+      "allowParticipantEdit": true,
+      "title": "",
+      "sub": "",
+      "buttonLabel": ""
     }
   }
 }

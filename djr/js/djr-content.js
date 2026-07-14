@@ -46,6 +46,10 @@
     if (typeof source[key] === 'string') target[key] = source[key];
   }
 
+  function applyNonEmptyString(target, source, key) {
+    if (typeof source[key] === 'string' && source[key].trim()) target[key] = source[key];
+  }
+
   function applyBoolean(target, source, key) {
     if (typeof source[key] === 'boolean') target[key] = source[key];
   }
@@ -89,16 +93,67 @@
     return data;
   }
 
+  function overlayParticipantPageSection(target, source, fields) {
+    if (!source || typeof source !== 'object' || source.allowParticipantEdit !== true) return;
+    fields.forEach(function (field) {
+      applyNonEmptyString(target, source, field);
+    });
+  }
+
+  function overlayParticipantPageContent(base, config) {
+    if (!config || typeof config !== 'object') return base;
+    var sections = config.sections || {};
+    var data = clone(base);
+
+    data.hero = data.hero || {};
+    overlayParticipantPageSection(data.hero, sections.hero, ['tagline']);
+
+    data.story = data.story || {};
+    overlayParticipantPageSection(data.story, sections.story, ['eyebrow', 'title', 'lead', 'body', 'quote']);
+
+    data.pictureOfTheWeek = data.pictureOfTheWeek || {};
+    overlayParticipantPageSection(data.pictureOfTheWeek, sections.featured, ['eyebrow', 'title', 'body']);
+    if (sections.featured && sections.featured.allowParticipantEdit === true && sections.featured.buttonLabel && sections.featured.buttonLabel.trim()) {
+      data.pictureOfTheWeek.button = data.pictureOfTheWeek.button || {};
+      data.pictureOfTheWeek.button.label = sections.featured.buttonLabel;
+    }
+
+    data.about = data.about || {};
+    overlayParticipantPageSection(data.about, sections.about, ['eyebrow', 'title', 'body']);
+
+    data.creativeFeature = data.creativeFeature || {};
+    overlayParticipantPageSection(data.creativeFeature, sections.creative, ['eyebrow', 'title', 'body']);
+
+    data.cta = data.cta || {};
+    overlayParticipantPageSection(data.cta, sections.cta, ['title', 'sub']);
+    if (sections.cta && sections.cta.allowParticipantEdit === true && sections.cta.buttonLabel && sections.cta.buttonLabel.trim()) {
+      data.cta.button = data.cta.button || {};
+      data.cta.button.label = sections.cta.buttonLabel;
+    }
+
+    return data;
+  }
+
   function getSectionAlbumId(config, sectionKey) {
     if (!config || typeof config !== 'object') return '';
     var section = config.sections && config.sections[sectionKey];
     if (section && section.enabled === false) return '';
     if (!section || section.allowParticipantAlbum !== true) return '';
-    return section.albumId || '';
+    return section.albumId || config.defaultAlbumId || '';
+  }
+
+  function getSectionImageLimit(config, sectionKey, fallback) {
+    var section = config && config.sections && config.sections[sectionKey];
+    var limit = section && Number(section.imageLimit);
+    return Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : fallback;
   }
 
   function applyParticipantSectionToggles(data, config) {
     var sections = (config && config.sections) || {};
+    if (sections.hero && typeof sections.hero.enabled === 'boolean') {
+      data.hero = data.hero || {};
+      data.hero.enabled = sections.hero.enabled;
+    }
     if (sections.story && typeof sections.story.enabled === 'boolean') {
       data.story = data.story || {};
       data.story.enabled = sections.story.enabled;
@@ -114,6 +169,10 @@
     if (sections.creative && typeof sections.creative.enabled === 'boolean') {
       data.creativeFeature = data.creativeFeature || {};
       data.creativeFeature.enabled = sections.creative.enabled;
+    }
+    if (sections.cta && typeof sections.cta.enabled === 'boolean') {
+      data.cta = data.cta || {};
+      data.cta.enabled = sections.cta.enabled;
     }
   }
 
@@ -134,25 +193,34 @@
       var data = clone(base);
       applyParticipantSectionToggles(data, config);
       var sectionIds = {
+        hero: getSectionAlbumId(config, 'hero'),
         story: getSectionAlbumId(config, 'story'),
         featured: getSectionAlbumId(config, 'featured'),
         about: getSectionAlbumId(config, 'about'),
         creative: getSectionAlbumId(config, 'creative')
       };
       var results = await Promise.all([
+        helper.loadPublicAlbumImages(sectionIds.hero, { fallbackAlt: 'David hero photo' }),
         helper.loadPublicAlbumImages(sectionIds.story, { fallbackAlt: 'David story photo' }),
         helper.loadPublicAlbumImages(sectionIds.featured, { fallbackAlt: 'David featured photo' }),
         helper.loadPublicAlbumImages(sectionIds.about, { fallbackAlt: 'David portrait photo' }),
         helper.loadPublicAlbumImages(sectionIds.creative, { fallbackAlt: 'David creative photo' })
       ]);
-      var storyImages = results[0];
-      var featuredImages = results[1];
-      var aboutImages = results[2];
-      var creativeImages = results[3];
+      var heroImages = results[0];
+      var storyImages = results[1];
+      var featuredImages = results[2];
+      var aboutImages = results[3];
+      var creativeImages = results[4];
       var image;
 
+      image = firstImage(heroImages);
+      if (image) {
+        data.hero = data.hero || {};
+        data.hero.backgroundImage = image.src;
+      }
+
       data.story = data.story || {};
-      data.story.images = mergeImages(storyImages, data.story.images, 4);
+      data.story.images = mergeImages(storyImages, data.story.images, getSectionImageLimit(config, 'story', 4));
 
       image = firstImage(featuredImages);
       if (image) {
@@ -168,7 +236,7 @@
       }
 
       data.creativeFeature = data.creativeFeature || {};
-      data.creativeFeature.images = mergeImages(creativeImages, data.creativeFeature.images, 2);
+      data.creativeFeature.images = mergeImages(creativeImages, data.creativeFeature.images, getSectionImageLimit(config, 'creative', 2));
 
       return data;
     } catch (err) {
@@ -252,6 +320,8 @@
     setMeta(data.meta);
 
     var hero = data.hero || {};
+    var heroSection = document.querySelector('.djr-hero');
+    if (heroSection) heroSection.style.display = hero.enabled === false ? 'none' : '';
     var heroBg = document.querySelector('.djr-hero-bg');
     if (heroBg) heroBg.style.backgroundImage = hero.backgroundImage ? 'url("' + hero.backgroundImage + '")' : '';
     var heroLogo = document.querySelector('.djr-hero-logo');
@@ -337,6 +407,7 @@
     var cta = data.cta || {};
     var ctaEl = document.querySelector('.djr-cta');
     if (ctaEl) {
+      ctaEl.style.display = cta.enabled === false ? 'none' : '';
       ctaEl.querySelector('.djr-cta-title').textContent = cta.title || '';
       ctaEl.querySelector('.djr-cta-sub').textContent = cta.sub || '';
       var ctaButton = ctaEl.querySelector('.djr-btn');
@@ -410,7 +481,7 @@
             .then(function (copy) {
               return fetchOptionalJson('/content/participant-pages/djr.json')
                 .then(function (config) {
-                  return overlayParticipantAlbums(overlayParticipantCopy(home, copy), config);
+                  return overlayParticipantAlbums(overlayParticipantPageContent(overlayParticipantCopy(home, copy), config), config);
                 })
                 .then(renderHome);
             });
