@@ -32,6 +32,8 @@ That screen exposes grouped DJR page sections where a participant or support per
 - Edit safe copy fields that are populated with the current DJR page text.
 - Use album images per section.
 - Paste Supabase album UUIDs from `/albums.html`.
+- Choose album order or manual photo selection for supported image sections.
+- Paste selected Supabase photo UUIDs when manual photo selection is needed.
 
 The Decap preview pane for Participant Pages uses `admin/preview-templates/participant-page-preview.js` and scoped preview CSS. It writes the current draft participant page config to same-origin `sessionStorage`, then renders the real `/djr/` page in an iframe at `/djr/?cmsPreview=participant-pages&previewSlug=djr`. The public `/djr/` URL does not read draft preview data.
 
@@ -53,8 +55,17 @@ Participant Pages does not upload media and does not create Decap JSON albums. I
 - `sections.featured.albumId`
 - `sections.about.albumId`
 - `sections.creative.albumId`
+- `sections.*.imageMode`
+- `sections.*.selectedPhotoIds`
 
 For each section, album overlays apply only when `allowParticipantAlbum` is true. A section album UUID wins over `defaultAlbumId`. Blank, invalid, private, missing, empty, or blocked albums preserve the default images from `content/djr/home.json`.
+
+`imageMode` controls how section photos are selected:
+
+- `albumOrder` uses the album's ordered photos up to `imageLimit`.
+- `manualSelection` uses `selectedPhotoIds` in the listed order, then fills any remaining slots from album order.
+
+Photo IDs must be Supabase photo UUIDs from the same album. Unknown, blocked, missing, or non-image photo IDs are skipped. If manual selection is empty, the renderer falls back to album order. The current Decap editor uses native text/list fields for photo IDs; a visual album photo picker is the recommended next UX improvement.
 
 ## Safe participant fields
 
@@ -66,6 +77,8 @@ Participant Pages can safely expose:
 - Participant edit gate: `sections.*.allowParticipantEdit`.
 - Album edit gate: `sections.*.allowParticipantAlbum`.
 - Album UUIDs: `sections.*.albumId`.
+- Image mode: `sections.*.imageMode`.
+- Selected photo UUIDs: `sections.*.selectedPhotoIds`.
 - Image limits for supported image sections.
 - Hero tagline.
 - Story eyebrow, title, lead, body, and quote.
@@ -118,6 +131,8 @@ The contract checks:
 - Participant Pages exposes only approved safe fields.
 - `enabled`, `allowParticipantEdit`, and `allowParticipantAlbum` are booleans.
 - Album IDs are blank or valid Supabase UUIDs.
+- Image mode is `albumOrder` or `manualSelection`.
+- Selected photo IDs are valid Supabase UUIDs.
 - Slugs, raw URLs, Google Photos URLs, and `/album.html?album=` URLs are rejected as album IDs.
 - The DJR homepage does not load the old CMS album card script.
 - The advanced DJR collection is hidden/de-emphasized.

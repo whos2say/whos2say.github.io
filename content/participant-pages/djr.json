@@ -11,6 +11,8 @@
       "tagline": "Eye to eye with the moment.",
       "allowParticipantAlbum": false,
       "albumId": "",
+      "imageMode": "albumOrder",
+      "selectedPhotoIds": [],
       "imageLimit": 1
     },
     "story": {
@@ -23,6 +25,8 @@
       "quote": "The dream. The hard work. The moment. The capture.",
       "allowParticipantAlbum": true,
       "albumId": "",
+      "imageMode": "albumOrder",
+      "selectedPhotoIds": [],
       "imageLimit": 4
     },
     "featured": {
@@ -34,6 +38,8 @@
       "buttonLabel": "See the Work",
       "allowParticipantAlbum": true,
       "albumId": "",
+      "imageMode": "albumOrder",
+      "selectedPhotoIds": [],
       "imageLimit": 1
     },
     "about": {
@@ -44,6 +50,8 @@
       "body": "David J. Richards is building his voice as a photographer one frame at a time. His work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss.",
       "allowParticipantAlbum": true,
       "albumId": "",
+      "imageMode": "albumOrder",
+      "selectedPhotoIds": [],
       "imageLimit": 1
     },
     "creative": {
@@ -54,6 +62,8 @@
       "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
       "allowParticipantAlbum": true,
       "albumId": "0bb2946f-dcbc-483a-84d1-00a65783ed4c",
+      "imageMode": "albumOrder",
+      "selectedPhotoIds": [],
       "imageLimit": 2
     },
     "cta": {

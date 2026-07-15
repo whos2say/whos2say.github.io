@@ -184,6 +184,25 @@
     return Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : fallback;
   }
 
+  function getSectionImageMode(config, sectionKey) {
+    var section = config && config.sections && config.sections[sectionKey];
+    return section && section.imageMode === 'manualSelection' ? 'manualSelection' : 'albumOrder';
+  }
+
+  function getSectionSelectedPhotoIds(config, sectionKey) {
+    var section = config && config.sections && config.sections[sectionKey];
+    return Array.isArray(section && section.selectedPhotoIds) ? section.selectedPhotoIds : [];
+  }
+
+  function getSectionAlbumOptions(config, sectionKey, fallbackAlt, fallbackLimit) {
+    return {
+      fallbackAlt: fallbackAlt,
+      imageMode: getSectionImageMode(config, sectionKey),
+      selectedPhotoIds: getSectionSelectedPhotoIds(config, sectionKey),
+      imageLimit: getSectionImageLimit(config, sectionKey, fallbackLimit)
+    };
+  }
+
   function applyParticipantSectionToggles(data, config) {
     var sections = (config && config.sections) || {};
     if (sections.hero && typeof sections.hero.enabled === 'boolean') {
@@ -236,11 +255,11 @@
         creative: getSectionAlbumId(config, 'creative')
       };
       var results = await Promise.all([
-        helper.loadPublicAlbumImages(sectionIds.hero, { fallbackAlt: 'David hero photo' }),
-        helper.loadPublicAlbumImages(sectionIds.story, { fallbackAlt: 'David story photo' }),
-        helper.loadPublicAlbumImages(sectionIds.featured, { fallbackAlt: 'David featured photo' }),
-        helper.loadPublicAlbumImages(sectionIds.about, { fallbackAlt: 'David portrait photo' }),
-        helper.loadPublicAlbumImages(sectionIds.creative, { fallbackAlt: 'David creative photo' })
+        helper.loadPublicAlbumImages(sectionIds.hero, getSectionAlbumOptions(config, 'hero', 'David hero photo', 1)),
+        helper.loadPublicAlbumImages(sectionIds.story, getSectionAlbumOptions(config, 'story', 'David story photo', 4)),
+        helper.loadPublicAlbumImages(sectionIds.featured, getSectionAlbumOptions(config, 'featured', 'David featured photo', 1)),
+        helper.loadPublicAlbumImages(sectionIds.about, getSectionAlbumOptions(config, 'about', 'David portrait photo', 1)),
+        helper.loadPublicAlbumImages(sectionIds.creative, getSectionAlbumOptions(config, 'creative', 'David creative photo', 2))
       ]);
       var heroImages = results[0];
       var storyImages = results[1];

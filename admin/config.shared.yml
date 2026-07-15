@@ -564,6 +564,11 @@
                   { label: Tagline, name: tagline, widget: string, required: false, hint: "Blank keeps the default DJR hero tagline." },
                   { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: false, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
+                      { label: Album order, value: albumOrder },
+                      { label: Manual selection, value: manualSelection }
+                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Story, name: story, widget: object, fields: [
@@ -576,6 +581,11 @@
                   { label: Quote, name: quote, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
+                      { label: Album order, value: albumOrder },
+                      { label: Manual selection, value: manualSelection }
+                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 4, value_type: int }
                 ]}
               - { label: Featured, name: featured, widget: object, fields: [
@@ -587,6 +597,11 @@
                   { label: Button Label, name: buttonLabel, widget: string, required: false, hint: "Blank keeps the default button label. Button URLs stay admin-owned." },
                   { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
+                      { label: Album order, value: albumOrder },
+                      { label: Manual selection, value: manualSelection }
+                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: About, name: about, widget: object, fields: [
@@ -597,6 +612,11 @@
                   { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
+                      { label: Album order, value: albumOrder },
+                      { label: Manual selection, value: manualSelection }
+                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Creative, name: creative, widget: object, fields: [
@@ -607,6 +627,11 @@
                   { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
+                  { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
+                      { label: Album order, value: albumOrder },
+                      { label: Manual selection, value: manualSelection }
+                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 2, value_type: int }
                 ]}
               - { label: CTA / Contact, name: cta, widget: object, fields: [

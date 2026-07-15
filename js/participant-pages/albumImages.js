@@ -14,9 +14,56 @@ export function normalizeAlbumId(value) {
   return String(value).trim()
 }
 
+export function normalizePhotoIds(value) {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((item) => String(item == null ? '' : item).trim())
+    .filter((item) => UUID_RE.test(item))
+}
+
+function normalizeImageMode(value) {
+  return value === 'manualSelection' ? 'manualSelection' : 'albumOrder'
+}
+
+function normalizeImageLimit(value, fallback) {
+  const limit = Number(value)
+  if (Number.isFinite(limit) && limit > 0) return Math.floor(limit)
+  return fallback
+}
+
+function normalizePhoto(photo, index, album, albumId, fallbackAlt) {
+  return {
+    photoId: photo.id || '',
+    src: getPublicUrl(photo.file_path),
+    alt: `${fallbackAlt} ${index + 1}`,
+    caption: album.name || '',
+    sourceAlbumId: albumId,
+    sourceAlbumName: album.name || '',
+    filePath: photo.file_path || '',
+    sortOrder: photo.sort_order == null || photo.sort_order === '' ? null : Number(photo.sort_order),
+    focalPoint: photo.focal_point || '',
+  }
+}
+
+function orderSelectedPhotos(images, selectedPhotoIds, imageLimit) {
+  if (!selectedPhotoIds.length) return images.slice(0, imageLimit)
+
+  const byId = new Map(images.map((image) => [image.photoId, image]))
+  const selected = selectedPhotoIds
+    .map((photoId) => byId.get(photoId))
+    .filter(Boolean)
+  const selectedIds = new Set(selected.map((image) => image.photoId))
+  const fill = images.filter((image) => !selectedIds.has(image.photoId))
+
+  return selected.concat(fill).slice(0, imageLimit)
+}
+
 export async function loadPublicAlbumImages(albumId, options = {}) {
   const normalizedAlbumId = normalizeAlbumId(albumId)
   const fallbackAlt = options.fallbackAlt || 'Participant album photo'
+  const imageMode = normalizeImageMode(options.imageMode)
+  const selectedPhotoIds = normalizePhotoIds(options.selectedPhotoIds)
+  const imageLimit = normalizeImageLimit(options.imageLimit, Number.POSITIVE_INFINITY)
 
   if (!normalizedAlbumId) return []
   if (!isValidAlbumId(normalizedAlbumId)) {
@@ -31,15 +78,13 @@ export async function loadPublicAlbumImages(albumId, options = {}) {
     const { data: photos, error: photosError } = await getOrderedAlbumPhotos(normalizedAlbumId)
     if (photosError || !Array.isArray(photos) || !photos.length) return []
 
-    return photos
+    const images = photos
       .filter((photo) => photo?.file_path && !isVideoPath(photo.file_path))
-      .map((photo, index) => ({
-        src: getPublicUrl(photo.file_path),
-        alt: `${fallbackAlt} ${index + 1}`,
-        caption: album.name || '',
-        sourceAlbumId: normalizedAlbumId,
-        focalPoint: photo.focal_point || '',
-      }))
+      .map((photo, index) => normalizePhoto(photo, index, album, normalizedAlbumId, fallbackAlt))
+
+    if (!images.length) return []
+    if (imageMode === 'manualSelection') return orderSelectedPhotos(images, selectedPhotoIds, imageLimit)
+    return images.slice(0, imageLimit)
   } catch (err) {
     console.warn('[participant album] Album image load skipped:', err.message)
     return []

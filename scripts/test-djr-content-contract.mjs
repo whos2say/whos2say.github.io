@@ -114,6 +114,20 @@ function validateImageLimit(value, label) {
   assert(Number.isInteger(value) && value > 0, `${label} must be a positive integer`)
 }
 
+function validateImageMode(value, label) {
+  assert(value === 'albumOrder' || value === 'manualSelection', `${label} must be albumOrder or manualSelection`)
+}
+
+function validatePhotoIds(value, label) {
+  assert(Array.isArray(value), `${label} must be an array`)
+  value.forEach((photoId, index) => {
+    assert(typeof photoId === 'string' && UUID_RE.test(photoId), `${label}[${index}] must be a Supabase photo UUID`)
+    assert(!/^https?:\/\//i.test(photoId), `${label}[${index}] must not be a URL`)
+    assert(!photoId.includes('/album.html'), `${label}[${index}] must not be an album page URL`)
+    assert(!/photos\.app\.goo\.gl|photos\.google\.com/i.test(photoId), `${label}[${index}] must not be a Google Photos URL`)
+  })
+}
+
 const indexHtml = readText('djr/index.html')
 const cmsIndexHtml = readText('admin/cms/index.html')
 assert(indexHtml.includes('data-djr-page="home"'), '/djr/ entrypoint is not marked as the DJR home page')
@@ -148,6 +162,9 @@ const participantPageAllowedPaths = new Set([
   'sections.hero.tagline',
   'sections.hero.allowParticipantAlbum',
   'sections.hero.albumId',
+  'sections.hero.imageMode',
+  'sections.hero.selectedPhotoIds',
+  'sections.hero.selectedPhotoIds[]',
   'sections.hero.imageLimit',
   'sections.story',
   'sections.story.enabled',
@@ -159,6 +176,9 @@ const participantPageAllowedPaths = new Set([
   'sections.story.quote',
   'sections.story.allowParticipantAlbum',
   'sections.story.albumId',
+  'sections.story.imageMode',
+  'sections.story.selectedPhotoIds',
+  'sections.story.selectedPhotoIds[]',
   'sections.story.imageLimit',
   'sections.featured',
   'sections.featured.enabled',
@@ -169,6 +189,9 @@ const participantPageAllowedPaths = new Set([
   'sections.featured.buttonLabel',
   'sections.featured.allowParticipantAlbum',
   'sections.featured.albumId',
+  'sections.featured.imageMode',
+  'sections.featured.selectedPhotoIds',
+  'sections.featured.selectedPhotoIds[]',
   'sections.featured.imageLimit',
   'sections.about',
   'sections.about.enabled',
@@ -178,6 +201,9 @@ const participantPageAllowedPaths = new Set([
   'sections.about.body',
   'sections.about.allowParticipantAlbum',
   'sections.about.albumId',
+  'sections.about.imageMode',
+  'sections.about.selectedPhotoIds',
+  'sections.about.selectedPhotoIds[]',
   'sections.about.imageLimit',
   'sections.creative',
   'sections.creative.enabled',
@@ -187,6 +213,9 @@ const participantPageAllowedPaths = new Set([
   'sections.creative.body',
   'sections.creative.allowParticipantAlbum',
   'sections.creative.albumId',
+  'sections.creative.imageMode',
+  'sections.creative.selectedPhotoIds',
+  'sections.creative.selectedPhotoIds[]',
   'sections.creative.imageLimit',
   'sections.cta',
   'sections.cta.enabled',
@@ -212,12 +241,15 @@ for (const sectionKey of ['hero', 'story', 'featured', 'about', 'creative', 'cta
   if (sectionKey !== 'cta') {
     assert(typeof section.allowParticipantAlbum === 'boolean', `participant page section ${sectionKey}.allowParticipantAlbum must be boolean`)
     validateAlbumIdField(section.albumId, `sections.${sectionKey}.albumId`)
+    validateImageMode(section.imageMode, `sections.${sectionKey}.imageMode`)
+    validatePhotoIds(section.selectedPhotoIds, `sections.${sectionKey}.selectedPhotoIds`)
     validateImageLimit(section.imageLimit, `sections.${sectionKey}.imageLimit`)
   }
 }
 
 for (const invalidId of ['david-behind-the-lens', '/album.html?album=fe027096-7084-4f96-974a-315b98b484b2', 'https://photos.google.com/share/example', 'https://www.whostosay.org/album.html?album=fe027096-7084-4f96-974a-315b98b484b2']) {
   assert(!isBlankOrUuid(invalidId), `album ID validator must reject ${invalidId}`)
+  assert(!(typeof invalidId === 'string' && UUID_RE.test(invalidId)), `photo ID validator must reject ${invalidId}`)
 }
 
 for (const relativePath of listJsonFiles('content/djr')) {
@@ -249,6 +281,9 @@ assert(albumImageHelper.includes('getAlbumById'), 'Participant album helper shou
 assert(albumImageHelper.includes('getOrderedAlbumPhotos'), 'Participant album helper should fetch ordered Supabase photos')
 assert(albumImageHelper.includes('getPublicUrl'), 'Participant album helper should map storage paths to public URLs')
 assert(albumImageHelper.includes('is_private'), 'Participant album helper should reject private albums')
+assert(albumImageHelper.includes('selectedPhotoIds'), 'Participant album helper should support selected photo IDs')
+assert(albumImageHelper.includes('manualSelection'), 'Participant album helper should support manual image selection mode')
+assert(albumImageHelper.includes('photoId'), 'Participant album helper should return normalized photo IDs')
 
 const participantPreview = readText('admin/preview-templates/participant-page-preview.js')
 assert(participantPreview.includes('registerPreviewTemplate') && participantPreview.includes('participant-pages'), 'Participant Pages preview template must register with Decap')
@@ -287,7 +322,7 @@ const participantPagesCollection = extractCollection(cmsConfig, 'participant-pag
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')
 if (participantPagesCollection) {
   assert(participantPagesCollection.includes('file: content/participant-pages/djr.json'), 'Participant Pages collection must expose content/participant-pages/djr.json')
-  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
+  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageMode', 'selectedPhotoIds', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
     assert(hasFieldName(participantPagesCollection, expectedField), `Participant Pages collection is missing field: ${expectedField}`)
   }
   for (const forbiddenField of ['href', 'formAction', 'photoGalleryAlbumId', 'googlePhotosAlbumUrl', 'album_id', 'nav', 'partner', 'button', 'primaryButton', 'secondaryButton', 'sourceType', 'sectionId', 'html', 'image', 'src']) {
