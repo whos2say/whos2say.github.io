@@ -61,6 +61,7 @@ export function createLightboxController({
     lightboxState.filePath = filePath || null
     lightboxState.index = (index !== undefined) ? index : state.allPhotos.findIndex(p => p.id === photoId)
     updateLightboxNavVisibility()
+    renderMediaInfo()
 
     const lbCropBtn = document.getElementById('lightbox-crop-btn')
     if (lbCropBtn) {
@@ -80,6 +81,7 @@ export function createLightboxController({
     lightboxState.url = null
     lightboxState.filePath = null
     lightboxState.index = -1
+    renderMediaInfo()
     const lbCropBtn = document.getElementById('lightbox-crop-btn')
     if (lbCropBtn) lbCropBtn.style.display = 'none'
   }
@@ -90,6 +92,113 @@ export function createLightboxController({
     if (!prevBtn || !nextBtn) return
     prevBtn.style.display = (lightboxState.index > 0) ? '' : 'none'
     nextBtn.style.display = (lightboxState.index < state.allPhotos.length - 1) ? '' : 'none'
+  }
+
+  function getCurrentPhoto() {
+    if (!lightboxState.photoId || !Array.isArray(state.allPhotos)) return null
+    return state.allPhotos.find(photo => photo.id === lightboxState.photoId) || null
+  }
+
+  function getOptionalText(photo, keys) {
+    for (const key of keys) {
+      const value = photo?.[key]
+      if (typeof value === 'string' && value.trim()) return value.trim()
+    }
+    return ''
+  }
+
+  function getTags(photo) {
+    const tags = photo?.tags || photo?.tag_list
+    if (Array.isArray(tags)) return tags.filter(Boolean).join(', ')
+    if (typeof tags === 'string') return tags.trim()
+    return ''
+  }
+
+  function appendInfoRow(parent, label, value) {
+    if (!value) return
+    const row = document.createElement('div')
+    row.className = 'lightbox-media-info-row'
+    const labelEl = document.createElement('span')
+    labelEl.className = 'lightbox-media-info-label'
+    labelEl.textContent = label
+    const valueEl = document.createElement('span')
+    valueEl.className = 'lightbox-media-info-value'
+    valueEl.textContent = value
+    row.appendChild(labelEl)
+    row.appendChild(valueEl)
+    parent.appendChild(row)
+  }
+
+  async function copyToClipboard(value, button) {
+    try {
+      await navigator.clipboard.writeText(value)
+      if (button) {
+        const original = button.textContent
+        button.textContent = 'Copied'
+        button.classList.add('is-copied')
+        setTimeout(() => {
+          button.textContent = original
+          button.classList.remove('is-copied')
+        }, 1400)
+      }
+    } catch {
+      window.prompt('Copy this value:', value)
+    }
+  }
+
+  function renderMediaInfo() {
+    const panel = document.getElementById('lightbox-media-info')
+    if (!panel) return
+
+    const photo = getCurrentPhoto()
+    if (!photo) {
+      panel.innerHTML = ''
+      panel.style.display = 'none'
+      return
+    }
+
+    panel.style.display = ''
+    panel.innerHTML = ''
+
+    const heading = document.createElement('div')
+    heading.className = 'lightbox-media-info-heading'
+    heading.textContent = 'Page Builder Info'
+    panel.appendChild(heading)
+
+    const helper = document.createElement('p')
+    helper.className = 'lightbox-media-info-helper'
+    helper.textContent = 'Use this Photo ID in Participant Pages when manually selecting images.'
+    panel.appendChild(helper)
+
+    const copyRow = document.createElement('div')
+    copyRow.className = 'media-hub-copy-row media-hub-copy-row--lightbox'
+
+    const label = document.createElement('span')
+    label.className = 'media-hub-copy-label'
+    label.textContent = 'Photo UUID'
+
+    const code = document.createElement('code')
+    code.textContent = photo.id || ''
+
+    const button = document.createElement('button')
+    button.className = 'media-hub-copy-btn'
+    button.type = 'button'
+    button.textContent = 'Copy Photo ID'
+    button.addEventListener('click', event => {
+      event.preventDefault()
+      event.stopPropagation()
+      copyToClipboard(photo.id || '', button)
+    })
+
+    copyRow.appendChild(label)
+    copyRow.appendChild(code)
+    copyRow.appendChild(button)
+    panel.appendChild(copyRow)
+
+    appendInfoRow(panel, 'Caption', getOptionalText(photo, ['caption', 'title', 'description']))
+    appendInfoRow(panel, 'Alt', getOptionalText(photo, ['alt', 'alt_text', 'altText']))
+    appendInfoRow(panel, 'Tags', getTags(photo))
+    appendInfoRow(panel, 'Credit', getOptionalText(photo, ['credit', 'photo_credit', 'photoCredit', 'uploaded_by_email']))
   }
 
   function navigateLightbox(delta) {

@@ -399,12 +399,17 @@ function renderAlbumMediaHubInfo(albumId) {
   }
 
   panel.innerHTML = `
-    <p class="media-hub-helper">Use Album UUID and Photo IDs in Participant Pages.</p>
-    <div class="media-hub-copy-row">
-      <span class="media-hub-copy-label">Album UUID</span>
-      <code>${escapeHtml(albumId)}</code>
-      <button class="media-hub-copy-btn" type="button">Copy</button>
-    </div>
+    <details class="media-hub-details">
+      <summary>Page Builder Info</summary>
+      <div class="media-hub-details-body">
+        <p class="media-hub-helper">Use this Album ID in Participant Pages. Photo IDs are available after opening a photo.</p>
+        <div class="media-hub-copy-row">
+          <span class="media-hub-copy-label">Album UUID</span>
+          <code>${escapeHtml(albumId)}</code>
+          <button class="media-hub-copy-btn" type="button">Copy Album ID</button>
+        </div>
+      </div>
+    </details>
   `
   panel.querySelector('.media-hub-copy-btn')?.addEventListener('click', event => {
     event.preventDefault()
