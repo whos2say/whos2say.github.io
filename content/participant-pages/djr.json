@@ -31,7 +31,9 @@
     },
     "featured": {
       "imageLimit": 1,
-      "selectedPhotoIds": [],
+      "selectedPhotoIds": [
+        "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963"
+      ],
       "enabled": true,
       "body": "David does not just take pictures from the edge of the action. He studies the field, waits for the face, the posture, the light, and the split second where a person becomes the story.",
       "buttonLabel": "See the Work",
@@ -40,7 +42,7 @@
       "albumId": "49d8c743-75e3-4371-9547-5a645327e81f",
       "allowParticipantEdit": true,
       "title": "The Sideline Becomes the Studio",
-      "imageMode": "albumOrder"
+      "imageMode": "manualSelection"
     },
     "about": {
       "imageLimit": 1,
@@ -58,15 +60,17 @@
     },
     "creative": {
       "imageLimit": 2,
-      "selectedPhotoIds": [],
+      "selectedPhotoIds": [
+        "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963.jpg"
+      ],
       "enabled": true,
       "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
       "allowParticipantAlbum": true,
       "eyebrow": "Eye to Eye",
-      "albumId": "0bb2946f-dcbc-483a-84d1-00a65783ed4c",
+      "albumId": "",
       "allowParticipantEdit": true,
       "title": "Based on a true story of perseverance and a camera.",
-      "imageMode": "albumOrder"
+      "imageMode": "manualSelection"
     },
     "cta": {
       "enabled": true,
