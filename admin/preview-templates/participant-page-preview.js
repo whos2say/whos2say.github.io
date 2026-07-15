@@ -11,23 +11,6 @@
   var stylePath = '/admin/preview-templates/participant-page-preview.css?v=participant-preview-8';
   var previewKeys = ['participant-pages', 'djr', 'participant-pages-djr'];
   var storagePrefix = 'wtsParticipantPagePreview:';
-  var savedConfigCache = {};
-  var sectionAnchors = {
-    hero: '',
-    story: 'story',
-    featured: 'story',
-    about: 'about',
-    creative: 'story',
-    cta: 'contact'
-  };
-  var sectionLabels = {
-    hero: 'Hero',
-    story: 'Story',
-    featured: 'Featured',
-    about: 'About',
-    creative: 'Creative',
-    cta: 'CTA'
-  };
 
   function toJS(value) {
     if (!value) return {};
@@ -54,68 +37,20 @@
     }
   }
 
-  function clone(value) {
-    try {
-      return JSON.parse(JSON.stringify(value || {}));
-    } catch (err) {
-      return {};
-    }
-  }
-
-  function previewSrc(slug, sectionKey) {
-    var anchor = sectionAnchors[sectionKey] || '';
+  function previewSrc(slug) {
     var src = '/djr/?cmsPreview=participant-pages&previewSlug=' + encodeURIComponent(slug) + '&ts=' + Date.now();
-    return anchor ? src + '#' + encodeURIComponent(anchor) : src;
+    return src;
   }
 
-  function reloadPreviewFrame(sectionKey) {
+  function reloadPreviewFrame(slug) {
     var frame = document.querySelector('.participant-page-preview__iframe');
-    var slug = frame && frame.getAttribute('data-preview-slug') || 'djr';
-    if (frame) frame.src = previewSrc(slug, sectionKey);
+    var previewSlug = slug || frame && frame.getAttribute('data-preview-slug') || 'djr';
+    if (frame) frame.src = previewSrc(previewSlug);
   }
 
-  function loadSavedConfig(slug) {
-    if (savedConfigCache[slug]) return Promise.resolve(clone(savedConfigCache[slug]));
-
-    return window.fetch('/content/participant-pages/' + encodeURIComponent(slug) + '.json', { cache: 'no-store' })
-      .then(function (response) {
-        if (!response.ok) throw new Error('Saved participant page config not available');
-        return response.json();
-      })
-      .then(function (data) {
-        savedConfigCache[slug] = clone(data);
-        return clone(data);
-      });
-  }
-
-  function replaceSection(currentData, savedData, sectionKey) {
-    var nextData = clone(currentData);
-    nextData.sections = nextData.sections || {};
-
-    if (sectionKey) {
-      nextData.sections[sectionKey] = clone(savedData && savedData.sections && savedData.sections[sectionKey]);
-      return nextData;
-    }
-
-    return clone(savedData);
-  }
-
-  function refreshPreview(slug, data, sectionKey) {
+  function refreshPreview(slug, data) {
     writeDraft(slug, data);
-    reloadPreviewFrame(sectionKey);
-  }
-
-  function undoPreview(slug, data, sectionKey) {
-    loadSavedConfig(slug)
-      .then(function (savedData) {
-        var nextData = replaceSection(data, savedData, sectionKey);
-        writeDraft(slug, nextData);
-        reloadPreviewFrame(sectionKey);
-        console.log('[Participant Pages Preview] undo preview applied', sectionKey || 'all');
-      })
-      .catch(function (err) {
-        console.warn('[Participant Pages Preview] could not undo preview:', err);
-      });
+    reloadPreviewFrame(slug);
   }
 
   function renderButton(label, className, onClick) {
@@ -124,24 +59,6 @@
       className: className,
       onClick: onClick
     }, label);
-  }
-
-  function renderSectionControls(slug, data) {
-    return h('div', { className: 'participant-page-preview__sections', 'aria-label': 'Preview section controls' },
-      Object.keys(sectionLabels).map(function (sectionKey) {
-        return h('div', { className: 'participant-page-preview__section-control', key: sectionKey }, [
-          h('span', { className: 'participant-page-preview__section-name' }, sectionLabels[sectionKey]),
-          h('div', { className: 'participant-page-preview__button-group' }, [
-            renderButton('Refresh', 'participant-page-preview__button', function () {
-              refreshPreview(slug, data, sectionKey);
-            }),
-            renderButton('Undo preview', 'participant-page-preview__button participant-page-preview__button--muted', function () {
-              undoPreview(slug, data, sectionKey);
-            })
-          ])
-        ]);
-      })
-    );
   }
 
   function ParticipantPagePreview(props) {
@@ -158,25 +75,22 @@
         h('div', null, [
           h('h1', { className: 'participant-page-preview__toolbar-title' }, 'Live DJR Page Preview'),
           h('p', { className: 'participant-page-preview__toolbar-subtitle' }, stored
-            ? 'Draft data from Participant Pages'
+            ? 'Preview auto-updates as you edit'
             : 'Preview is using saved content because draft data could not be stored')
         ]),
         h('div', { className: 'participant-page-preview__actions' }, [
-          renderButton('Refresh preview', 'participant-page-preview__button participant-page-preview__button--primary', function () {
+          renderButton('Refresh Preview', 'participant-page-preview__button participant-page-preview__button--primary', function () {
             refreshPreview(slug, data);
-          }),
-          renderButton('Undo preview to saved', 'participant-page-preview__button participant-page-preview__button--muted', function () {
-            undoPreview(slug, data);
           }),
           h('a', {
             className: 'participant-page-preview__open',
             href: src,
             target: '_blank',
             rel: 'noopener'
-          }, 'Open full preview')
+          }, 'Open Full Preview')
         ])
       ]),
-      renderSectionControls(slug, data),
+      h('p', { className: 'participant-page-preview__hint' }, 'Preview auto-updates as you edit. Use Refresh Preview if the iframe looks stale.'),
       h('iframe', {
         className: 'participant-page-preview__iframe',
         src: src,

@@ -28,12 +28,16 @@ Editors should use:
 That screen exposes grouped DJR page sections where a participant or support person can:
 
 - Turn supported sections on or off.
-- Allow or block participant text edits per section.
-- Edit safe non-empty copy fields.
-- Allow or block participant album overrides per section.
+- Use custom text per section.
+- Edit safe copy fields that are populated with the current DJR page text.
+- Use album images per section.
 - Paste Supabase album UUIDs from `/albums.html`.
 
 The Decap preview pane for Participant Pages uses `admin/preview-templates/participant-page-preview.js` and scoped preview CSS. It writes the current draft participant page config to same-origin `sessionStorage`, then renders the real `/djr/` page in an iframe at `/djr/?cmsPreview=participant-pages&previewSlug=djr`. The public `/djr/` URL does not read draft preview data.
+
+The preview auto-updates as editors change fields before publishing. `Refresh Preview` only reloads the iframe when the embedded page looks stale; it does not change form data. Actual publishing still happens through the Decap save/publish workflow.
+
+To revert text for a section without deleting draft text, turn off `Use custom text for this section`. To revert images for a section without deleting the album UUID, turn off `Use album images for this section`.
 
 The old `DJR Photography` collection is hidden and labeled as an advanced/admin legacy fallback. It is not the normal participant editing workflow.
 
@@ -70,7 +74,7 @@ Participant Pages can safely expose:
 - Creative feature eyebrow, title, and body.
 - CTA title, supporting text, and button label.
 
-Blank text fields do not erase fallback content. Text overlays apply only when `allowParticipantEdit` is true.
+Text fields are intentionally populated with the current DJR copy so editors can revise what is already on the page. Blank text fields do not erase fallback content. Text overlays apply only when `allowParticipantEdit` is true.
 
 ## Admin-only fields
 

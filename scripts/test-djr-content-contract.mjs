@@ -274,6 +274,10 @@ assert(participantPreview.includes('sessionStorage.setItem'), 'Participant Pages
 assert(participantPreview.includes('/djr/?cmsPreview=participant-pages&previewSlug='), 'Participant Pages preview should render the live DJR page iframe in CMS preview mode')
 assert(participantPreview.includes('participant-page-preview__iframe'), 'Participant Pages preview should render an iframe as the main preview')
 assert(participantPreview.includes('Live DJR Page Preview'), 'Participant Pages preview should show a live preview toolbar')
+assert(participantPreview.includes('Preview auto-updates as you edit'), 'Participant Pages preview should explain that edits auto-update the iframe')
+assert(participantPreview.includes('Refresh Preview'), 'Participant Pages preview should keep an honest iframe refresh control')
+assert(!participantPreview.includes('Undo preview'), 'Participant Pages preview must not show a fake undo control')
+assert(!participantPreview.includes('undoPreview'), 'Participant Pages preview must not include iframe-only undo behavior')
 assert(!participantPreview.includes('Story / The Photographer'), 'Participant Pages preview should not render admin section cards as the main preview')
 assert(!participantPreview.includes('getAlbumById'), 'Participant Pages preview must not fetch Supabase album metadata')
 assert(!participantPreview.includes('widget: image'), 'Participant Pages preview must not introduce upload widgets')
@@ -290,6 +294,10 @@ if (participantPagesCollection) {
     assert(!hasFieldName(participantPagesCollection, forbiddenField), `Participant Pages collection must not expose field: ${forbiddenField}`)
   }
   assert(!participantPagesCollection.includes('widget: image'), 'Participant Pages collection must not expose media upload widgets')
+  assert(participantPagesCollection.includes('Use custom text for this section'), 'Participant Pages collection should label text toggles clearly')
+  assert(participantPagesCollection.includes('Use album images for this section'), 'Participant Pages collection should label album toggles clearly')
+  assert(participantPagesCollection.includes('Turn this off to show the official/default DJR copy for this section without deleting your draft text.'), 'Participant Pages collection should explain how to revert custom text without deleting drafts')
+  assert(participantPagesCollection.includes('Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images.'), 'Participant Pages collection should explain how album image toggles work')
 }
 
 const djrCollection = extractCollection(cmsConfig, 'djr')

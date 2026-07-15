@@ -560,58 +560,58 @@
             fields:
               - { label: Hero, name: hero, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Use custom text for this section, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to show the official/default DJR copy for this section without deleting your draft text." },
                   { label: Tagline, name: tagline, widget: string, required: false, hint: "Blank keeps the default DJR hero tagline." },
-                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: false },
+                  { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: false, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Story, name: story, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Use custom text for this section, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to show the official/default DJR copy for this section without deleting your draft text." },
                   { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Lead, name: lead, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Quote, name: quote, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
-                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 4, value_type: int }
                 ]}
               - { label: Featured, name: featured, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Use custom text for this section, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to show the official/default DJR copy for this section without deleting your draft text." },
                   { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Button Label, name: buttonLabel, widget: string, required: false, hint: "Blank keeps the default button label. Button URLs stay admin-owned." },
-                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: About, name: about, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Use custom text for this section, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to show the official/default DJR copy for this section without deleting your draft text." },
                   { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
-                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Creative, name: creative, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Use custom text for this section, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to show the official/default DJR copy for this section without deleting your draft text." },
                   { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Body, name: body, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
-                  { label: Allow participant album override, name: allowParticipantAlbum, widget: boolean, required: false, default: true },
+                  { label: Use album images for this section, name: allowParticipantAlbum, widget: boolean, required: false, default: true, hint: "Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images." },
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 2, value_type: int }
                 ]}
               - { label: CTA / Contact, name: cta, widget: object, fields: [
                   { label: Enabled, name: enabled, widget: boolean, required: false, default: true },
-                  { label: Allow participant text edits, name: allowParticipantEdit, widget: boolean, required: false, default: true },
+                  { label: Use custom text for this section, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to show the official/default DJR copy for this section without deleting your draft text." },
                   { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Supporting Text, name: sub, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Button Label, name: buttonLabel, widget: string, required: false, hint: "Blank keeps the default button label. Button URLs stay admin-owned." }
