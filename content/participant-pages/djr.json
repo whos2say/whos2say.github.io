@@ -44,7 +44,9 @@
     },
     "about": {
       "imageLimit": 1,
-      "selectedPhotoIds": [],
+      "selectedPhotoIds": [
+        "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963"
+      ],
       "enabled": true,
       "body": "David J. Richards is building his voice as a photographer one frame at a time. His work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss.",
       "allowParticipantAlbum": true,
@@ -52,7 +54,7 @@
       "albumId": "",
       "allowParticipantEdit": true,
       "title": "Not just a gallery. A point of view.",
-      "imageMode": "albumOrder"
+      "imageMode": "manualSelection"
     },
     "creative": {
       "imageLimit": 2,
