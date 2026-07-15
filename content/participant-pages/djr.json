@@ -104,7 +104,7 @@
         "imageMode": "albumOrder",
         "selectedPhotoIds": [],
         "imageLimit": 9,
-        "displayMode": "grid",
+        "displayMode": "slideshow",
         "ctaLabel": "Book This Session"
       },
       {
@@ -124,7 +124,7 @@
         "imageMode": "albumOrder",
         "selectedPhotoIds": [],
         "imageLimit": 9,
-        "displayMode": "grid",
+        "displayMode": "slideshow",
         "ctaLabel": "Book This Session"
       },
       {
@@ -144,7 +144,7 @@
         "imageMode": "albumOrder",
         "selectedPhotoIds": [],
         "imageLimit": 9,
-        "displayMode": "grid",
+        "displayMode": "slideshow",
         "ctaLabel": "Ask About This"
       },
       {
@@ -164,7 +164,7 @@
         "imageMode": "albumOrder",
         "selectedPhotoIds": [],
         "imageLimit": 9,
-        "displayMode": "grid",
+        "displayMode": "slideshow",
         "ctaLabel": "Book Game Coverage"
       },
       {
@@ -184,7 +184,7 @@
         "imageMode": "albumOrder",
         "selectedPhotoIds": [],
         "imageLimit": 9,
-        "displayMode": "grid",
+        "displayMode": "slideshow",
         "ctaLabel": "Start the Story"
       },
       {
@@ -204,7 +204,7 @@
         "imageMode": "albumOrder",
         "selectedPhotoIds": [],
         "imageLimit": 9,
-        "displayMode": "grid",
+        "displayMode": "slideshow",
         "ctaLabel": "Ask About This"
       }
     ]

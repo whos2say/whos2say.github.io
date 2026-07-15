@@ -569,7 +569,7 @@
                       { label: Manual selected photos, value: manualSelection },
                       { label: Single selected photo, value: singlePhoto }
                     ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
+                  { label: Selected Photos, name: selectedPhotoIds, widget: album-photo-selector, required: false, hint: "Visual selector. Photo IDs must come from the Album UUID above. For Single selected photo, choose one photo." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Story, name: story, widget: object, fields: [
@@ -587,7 +587,7 @@
                       { label: Manual selected photos, value: manualSelection },
                       { label: Single selected photo, value: singlePhoto }
                     ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
+                  { label: Selected Photos, name: selectedPhotoIds, widget: album-photo-selector, required: false, hint: "Visual selector. Photo IDs must come from the Album UUID above. For Single selected photo, choose one photo." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 4, value_type: int }
                 ]}
               - { label: Featured, name: featured, widget: object, fields: [
@@ -604,7 +604,7 @@
                       { label: Manual selected photos, value: manualSelection },
                       { label: Single selected photo, value: singlePhoto }
                     ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
+                  { label: Selected Photos, name: selectedPhotoIds, widget: album-photo-selector, required: false, hint: "Visual selector. Photo IDs must come from the Album UUID above. For Single selected photo, choose one photo." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: About, name: about, widget: object, fields: [
@@ -620,7 +620,7 @@
                       { label: Manual selected photos, value: manualSelection },
                       { label: Single selected photo, value: singlePhoto }
                     ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
+                  { label: Selected Photos, name: selectedPhotoIds, widget: album-photo-selector, required: false, hint: "Visual selector. Photo IDs must come from the Album UUID above. For Single selected photo, choose one photo." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Creative, name: creative, widget: object, fields: [
@@ -636,7 +636,7 @@
                       { label: Manual selected photos, value: manualSelection },
                       { label: Single selected photo, value: singlePhoto }
                     ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
+                  { label: Selected Photos, name: selectedPhotoIds, widget: album-photo-selector, required: false, hint: "Visual selector. Photo IDs must come from the Album UUID above. For Single selected photo, choose one photo." },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 2, value_type: int }
                 ]}
               - { label: CTA / Contact, name: cta, widget: object, fields: [
@@ -683,13 +683,13 @@
                       - { label: Manual selected photos, value: manualSelection }
                       - { label: Single selected photo, value: singlePhoto }
                     hint: "Manual and single-photo modes use the Photo UUIDs below. Photo UUIDs must come from the Album UUID above."
-                  - { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Find/copy Photo UUIDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } }
+                  - { label: Selected Photos, name: selectedPhotoIds, widget: album-photo-selector, required: false, hint: "Visual selector. Find/copy Photo UUIDs from /albums.html by opening a photo if you need the advanced manual fallback." }
                   - { label: Image Limit, name: imageLimit, widget: number, required: false, default: 9, value_type: int }
                   - label: Display Mode
                     name: displayMode
                     widget: select
                     required: false
-                    default: grid
+                    default: slideshow
                     options:
                       - { label: Immersive grid, value: grid }
                       - { label: Slideshow, value: slideshow }

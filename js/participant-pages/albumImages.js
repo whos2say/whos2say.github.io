@@ -27,6 +27,10 @@ function normalizeImageMode(value) {
   return value === 'manualSelection' ? 'manualSelection' : 'albumOrder'
 }
 
+function getFileName(filePath) {
+  return String(filePath || '').split('/').filter(Boolean).pop() || ''
+}
+
 function normalizeImageLimit(value, fallback) {
   const limit = Number(value)
   if (Number.isFinite(limit) && limit > 0) return Math.floor(limit)
@@ -37,8 +41,8 @@ function normalizePhoto(photo, index, album, albumId, fallbackAlt) {
   return {
     photoId: photo.id || '',
     src: getPublicUrl(photo.file_path),
-    alt: `${fallbackAlt} ${index + 1}`,
-    caption: album.name || '',
+    alt: photo.alt || photo.alt_text || photo.altText || `${fallbackAlt} ${index + 1}`,
+    caption: photo.caption || photo.title || photo.description || album.name || '',
     sourceAlbumId: albumId,
     sourceAlbumName: album.name || '',
     filePath: photo.file_path || '',
@@ -56,8 +60,8 @@ function orderSelectedPhotos(images, selectedPhotoIds, imageLimit) {
     if (directMatch) return directMatch
 
     return images.find((image) => {
-      const fileName = String(image.filePath || '').split('/').filter(Boolean).pop() || ''
-      return selectedPhotoId === `${image.sourceAlbumId}/${fileName}`
+      const fileName = getFileName(image.filePath)
+      return selectedPhotoId === image.filePath || selectedPhotoId === fileName || selectedPhotoId === `${image.sourceAlbumId}/${fileName}`
     })
   }
   const selected = selectedPhotoIds

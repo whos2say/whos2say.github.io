@@ -133,6 +133,7 @@ function validatePhotoIds(value, label) {
 const indexHtml = readText('djr/index.html')
 const serviceHtml = readText('djr/service.html')
 const cmsIndexHtml = readText('admin/cms/index.html')
+const albumPhotoSelector = readText('admin/widgets/album-photo-selector.js')
 assert(indexHtml.includes('data-djr-page="home"'), '/djr/ entrypoint is not marked as the DJR home page')
 assert(indexHtml.includes('/djr/js/djr-content.js'), '/djr/ does not load DJR content renderer')
 assert(!indexHtml.includes('/djr/js/djr-section-galleries.js'), '/djr/ must not load the old JSON CMS album card renderer')
@@ -144,6 +145,9 @@ assert(cmsIndexHtml.includes('window.CMS_MANUAL_INIT = true'), '/admin/cms/ must
 assert(cmsIndexHtml.indexOf('window.CMS_MANUAL_INIT = true') < cmsIndexHtml.indexOf('decap-cms'), '/admin/cms/ must set CMS_MANUAL_INIT before loading Decap')
 assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js?v=participant-preview-8'), '/admin/cms/ must load the cache-busted Participant Pages preview template')
 assert(cmsIndexHtml.indexOf('participant-page-preview.js?v=participant-preview-8') < cmsIndexHtml.indexOf('window.CMS.init()'), '/admin/cms/ must load the Participant Pages preview before CMS.init()')
+assert(cmsIndexHtml.includes('/admin/widgets/album-photo-selector.js?v=album-photo-selector-1'), '/admin/cms/ must load the Album Photo Selector widget')
+assert(cmsIndexHtml.includes('window.__albumPhotoSelectorRegistered'), '/admin/cms/ must wait for the Album Photo Selector before CMS.init() when available')
+assert(cmsIndexHtml.includes('https://oiiluqrpzhujbvrblsko.supabase.co'), '/admin/cms/ CSP must allow the Supabase media source for the Album Photo Selector')
 
 const site = readJson('content/djr/site.json')
 const home = readJson('content/djr/home.json')
@@ -299,6 +303,7 @@ for (const [index, service] of (services.items || []).entries()) {
   validateImageLimit(service.imageLimit, `services.items[${index}].imageLimit`)
   assert(service.displayMode === 'grid' || service.displayMode === 'slideshow', `services.items[${index}].displayMode must be grid or slideshow`)
 }
+assert(services.items.some((service) => service.displayMode === 'slideshow'), 'participant page service offerings should support slideshow display mode')
 
 for (const invalidId of ['david-behind-the-lens', '/album.html?album=fe027096-7084-4f96-974a-315b98b484b2', 'https://photos.google.com/share/example', 'https://www.whostosay.org/album.html?album=fe027096-7084-4f96-974a-315b98b484b2']) {
   assert(!isBlankOrUuid(invalidId), `album ID validator must reject ${invalidId}`)
@@ -332,6 +337,8 @@ assert(djrContent.includes('/js/participant-pages/albumImages.js'), 'DJR content
 assert(djrContent.includes('renderServicePage'), 'DJR content renderer should render DJR service offering pages')
 assert(djrContent.includes('/djr/service.html?service='), 'DJR service cards should link to service offering pages')
 assert(djrContent.includes('loadServiceImages'), 'DJR service pages should load album images through the participant album helper')
+assert(djrContent.includes('renderServiceSlideshow'), 'DJR service pages should render slideshow visual mode')
+assert(djrContent.includes('initServiceSlideshow'), 'DJR service slideshow should initialize public controls')
 assert(!djrContent.includes('content/djr-albums'), 'DJR content renderer must not depend on JSON CMS albums')
 
 const albumImageHelper = readText('js/participant-pages/albumImages.js')
@@ -346,6 +353,13 @@ assert(albumImageHelper.includes('singlePhoto'), 'Participant album helper shoul
 assert(albumImageHelper.includes('selectedPhotoIds.slice(0, 1)'), 'Participant album helper should use the first selected Photo ID for single-photo mode')
 assert(albumImageHelper.includes('photoId'), 'Participant album helper should return normalized photo IDs')
 assert(albumImageHelper.includes('ALBUM_SCOPED_PHOTO_ID_RE'), 'Participant album helper should preserve legacy album-scoped selected photo IDs')
+assert(albumImageHelper.includes('selectedPhotoId === image.filePath'), 'Participant album helper should preserve legacy file_path selected photo IDs')
+
+assert(albumPhotoSelector.includes("registerWidget('album-photo-selector'"), 'Album Photo Selector must register a Decap custom widget')
+assert(albumPhotoSelector.includes('getOrderedAlbumPhotos'), 'Album Photo Selector should load ordered Supabase album photos')
+assert(albumPhotoSelector.includes('getAlbumById'), 'Album Photo Selector should reject missing/private albums through album metadata')
+assert(albumPhotoSelector.includes('props.onChange(nextIds)'), 'Album Photo Selector should write selected Photo IDs back to Decap')
+assert(albumPhotoSelector.includes('Images come from /albums.html'), 'Album Photo Selector should explain the Media Hub workflow')
 
 const participantPreview = readText('admin/preview-templates/participant-page-preview.js')
 assert(participantPreview.includes('registerPreviewTemplate') && participantPreview.includes('participant-pages'), 'Participant Pages preview template must register with Decap')
@@ -398,6 +412,8 @@ if (participantPagesCollection) {
   assert(participantPagesCollection.includes('Single selected photo'), 'Participant Pages collection should expose a single-photo image mode')
   assert(participantPagesCollection.includes('Photo UUIDs must come from the Album UUID above.'), 'Participant Pages collection should explain Photo UUIDs must match the Album UUID')
   assert(participantPagesCollection.includes('Albums and Photo IDs come from /albums.html. The public service page uses these images without showing media hub/admin controls.'), 'Participant Pages collection should explain the service offering media workflow')
+  assert(participantPagesCollection.includes('widget: album-photo-selector'), 'Participant Pages collection should use the visual Album Photo Selector for selected photos')
+  assert(participantPagesCollection.includes('default: slideshow'), 'Participant Pages service display mode should default to slideshow')
 }
 
 const djrCollection = extractCollection(cmsConfig, 'djr')

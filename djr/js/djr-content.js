@@ -173,7 +173,7 @@
       imageMode: item.imageMode === 'singlePhoto' ? 'singlePhoto' : (item.imageMode === 'manualSelection' ? 'manualSelection' : 'albumOrder'),
       selectedPhotoIds: Array.isArray(item.selectedPhotoIds) ? item.selectedPhotoIds.slice() : [],
       imageLimit: Number.isFinite(Number(item.imageLimit)) && Number(item.imageLimit) > 0 ? Math.floor(Number(item.imageLimit)) : 9,
-      displayMode: item.displayMode === 'slideshow' ? 'slideshow' : 'grid',
+      displayMode: item.displayMode === 'grid' ? 'grid' : 'slideshow',
       ctaLabel: safeString(item.ctaLabel) || 'Book This Session',
       image: safeString(item.image),
       href: safeString(item.href)
@@ -623,6 +623,11 @@
     if (!galleryImages.length) {
       return '<p class="djr-service-empty">Images for this offering are being prepared.</p>';
     }
+
+    if ((item.displayMode || 'slideshow') === 'slideshow') {
+      return renderServiceSlideshow(item, galleryImages);
+    }
+
     return '<div class="djr-service-gallery djr-service-gallery--' + esc(item.displayMode || 'grid') + '">' +
       galleryImages.map(function (image) {
         return '<figure class="djr-service-photo"><img src="' + esc(image.src) + '" alt="' + esc(image.alt || item.title) + '" loading="lazy" decoding="async"/>' +
@@ -630,6 +635,59 @@
           '</figure>';
       }).join('\n') +
       '</div>';
+  }
+
+  function renderServiceSlideshow(item, images) {
+    var slides = images.map(function (image, index) {
+      return '<figure class="djr-service-slide' + (index === 0 ? ' is-active' : '') + '" data-djr-service-slide="' + index + '">' +
+        '<img src="' + esc(image.src) + '" alt="' + esc(image.alt || item.title) + '" loading="' + (index === 0 ? 'eager' : 'lazy') + '" decoding="async"/>' +
+        (image.caption ? '<figcaption>' + esc(image.caption) + '</figcaption>' : '') +
+        '</figure>';
+    }).join('\n');
+    var thumbs = images.map(function (image, index) {
+      return '<button class="djr-service-thumb' + (index === 0 ? ' is-active' : '') + '" type="button" data-djr-service-thumb="' + index + '" aria-label="Show photo ' + (index + 1) + '">' +
+        '<img src="' + esc(image.src) + '" alt="" loading="lazy" decoding="async"/>' +
+        '</button>';
+    }).join('\n');
+
+    return '<div class="djr-service-slideshow" data-djr-service-slideshow>' +
+      '<div class="djr-service-slides">' + slides + '</div>' +
+      (images.length > 1 ? '<button class="djr-service-slideshow-btn djr-service-slideshow-btn--prev" type="button" data-djr-service-prev aria-label="Previous photo">‹</button>' : '') +
+      (images.length > 1 ? '<button class="djr-service-slideshow-btn djr-service-slideshow-btn--next" type="button" data-djr-service-next aria-label="Next photo">›</button>' : '') +
+      (images.length > 1 ? '<div class="djr-service-thumbs" aria-label="Service photo navigation">' + thumbs + '</div>' : '') +
+      '</div>';
+  }
+
+  function initServiceSlideshow(root) {
+    var slideshow = root && root.querySelector('[data-djr-service-slideshow]');
+    if (!slideshow) return;
+    var slides = Array.prototype.slice.call(slideshow.querySelectorAll('[data-djr-service-slide]'));
+    var thumbs = Array.prototype.slice.call(slideshow.querySelectorAll('[data-djr-service-thumb]'));
+    var active = 0;
+
+    function showSlide(index) {
+      if (!slides.length) return;
+      active = (index + slides.length) % slides.length;
+      slides.forEach(function (slide, slideIndex) {
+        slide.classList.toggle('is-active', slideIndex === active);
+      });
+      thumbs.forEach(function (thumb, thumbIndex) {
+        thumb.classList.toggle('is-active', thumbIndex === active);
+      });
+    }
+
+    var prev = slideshow.querySelector('[data-djr-service-prev]');
+    var next = slideshow.querySelector('[data-djr-service-next]');
+    if (prev) prev.addEventListener('click', function () { showSlide(active - 1); });
+    if (next) next.addEventListener('click', function () { showSlide(active + 1); });
+    thumbs.forEach(function (thumb, index) {
+      thumb.addEventListener('click', function () { showSlide(index); });
+    });
+    slideshow.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowLeft') showSlide(active - 1);
+      if (event.key === 'ArrowRight') showSlide(active + 1);
+    });
+    slideshow.tabIndex = 0;
   }
 
   async function renderServicePage(data, config) {
@@ -676,6 +734,7 @@
       '</div>' +
       '</div>' +
       '</section>';
+    initServiceSlideshow(root);
   }
 
   function renderContact(data, site) {

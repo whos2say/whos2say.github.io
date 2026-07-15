@@ -33,7 +33,7 @@ That screen exposes grouped DJR page sections where a participant or support per
 - Use album images per section.
 - Paste Supabase album UUIDs from `/albums.html`.
 - Choose album order, manual selected photos, or a single selected photo for supported image sections.
-- Paste selected Supabase photo UUIDs when manual or single-photo selection is needed.
+- Use the visual Selected Photos widget to load album thumbnails and choose photos for manual or single-photo selection.
 - Manage DJR service offerings, which are the public photography/gallery types shown on the homepage.
 
 The Decap preview pane for Participant Pages uses `admin/preview-templates/participant-page-preview.js` and scoped preview CSS. It writes the current draft participant page config to same-origin `sessionStorage`, then renders the real `/djr/` page in an iframe at `/djr/?cmsPreview=participant-pages&previewSlug=djr`. The public `/djr/` URL does not read draft preview data.
@@ -57,6 +57,8 @@ The DJR homepage service cards represent David's photography offering types:
 
 Each card links to a public DJR service offering page at `/djr/service.html?service=<serviceId>`. These pages are visual public pages, not raw albums and not media-hub/admin screens. They use the DJR chrome, a visual gallery grid, a service description, package bullets, and a contact CTA.
 
+Service offering pages use slideshow as the default public "see the work" experience. Editors can still choose `grid` for a service item when a tiled gallery is a better fit.
+
 In Participant Pages, the `services` section can safely edit:
 
 - Services section visibility, eyebrow, and title.
@@ -68,6 +70,7 @@ Service images come from `/albums.html` and Supabase albums. To connect a servic
 2. Copy the Album UUID.
 3. Paste it into that service offering's `Album UUID`.
 4. Leave `Image Mode` as `Album order`, or choose manual/single-photo mode and paste Photo UUIDs copied from the opened photo detail view.
+5. In `Selected Photos`, load the Album UUID and click thumbnails to choose or reorder the photos shown on the service page.
 
 Blank, invalid, private, missing, empty, or blocked service albums fall back to the default DJR service card image from `content/djr/home.json`. Button URLs remain admin-owned; the participant-facing CTA label links to the DJR contact page.
 
@@ -100,6 +103,8 @@ For each section, album overlays apply only when `allowParticipantAlbum` is true
 Photo IDs are resolved inside the selected Album UUID. The Album UUID and Photo UUID must match: if a selected photo is not in the resolved album, it is skipped. Unknown, blocked, missing, or non-image photo IDs are skipped. If manual selection is empty, the renderer falls back to album order. The current Decap editor uses native text/list fields for photo IDs; a visual album photo picker is the recommended next UX improvement.
 
 New selections should use Photo UUIDs copied from the opened photo detail view in `/albums.html`. The renderer also preserves older album-scoped selected photo IDs already saved in CMS content so existing draft selections are not discarded during Participant Pages updates.
+
+Participant Pages includes a visual Selected Photos widget for `selectedPhotoIds`. It loads thumbnails from the album, writes selected `photos.id` values into the page config, preserves selected order, and keeps an advanced/manual ID details area for fallback troubleshooting.
 
 Examples:
 
