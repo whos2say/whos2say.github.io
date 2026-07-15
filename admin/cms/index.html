@@ -26,7 +26,7 @@
       window.CMS_MANUAL_INIT = true;
     </script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-    <script type="module" src="/admin/widgets/album-photo-selector.js?v=album-photo-selector-1"></script>
+    <script src="/admin/widgets/album-photo-selector.js?v=album-photo-selector-2"></script>
     <script src="/admin/preview-templates/participant-page-preview.js?v=participant-preview-8"></script>
     <script>
       (function initCmsAfterParticipantPreview(attempt) {
@@ -35,7 +35,19 @@
           return;
         }
 
-        if ((window.__participantPagesPreviewRegistered && window.__albumPhotoSelectorRegistered) || attempt > 80) {
+        if (window.__participantPagesPreviewRegistered && window.__albumPhotoSelectorRegistered) {
+          window.CMS.init();
+          return;
+        }
+
+        if (attempt > 80) {
+          console.warn('[CMS Init] Initializing after registration wait timeout', {
+            selectorScriptLoaded: Boolean(window.__albumPhotoSelectorScriptLoaded),
+            selectorRegistered: Boolean(window.__albumPhotoSelectorRegistered),
+            selectorFailed: Boolean(window.__albumPhotoSelectorRegistrationFailed),
+            previewRegistered: Boolean(window.__participantPagesPreviewRegistered),
+            previewFailed: Boolean(window.__participantPagesPreviewRegistrationFailed)
+          });
           window.CMS.init();
           return;
         }
