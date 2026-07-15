@@ -63,6 +63,8 @@ export function createPhotoGridController({
 
     tile.appendChild(checkbox)
 
+    tile.appendChild(buildPhotoMetadata(photo))
+
     const controls = buildPhotoControls(photo, publicUrl)
     tile.appendChild(controls)
 
@@ -130,6 +132,95 @@ export function createPhotoGridController({
     enhancedBadge.innerHTML = '✨ Enhanced'
     tile.appendChild(enhancedBadge)
     return media
+  }
+
+  function getOptionalText(photo, keys) {
+    for (const key of keys) {
+      const value = photo?.[key]
+      if (typeof value === 'string' && value.trim()) return value.trim()
+    }
+    return ''
+  }
+
+  function getTags(photo) {
+    const tags = photo?.tags || photo?.tag_list
+    if (Array.isArray(tags)) return tags.filter(Boolean).join(', ')
+    if (typeof tags === 'string') return tags.trim()
+    return ''
+  }
+
+  async function copyToClipboard(value, button) {
+    try {
+      await navigator.clipboard.writeText(value)
+      if (button) {
+        const original = button.textContent
+        button.textContent = 'Copied'
+        button.classList.add('is-copied')
+        setTimeout(() => {
+          button.textContent = original
+          button.classList.remove('is-copied')
+        }, 1400)
+      }
+      showToast?.('Copied')
+    } catch {
+      window.prompt('Copy this value:', value)
+    }
+  }
+
+  function appendMetadataRow(parent, label, value) {
+    if (!value) return
+    const row = document.createElement('div')
+    row.className = 'photo-meta-row'
+    const labelEl = document.createElement('span')
+    labelEl.className = 'photo-meta-label'
+    labelEl.textContent = label
+    const valueEl = document.createElement('span')
+    valueEl.className = 'photo-meta-value'
+    valueEl.textContent = value
+    row.appendChild(labelEl)
+    row.appendChild(valueEl)
+    parent.appendChild(row)
+  }
+
+  function buildPhotoMetadata(photo) {
+    const meta = document.createElement('div')
+    meta.className = 'photo-media-hub-meta'
+
+    const helper = document.createElement('div')
+    helper.className = 'photo-media-hub-helper'
+    helper.textContent = 'Use Photo ID in Participant Pages.'
+    meta.appendChild(helper)
+
+    const row = document.createElement('div')
+    row.className = 'media-hub-copy-row media-hub-copy-row--photo'
+
+    const label = document.createElement('span')
+    label.className = 'media-hub-copy-label'
+    label.textContent = 'Photo UUID'
+
+    const code = document.createElement('code')
+    code.textContent = photo.id || ''
+
+    const button = document.createElement('button')
+    button.className = 'media-hub-copy-btn'
+    button.type = 'button'
+    button.textContent = 'Copy'
+    button.addEventListener('click', event => {
+      event.preventDefault()
+      event.stopPropagation()
+      copyToClipboard(photo.id || '', button)
+    })
+
+    row.appendChild(label)
+    row.appendChild(code)
+    row.appendChild(button)
+    meta.appendChild(row)
+
+    appendMetadataRow(meta, 'Caption', getOptionalText(photo, ['caption', 'title', 'description']))
+    appendMetadataRow(meta, 'Alt', getOptionalText(photo, ['alt', 'alt_text', 'altText']))
+    appendMetadataRow(meta, 'Tags', getTags(photo))
+
+    return meta
   }
 
   function addDarkPhotoDetection({ tile, media, controls, idx }) {

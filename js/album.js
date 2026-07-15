@@ -362,6 +362,56 @@ function downloadPhoto(url, filename) {
   return downloadPhotoFile(url, filename, { showToast })
 }
 
+function escapeHtml(text) {
+  const div = document.createElement('div')
+  div.textContent = text == null ? '' : String(text)
+  return div.innerHTML
+}
+
+async function copyToClipboard(value, button) {
+  try {
+    await navigator.clipboard.writeText(value)
+    if (button) {
+      const original = button.textContent
+      button.textContent = 'Copied'
+      button.classList.add('is-copied')
+      setTimeout(() => {
+        button.textContent = original
+        button.classList.remove('is-copied')
+      }, 1400)
+    }
+    showToast('Copied')
+  } catch {
+    window.prompt('Copy this value:', value)
+  }
+}
+
+function renderAlbumMediaHubInfo(albumId) {
+  const hero = document.querySelector('.album-hero-inner')
+  if (!hero || !albumId) return
+
+  let panel = document.getElementById('album-media-hub-info')
+  if (!panel) {
+    panel = document.createElement('div')
+    panel.id = 'album-media-hub-info'
+    panel.className = 'media-hub-panel'
+    hero.insertAdjacentElement('afterend', panel)
+  }
+
+  panel.innerHTML = `
+    <p class="media-hub-helper">Use Album UUID and Photo IDs in Participant Pages.</p>
+    <div class="media-hub-copy-row">
+      <span class="media-hub-copy-label">Album UUID</span>
+      <code>${escapeHtml(albumId)}</code>
+      <button class="media-hub-copy-btn" type="button">Copy</button>
+    </div>
+  `
+  panel.querySelector('.media-hub-copy-btn')?.addEventListener('click', event => {
+    event.preventDefault()
+    copyToClipboard(albumId, event.currentTarget)
+  })
+}
+
 async function loadAlbum() {
   currentAlbumId = getAlbumId()
   setAlbumState({ currentAlbumId })
@@ -398,6 +448,8 @@ async function loadAlbum() {
 
   // Set upload link
   uploadBtnEl.href = `/upload.html?album=${encodeURIComponent(currentAlbumId)}`
+
+  renderAlbumMediaHubInfo(currentAlbumId)
   
   // Set slideshow link
   slideshowBtnEl.href = `/slideshow.html?album=${encodeURIComponent(currentAlbumId)}`

@@ -251,9 +251,12 @@ async function loadAlbums() {
           ${privateBadge}
           <h3>${escapeHtml(album.name)}</h3>
           <p>Created ${createdDate}</p>
+          <p class="media-hub-helper">Use Album UUID and Photo IDs in Participant Pages.</p>
+          ${buildUuidCopyHtml('Album UUID', album.id)}
           <a href="/album.html?album=${encodeURIComponent(album.id)}">View Album</a>
         </div>
       `
+      initCopyButtons(card)
 
       if (userIsAdmin && !adminPreviewMode) {
         card.draggable = true
@@ -605,6 +608,43 @@ function escapeHtml(text) {
   const div = document.createElement('div')
   div.textContent = text
   return div.innerHTML
+}
+
+async function copyToClipboard(value, button) {
+  try {
+    await navigator.clipboard.writeText(value)
+    if (button) {
+      const original = button.textContent
+      button.textContent = 'Copied'
+      button.classList.add('is-copied')
+      setTimeout(() => {
+        button.textContent = original
+        button.classList.remove('is-copied')
+      }, 1400)
+    }
+  } catch {
+    window.prompt('Copy this value:', value)
+  }
+}
+
+function buildUuidCopyHtml(label, value) {
+  return `
+    <div class="media-hub-copy-row">
+      <span class="media-hub-copy-label">${escapeHtml(label)}</span>
+      <code>${escapeHtml(value)}</code>
+      <button class="media-hub-copy-btn" type="button" data-copy-value="${escapeHtml(value)}">Copy</button>
+    </div>
+  `
+}
+
+function initCopyButtons(root = document) {
+  root.querySelectorAll('[data-copy-value]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.preventDefault()
+      event.stopPropagation()
+      copyToClipboard(button.dataset.copyValue || '', button)
+    })
+  })
 }
 
 async function checkAuth() {
