@@ -61,13 +61,14 @@
     "creative": {
       "imageLimit": 2,
       "selectedPhotoIds": [
-        "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963.jpg"
+        "97db0186-2cb3-49e2-b3b6-c47ceb85c31c",
+        "e82e5c4f-8b44-4833-aeeb-3d63bd7956e2"
       ],
       "enabled": true,
       "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
       "allowParticipantAlbum": true,
       "eyebrow": "Eye to Eye",
-      "albumId": "",
+      "albumId": "890289d8-897a-4c0d-b753-49da84c93f84",
       "allowParticipantEdit": true,
       "title": "Based on a true story of perseverance and a camera.",
       "imageMode": "manualSelection"
