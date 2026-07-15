@@ -1,5 +1,5 @@
 {
-  "_comment": "DJR participant page settings. Participant Pages is the main CMS workflow. Blank copy fields preserve content/djr/home.json. Create/manage albums in /albums.html, then paste Supabase album UUIDs here.",
+  "_comment": "DJR participant page settings. Participant Pages is the main CMS workflow. Text fields are seeded from the live DJR page so editors can revise before publishing. Create/manage albums in /albums.html, then paste Supabase album UUIDs here.",
   "name": "David J. Richards",
   "slug": "djr",
   "template": "djr-photography",
@@ -8,7 +8,7 @@
     "hero": {
       "enabled": true,
       "allowParticipantEdit": true,
-      "tagline": "",
+      "tagline": "Eye to eye with the moment.",
       "allowParticipantAlbum": false,
       "albumId": "",
       "imageLimit": 1
@@ -16,11 +16,11 @@
     "story": {
       "enabled": true,
       "allowParticipantEdit": true,
-      "eyebrow": "",
-      "title": "",
-      "lead": "",
-      "body": "",
-      "quote": "",
+      "eyebrow": "The Photographer",
+      "title": "A camera became David's way of stepping into the world.",
+      "lead": "DJR Photography is not a polished brand invented in a boardroom. It is a real person learning to look closely, move with purpose, and tell people, places, games, and family stories through the lens.",
+      "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
+      "quote": "The dream. The hard work. The moment. The capture.",
       "allowParticipantAlbum": true,
       "albumId": "",
       "imageLimit": 4
@@ -28,10 +28,10 @@
     "featured": {
       "enabled": true,
       "allowParticipantEdit": true,
-      "eyebrow": "",
-      "title": "",
-      "body": "",
-      "buttonLabel": "",
+      "eyebrow": "Featured Story",
+      "title": "The Sideline Becomes the Studio",
+      "body": "David does not just take pictures from the edge of the action. He studies the field, waits for the face, the posture, the light, and the split second where a person becomes the story.",
+      "buttonLabel": "See the Work",
       "allowParticipantAlbum": true,
       "albumId": "",
       "imageLimit": 1
@@ -39,9 +39,9 @@
     "about": {
       "enabled": true,
       "allowParticipantEdit": true,
-      "eyebrow": "",
-      "title": "",
-      "body": "",
+      "eyebrow": "About David",
+      "title": "Not just a gallery. A point of view.",
+      "body": "David J. Richards is building his voice as a photographer one frame at a time. His work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss.",
       "allowParticipantAlbum": true,
       "albumId": "",
       "imageLimit": 1
@@ -49,9 +49,9 @@
     "creative": {
       "enabled": true,
       "allowParticipantEdit": true,
-      "eyebrow": "",
-      "title": "",
-      "body": "",
+      "eyebrow": "Eye to Eye",
+      "title": "Based on a true story of perseverance and a camera.",
+      "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
       "allowParticipantAlbum": true,
       "albumId": "0bb2946f-dcbc-483a-84d1-00a65783ed4c",
       "imageLimit": 2
@@ -59,9 +59,9 @@
     "cta": {
       "enabled": true,
       "allowParticipantEdit": true,
-      "title": "",
-      "sub": "",
-      "buttonLabel": ""
+      "title": "Help David keep building the story.",
+      "sub": "Book a session, invite him to cover a game or event, or follow along as DJR Photography grows from a dream into a body of work.",
+      "buttonLabel": "Contact DJR"
     }
   }
 }

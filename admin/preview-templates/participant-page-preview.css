@@ -23,6 +23,14 @@
   background: rgba(18, 20, 31, 0.94);
 }
 
+.participant-page-preview__actions,
+.participant-page-preview__button-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .participant-page-preview__toolbar-title {
   margin: 0;
   color: #fff7df;
@@ -37,20 +45,63 @@
   line-height: 1.4;
 }
 
+.participant-page-preview__button,
 .participant-page-preview__open {
   flex: 0 0 auto;
   padding: 9px 12px;
   border: 1px solid rgba(215, 189, 121, 0.5);
   border-radius: 999px;
+  background: transparent;
   color: #f6dc95;
+  cursor: pointer;
   font-size: 12px;
   font-weight: 800;
+  font-family: inherit;
+  line-height: 1.2;
   text-decoration: none;
 }
 
+.participant-page-preview__button:hover,
 .participant-page-preview__open:hover {
   border-color: rgba(215, 189, 121, 0.9);
   color: #fff4cf;
+}
+
+.participant-page-preview__button--primary {
+  background: rgba(86, 160, 255, 0.16);
+  border-color: rgba(86, 160, 255, 0.62);
+  color: #dcecff;
+}
+
+.participant-page-preview__button--muted {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(246, 242, 234, 0.72);
+}
+
+.participant-page-preview__sections {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.participant-page-preview__section-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.participant-page-preview__section-name {
+  min-width: 0;
+  color: rgba(246, 242, 234, 0.9);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .participant-page-preview__iframe {
@@ -93,9 +144,16 @@
     display: block;
   }
 
+  .participant-page-preview__actions {
+    margin-top: 10px;
+  }
+
   .participant-page-preview__open {
     display: inline-flex;
-    margin-top: 10px;
+  }
+
+  .participant-page-preview__sections {
+    grid-template-columns: 1fr;
   }
 
   .participant-page-preview__iframe {

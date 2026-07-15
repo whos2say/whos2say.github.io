@@ -123,8 +123,8 @@ assert(indexHtml.includes('David J. Richards') || indexHtml.includes('DJR Photog
 assert(cmsIndexHtml.includes('/admin/config.yml'), '/admin/cms/ must load the generated Decap config')
 assert(cmsIndexHtml.includes('window.CMS_MANUAL_INIT = true'), '/admin/cms/ must enable Decap manual initialization before loading Decap')
 assert(cmsIndexHtml.indexOf('window.CMS_MANUAL_INIT = true') < cmsIndexHtml.indexOf('decap-cms'), '/admin/cms/ must set CMS_MANUAL_INIT before loading Decap')
-assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js?v=participant-preview-7'), '/admin/cms/ must load the cache-busted Participant Pages preview template')
-assert(cmsIndexHtml.indexOf('participant-page-preview.js?v=participant-preview-7') < cmsIndexHtml.indexOf('window.CMS.init()'), '/admin/cms/ must load the Participant Pages preview before CMS.init()')
+assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js?v=participant-preview-8'), '/admin/cms/ must load the cache-busted Participant Pages preview template')
+assert(cmsIndexHtml.indexOf('participant-page-preview.js?v=participant-preview-8') < cmsIndexHtml.indexOf('window.CMS.init()'), '/admin/cms/ must load the Participant Pages preview before CMS.init()')
 
 const site = readJson('content/djr/site.json')
 const home = readJson('content/djr/home.json')
@@ -261,14 +261,14 @@ assert(participantPreview.includes('window.__participantPagesPreviewLoaded = tru
 assert(participantPreview.includes('window.__participantPagesPreviewRegistered = true'), 'Participant Pages preview should set a registration marker')
 assert(participantPreview.includes('window.__participantPagesPreviewRegistrationFailed = true'), 'Participant Pages preview should set a failure marker after retries')
 assert(participantPreview.includes('console.log') && participantPreview.includes('console.warn'), 'Participant Pages preview should include admin-only registration logging')
-assert(participantPreview.includes('[Participant Pages Preview] script loaded v7'), 'Participant Pages preview should log the v7 load marker')
-assert(participantPreview.includes('[Participant Pages Preview] registered for participant-pages v7'), 'Participant Pages preview should log the v7 registration marker')
+assert(participantPreview.includes('[Participant Pages Preview] script loaded v8'), 'Participant Pages preview should log the v8 load marker')
+assert(participantPreview.includes('[Participant Pages Preview] registered for participant-pages v8'), 'Participant Pages preview should log the v8 registration marker')
 assert(participantPreview.includes('[Participant Pages Preview] iframe draft updated'), 'Participant Pages preview should log iframe draft updates')
 for (const previewKey of ['participant-pages', 'djr', 'participant-pages-djr']) {
   assert(participantPreview.includes(`[Participant Pages Preview] registered for ' + key`) && participantPreview.includes(previewKey), `Participant Pages preview should register/log key: ${previewKey}`)
 }
 assert(!participantPreview.includes('CMS.init('), 'Participant Pages preview script must not initialize Decap')
-assert(participantPreview.includes('participant-page-preview.css?v=participant-preview-7'), 'Participant Pages preview should cache-bust its preview CSS')
+assert(participantPreview.includes('participant-page-preview.css?v=participant-preview-8'), 'Participant Pages preview should cache-bust its preview CSS')
 assert(participantPreview.includes('wtsParticipantPagePreview:'), 'Participant Pages preview should write draft data to sessionStorage')
 assert(participantPreview.includes('sessionStorage.setItem'), 'Participant Pages preview should store draft data for the iframe')
 assert(participantPreview.includes('/djr/?cmsPreview=participant-pages&previewSlug='), 'Participant Pages preview should render the live DJR page iframe in CMS preview mode')
