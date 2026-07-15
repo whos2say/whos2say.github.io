@@ -30,6 +30,42 @@
       });
   }
 
+  function getSearchParams() {
+    try {
+      return new URLSearchParams(global.location.search || '');
+    } catch (err) {
+      return new URLSearchParams('');
+    }
+  }
+
+  function isParticipantCmsPreview() {
+    return getSearchParams().get('cmsPreview') === 'participant-pages';
+  }
+
+  function getParticipantPreviewSlug() {
+    return getSearchParams().get('previewSlug') || 'djr';
+  }
+
+  function readParticipantPreviewConfig() {
+    if (!isParticipantCmsPreview()) return null;
+    try {
+      var key = 'wtsParticipantPagePreview:' + getParticipantPreviewSlug();
+      var raw = global.sessionStorage && global.sessionStorage.getItem(key);
+      if (!raw) return null;
+      var data = JSON.parse(raw);
+      return data && typeof data === 'object' ? data : null;
+    } catch (err) {
+      console.warn('[DJRContent] Participant CMS preview config unavailable:', err.message);
+      return null;
+    }
+  }
+
+  function loadParticipantPageConfig() {
+    var previewConfig = readParticipantPreviewConfig();
+    if (previewConfig) return Promise.resolve(previewConfig);
+    return fetchOptionalJson('/content/participant-pages/djr.json');
+  }
+
   function esc(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -479,7 +515,7 @@
         return fetchJson('/content/djr/home.json').then(function (home) {
           return fetchOptionalJson('/content/djr/participant-copy.json')
             .then(function (copy) {
-              return fetchOptionalJson('/content/participant-pages/djr.json')
+              return loadParticipantPageConfig()
                 .then(function (config) {
                   return overlayParticipantAlbums(overlayParticipantPageContent(overlayParticipantCopy(home, copy), config), config);
                 })
