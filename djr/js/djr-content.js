@@ -186,6 +186,7 @@
 
   function getSectionImageMode(config, sectionKey) {
     var section = config && config.sections && config.sections[sectionKey];
+    if (section && section.imageMode === 'singlePhoto') return 'singlePhoto';
     return section && section.imageMode === 'manualSelection' ? 'manualSelection' : 'albumOrder';
   }
 
@@ -195,11 +196,12 @@
   }
 
   function getSectionAlbumOptions(config, sectionKey, fallbackAlt, fallbackLimit) {
+    var imageMode = getSectionImageMode(config, sectionKey);
     return {
       fallbackAlt: fallbackAlt,
-      imageMode: getSectionImageMode(config, sectionKey),
+      imageMode: imageMode,
       selectedPhotoIds: getSectionSelectedPhotoIds(config, sectionKey),
-      imageLimit: getSectionImageLimit(config, sectionKey, fallbackLimit)
+      imageLimit: imageMode === 'singlePhoto' ? 1 : getSectionImageLimit(config, sectionKey, fallbackLimit)
     };
   }
 

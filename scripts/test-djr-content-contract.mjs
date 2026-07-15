@@ -115,7 +115,7 @@ function validateImageLimit(value, label) {
 }
 
 function validateImageMode(value, label) {
-  assert(value === 'albumOrder' || value === 'manualSelection', `${label} must be albumOrder or manualSelection`)
+  assert(value === 'albumOrder' || value === 'manualSelection' || value === 'singlePhoto', `${label} must be albumOrder, manualSelection, or singlePhoto`)
 }
 
 function validatePhotoIds(value, label) {
@@ -272,6 +272,8 @@ assert(djrContent.includes('applyNonEmptyString'), 'DJR content renderer must pr
 assert(djrContent.includes('applyParticipantSectionToggles'), 'DJR content renderer should apply participant section toggles')
 assert(djrContent.includes('allowParticipantAlbum !== true'), 'DJR content renderer must only apply section album overlays when allowParticipantAlbum is true')
 assert(djrContent.includes('section.albumId || config.defaultAlbumId'), 'DJR content renderer should use section album IDs before defaultAlbumId')
+assert(djrContent.includes("section.imageMode === 'singlePhoto'"), 'DJR content renderer should support single-photo image mode')
+assert(djrContent.includes("imageMode === 'singlePhoto' ? 1"), 'DJR content renderer should force image limit 1 for single-photo mode')
 assert(djrContent.includes('/js/participant-pages/albumImages.js'), 'DJR content renderer should use the participant album image helper')
 assert(!djrContent.includes('content/djr-albums'), 'DJR content renderer must not depend on JSON CMS albums')
 
@@ -283,6 +285,8 @@ assert(albumImageHelper.includes('getPublicUrl'), 'Participant album helper shou
 assert(albumImageHelper.includes('is_private'), 'Participant album helper should reject private albums')
 assert(albumImageHelper.includes('selectedPhotoIds'), 'Participant album helper should support selected photo IDs')
 assert(albumImageHelper.includes('manualSelection'), 'Participant album helper should support manual image selection mode')
+assert(albumImageHelper.includes('singlePhoto'), 'Participant album helper should support single-photo image mode')
+assert(albumImageHelper.includes('selectedPhotoIds.slice(0, 1)'), 'Participant album helper should use the first selected Photo ID for single-photo mode')
 assert(albumImageHelper.includes('photoId'), 'Participant album helper should return normalized photo IDs')
 
 const participantPreview = readText('admin/preview-templates/participant-page-preview.js')
@@ -333,6 +337,8 @@ if (participantPagesCollection) {
   assert(participantPagesCollection.includes('Use album images for this section'), 'Participant Pages collection should label album toggles clearly')
   assert(participantPagesCollection.includes('Turn this off to show the official/default DJR copy for this section without deleting your draft text.'), 'Participant Pages collection should explain how to revert custom text without deleting drafts')
   assert(participantPagesCollection.includes('Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images.'), 'Participant Pages collection should explain how album image toggles work')
+  assert(participantPagesCollection.includes('Single selected photo'), 'Participant Pages collection should expose a single-photo image mode')
+  assert(participantPagesCollection.includes('Photo UUIDs must come from the Album UUID above.'), 'Participant Pages collection should explain Photo UUIDs must match the Album UUID')
 }
 
 const djrCollection = extractCollection(cmsConfig, 'djr')

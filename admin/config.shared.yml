@@ -566,9 +566,10 @@
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
                       { label: Album order, value: albumOrder },
-                      { label: Manual selection, value: manualSelection }
-                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
+                      { label: Manual selected photos, value: manualSelection },
+                      { label: Single selected photo, value: singlePhoto }
+                    ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Story, name: story, widget: object, fields: [
@@ -583,9 +584,10 @@
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
                       { label: Album order, value: albumOrder },
-                      { label: Manual selection, value: manualSelection }
-                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
+                      { label: Manual selected photos, value: manualSelection },
+                      { label: Single selected photo, value: singlePhoto }
+                    ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 4, value_type: int }
                 ]}
               - { label: Featured, name: featured, widget: object, fields: [
@@ -599,9 +601,10 @@
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
                       { label: Album order, value: albumOrder },
-                      { label: Manual selection, value: manualSelection }
-                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
+                      { label: Manual selected photos, value: manualSelection },
+                      { label: Single selected photo, value: singlePhoto }
+                    ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: About, name: about, widget: object, fields: [
@@ -614,9 +617,10 @@
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
                       { label: Album order, value: albumOrder },
-                      { label: Manual selection, value: manualSelection }
-                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
+                      { label: Manual selected photos, value: manualSelection },
+                      { label: Single selected photo, value: singlePhoto }
+                    ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 1, value_type: int }
                 ]}
               - { label: Creative, name: creative, widget: object, fields: [
@@ -629,9 +633,10 @@
                   { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID when album override is enabled." },
                   { label: Image Mode, name: imageMode, widget: select, required: false, default: albumOrder, options: [
                       { label: Album order, value: albumOrder },
-                      { label: Manual selection, value: manualSelection }
-                    ], hint: "Album order uses the first images from the album. Manual selection uses the Selected Photo IDs below, then fills from album order if needed." },
-                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Optional. Use only with Manual selection. Photo IDs come from /albums.html.", field: { label: Photo UUID, name: photoId, widget: string } },
+                      { label: Manual selected photos, value: manualSelection },
+                      { label: Single selected photo, value: singlePhoto }
+                    ], hint: "Album order uses the first images from the album. Manual selected photos uses the Photo UUIDs below in order. Single selected photo uses the first Photo UUID below and treats Image Limit as 1." },
+                  { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Photo UUIDs must come from the Album UUID above. For Single selected photo, add one Photo UUID. Find/copy IDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } },
                   { label: Image Limit, name: imageLimit, widget: number, required: false, default: 2, value_type: int }
                 ]}
               - { label: CTA / Contact, name: cta, widget: object, fields: [

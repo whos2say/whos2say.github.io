@@ -22,6 +22,7 @@ export function normalizePhotoIds(value) {
 }
 
 function normalizeImageMode(value) {
+  if (value === 'singlePhoto') return 'singlePhoto'
   return value === 'manualSelection' ? 'manualSelection' : 'albumOrder'
 }
 
@@ -63,7 +64,9 @@ export async function loadPublicAlbumImages(albumId, options = {}) {
   const fallbackAlt = options.fallbackAlt || 'Participant album photo'
   const imageMode = normalizeImageMode(options.imageMode)
   const selectedPhotoIds = normalizePhotoIds(options.selectedPhotoIds)
-  const imageLimit = normalizeImageLimit(options.imageLimit, Number.POSITIVE_INFINITY)
+  const imageLimit = imageMode === 'singlePhoto'
+    ? 1
+    : normalizeImageLimit(options.imageLimit, Number.POSITIVE_INFINITY)
 
   if (!normalizedAlbumId) return []
   if (!isValidAlbumId(normalizedAlbumId)) {
@@ -83,6 +86,7 @@ export async function loadPublicAlbumImages(albumId, options = {}) {
       .map((photo, index) => normalizePhoto(photo, index, album, normalizedAlbumId, fallbackAlt))
 
     if (!images.length) return []
+    if (imageMode === 'singlePhoto') return orderSelectedPhotos(images, selectedPhotoIds.slice(0, 1), 1)
     if (imageMode === 'manualSelection') return orderSelectedPhotos(images, selectedPhotoIds, imageLimit)
     return images.slice(0, imageLimit)
   } catch (err) {

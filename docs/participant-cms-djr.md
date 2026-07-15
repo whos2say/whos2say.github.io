@@ -32,8 +32,8 @@ That screen exposes grouped DJR page sections where a participant or support per
 - Edit safe copy fields that are populated with the current DJR page text.
 - Use album images per section.
 - Paste Supabase album UUIDs from `/albums.html`.
-- Choose album order or manual photo selection for supported image sections.
-- Paste selected Supabase photo UUIDs when manual photo selection is needed.
+- Choose album order, manual selected photos, or a single selected photo for supported image sections.
+- Paste selected Supabase photo UUIDs when manual or single-photo selection is needed.
 
 The Decap preview pane for Participant Pages uses `admin/preview-templates/participant-page-preview.js` and scoped preview CSS. It writes the current draft participant page config to same-origin `sessionStorage`, then renders the real `/djr/` page in an iframe at `/djr/?cmsPreview=participant-pages&previewSlug=djr`. The public `/djr/` URL does not read draft preview data.
 
@@ -64,8 +64,17 @@ For each section, album overlays apply only when `allowParticipantAlbum` is true
 
 - `albumOrder` uses the album's ordered photos up to `imageLimit`.
 - `manualSelection` uses `selectedPhotoIds` in the listed order, then fills any remaining slots from album order.
+- `singlePhoto` uses the first `selectedPhotoIds` value and treats `imageLimit` as 1.
 
-Photo IDs must be Supabase photo UUIDs from the same album. Unknown, blocked, missing, or non-image photo IDs are skipped. If manual selection is empty, the renderer falls back to album order. The current Decap editor uses native text/list fields for photo IDs; a visual album photo picker is the recommended next UX improvement.
+Photo IDs are resolved inside the selected Album UUID. The Album UUID and Photo UUID must match: if a selected photo is not in the resolved album, it is skipped. Unknown, blocked, missing, or non-image photo IDs are skipped. If manual selection is empty, the renderer falls back to album order. The current Decap editor uses native text/list fields for photo IDs; a visual album photo picker is the recommended next UX improvement.
+
+Examples:
+
+- One image: set `imageMode` to `singlePhoto`, paste the section's Album UUID, then add one Photo UUID to `selectedPhotoIds`. The renderer uses that one photo and ignores `imageLimit`.
+- Multiple images: set `imageMode` to `manualSelection`, paste the section's Album UUID, add Photo UUIDs to `selectedPhotoIds` in the order they should appear, and set `imageLimit` to the desired count.
+- Album order: set `imageMode` to `albumOrder`, paste the Album UUID, leave `selectedPhotoIds` empty, and set `imageLimit`.
+
+In `/albums.html`, open an album to copy the Album UUID from Page Builder Info. Open an individual photo to copy the Album UUID and Photo UUID together for Participant Pages.
 
 ## Safe participant fields
 
@@ -131,7 +140,7 @@ The contract checks:
 - Participant Pages exposes only approved safe fields.
 - `enabled`, `allowParticipantEdit`, and `allowParticipantAlbum` are booleans.
 - Album IDs are blank or valid Supabase UUIDs.
-- Image mode is `albumOrder` or `manualSelection`.
+- Image mode is `albumOrder`, `manualSelection`, or `singlePhoto`.
 - Selected photo IDs are valid Supabase UUIDs.
 - Slugs, raw URLs, Google Photos URLs, and `/album.html?album=` URLs are rejected as album IDs.
 - The DJR homepage does not load the old CMS album card script.

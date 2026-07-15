@@ -129,6 +129,33 @@ export function createLightboxController({
     parent.appendChild(row)
   }
 
+  function appendCopyRow(parent, labelText, value, buttonText) {
+    const row = document.createElement('div')
+    row.className = 'media-hub-copy-row media-hub-copy-row--lightbox'
+
+    const label = document.createElement('span')
+    label.className = 'media-hub-copy-label'
+    label.textContent = labelText
+
+    const code = document.createElement('code')
+    code.textContent = value || ''
+
+    const button = document.createElement('button')
+    button.className = 'media-hub-copy-btn'
+    button.type = 'button'
+    button.textContent = buttonText
+    button.addEventListener('click', event => {
+      event.preventDefault()
+      event.stopPropagation()
+      copyToClipboard(value || '', button)
+    })
+
+    row.appendChild(label)
+    row.appendChild(code)
+    row.appendChild(button)
+    parent.appendChild(row)
+  }
+
   async function copyToClipboard(value, button) {
     try {
       await navigator.clipboard.writeText(value)
@@ -170,30 +197,22 @@ export function createLightboxController({
     helper.textContent = 'Use this Photo ID in Participant Pages when manually selecting images.'
     panel.appendChild(helper)
 
-    const copyRow = document.createElement('div')
-    copyRow.className = 'media-hub-copy-row media-hub-copy-row--lightbox'
+    appendCopyRow(panel, 'Album UUID', state.currentAlbumId || '', 'Copy Album ID')
+    appendCopyRow(panel, 'Photo UUID', photo.id || '', 'Copy Photo ID')
 
-    const label = document.createElement('span')
-    label.className = 'media-hub-copy-label'
-    label.textContent = 'Photo UUID'
-
-    const code = document.createElement('code')
-    code.textContent = photo.id || ''
-
-    const button = document.createElement('button')
-    button.className = 'media-hub-copy-btn'
-    button.type = 'button'
-    button.textContent = 'Copy Photo ID'
-    button.addEventListener('click', event => {
+    const copyBoth = document.createElement('button')
+    copyBoth.className = 'media-hub-copy-btn media-hub-copy-btn--full'
+    copyBoth.type = 'button'
+    copyBoth.textContent = 'Copy IDs for Participant Page'
+    copyBoth.addEventListener('click', event => {
       event.preventDefault()
       event.stopPropagation()
-      copyToClipboard(photo.id || '', button)
+      copyToClipboard(
+        `Album UUID: ${state.currentAlbumId || ''}\nPhoto UUID: ${photo.id || ''}`,
+        copyBoth
+      )
     })
-
-    copyRow.appendChild(label)
-    copyRow.appendChild(code)
-    copyRow.appendChild(button)
-    panel.appendChild(copyRow)
+    panel.appendChild(copyBoth)
 
     appendInfoRow(panel, 'Caption', getOptionalText(photo, ['caption', 'title', 'description']))
     appendInfoRow(panel, 'Alt', getOptionalText(photo, ['alt', 'alt_text', 'altText']))

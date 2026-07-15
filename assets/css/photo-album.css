@@ -184,6 +184,11 @@
       color: var(--color-dark-900);
     }
 
+    .media-hub-copy-btn--full{
+      width: 100%;
+      min-height: 34px;
+    }
+
     .albums-page .album-card a{
       color: var(--color-primary);
       text-decoration: none;
