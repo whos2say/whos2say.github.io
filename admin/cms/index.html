@@ -22,7 +22,25 @@
     />
   </head>
   <body>
+    <script>
+      window.CMS_MANUAL_INIT = true;
+    </script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-    <script src="/admin/preview-templates/participant-page-preview.js?v=participant-preview-4"></script>
+    <script src="/admin/preview-templates/participant-page-preview.js?v=participant-preview-5"></script>
+    <script>
+      (function initCmsAfterParticipantPreview(attempt) {
+        if (!window.CMS) {
+          window.setTimeout(function () { initCmsAfterParticipantPreview((attempt || 0) + 1); }, 50);
+          return;
+        }
+
+        if (window.__participantPagesPreviewRegistered || attempt > 80) {
+          window.CMS.init();
+          return;
+        }
+
+        window.setTimeout(function () { initCmsAfterParticipantPreview((attempt || 0) + 1); }, 50);
+      })(0);
+    </script>
   </body>
 </html>

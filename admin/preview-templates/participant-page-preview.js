@@ -2,14 +2,14 @@
   'use strict';
 
   window.__participantPagesPreviewLoaded = true;
-  console.log('[Participant Pages Preview] script loaded v4');
+  console.log('[Participant Pages Preview] script loaded v5');
 
   var h = null;
   var registered = false;
   var attempts = 0;
   var maxAttempts = 60;
   var retryDelay = 100;
-  var stylePath = '/admin/preview-templates/participant-page-preview.css?v=participant-preview-4';
+  var stylePath = '/admin/preview-templates/participant-page-preview.css?v=participant-preview-5';
 
   var SECTION_ORDER = [
     {
@@ -213,7 +213,7 @@
       attempts += 1;
       if (attempts >= maxAttempts) {
         window.__participantPagesPreviewRegistrationFailed = true;
-        console.warn('[Participant Pages Preview] registration failed after retries v4', {
+        console.warn('[Participant Pages Preview] registration failed after retries v5', {
           hasCMS: Boolean(window.CMS),
           hasH: Boolean(window.h),
           hasReact: Boolean(window.React),
@@ -228,12 +228,13 @@
 
     try {
       CMS.registerPreviewStyle(stylePath);
+      console.log('[Participant Pages Preview] registering collection participant-pages');
       CMS.registerPreviewTemplate("participant-pages", ParticipantPagePreview);
       registered = true;
       window.__participantPagesPreviewRegistered = true;
-      console.log('[Participant Pages Preview] registered for participant-pages v4');
+      console.log('[Participant Pages Preview] registered for participant-pages v5');
     } catch (err) {
-      console.warn('[Participant Pages Preview] registration failed v4:', err);
+      console.warn('[Participant Pages Preview] registration failed v5:', err);
     }
   }
 
