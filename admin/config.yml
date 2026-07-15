@@ -671,6 +671,54 @@ collections:
                   { label: Supporting Text, name: sub, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Button Label, name: buttonLabel, widget: string, required: false, hint: "Blank keeps the default button label. Button URLs stay admin-owned." }
                 ]}
+          - label: Service Offerings
+            name: services
+            widget: object
+            hint: "Albums and Photo IDs come from /albums.html. The public service page uses these images without showing media hub/admin controls."
+            fields:
+              - { label: Enabled, name: enabled, widget: boolean, required: false, default: true }
+              - { label: Use custom text, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to show the official/default DJR service copy without deleting your draft text." }
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: "Blank keeps the default DJR services eyebrow." }
+              - { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default DJR services title." }
+              - label: Service offerings
+                name: items
+                widget: list
+                summary: "{{fields.title}}"
+                fields:
+                  - { label: Enabled, name: enabled, widget: boolean, required: false, default: true }
+                  - { label: Service ID, name: serviceId, widget: string, hint: "Use a lowercase URL-safe value, such as behind-the-lens or sports-energy." }
+                  - { label: Category, name: category, widget: string, required: false }
+                  - { label: Icon/Text, name: icon, widget: string, required: false }
+                  - { label: Title, name: title, widget: string, required: false, hint: "Blank keeps the default service title when Use custom text is off." }
+                  - { label: Summary/card text, name: summary, widget: text, required: false, hint: "Short text shown on the homepage card and service page hero." }
+                  - { label: Service description, name: serviceDescription, widget: text, required: false, hint: "Longer public description shown on the service offering page." }
+                  - label: Package bullets
+                    name: packageDetails
+                    widget: list
+                    required: false
+                    field: { label: Bullet, name: bullet, widget: string }
+                  - { label: Album UUID, name: albumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Blank uses Default Album ID." }
+                  - label: Image Mode
+                    name: imageMode
+                    widget: select
+                    required: false
+                    default: albumOrder
+                    options:
+                      - { label: Album order, value: albumOrder }
+                      - { label: Manual selected photos, value: manualSelection }
+                      - { label: Single selected photo, value: singlePhoto }
+                    hint: "Manual and single-photo modes use the Photo UUIDs below. Photo UUIDs must come from the Album UUID above."
+                  - { label: Selected Photo IDs, name: selectedPhotoIds, widget: list, required: false, hint: "Find/copy Photo UUIDs from /albums.html by opening a photo.", field: { label: Photo UUID, name: photoId, widget: string } }
+                  - { label: Image Limit, name: imageLimit, widget: number, required: false, default: 9, value_type: int }
+                  - label: Display Mode
+                    name: displayMode
+                    widget: select
+                    required: false
+                    default: grid
+                    options:
+                      - { label: Immersive grid, value: grid }
+                      - { label: Slideshow, value: slideshow }
+                  - { label: CTA label, name: ctaLabel, widget: string, required: false, hint: "Button goes to the DJR contact page. URLs stay admin-owned." }
 
   - name: djr
     label: DJR Photography - Advanced/Admin Legacy

@@ -8,6 +8,7 @@ const root = path.join(__dirname, '..')
 
 const errors = []
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 function fail(message) {
   errors.push(message)
@@ -129,10 +130,13 @@ function validatePhotoIds(value, label) {
 }
 
 const indexHtml = readText('djr/index.html')
+const serviceHtml = readText('djr/service.html')
 const cmsIndexHtml = readText('admin/cms/index.html')
 assert(indexHtml.includes('data-djr-page="home"'), '/djr/ entrypoint is not marked as the DJR home page')
 assert(indexHtml.includes('/djr/js/djr-content.js'), '/djr/ does not load DJR content renderer')
 assert(!indexHtml.includes('/djr/js/djr-section-galleries.js'), '/djr/ must not load the old JSON CMS album card renderer')
+assert(serviceHtml.includes('data-djr-page="service"'), '/djr/service.html must be marked as the DJR service page')
+assert(serviceHtml.includes('/djr/js/djr-content.js'), '/djr/service.html must load the DJR content renderer')
 assert(indexHtml.includes('David J. Richards') || indexHtml.includes('DJR Photography'), '/djr/ lacks DJR identity in baseline HTML')
 assert(cmsIndexHtml.includes('/admin/config.yml'), '/admin/cms/ must load the generated Decap config')
 assert(cmsIndexHtml.includes('window.CMS_MANUAL_INIT = true'), '/admin/cms/ must enable Decap manual initialization before loading Decap')
@@ -223,6 +227,29 @@ const participantPageAllowedPaths = new Set([
   'sections.cta.title',
   'sections.cta.sub',
   'sections.cta.buttonLabel',
+  'services',
+  'services.enabled',
+  'services.allowParticipantEdit',
+  'services.eyebrow',
+  'services.title',
+  'services.items',
+  'services.items[]',
+  'services.items[].serviceId',
+  'services.items[].enabled',
+  'services.items[].category',
+  'services.items[].icon',
+  'services.items[].title',
+  'services.items[].summary',
+  'services.items[].serviceDescription',
+  'services.items[].packageDetails',
+  'services.items[].packageDetails[]',
+  'services.items[].albumId',
+  'services.items[].imageMode',
+  'services.items[].selectedPhotoIds',
+  'services.items[].selectedPhotoIds[]',
+  'services.items[].imageLimit',
+  'services.items[].displayMode',
+  'services.items[].ctaLabel',
 ])
 
 for (const participantPath of collectPaths(participantPage)) {
@@ -247,6 +274,31 @@ for (const sectionKey of ['hero', 'story', 'featured', 'about', 'creative', 'cta
   }
 }
 
+const services = participantPage?.services
+assert(services && typeof services === 'object', 'participant page services section must exist')
+assert(typeof services.enabled === 'boolean', 'participant page services.enabled must be boolean')
+assert(typeof services.allowParticipantEdit === 'boolean', 'participant page services.allowParticipantEdit must be boolean')
+assert(Array.isArray(services.items) && services.items.length >= 6, 'participant page services.items must include the DJR service offerings')
+for (const [index, service] of (services.items || []).entries()) {
+  assert(service && typeof service === 'object', `services.items[${index}] must be an object`)
+  assert(typeof service.enabled === 'boolean', `services.items[${index}].enabled must be boolean`)
+  assert(typeof service.serviceId === 'string' && SLUG_RE.test(service.serviceId), `services.items[${index}].serviceId must be URL-safe slug text`)
+  for (const field of ['category', 'icon', 'title', 'summary', 'serviceDescription', 'ctaLabel']) {
+    assert(typeof service[field] === 'string', `services.items[${index}].${field} must be a string`)
+    assert(!/<[a-z][\s\S]*>/i.test(service[field]), `services.items[${index}].${field} must not contain raw HTML`)
+  }
+  assert(Array.isArray(service.packageDetails), `services.items[${index}].packageDetails must be an array`)
+  service.packageDetails.forEach((detail, detailIndex) => {
+    assert(typeof detail === 'string', `services.items[${index}].packageDetails[${detailIndex}] must be a string`)
+    assert(!/<[a-z][\s\S]*>/i.test(detail), `services.items[${index}].packageDetails[${detailIndex}] must not contain raw HTML`)
+  })
+  validateAlbumIdField(service.albumId, `services.items[${index}].albumId`)
+  validateImageMode(service.imageMode, `services.items[${index}].imageMode`)
+  validatePhotoIds(service.selectedPhotoIds, `services.items[${index}].selectedPhotoIds`)
+  validateImageLimit(service.imageLimit, `services.items[${index}].imageLimit`)
+  assert(service.displayMode === 'grid' || service.displayMode === 'slideshow', `services.items[${index}].displayMode must be grid or slideshow`)
+}
+
 for (const invalidId of ['david-behind-the-lens', '/album.html?album=fe027096-7084-4f96-974a-315b98b484b2', 'https://photos.google.com/share/example', 'https://www.whostosay.org/album.html?album=fe027096-7084-4f96-974a-315b98b484b2']) {
   assert(!isBlankOrUuid(invalidId), `album ID validator must reject ${invalidId}`)
   assert(!(typeof invalidId === 'string' && UUID_RE.test(invalidId)), `photo ID validator must reject ${invalidId}`)
@@ -267,6 +319,7 @@ assert(djrContent.includes('readParticipantPreviewConfig'), 'DJR content rendere
 assert(djrContent.includes('loadParticipantPageConfig'), 'DJR content renderer should fall back to saved participant config when preview data is unavailable')
 assert(djrContent.includes('overlayParticipantAlbums'), 'DJR content renderer should overlay Supabase album images before rendering')
 assert(djrContent.includes('overlayParticipantPageContent'), 'DJR content renderer should overlay safe Participant Pages copy')
+assert(djrContent.includes('overlayParticipantServices'), 'DJR content renderer should overlay safe Participant Pages service offerings')
 assert(djrContent.includes('allowParticipantEdit !== true'), 'DJR content renderer must only apply participant text overlays when allowParticipantEdit is true')
 assert(djrContent.includes('applyNonEmptyString'), 'DJR content renderer must preserve fallback content for blank participant fields')
 assert(djrContent.includes('applyParticipantSectionToggles'), 'DJR content renderer should apply participant section toggles')
@@ -275,6 +328,9 @@ assert(djrContent.includes('section.albumId || config.defaultAlbumId'), 'DJR con
 assert(djrContent.includes("section.imageMode === 'singlePhoto'"), 'DJR content renderer should support single-photo image mode')
 assert(djrContent.includes("imageMode === 'singlePhoto' ? 1"), 'DJR content renderer should force image limit 1 for single-photo mode')
 assert(djrContent.includes('/js/participant-pages/albumImages.js'), 'DJR content renderer should use the participant album image helper')
+assert(djrContent.includes('renderServicePage'), 'DJR content renderer should render DJR service offering pages')
+assert(djrContent.includes('/djr/service.html?service='), 'DJR service cards should link to service offering pages')
+assert(djrContent.includes('loadServiceImages'), 'DJR service pages should load album images through the participant album helper')
 assert(!djrContent.includes('content/djr-albums'), 'DJR content renderer must not depend on JSON CMS albums')
 
 const albumImageHelper = readText('js/participant-pages/albumImages.js')
@@ -326,7 +382,7 @@ const participantPagesCollection = extractCollection(cmsConfig, 'participant-pag
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')
 if (participantPagesCollection) {
   assert(participantPagesCollection.includes('file: content/participant-pages/djr.json'), 'Participant Pages collection must expose content/participant-pages/djr.json')
-  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageMode', 'selectedPhotoIds', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
+  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'services', 'items', 'serviceId', 'category', 'icon', 'summary', 'serviceDescription', 'packageDetails', 'displayMode', 'ctaLabel', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageMode', 'selectedPhotoIds', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
     assert(hasFieldName(participantPagesCollection, expectedField), `Participant Pages collection is missing field: ${expectedField}`)
   }
   for (const forbiddenField of ['href', 'formAction', 'photoGalleryAlbumId', 'googlePhotosAlbumUrl', 'album_id', 'nav', 'partner', 'button', 'primaryButton', 'secondaryButton', 'sourceType', 'sectionId', 'html', 'image', 'src']) {
@@ -339,6 +395,7 @@ if (participantPagesCollection) {
   assert(participantPagesCollection.includes('Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images.'), 'Participant Pages collection should explain how album image toggles work')
   assert(participantPagesCollection.includes('Single selected photo'), 'Participant Pages collection should expose a single-photo image mode')
   assert(participantPagesCollection.includes('Photo UUIDs must come from the Album UUID above.'), 'Participant Pages collection should explain Photo UUIDs must match the Album UUID')
+  assert(participantPagesCollection.includes('Albums and Photo IDs come from /albums.html. The public service page uses these images without showing media hub/admin controls.'), 'Participant Pages collection should explain the service offering media workflow')
 }
 
 const djrCollection = extractCollection(cmsConfig, 'djr')

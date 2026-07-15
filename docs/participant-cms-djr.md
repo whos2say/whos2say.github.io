@@ -34,6 +34,7 @@ That screen exposes grouped DJR page sections where a participant or support per
 - Paste Supabase album UUIDs from `/albums.html`.
 - Choose album order, manual selected photos, or a single selected photo for supported image sections.
 - Paste selected Supabase photo UUIDs when manual or single-photo selection is needed.
+- Manage DJR service offerings, which are the public photography/gallery types shown on the homepage.
 
 The Decap preview pane for Participant Pages uses `admin/preview-templates/participant-page-preview.js` and scoped preview CSS. It writes the current draft participant page config to same-origin `sessionStorage`, then renders the real `/djr/` page in an iframe at `/djr/?cmsPreview=participant-pages&previewSlug=djr`. The public `/djr/` URL does not read draft preview data.
 
@@ -42,6 +43,33 @@ The preview auto-updates as editors change fields before publishing. `Refresh Pr
 To revert text for a section without deleting draft text, turn off `Use custom text for this section`. To revert images for a section without deleting the album UUID, turn off `Use album images for this section`.
 
 The old `DJR Photography` collection is hidden and labeled as an advanced/admin legacy fallback. It is not the normal participant editing workflow.
+
+## Service offerings
+
+The DJR homepage service cards represent David's photography offering types:
+
+- Behind the Lens
+- Human Moments
+- Creative Details
+- Sports Energy
+- The Bigger Dream
+- Point of View
+
+Each card links to a public DJR service offering page at `/djr/service.html?service=<serviceId>`. These pages are visual public pages, not raw albums and not media-hub/admin screens. They use the DJR chrome, a visual gallery grid, a service description, package bullets, and a contact CTA.
+
+In Participant Pages, the `services` section can safely edit:
+
+- Services section visibility, eyebrow, and title.
+- Each service's `serviceId`, title, category/icon, summary, description, package bullets, album UUID, image mode, selected photo UUIDs, image limit, display mode, and CTA label.
+
+Service images come from `/albums.html` and Supabase albums. To connect a service card to images:
+
+1. Create or manage the album in `/albums.html`.
+2. Copy the Album UUID.
+3. Paste it into that service offering's `Album UUID`.
+4. Leave `Image Mode` as `Album order`, or choose manual/single-photo mode and paste Photo UUIDs copied from the opened photo detail view.
+
+Blank, invalid, private, missing, empty, or blocked service albums fall back to the default DJR service card image from `content/djr/home.json`. Button URLs remain admin-owned; the participant-facing CTA label links to the DJR contact page.
 
 ## Media model
 
@@ -57,6 +85,9 @@ Participant Pages does not upload media and does not create Decap JSON albums. I
 - `sections.creative.albumId`
 - `sections.*.imageMode`
 - `sections.*.selectedPhotoIds`
+- `services.items.*.albumId`
+- `services.items.*.imageMode`
+- `services.items.*.selectedPhotoIds`
 
 For each section, album overlays apply only when `allowParticipantAlbum` is true. A section album UUID wins over `defaultAlbumId`. Blank, invalid, private, missing, empty, or blocked albums preserve the default images from `content/djr/home.json`.
 
@@ -95,6 +126,7 @@ Participant Pages can safely expose:
 - About eyebrow, title, and body.
 - Creative feature eyebrow, title, and body.
 - CTA title, supporting text, and button label.
+- Service offering eyebrow, title, category/icon, summary, description, package bullets, image selection settings, display mode, and CTA label.
 
 Text fields are intentionally populated with the current DJR copy so editors can revise what is already on the page. Blank text fields do not erase fallback content. Text overlays apply only when `allowParticipantEdit` is true.
 
@@ -123,6 +155,15 @@ For `/djr/`, `djr/js/djr-content.js`:
 4. Applies safe non-empty text overlays only when `allowParticipantEdit` is true.
 5. Applies section album images only when `allowParticipantAlbum` is true.
 6. Falls back to default content whenever participant fields are blank or album loading fails.
+7. Links service cards to `/djr/service.html?service=<serviceId>` when a safe service ID exists.
+
+For `/djr/service.html`, the same renderer:
+
+1. Reads the `service` query parameter.
+2. Loads the default DJR home content plus the Participant Pages service overlay.
+3. Finds the matching enabled service offering.
+4. Loads album images through `js/participant-pages/albumImages.js`.
+5. Renders a visual public service page with no UUIDs, upload controls, or media-hub/admin UI.
 
 The renderer does not append new sections or cards. The old `djr/js/djr-section-galleries.js` card path is not loaded by `/djr/`.
 
@@ -144,5 +185,8 @@ The contract checks:
 - Selected photo IDs are valid Supabase UUIDs.
 - Slugs, raw URLs, Google Photos URLs, and `/album.html?album=` URLs are rejected as album IDs.
 - The DJR homepage does not load the old CMS album card script.
+- DJR service IDs are slug-safe.
+- DJR service album IDs are blank or valid Supabase UUIDs.
+- DJR service display modes are allowlisted.
 - The advanced DJR collection is hidden/de-emphasized.
 - Decap does not expose `content/djr-albums` as participant media.

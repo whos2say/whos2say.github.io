@@ -90,6 +90,25 @@
     if (typeof source[key] === 'boolean') target[key] = source[key];
   }
 
+  function slugify(value) {
+    return String(value || '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  function safeString(value) {
+    return typeof value === 'string' ? value : '';
+  }
+
+  function safeStringList(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+      .map(function (item) { return safeString(item).trim(); })
+      .filter(Boolean);
+  }
+
   function overlayTextSection(target, source, fields) {
     if (!source || typeof source !== 'object') return;
     fields.forEach(function (field) {
@@ -136,6 +155,71 @@
     });
   }
 
+  function normalizeServiceItem(item, index) {
+    item = item || {};
+    var title = safeString(item.title) || 'Photography Offering';
+    var serviceId = slugify(item.serviceId || title) || 'service-' + (index + 1);
+    return {
+      serviceId: serviceId,
+      enabled: item.enabled !== false,
+      category: safeString(item.category || item.icon),
+      icon: safeString(item.icon || item.category || 'Photo'),
+      title: title,
+      summary: safeString(item.summary || item.text),
+      text: safeString(item.summary || item.text),
+      serviceDescription: safeString(item.serviceDescription || item.summary || item.text),
+      packageDetails: safeStringList(item.packageDetails || item.bullets),
+      albumId: safeString(item.albumId).trim(),
+      imageMode: item.imageMode === 'singlePhoto' ? 'singlePhoto' : (item.imageMode === 'manualSelection' ? 'manualSelection' : 'albumOrder'),
+      selectedPhotoIds: Array.isArray(item.selectedPhotoIds) ? item.selectedPhotoIds.slice() : [],
+      imageLimit: Number.isFinite(Number(item.imageLimit)) && Number(item.imageLimit) > 0 ? Math.floor(Number(item.imageLimit)) : 9,
+      displayMode: item.displayMode === 'slideshow' ? 'slideshow' : 'grid',
+      ctaLabel: safeString(item.ctaLabel) || 'Book This Session',
+      image: safeString(item.image),
+      href: safeString(item.href)
+    };
+  }
+
+  function overlayParticipantServices(data, config) {
+    data.services = data.services || {};
+    var fallbackItems = (data.services.items || []).map(normalizeServiceItem);
+    var servicesConfig = config && config.services;
+    if (!servicesConfig || typeof servicesConfig !== 'object') {
+      data.services.items = fallbackItems;
+      return;
+    }
+
+    applyBoolean(data.services, servicesConfig, 'enabled');
+    if (servicesConfig.allowParticipantEdit === true) {
+      applyNonEmptyString(data.services, servicesConfig, 'eyebrow');
+      applyNonEmptyString(data.services, servicesConfig, 'title');
+    }
+
+    var configuredItems = Array.isArray(servicesConfig.items) ? servicesConfig.items.map(normalizeServiceItem) : [];
+    var byId = new Map(configuredItems.map(function (item) { return [item.serviceId, item]; }));
+    data.services.items = fallbackItems.map(function (fallback, index) {
+      var configured = byId.get(fallback.serviceId) || configuredItems[index];
+      if (!configured) return fallback;
+
+      var merged = Object.assign({}, fallback);
+      applyBoolean(merged, configured, 'enabled');
+      merged.albumId = configured.albumId;
+      merged.imageMode = configured.imageMode;
+      merged.selectedPhotoIds = configured.selectedPhotoIds;
+      merged.imageLimit = configured.imageLimit;
+      merged.displayMode = configured.displayMode;
+
+      if (servicesConfig.allowParticipantEdit === true) {
+        ['category', 'icon', 'title', 'summary', 'text', 'serviceDescription', 'ctaLabel'].forEach(function (field) {
+          applyNonEmptyString(merged, configured, field);
+        });
+        if (configured.packageDetails.length) merged.packageDetails = configured.packageDetails;
+      }
+
+      return merged;
+    });
+  }
+
   function overlayParticipantPageContent(base, config) {
     if (!config || typeof config !== 'object') return base;
     var sections = config.sections || {};
@@ -166,6 +250,8 @@
       data.cta.button = data.cta.button || {};
       data.cta.button.label = sections.cta.buttonLabel;
     }
+
+    overlayParticipantServices(data, config);
 
     return data;
   }
@@ -316,6 +402,11 @@
     return '<div class="djr-placeholder" aria-hidden="true">' + esc(fallback || 'Photo') + '</div>';
   }
 
+  function serviceHref(item) {
+    if (item && item.serviceId) return '/djr/service.html?service=' + encodeURIComponent(item.serviceId);
+    return (item && item.href) || '/djr/galleries.html';
+  }
+
   function renderChrome(site) {
     var brand = site.brand || {};
     document.querySelectorAll('.djr-brand .djr-wordmark').forEach(function (el) {
@@ -428,12 +519,13 @@
     var services = data.services || {};
     var servicesSection = document.getElementById('services');
     if (servicesSection) {
+      servicesSection.style.display = services.enabled === false ? 'none' : '';
       servicesSection.querySelector('.djr-eyebrow').textContent = services.eyebrow || '';
       servicesSection.querySelector('.djr-h2').textContent = services.title || '';
       var grid = servicesSection.querySelector('.djr-services-grid');
       if (grid) {
-        grid.innerHTML = (services.items || []).map(function (item) {
-          return '<a class="djr-service-card" href="' + esc(item.href || '/djr/galleries.html') + '"><div class="djr-service-media">' + mediaHtml(item.image, item.title, item.icon) + '</div><div class="djr-service-body"><span class="djr-service-icon">' + esc(item.icon || 'Photo') + '</span><h3 class="djr-service-title">' + esc(item.title) + '</h3><p class="djr-service-text">' + esc(item.text) + '</p><span class="djr-service-link">Learn More</span></div></a>';
+        grid.innerHTML = (services.items || []).filter(function (item) { return item.enabled !== false; }).map(function (item) {
+          return '<a class="djr-service-card" href="' + esc(serviceHref(item)) + '"><div class="djr-service-media">' + mediaHtml(item.image, item.title, item.icon) + '</div><div class="djr-service-body"><span class="djr-service-icon">' + esc(item.icon || item.category || 'Photo') + '</span><h3 class="djr-service-title">' + esc(item.title) + '</h3><p class="djr-service-text">' + esc(item.summary || item.text) + '</p><span class="djr-service-link">Learn More</span></div></a>';
         }).join('\n');
       }
     }
@@ -485,6 +577,107 @@
     section.querySelector('p:not(.djr-eyebrow)').textContent = hero.intro || '';
   }
 
+  function getRequestedServiceId() {
+    return slugify(getSearchParams().get('service') || '');
+  }
+
+  function findServiceItem(data, serviceId) {
+    var services = data.services || {};
+    var items = Array.isArray(services.items) ? services.items : [];
+    return items.filter(function (item) { return item.enabled !== false; }).find(function (item) {
+      return item.serviceId === serviceId;
+    }) || null;
+  }
+
+  async function loadServiceImages(item, config) {
+    var albumId = (item && item.albumId) || (config && config.defaultAlbumId) || '';
+    if (!albumId) return [];
+    try {
+      var helper = await import('/js/participant-pages/albumImages.js');
+      return helper.loadPublicAlbumImages(albumId, {
+        fallbackAlt: (item && item.title) || 'DJR service photo',
+        imageMode: item && item.imageMode,
+        selectedPhotoIds: item && item.selectedPhotoIds,
+        imageLimit: item && item.imageMode === 'singlePhoto' ? 1 : ((item && item.imageLimit) || 9)
+      });
+    } catch (err) {
+      console.warn('[DJRContent] Service album images skipped:', err.message);
+      return [];
+    }
+  }
+
+  function renderServiceNotFound(root) {
+    root.innerHTML =
+      '<section class="djr-page-hero djr-service-page"><div class="djr-container">' +
+      '<p class="djr-eyebrow">DJR Photography</p>' +
+      '<h1 class="djr-h2">Service not found</h1>' +
+      '<p>This service offering is not available yet.</p>' +
+      '<p><a class="djr-btn" href="/djr/#services">Back to Services</a></p>' +
+      '</div></section>';
+  }
+
+  function renderServiceGallery(item, images) {
+    var galleryImages = Array.isArray(images) && images.length
+      ? images
+      : (item.image ? [{ src: item.image, alt: item.title, caption: item.title }] : []);
+    if (!galleryImages.length) {
+      return '<p class="djr-service-empty">Images for this offering are being prepared.</p>';
+    }
+    return '<div class="djr-service-gallery djr-service-gallery--' + esc(item.displayMode || 'grid') + '">' +
+      galleryImages.map(function (image) {
+        return '<figure class="djr-service-photo"><img src="' + esc(image.src) + '" alt="' + esc(image.alt || item.title) + '" loading="lazy" decoding="async"/>' +
+          (image.caption ? '<figcaption>' + esc(image.caption) + '</figcaption>' : '') +
+          '</figure>';
+      }).join('\n') +
+      '</div>';
+  }
+
+  async function renderServicePage(data, config) {
+    var root = document.getElementById('djr-service-root');
+    if (!root) return;
+    var serviceId = getRequestedServiceId();
+    var item = findServiceItem(data, serviceId);
+    if (!item) {
+      setMeta({ title: 'Service Not Found | DJR Photography', description: 'DJR Photography service offering not found.' });
+      renderServiceNotFound(root);
+      return;
+    }
+
+    setMeta({
+      title: item.title + ' | DJR Photography',
+      description: item.summary || item.serviceDescription || 'DJR Photography service offering.'
+    });
+
+    var images = await loadServiceImages(item, config);
+    var bullets = (item.packageDetails || []).map(function (detail) {
+      return '<li>' + esc(detail) + '</li>';
+    }).join('');
+
+    root.innerHTML =
+      '<section class="djr-service-page">' +
+      '<div class="djr-container">' +
+      '<a class="djr-service-back" href="/djr/#services">Back to Services</a>' +
+      '<div class="djr-service-hero">' +
+      '<p class="djr-eyebrow">' + esc(item.category || item.icon || 'DJR Photography') + '</p>' +
+      '<h1 class="djr-service-heading">' + esc(item.title) + '</h1>' +
+      '<p class="djr-service-summary">' + esc(item.summary || '') + '</p>' +
+      '</div>' +
+      renderServiceGallery(item, images) +
+      '<div class="djr-service-detail">' +
+      '<div>' +
+      '<p class="djr-eyebrow">The Offering</p>' +
+      '<p class="djr-service-description">' + esc(item.serviceDescription || item.summary || '') + '</p>' +
+      '</div>' +
+      '<aside class="djr-service-panel">' +
+      '<h2>Package Details</h2>' +
+      (bullets ? '<ul class="djr-service-bullets">' + bullets + '</ul>' : '<p>Details can be shaped around the story, event, or creative direction.</p>') +
+      '<a class="djr-btn djr-btn--solid" href="/djr/contact.html">' + esc(item.ctaLabel || 'Book This Session') + '</a>' +
+      '</aside>' +
+      '</div>' +
+      '</div>' +
+      '</section>';
+  }
+
   function renderContact(data, site) {
     setMeta(data.meta);
     var hero = data.hero || {};
@@ -526,6 +719,21 @@
     });
   }
 
+  function loadHomePageData() {
+    return fetchJson('/content/djr/home.json').then(function (home) {
+      return fetchOptionalJson('/content/djr/participant-copy.json')
+        .then(function (copy) {
+          return loadParticipantPageConfig()
+            .then(function (config) {
+              return overlayParticipantAlbums(overlayParticipantPageContent(overlayParticipantCopy(home, copy), config), config)
+                .then(function (data) {
+                  return { data: data, config: config };
+                });
+            });
+        });
+    });
+  }
+
   function init() {
     initNavToggle();
     var page = document.body.getAttribute('data-djr-page');
@@ -533,19 +741,15 @@
     return fetchJson('/content/djr/site.json').then(function (site) {
       renderChrome(site);
       if (page === 'home') {
-        return fetchJson('/content/djr/home.json').then(function (home) {
-          return fetchOptionalJson('/content/djr/participant-copy.json')
-            .then(function (copy) {
-              return loadParticipantPageConfig()
-                .then(function (config) {
-                  return overlayParticipantAlbums(overlayParticipantPageContent(overlayParticipantCopy(home, copy), config), config);
-                })
-                .then(renderHome);
-            });
-        });
+        return loadHomePageData().then(function (result) { renderHome(result.data); });
       }
       if (page === 'galleries') return fetchJson('/content/djr/galleries.json').then(renderGalleriesPage);
       if (page === 'contact') return fetchJson('/content/djr/contact.json').then(function (data) { renderContact(data, site); });
+      if (page === 'service') {
+        return loadHomePageData().then(function (result) {
+          return renderServicePage(result.data, result.config);
+        });
+      }
     });
   }
 
