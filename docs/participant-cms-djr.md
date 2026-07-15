@@ -99,6 +99,8 @@ For each section, album overlays apply only when `allowParticipantAlbum` is true
 
 Photo IDs are resolved inside the selected Album UUID. The Album UUID and Photo UUID must match: if a selected photo is not in the resolved album, it is skipped. Unknown, blocked, missing, or non-image photo IDs are skipped. If manual selection is empty, the renderer falls back to album order. The current Decap editor uses native text/list fields for photo IDs; a visual album photo picker is the recommended next UX improvement.
 
+New selections should use Photo UUIDs copied from the opened photo detail view in `/albums.html`. The renderer also preserves older album-scoped selected photo IDs already saved in CMS content so existing draft selections are not discarded during Participant Pages updates.
+
 Examples:
 
 - One image: set `imageMode` to `singlePhoto`, paste the section's Album UUID, then add one Photo UUID to `selectedPhotoIds`. The renderer uses that one photo and ignores `imageLimit`.

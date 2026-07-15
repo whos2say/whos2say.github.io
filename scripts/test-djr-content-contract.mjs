@@ -8,6 +8,7 @@ const root = path.join(__dirname, '..')
 
 const errors = []
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const ALBUM_SCOPED_PHOTO_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[a-z0-9][a-z0-9._-]*$/i
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 function fail(message) {
@@ -122,7 +123,7 @@ function validateImageMode(value, label) {
 function validatePhotoIds(value, label) {
   assert(Array.isArray(value), `${label} must be an array`)
   value.forEach((photoId, index) => {
-    assert(typeof photoId === 'string' && UUID_RE.test(photoId), `${label}[${index}] must be a Supabase photo UUID`)
+    assert(typeof photoId === 'string' && (UUID_RE.test(photoId) || ALBUM_SCOPED_PHOTO_ID_RE.test(photoId)), `${label}[${index}] must be a Supabase photo UUID or legacy album-scoped photo ID`)
     assert(!/^https?:\/\//i.test(photoId), `${label}[${index}] must not be a URL`)
     assert(!photoId.includes('/album.html'), `${label}[${index}] must not be an album page URL`)
     assert(!/photos\.app\.goo\.gl|photos\.google\.com/i.test(photoId), `${label}[${index}] must not be a Google Photos URL`)
@@ -344,6 +345,7 @@ assert(albumImageHelper.includes('manualSelection'), 'Participant album helper s
 assert(albumImageHelper.includes('singlePhoto'), 'Participant album helper should support single-photo image mode')
 assert(albumImageHelper.includes('selectedPhotoIds.slice(0, 1)'), 'Participant album helper should use the first selected Photo ID for single-photo mode')
 assert(albumImageHelper.includes('photoId'), 'Participant album helper should return normalized photo IDs')
+assert(albumImageHelper.includes('ALBUM_SCOPED_PHOTO_ID_RE'), 'Participant album helper should preserve legacy album-scoped selected photo IDs')
 
 const participantPreview = readText('admin/preview-templates/participant-page-preview.js')
 assert(participantPreview.includes('registerPreviewTemplate') && participantPreview.includes('participant-pages'), 'Participant Pages preview template must register with Decap')

@@ -4,6 +4,7 @@ import { getPublicUrl } from '../photo-album/services/storageService.js'
 import { isVideoPath } from '../photo-album/utils/media.js'
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const ALBUM_SCOPED_PHOTO_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[a-z0-9][a-z0-9._-]*$/i
 
 export function isValidAlbumId(value) {
   return typeof value === 'string' && UUID_RE.test(value.trim())
@@ -18,7 +19,7 @@ export function normalizePhotoIds(value) {
   if (!Array.isArray(value)) return []
   return value
     .map((item) => String(item == null ? '' : item).trim())
-    .filter((item) => UUID_RE.test(item))
+    .filter((item) => UUID_RE.test(item) || ALBUM_SCOPED_PHOTO_ID_RE.test(item))
 }
 
 function normalizeImageMode(value) {
@@ -50,8 +51,17 @@ function orderSelectedPhotos(images, selectedPhotoIds, imageLimit) {
   if (!selectedPhotoIds.length) return images.slice(0, imageLimit)
 
   const byId = new Map(images.map((image) => [image.photoId, image]))
+  const findSelectedImage = (selectedPhotoId) => {
+    const directMatch = byId.get(selectedPhotoId)
+    if (directMatch) return directMatch
+
+    return images.find((image) => {
+      const fileName = String(image.filePath || '').split('/').filter(Boolean).pop() || ''
+      return selectedPhotoId === `${image.sourceAlbumId}/${fileName}`
+    })
+  }
   const selected = selectedPhotoIds
-    .map((photoId) => byId.get(photoId))
+    .map((photoId) => findSelectedImage(photoId))
     .filter(Boolean)
   const selectedIds = new Set(selected.map((image) => image.photoId))
   const fill = images.filter((image) => !selectedIds.has(image.photoId))
