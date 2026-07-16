@@ -7,6 +7,7 @@
   var attempts = 0;
   var maxAttempts = 60;
   var palettes = {
+    'djr-cinematic-blue': { label: 'DJR Cinematic Blue', modes: ['dark'], accents: ['electric-blue', 'cyan', 'muted-gold'], swatches: ['#07090d', '#10141c', '#e8ecf2', '#4da6ff', '#22c7e8'], tokens: ['#07090d', '#10141c', '#e8ecf2', '#aeb9c8', '#4da6ff', '#04111f', '#273246'] },
     'warm-documentary': { label: 'Warm Documentary', modes: ['dark', 'light'], accents: ['amber', 'rust'], swatches: ['#171411', '#fffaf2', '#e9a23b', '#9d6737'], tokens: ['#171411', '#27211b', '#fffaf2', '#d8cab8', '#e9a23b', '#211506', '#5e4d3b'] },
     'bold-advocate': { label: 'Bold Advocate', modes: ['light', 'dark'], accents: ['gold', 'coral'], swatches: ['#152238', '#fff9ed', '#b86b00', '#1f4777'], tokens: ['#fff9ed', '#ffffff', '#152238', '#526077', '#b86b00', '#ffffff', '#c8b58f'] },
     'calm-focus': { label: 'Calm Focus', modes: ['light', 'dark'], accents: ['blue', 'teal'], swatches: ['#17333a', '#f1f7f8', '#176b78', '#7ca6ad'], tokens: ['#f1f7f8', '#ffffff', '#17333a', '#526c72', '#176b78', '#ffffff', '#b9d0d4'] },

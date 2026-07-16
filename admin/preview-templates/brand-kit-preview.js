@@ -6,6 +6,7 @@
   var h;
   var attempts = 0;
   var palettes = {
+    'djr-cinematic-blue': { label: 'DJR Cinematic Blue', colors: ['#07090d', '#10141c', '#e8ecf2', '#4da6ff', '#22c7e8'], bg: '#07090d', surface: '#10141c', text: '#e8ecf2', muted: '#aeb9c8', accent: '#4da6ff', accentText: '#04111f', border: '#273246' },
     'warm-documentary': { label: 'Warm Documentary', colors: ['#171411', '#fffaf2', '#e9a23b', '#9d6737'], bg: '#171411', surface: '#27211b', text: '#fffaf2', muted: '#d8cab8', accent: '#e9a23b', accentText: '#211506', border: '#5e4d3b' },
     'bold-advocate': { label: 'Bold Advocate', colors: ['#152238', '#fff9ed', '#b86b00', '#1f4777'], bg: '#fff9ed', surface: '#ffffff', text: '#152238', muted: '#526077', accent: '#b86b00', accentText: '#ffffff', border: '#c8b58f' },
     'calm-focus': { label: 'Calm Focus', colors: ['#17333a', '#f1f7f8', '#176b78', '#7ca6ad'], bg: '#f1f7f8', surface: '#ffffff', text: '#17333a', muted: '#526c72', accent: '#176b78', accentText: '#ffffff', border: '#b9d0d4' },

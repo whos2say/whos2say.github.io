@@ -7,6 +7,7 @@ const PERSONS = new Set(['first-person', 'third-person', 'mixed'])
 const DESIGN_PRESETS = new Set(['documentary-warm', 'advocacy-editorial'])
 export const DESIGN_SYSTEM_REGISTRY = Object.freeze({
   palettes: Object.freeze({
+    'djr-cinematic-blue': { label: 'DJR Cinematic Blue', modes: ['dark'], accents: ['electric-blue', 'cyan', 'muted-gold'], tokens: { background: '#07090d', surface: '#10141c', text: '#e8ecf2', muted: '#aeb9c8', accent: '#4da6ff', accentText: '#04111f', border: '#273246', image: '#22c7e8' } },
     'warm-documentary': { label: 'Warm Documentary', modes: ['dark', 'light'], accents: ['amber', 'rust'], tokens: { background: '#171411', surface: '#27211b', text: '#fffaf2', muted: '#d8cab8', accent: '#e9a23b', accentText: '#211506', border: '#5e4d3b', image: '#9d6737' } },
     'bold-advocate': { label: 'Bold Advocate', modes: ['light', 'dark'], accents: ['gold', 'coral'], tokens: { background: '#fff9ed', surface: '#ffffff', text: '#152238', muted: '#526077', accent: '#b86b00', accentText: '#ffffff', border: '#c8b58f', image: '#1f4777' } },
     'calm-focus': { label: 'Calm Focus', modes: ['light', 'dark'], accents: ['blue', 'teal'], tokens: { background: '#f1f7f8', surface: '#ffffff', text: '#17333a', muted: '#526c72', accent: '#176b78', accentText: '#ffffff', border: '#b9d0d4', image: '#7ca6ad' } },

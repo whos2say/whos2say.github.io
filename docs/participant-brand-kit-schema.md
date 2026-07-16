@@ -52,7 +52,9 @@ Skipping is a supported workshop choice, not a validation error. The Brand Board
 
 Version 1 accepts named presets for overall design, palette, typography, buttons, cards, images, backgrounds, rhythm, and motion. It does not apply them to DJR yet. Templates may consume only explicitly supported presets while preserving current design fallbacks.
 
-The palette picker offers seven curated choices: Warm Documentary, Bold Advocate, Calm Focus, Electric Creative, Natural Community, Editorial Classic, and High Contrast Access. Each writes only a palette ID, approved mode, and approved accent name. Token examples and hex values live in code for the workshop preview; raw color inputs are not stored or exposed. Curated palettes keep the exercise approachable and provide reviewed contrast pairs.
+The palette picker offers approved curated choices: DJR Cinematic Blue, Warm Documentary, Bold Advocate, Calm Focus, Electric Creative, Natural Community, Editorial Classic, and High Contrast Access. Each writes only a palette ID, approved mode, and approved accent name. Token examples and hex values live in code for the workshop preview; raw color inputs are not stored or exposed. Curated palettes keep the exercise approachable and provide reviewed contrast pairs.
+
+`djr-cinematic-blue` mirrors the established DJR site's dark cinematic direction: near-black and deep navy surfaces, cool silver text, electric blue as the primary accent, subtle cyan highlights, and muted gold as an optional small emphasis. Selecting it changes the Brand Board only; it is not applied to `/djr/` public output.
 
 The Decap preview is a visual Brand Board showing identity, palette, type, button, card, photo direction, voice, vocabulary, CTA intent, and workshop progress. It is not a preview of a public participant page and cannot create a route.
 
