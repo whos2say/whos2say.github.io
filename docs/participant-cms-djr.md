@@ -19,6 +19,12 @@ The DJR page is a static participant microsite under `/djr/`.
 
 The DJR Participant Page references the DJR Brand Kit with `"brandKit": "djr"`. Version 1 loads that metadata but does not apply visual presets or redesign the page. Existing DJR content and styles remain the public fallback and visible source.
 
+## Brand Kit workshop
+
+Editors can open **Participant Brand Kits** separately from Participant Pages. The Brand Kit editor includes guided progress and comfort choices, a curated visual palette picker, and a Brand Board preview. It is acceptable to choose **Skip for now**, **Needs staff help**, or **This feels too deep today**; those choices are represented supportively in the board rather than treated as errors.
+
+The palette picker stores approved IDs only. It does not expose raw colors, CSS, HTML, URLs, layouts, routes, or Media Hub controls. The Brand Board helps discuss DJR's brand direction but does not change `/djr/` styling or content rendering.
+
 ## CMS workflow
 
 Participant Pages is the main participant-facing CMS workflow.

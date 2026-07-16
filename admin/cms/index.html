@@ -27,7 +27,10 @@
     </script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
     <script src="/admin/widgets/album-photo-selector.js?v=album-photo-selector-3"></script>
+    <link rel="stylesheet" href="/admin/widgets/brand-palette-picker.css?v=brand-palette-picker-1" />
+    <script src="/admin/widgets/brand-palette-picker.js?v=brand-palette-picker-1"></script>
     <script src="/admin/preview-templates/participant-page-preview.js?v=participant-preview-8"></script>
+    <script src="/admin/preview-templates/brand-kit-preview.js?v=brand-kit-preview-1"></script>
     <script>
       (function initCmsAfterParticipantPreview(attempt) {
         if (!window.CMS) {
@@ -35,7 +38,7 @@
           return;
         }
 
-        if (window.__participantPagesPreviewRegistered && window.__albumPhotoSelectorRegistered) {
+        if (window.__participantPagesPreviewRegistered && window.__albumPhotoSelectorRegistered && window.__brandPalettePickerRegistered && window.__brandKitPreviewRegistered) {
           window.CMS.init();
           return;
         }
@@ -46,7 +49,11 @@
             selectorRegistered: Boolean(window.__albumPhotoSelectorRegistered),
             selectorFailed: Boolean(window.__albumPhotoSelectorRegistrationFailed),
             previewRegistered: Boolean(window.__participantPagesPreviewRegistered),
-            previewFailed: Boolean(window.__participantPagesPreviewRegistrationFailed)
+            previewFailed: Boolean(window.__participantPagesPreviewRegistrationFailed),
+            paletteRegistered: Boolean(window.__brandPalettePickerRegistered),
+            paletteFailed: Boolean(window.__brandPalettePickerRegistrationFailed),
+            brandKitPreviewRegistered: Boolean(window.__brandKitPreviewRegistered),
+            brandKitPreviewFailed: Boolean(window.__brandKitPreviewRegistrationFailed)
           });
           window.CMS.init();
           return;

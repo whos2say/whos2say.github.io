@@ -2,7 +2,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { BRAND_KIT_SCHEMA_VERSION, normalizeBrandKit } from '../js/participant-pages/brandKit.js'
+import { BRAND_KIT_SCHEMA_VERSION, DESIGN_SYSTEM_REGISTRY, PARTICIPANT_COMFORT_LEVELS, WORKSHOP_AREAS, WORKSHOP_STATUSES, normalizeBrandKit } from '../js/participant-pages/brandKit.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
@@ -135,6 +135,8 @@ const indexHtml = readText('djr/index.html')
 const serviceHtml = readText('djr/service.html')
 const cmsIndexHtml = readText('admin/cms/index.html')
 const albumPhotoSelector = readText('admin/widgets/album-photo-selector.js')
+const brandPalettePicker = readText('admin/widgets/brand-palette-picker.js')
+const brandKitPreview = readText('admin/preview-templates/brand-kit-preview.js')
 assert(indexHtml.includes('data-djr-page="home"'), '/djr/ entrypoint is not marked as the DJR home page')
 assert(indexHtml.includes('/djr/js/djr-content.js'), '/djr/ does not load DJR content renderer')
 assert(!indexHtml.includes('/djr/js/djr-section-galleries.js'), '/djr/ must not load the old JSON CMS album card renderer')
@@ -147,6 +149,10 @@ assert(cmsIndexHtml.indexOf('window.CMS_MANUAL_INIT = true') < cmsIndexHtml.inde
 assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js?v=participant-preview-8'), '/admin/cms/ must load the cache-busted Participant Pages preview template')
 assert(cmsIndexHtml.indexOf('participant-page-preview.js?v=participant-preview-8') < cmsIndexHtml.indexOf('window.CMS.init()'), '/admin/cms/ must load the Participant Pages preview before CMS.init()')
 assert(cmsIndexHtml.includes('/admin/widgets/album-photo-selector.js?v=album-photo-selector-3'), '/admin/cms/ must load the cache-busted Album Photo Selector widget')
+assert(cmsIndexHtml.includes('/admin/widgets/brand-palette-picker.js?v=brand-palette-picker-1'), '/admin/cms/ must load the Brand Palette Picker')
+assert(cmsIndexHtml.includes('/admin/widgets/brand-palette-picker.css?v=brand-palette-picker-1'), '/admin/cms/ must load Brand Palette Picker styles')
+assert(cmsIndexHtml.includes('/admin/preview-templates/brand-kit-preview.js?v=brand-kit-preview-1'), '/admin/cms/ must load the Brand Kit preview')
+assert(cmsIndexHtml.includes('window.__brandPalettePickerRegistered') && cmsIndexHtml.includes('window.__brandKitPreviewRegistered'), '/admin/cms/ must wait for Brand Kit workshop registrations before CMS.init()')
 assert(!cmsIndexHtml.includes('type="module" src="/admin/widgets/album-photo-selector.js'), '/admin/cms/ must load the Album Photo Selector as a normal script so it registers before CMS.init()')
 assert(cmsIndexHtml.includes('window.__albumPhotoSelectorRegistered'), '/admin/cms/ must wait for the Album Photo Selector before CMS.init() when available')
 assert(cmsIndexHtml.includes('[CMS Init] Initializing after registration wait timeout'), '/admin/cms/ should log diagnostics if widget/preview registration times out')
@@ -332,6 +338,24 @@ assert(codyBrandKit?.status === 'draft', 'Cody Brand Kit must remain draft-only'
 assert(!fs.existsSync(path.join(root, 'cody')), 'Cody Brand Kit must not create a /cody route')
 assert(!fs.existsSync(path.join(root, 'participants', 'cody')), 'Cody Brand Kit must not create a participant Cody route')
 
+for (const [label, kit] of [['DJR', djrBrandKit], ['Cody', codyBrandKit]]) {
+  assert(kit?.workshop && typeof kit.workshop === 'object', `${label} Brand Kit must include workshop metadata`)
+  for (const area of WORKSHOP_AREAS) {
+    assert(kit.workshop[area] && typeof kit.workshop[area] === 'object', `${label} workshop must include ${area}`)
+    assert(typeof kit.workshop[area].enabled === 'boolean', `${label} workshop ${area}.enabled must be boolean`)
+    assert(WORKSHOP_STATUSES.includes(kit.workshop[area].status), `${label} workshop ${area}.status must be approved`)
+    assert(PARTICIPANT_COMFORT_LEVELS.includes(kit.workshop[area].participantComfort), `${label} workshop ${area}.participantComfort must be approved`)
+    assert(typeof kit.workshop[area].notes === 'string', `${label} workshop ${area}.notes must be plain text`)
+  }
+  const colors = kit?.designSystem?.colors || {}
+  const palette = DESIGN_SYSTEM_REGISTRY.palettes[colors.palette]
+  assert(Boolean(palette), `${label} palette must be an approved palette ID`)
+  assert(palette?.modes.includes(colors.mode), `${label} palette mode must be approved for its palette`)
+  assert(palette?.accents.includes(colors.accent), `${label} accent must be approved for its palette`)
+  assert(!/^#[0-9a-f]{3,8}$/i.test(colors.palette || ''), `${label} palette must not be a raw hex value`)
+  assert(!/^#[0-9a-f]{3,8}$/i.test(colors.accent || ''), `${label} accent must not be a raw hex value`)
+}
+
 const hostileBrandKit = normalizeBrandKit({
   schemaVersion: 1,
   slug: 'djr',
@@ -360,6 +384,8 @@ assert(hostileBrandKit.messaging.approvedCallsToAction[0].intent === 'contact', 
 assert(!('href' in hostileBrandKit.messaging.approvedCallsToAction[0]), 'Brand Kit CTA must not expose arbitrary URLs')
 assert(hostileBrandKit.designSystem.preset === '', 'Brand Kit normalizer must reject unknown design presets')
 assert(!('raw' in hostileBrandKit.designSystem.colors), 'Brand Kit normalizer must discard raw color values')
+assert(hostileBrandKit.designSystem.colors.palette === 'high-contrast-access', 'Unknown palettes must fall back to the safe high-contrast palette')
+assert(hostileBrandKit.designSystem.colors.accent === 'yellow', 'Raw or unknown accents must fall back to an approved accent')
 assert(brandKitLoader.includes("fetcher(`/content/participant-brand-kits/${slug}.json`"), 'Brand Kit loader must load only slug-addressed local JSON')
 assert(djrContent.includes('loadParticipantBrandKit'), 'DJR renderer should safely load referenced Brand Kit metadata')
 assert(!djrContent.includes('brandKit.designSystem'), 'DJR renderer must not apply Brand Kit design presets in version 1')
@@ -418,6 +444,17 @@ assert(albumPhotoSelector.includes('getAlbumById'), 'Album Photo Selector should
 assert(albumPhotoSelector.includes('props.onChange(nextIds)'), 'Album Photo Selector should write selected Photo IDs back to Decap')
 assert(albumPhotoSelector.includes('Images come from /albums.html'), 'Album Photo Selector should explain the Media Hub workflow')
 
+assert(brandPalettePicker.includes("registerWidget('brand-palette-picker'"), 'Brand Palette Picker must register a Decap custom widget')
+assert(brandPalettePicker.includes('window.__brandPalettePickerRegistered = true'), 'Brand Palette Picker must expose a registration marker')
+assert(brandPalettePicker.includes('This palette uses approved contrast pairs.'), 'Brand Palette Picker must explain accessible contrast')
+for (const paletteId of Object.keys(DESIGN_SYSTEM_REGISTRY.palettes)) assert(brandPalettePicker.includes(paletteId), `Brand Palette Picker is missing ${paletteId}`)
+assert(!brandPalettePicker.includes('type="color"'), 'Brand Palette Picker must not expose raw color inputs')
+
+assert(brandKitPreview.includes("registerPreviewTemplate('participant-brand-kits'"), 'Brand Kit preview must register for participant-brand-kits')
+assert(brandKitPreview.includes('Draft Brand Kit'), 'Brand Kit preview must clearly label drafts')
+assert(brandKitPreview.includes('Skipped for now') && brandKitPreview.includes('Needs support'), 'Brand Kit preview must represent opt-out and support states')
+assert(brandKitPreview.includes('This board is a workshop view, not a public page.'), 'Brand Kit preview must explain that it is not a public page')
+
 const participantPreview = readText('admin/preview-templates/participant-page-preview.js')
 assert(participantPreview.includes('registerPreviewTemplate') && participantPreview.includes('participant-pages'), 'Participant Pages preview template must register with Decap')
 assert(participantPreview.includes("previewKeys = ['participant-pages', 'djr', 'participant-pages-djr']"), 'Participant Pages preview should bind to the collection and likely DJR file-entry keys')
@@ -458,13 +495,15 @@ assert(brandKitsCollection, 'Decap shared config is missing the participant-bran
 if (brandKitsCollection) {
   assert(brandKitsCollection.includes('folder: content/participant-brand-kits'), 'Brand Kits collection must expose content/participant-brand-kits')
   assert(brandKitsCollection.includes('create: false'), 'Brand Kits collection must not let participants create arbitrary kits')
-  for (const expectedField of ['schemaVersion', 'slug', 'status', 'identity', 'strategy', 'voice', 'messaging', 'visualDirection', 'designSystem', 'governance']) {
+  for (const expectedField of ['schemaVersion', 'slug', 'status', 'workshop', 'brandFoundation', 'audienceMessage', 'voiceLanguage', 'storyCta', 'photoVisual', 'colorsDesign', 'identity', 'strategy', 'voice', 'messaging', 'visualDirection', 'designSystem', 'governance']) {
     assert(hasFieldName(brandKitsCollection, expectedField), `Brand Kits collection is missing field: ${expectedField}`)
   }
   for (const forbiddenField of ['href', 'url', 'route', 'formAction', 'nav', 'navigation', 'albumId', 'albums', 'script', 'scripts', 'css', 'html', 'layout', 'image', 'src']) {
     assert(!hasFieldName(brandKitsCollection, forbiddenField), `Brand Kits collection must not expose field: ${forbiddenField}`)
   }
   assert(!brandKitsCollection.includes('widget: image'), 'Brand Kits collection must not expose image uploads')
+  assert(brandKitsCollection.includes('widget: brand-palette-picker'), 'Brand Kits collection must use the visual Brand Palette Picker')
+  assert(brandKitsCollection.includes('Skip for now') && brandKitsCollection.includes('Needs staff help') && brandKitsCollection.includes('This feels too deep today') && brandKitsCollection.includes('Come back later'), 'Brand Kits workshop must use participant-friendly opt-out labels')
 }
 const participantPagesCollection = extractCollection(cmsConfig, 'participant-pages')
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')

@@ -64,7 +64,7 @@
   },
   "designSystem": {
     "preset": "advocacy-editorial",
-    "colors": { "palette": "accidental-advocate", "mode": "light", "accent": "gold" },
+    "colors": { "palette": "bold-advocate", "mode": "light", "accent": "gold" },
     "typography": { "preset": "bold-editorial" },
     "buttons": { "preset": "solid-square" },
     "cards": { "preset": "editorial-bordered" },
@@ -72,6 +72,14 @@
     "backgrounds": { "preset": "warm-light" },
     "rhythm": { "preset": "balanced" },
     "motion": { "preset": "minimal", "reducedMotionRequired": true }
+  },
+  "workshop": {
+    "brandFoundation": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "Draft for Cody's review." },
+    "audienceMessage": { "enabled": true, "status": "in-progress", "participantComfort": "unsure", "notes": "Come back later with Cody and support staff." },
+    "voiceLanguage": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "" },
+    "storyCta": { "enabled": true, "status": "needs-staff-help", "participantComfort": "needs-support", "notes": "Cody's own words and approval are required." },
+    "photoVisual": { "enabled": true, "status": "not-started", "participantComfort": "comfortable", "notes": "" },
+    "colorsDesign": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "" }
   },
   "governance": {
     "participantEditable": true,

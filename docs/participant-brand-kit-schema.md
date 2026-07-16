@@ -25,6 +25,7 @@ A Participant Page connects to a kit with `"brandKit": "djr"`.
 | `visualDirection` | object | Photo guidance, color mood, design style, accessibility intent |
 | `designSystem` | object | Closed, template-safe preset selections |
 | `governance` | object | Editability, review requirement, approval metadata, notes |
+| `workshop` | object | Guided progress, comfort, opt-out, and support metadata for six workshop areas |
 
 The complete field shape is demonstrated by `content/participant-brand-kits/djr.json` and `content/participant-brand-kits/cody.json`.
 
@@ -36,9 +37,24 @@ The normalized result has no fields for routes, navigation, link destinations, a
 
 CTA entries contain only `id`, `label`, semantic `intent`, and `description`. A template or admin-owned registry must map intent to an approved destination.
 
+## Brand Workshop flow
+
+The CMS presents six guided areas: Brand Foundation, Audience and Message, Voice and Language, Story and Invitations, Photo and Visual Direction, and Colors and Design. Each area stores:
+
+- `enabled`: include the area in the current workshop.
+- `status`: `not-started`, `in-progress`, `skip-for-now`, `needs-staff-help`, or `complete`.
+- `participantComfort`: `comfortable`, `unsure`, `too-deep`, or `needs-support`.
+- `notes`: plain-text decisions, questions, or reminders.
+
+Skipping is a supported workshop choice, not a validation error. The Brand Board displays disabled and `skip-for-now` areas as “Skipped for now.” Areas marked `too-deep`, `needs-support`, or `needs-staff-help` display as “Needs support.” This lets a participant set boundaries and return later without losing work.
+
 ## Design presets and publication
 
 Version 1 accepts named presets for overall design, palette, typography, buttons, cards, images, backgrounds, rhythm, and motion. It does not apply them to DJR yet. Templates may consume only explicitly supported presets while preserving current design fallbacks.
+
+The palette picker offers seven curated choices: Warm Documentary, Bold Advocate, Calm Focus, Electric Creative, Natural Community, Editorial Classic, and High Contrast Access. Each writes only a palette ID, approved mode, and approved accent name. Token examples and hex values live in code for the workshop preview; raw color inputs are not stored or exposed. Curated palettes keep the exercise approachable and provide reviewed contrast pairs.
+
+The Decap preview is a visual Brand Board showing identity, palette, type, button, card, photo direction, voice, vocabulary, CTA intent, and workshop progress. It is not a preview of a public participant page and cannot create a route.
 
 `status` is metadata, not a route generator. Cody remains draft-only until Cody's language and a separate `accidental-advocate` template are approved.
 

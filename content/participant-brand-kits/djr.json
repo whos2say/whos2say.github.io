@@ -66,7 +66,7 @@
   },
   "designSystem": {
     "preset": "documentary-warm",
-    "colors": { "palette": "djr", "mode": "dark", "accent": "amber" },
+    "colors": { "palette": "warm-documentary", "mode": "dark", "accent": "amber" },
     "typography": { "preset": "editorial-sans" },
     "buttons": { "preset": "solid-rounded" },
     "cards": { "preset": "quiet-bordered" },
@@ -74,6 +74,14 @@
     "backgrounds": { "preset": "layered-dark" },
     "rhythm": { "preset": "spacious" },
     "motion": { "preset": "subtle", "reducedMotionRequired": true }
+  },
+  "workshop": {
+    "brandFoundation": { "enabled": true, "status": "complete", "participantComfort": "comfortable", "notes": "" },
+    "audienceMessage": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "" },
+    "voiceLanguage": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "" },
+    "storyCta": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "" },
+    "photoVisual": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "" },
+    "colorsDesign": { "enabled": true, "status": "in-progress", "participantComfort": "comfortable", "notes": "" }
   },
   "governance": {
     "participantEditable": true,

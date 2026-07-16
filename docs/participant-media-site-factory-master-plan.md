@@ -392,6 +392,12 @@ Participant Pages reference a kit by slug. The safe normalizer returns only allo
 
 The initial DJR kit records existing direction without changing `/djr/`. Cody's kit is draft planning data only and does not create a route, navigation item, page, or template.
 
+### Brand Kit Visual Workshop v1
+
+The CMS now turns the Brand Kit into a guided workshop with progress, comfort, skip-for-now, and staff-support choices for each major brand area. A visual Brand Board helps participants see identity, voice, palette, typography, buttons, cards, photo direction, CTA intent, and overall progress together.
+
+Colors are selected from curated, accessible palettes rather than raw hex inputs. Palette token examples exist only in the closed design registry and CMS presentation code. They are not applied to public participant pages yet. The Brand Board is a workshop artifact, not a Cody or DJR public-page preview.
+
 ### Brand Kit concept
 
 Each participant should eventually have a brand kit:

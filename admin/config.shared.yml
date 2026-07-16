@@ -545,6 +545,35 @@
       - { label: Schema Version, name: schemaVersion, widget: number, value_type: int, default: 1 }
       - { label: Slug, name: slug, widget: string, hint: "Admin-owned participant identifier. This does not create a route." }
       - { label: Status, name: status, widget: select, options: [draft, in-review, approved], default: draft }
+      - label: Brand Workshop Guide
+        name: workshop
+        widget: object
+        hint: "Use this together. It is okay to skip an area, come back later, or ask staff for support."
+        fields:
+          - &workshop_area
+            label: Brand Foundation Workshop
+            name: brandFoundation
+            widget: object
+            fields:
+              - { label: Include this workshop area, name: enabled, widget: boolean, default: true }
+              - { label: Workshop status, name: status, widget: select, options: [{ label: Come back later, value: not-started }, { label: In progress, value: in-progress }, { label: Skip for now, value: skip-for-now }, { label: Needs staff help, value: needs-staff-help }, { label: Complete, value: complete }], default: not-started }
+              - { label: How does this feel?, name: participantComfort, widget: select, options: [{ label: Comfortable, value: comfortable }, { label: Unsure, value: unsure }, { label: This feels too deep today, value: too-deep }, { label: Needs support, value: needs-support }], default: comfortable }
+              - { label: Workshop notes, name: notes, widget: text, required: false, hint: "Capture questions, choices, or what to come back to later." }
+          - <<: *workshop_area
+            label: Audience and Message Workshop
+            name: audienceMessage
+          - <<: *workshop_area
+            label: Voice and Language Workshop
+            name: voiceLanguage
+          - <<: *workshop_area
+            label: Story and Invitations Workshop
+            name: storyCta
+          - <<: *workshop_area
+            label: Photo and Visual Workshop
+            name: photoVisual
+          - <<: *workshop_area
+            label: Colors and Design Workshop
+            name: colorsDesign
       - { label: Brand Foundation, name: identity, widget: object, fields: [
           { label: Brand Name, name: brandName, widget: string },
           { label: Participant Name, name: participantName, widget: string },
@@ -625,11 +654,7 @@
         hint: "Choose approved presets only. Raw CSS, arbitrary colors, fonts, and layout controls are not available."
         fields:
           - { label: Overall Preset, name: preset, widget: select, options: [documentary-warm, advocacy-editorial] }
-          - { label: Colors, name: colors, widget: object, fields: [
-              { label: Palette, name: palette, widget: select, options: [djr, accidental-advocate] },
-              { label: Mode, name: mode, widget: select, options: [dark, light] },
-              { label: Accent Name, name: accent, widget: string }
-            ]}
+          - { label: Color Palette Workshop, name: colors, widget: brand-palette-picker, hint: "Choose from curated, accessible palettes and preview how each choice feels. Raw color codes are not available." }
           - { label: Typography, name: typography, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [editorial-sans, bold-editorial] }] }
           - { label: Buttons, name: buttons, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [solid-rounded, solid-square] }] }
           - { label: Cards, name: cards, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [quiet-bordered, editorial-bordered] }] }
