@@ -71,12 +71,12 @@
         "e82e5c4f-8b44-4833-aeeb-3d63bd7956e2"
       ],
       "enabled": true,
-      "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
+      "body": "Creativity means taking a normal moment and turning it into something special. DJR Photography uses light, color, emotion, action, and style to make every photo stand out.",
       "allowParticipantAlbum": true,
-      "eyebrow": "Eye to Eye",
+      "eyebrow": "Creativity at DJR Photography",
       "albumId": "890289d8-897a-4c0d-b753-49da84c93f84",
       "allowParticipantEdit": true,
-      "title": "Based on a true story of perseverance and a camera.",
+      "title": "Creativity That Makes Moments Standout",
       "imageMode": "manualSelection"
     },
     "cta": {
@@ -108,15 +108,15 @@
         "summary": "I see the candid moments between family and friends, during special occasions.  Capturing the authentic Love when no one's looking.",
         "serviceDescription": "I will be  a fly on the wall for your ceremony, cocktail hour, or when everyone is on the dancefloor.\nCapturing special glances during toasts, and introductions or simply capturing the moment.",
         "albumId": "3918b612-b15a-4757-bab4-0051795277d1",
-        "serviceId": "wedding-photography",
+        "serviceId": "event-photography",
         "title": "Capturing the moments",
-        "icon": "Wedding",
+        "icon": "Events",
         "packageDetails": [
           "The Love Story - Engagement Beach photos, Rehersal",
           "A digital gallery of everything, with albums for each step of the journey.",
           "High Quality prints in various sizes, custom to your desires."
         ],
-        "category": "Wedding Photos",
+        "category": "Events & Celebrations",
         "imageMode": "manualSelection"
       },
       {
@@ -147,16 +147,16 @@
         "displayMode": "slideshow",
         "summary": "Color, texture, reflection, and small visual surprises that make a scene feel personal.",
         "serviceDescription": "A detail-led gallery for color, texture, reflection, objects, and small visual surprises that give a scene personality.",
-        "albumId": "",
-        "serviceId": "creative-details",
+        "albumId": "f4c8061b-fff1-43c8-8504-9c649ca05af0",
+        "serviceId": "nature-landscape",
         "title": "Creative Details",
-        "icon": "Art",
+        "icon": "Nature",
         "packageDetails": [
           "Close-up and detail photography",
           "A gallery shaped around color, texture, and atmosphere",
           "Good fit for creative experiments, objects, and visual studies"
         ],
-        "category": "Art",
+        "category": "Nature & Landscape",
         "imageMode": "albumOrder"
       },
       {
