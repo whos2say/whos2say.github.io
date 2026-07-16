@@ -378,6 +378,20 @@ This is not just visual styling. It should teach participants:
 - What words sound like me?
 - What services, projects, or ideas do I want to be known for?
 
+### Brand Kit version 1 architecture
+
+Brand Kit version 1 uses a hybrid ownership model:
+
+```text
+content/participant-brand-kits/{slug}.json → identity, audience, voice, messaging, visual direction, approved presets
+content/participant-pages/{slug}.json      → template, page sections, Media Hub album/photo selections
+participant template                      → route, structure, layout, safe links, and preset implementation
+```
+
+Participant Pages reference a kit by slug. The safe normalizer returns only allowlisted metadata and cannot override routes, forms, navigation, albums, scripts, HTML, raw CSS, arbitrary URLs, or layout. See `docs/participant-brand-kit-schema.md`.
+
+The initial DJR kit records existing direction without changing `/djr/`. Cody's kit is draft planning data only and does not create a route, navigation item, page, or template.
+
 ### Brand Kit concept
 
 Each participant should eventually have a brand kit:

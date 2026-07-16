@@ -558,6 +558,121 @@ collections:
               { label: Body, name: body, widget: text }
             ]}
 
+  - name: participant-brand-kits
+    label: Participant Brand Kits
+    description: "Define participant identity, audience, message, voice, and constrained visual direction. Brand Kits cannot control routes, links, albums, layout, HTML, or CSS."
+    folder: content/participant-brand-kits
+    extension: json
+    format: json
+    create: false
+    identifier_field: slug
+    fields:
+      - { label: Schema Version, name: schemaVersion, widget: number, value_type: int, default: 1 }
+      - { label: Slug, name: slug, widget: string, hint: "Admin-owned participant identifier. This does not create a route." }
+      - { label: Status, name: status, widget: select, options: [draft, in-review, approved], default: draft }
+      - { label: Brand Foundation, name: identity, widget: object, fields: [
+          { label: Brand Name, name: brandName, widget: string },
+          { label: Participant Name, name: participantName, widget: string },
+          { label: Tagline, name: tagline, widget: string },
+          { label: Short Bio, name: shortBio, widget: text },
+          { label: Long Bio, name: longBio, widget: text }
+        ]}
+      - { label: Audience and Message, name: strategy, widget: object, fields: [
+          { label: Purpose, name: purpose, widget: text },
+          { label: Primary Audiences, name: primaryAudience, widget: list, field: { label: Audience, name: audience, widget: string } },
+          { label: Secondary Audiences, name: secondaryAudience, widget: list, required: false, field: { label: Audience, name: audience, widget: string } },
+          { label: Key Message, name: keyMessage, widget: text },
+          { label: Supporting Messages, name: supportingMessages, widget: list, field: { label: Message, name: message, widget: text } },
+          { label: Desired Audience Response, name: desiredAudienceResponse, widget: text }
+        ]}
+      - label: Voice and Language
+        name: voice
+        widget: object
+        fields:
+          - { label: Voice Summary, name: summary, widget: text }
+          - label: Voice Traits
+            name: traits
+            widget: list
+            fields:
+              - { label: Trait, name: name, widget: string }
+              - { label: Meaning, name: description, widget: text }
+              - { label: Do, name: do, widget: text }
+              - { label: Avoid, name: dont, widget: text }
+          - { label: Tone by Context, name: toneByContext, widget: object, fields: [
+              { label: Introduction, name: introduction, widget: text },
+              { label: Story, name: story, widget: text },
+              { label: Invitation, name: invitation, widget: text },
+              { label: Sensitive Topics, name: sensitiveTopics, widget: text }
+            ]}
+          - { label: Words to Use, name: wordsToUse, widget: list, field: { label: Word or phrase, name: word, widget: string } }
+          - { label: Words to Avoid, name: wordsToAvoid, widget: list, field: { label: Word or phrase, name: word, widget: string } }
+          - { label: Writing Rules, name: writingRules, widget: object, fields: [
+              { label: Reading Level, name: readingLevel, widget: select, options: [plain, general, advanced], default: plain },
+              { label: Sentence Style, name: sentenceStyle, widget: string },
+              { label: Point of View, name: person, widget: select, options: [first-person, third-person, mixed] },
+              { label: Accessibility Notes, name: accessibilityNotes, widget: list, field: { label: Note, name: note, widget: text } }
+            ]}
+      - label: Story and Calls to Action
+        name: messaging
+        widget: object
+        fields:
+          - { label: Origin Story, name: originStory, widget: text }
+          - { label: Public Message, name: publicMessage, widget: text }
+          - { label: Proof Points, name: proofPoints, widget: list, required: false, field: { label: Point, name: point, widget: text } }
+          - { label: Advocacy Topics, name: advocacyTopics, widget: list, required: false, field: { label: Topic, name: topic, widget: text } }
+          - { label: Personal Boundaries, name: personalBoundaries, widget: list, required: false, field: { label: Boundary, name: boundary, widget: text } }
+          - label: Approved Calls to Action
+            name: approvedCallsToAction
+            widget: list
+            hint: "Describe the invitation only. Destinations and URLs remain admin/template-owned."
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Label, name: label, widget: string }
+              - { label: Intent, name: intent, widget: string }
+              - { label: Description, name: description, widget: text }
+          - { label: Claims to Avoid, name: claimsToAvoid, widget: list, field: { label: Claim, name: claim, widget: text } }
+      - { label: Photo and Visual Direction, name: visualDirection, widget: object, fields: [
+          { label: Photo Style, name: photoStyle, widget: object, fields: [
+              { label: Summary, name: summary, widget: text },
+              { label: Subjects, name: subjects, widget: list, field: { label: Subject, name: subject, widget: string } },
+              { label: Composition, name: composition, widget: list, field: { label: Direction, name: direction, widget: string } },
+              { label: Lighting, name: lighting, widget: list, field: { label: Direction, name: direction, widget: string } },
+              { label: Mood, name: mood, widget: list, field: { label: Mood, name: moodItem, widget: string } },
+              { label: Avoid, name: avoid, widget: list, field: { label: Avoid, name: avoidItem, widget: string } }
+            ]},
+          { label: Color Mood, name: colorMood, widget: list, field: { label: Mood, name: mood, widget: string } },
+          { label: Design Style, name: designStyle, widget: list, field: { label: Style, name: style, widget: string } },
+          { label: Accessibility Intent, name: accessibilityIntent, widget: text }
+        ]}
+      - label: Approved Design Choices
+        name: designSystem
+        widget: object
+        hint: "Choose approved presets only. Raw CSS, arbitrary colors, fonts, and layout controls are not available."
+        fields:
+          - { label: Overall Preset, name: preset, widget: select, options: [documentary-warm, advocacy-editorial] }
+          - { label: Colors, name: colors, widget: object, fields: [
+              { label: Palette, name: palette, widget: select, options: [djr, accidental-advocate] },
+              { label: Mode, name: mode, widget: select, options: [dark, light] },
+              { label: Accent Name, name: accent, widget: string }
+            ]}
+          - { label: Typography, name: typography, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [editorial-sans, bold-editorial] }] }
+          - { label: Buttons, name: buttons, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [solid-rounded, solid-square] }] }
+          - { label: Cards, name: cards, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [quiet-bordered, editorial-bordered] }] }
+          - { label: Images, name: images, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [natural-cinematic, documentary-candid] }] }
+          - { label: Backgrounds, name: backgrounds, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [layered-dark, warm-light] }] }
+          - { label: Section Rhythm, name: rhythm, widget: object, fields: [{ label: Preset, name: preset, widget: select, options: [spacious, balanced] }] }
+          - { label: Motion, name: motion, widget: object, fields: [
+              { label: Preset, name: preset, widget: select, options: [subtle, minimal] },
+              { label: Reduced Motion Required, name: reducedMotionRequired, widget: boolean, default: true }
+            ]}
+      - { label: Review and Governance, name: governance, widget: object, fields: [
+          { label: Participant Editable, name: participantEditable, widget: boolean, default: true },
+          { label: Review Required, name: reviewRequired, widget: boolean, default: true },
+          { label: Approved By, name: approvedBy, widget: string, required: false },
+          { label: Approved At, name: approvedAt, widget: datetime, required: false },
+          { label: Notes, name: notes, widget: text, required: false }
+        ]}
+
   - name: participant-pages
     label: Participant Pages
     description: "Primary participant-facing editor for participant microsites. Use /albums.html to manage media, then paste Supabase album UUIDs here."
@@ -578,6 +693,7 @@ collections:
             widget: select
             options:
               - djr-photography
+          - { label: Brand Kit, name: brandKit, widget: hidden, default: djr, hint: "Admin-owned reference to content/participant-brand-kits/djr.json." }
           - { label: Default Album ID, name: defaultAlbumId, widget: string, required: false, hint: "Create/manage albums in /albums.html, then paste the Supabase album UUID here. Section Album UUIDs override this when provided." }
           - label: Page Sections
             name: sections

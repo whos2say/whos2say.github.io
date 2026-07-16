@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "slug": "djr",
+  "status": "approved",
+  "identity": {
+    "brandName": "DJR Photography",
+    "participantName": "David J. Richards",
+    "tagline": "Eye to eye with the moment.",
+    "shortBio": "David J. Richards is building his voice as a photographer one frame at a time.",
+    "longBio": "David's work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss."
+  },
+  "strategy": {
+    "purpose": "Show David's developing point of view and invite people to experience or support his photography.",
+    "primaryAudience": ["Families", "Athletes and teams", "Community partners", "People interested in David's creative journey"],
+    "secondaryAudience": ["Event organizers", "Creative collaborators"],
+    "keyMessage": "DJR Photography is a real person learning to look closely, move with purpose, and tell stories through the lens.",
+    "supportingMessages": ["Attention matters more than polish.", "Practice and persistence are part of the story.", "People and feeling come before posing."],
+    "desiredAudienceResponse": "See David's point of view, follow his growth, or invite him to photograph a meaningful moment."
+  },
+  "voice": {
+    "summary": "Observant, human, cinematic, encouraging, and grounded.",
+    "traits": [
+      { "name": "Observant", "description": "Notice faces, posture, light, feeling, and overlooked details.", "do": "Describe specific moments.", "dont": "Make inflated claims." },
+      { "name": "Human", "description": "Keep David and the people he photographs at the center.", "do": "Use warm, direct language.", "dont": "Sound like a corporate campaign." },
+      { "name": "Cinematic", "description": "Make room for imagination while distinguishing it from documentary work.", "do": "Describe atmosphere and possibility.", "dont": "Present imagined scenes as documentary fact." }
+    ],
+    "toneByContext": {
+      "introduction": "Confident, concise, and welcoming.",
+      "story": "Reflective and specific, with attention to practice and growth.",
+      "invitation": "Warm and direct without pressure or promises.",
+      "sensitiveTopics": "Respect David's agency and avoid pity, inspiration clichés, or speaking for him."
+    },
+    "wordsToUse": ["point of view", "moment", "attention", "practice", "story", "connection", "growth"],
+    "wordsToAvoid": ["inspirational despite", "suffers from", "overcomes", "professional guarantee", "perfect"],
+    "writingRules": {
+      "readingLevel": "plain",
+      "sentenceStyle": "Short-to-medium sentences with concrete images.",
+      "person": "third-person",
+      "accessibilityNotes": ["Prefer concrete language.", "Explain photography terms when context does not make them clear."]
+    }
+  },
+  "messaging": {
+    "originStory": "A camera became David's way of stepping into the world, learning to look closely, and building confidence one frame at a time.",
+    "publicMessage": "The dream. The hard work. The moment. The capture.",
+    "proofPoints": ["Sports, family, studio, and creative photography", "A growing body of participant-selected work", "Practice behind the camera and attention to human moments"],
+    "advocacyTopics": [],
+    "personalBoundaries": ["Do not define David through disability.", "Do not present AI-created imagery as documentary photography."],
+    "approvedCallsToAction": [
+      { "id": "contact", "label": "Contact DJR", "intent": "contact", "description": "Invite a photography or collaboration inquiry through the admin-owned DJR contact route." },
+      { "id": "see-work", "label": "See the Work", "intent": "gallery", "description": "Invite visitors to view David's photography through an admin-owned gallery route." }
+    ],
+    "claimsToAvoid": ["Guaranteed outcomes", "Unverified professional credentials", "Promises about availability or services"]
+  },
+  "visualDirection": {
+    "photoStyle": {
+      "summary": "Documentary observation with cinematic energy and honest human moments.",
+      "subjects": ["People in action", "Behind-the-scenes practice", "Family and community", "Creative details"],
+      "composition": ["Eye-level connection", "Sideline perspective", "Close details", "Layered environments"],
+      "lighting": ["Available light", "Game and event light", "Controlled studio experiments"],
+      "mood": ["Focused", "Warm", "Energetic", "Reflective"],
+      "avoid": ["Generic stock imagery", "Overly staged poses", "Mislabeling AI imagery as documentary work"]
+    },
+    "colorMood": ["Deep", "Warm", "Cinematic", "High-contrast"],
+    "designStyle": ["Editorial", "Photography-first", "Confident", "Spacious"],
+    "accessibilityIntent": "Keep text highly legible, focus states visible, and motion optional while allowing photography to lead."
+  },
+  "designSystem": {
+    "preset": "documentary-warm",
+    "colors": { "palette": "djr", "mode": "dark", "accent": "amber" },
+    "typography": { "preset": "editorial-sans" },
+    "buttons": { "preset": "solid-rounded" },
+    "cards": { "preset": "quiet-bordered" },
+    "images": { "preset": "natural-cinematic" },
+    "backgrounds": { "preset": "layered-dark" },
+    "rhythm": { "preset": "spacious" },
+    "motion": { "preset": "subtle", "reducedMotionRequired": true }
+  },
+  "governance": {
+    "participantEditable": true,
+    "reviewRequired": true,
+    "approvedBy": "",
+    "approvedAt": "",
+    "notes": "Version 1 records existing DJR brand direction. It does not change the current DJR design or routes."
+  }
+}

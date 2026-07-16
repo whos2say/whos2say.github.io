@@ -66,6 +66,13 @@
     return fetchOptionalJson('/content/participant-pages/djr.json');
   }
 
+  function loadParticipantBrandKit(config) {
+    var slug = config && typeof config.brandKit === 'string' ? config.brandKit : '';
+    return import('/js/participant-pages/brandKit.js')
+      .then(function (helper) { return helper.loadBrandKit(slug); })
+      .catch(function () { return null; });
+  }
+
   function esc(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -784,10 +791,12 @@
         .then(function (copy) {
           return loadParticipantPageConfig()
             .then(function (config) {
-              return overlayParticipantAlbums(overlayParticipantPageContent(overlayParticipantCopy(home, copy), config), config)
-                .then(function (data) {
-                  return { data: data, config: config };
-                });
+              return Promise.all([
+                overlayParticipantAlbums(overlayParticipantPageContent(overlayParticipantCopy(home, copy), config), config),
+                loadParticipantBrandKit(config)
+              ]).then(function (results) {
+                return { data: results[0], config: config, brandKit: results[1] };
+              });
             });
         });
     });

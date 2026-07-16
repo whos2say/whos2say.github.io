@@ -2,6 +2,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { BRAND_KIT_SCHEMA_VERSION, normalizeBrandKit } from '../js/participant-pages/brandKit.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
@@ -165,6 +166,7 @@ const participantPageAllowedPaths = new Set([
   'name',
   'slug',
   'template',
+  'brandKit',
   'defaultAlbumId',
   'sections',
   'sections.hero',
@@ -266,6 +268,7 @@ for (const participantPath of collectPaths(participantPage)) {
 assert(participantPage?.name === 'David J. Richards', 'DJR participant page config must identify David J. Richards')
 assert(participantPage?.slug === 'djr', 'DJR participant page config slug must be djr')
 assert(participantPage?.template === 'djr-photography', 'DJR participant page config must use the djr-photography template')
+assert(participantPage?.brandKit === 'djr', 'DJR participant page config must reference the djr Brand Kit')
 validateAlbumIdField(participantPage?.defaultAlbumId, 'defaultAlbumId')
 for (const sectionKey of ['hero', 'story', 'featured', 'about', 'creative', 'cta']) {
   const section = participantPage?.sections?.[sectionKey]
@@ -318,6 +321,48 @@ for (const relativePath of listJsonFiles('content/djr')) {
 }
 
 const djrContent = readText('djr/js/djr-content.js')
+const brandKitLoader = readText('js/participant-pages/brandKit.js')
+const djrBrandKit = readJson('content/participant-brand-kits/djr.json')
+const codyBrandKit = readJson('content/participant-brand-kits/cody.json')
+assert(BRAND_KIT_SCHEMA_VERSION === 1, 'Brand Kit loader must support schema version 1')
+assert(djrBrandKit?.schemaVersion === 1 && djrBrandKit?.slug === 'djr', 'DJR Brand Kit must use schema version 1 and slug djr')
+assert(djrBrandKit?.status === 'approved', 'DJR Brand Kit must be approved')
+assert(codyBrandKit?.schemaVersion === 1 && codyBrandKit?.slug === 'cody', 'Cody Brand Kit must use schema version 1 and slug cody')
+assert(codyBrandKit?.status === 'draft', 'Cody Brand Kit must remain draft-only')
+assert(!fs.existsSync(path.join(root, 'cody')), 'Cody Brand Kit must not create a /cody route')
+assert(!fs.existsSync(path.join(root, 'participants', 'cody')), 'Cody Brand Kit must not create a participant Cody route')
+
+const hostileBrandKit = normalizeBrandKit({
+  schemaVersion: 1,
+  slug: 'djr',
+  status: 'approved',
+  route: '/hijack',
+  href: 'javascript:alert(1)',
+  url: 'https://example.com',
+  formAction: 'https://example.com/collect',
+  navigation: [{ href: '/hijack' }],
+  albums: ['fe027096-7084-4f96-974a-315b98b484b2'],
+  albumId: 'fe027096-7084-4f96-974a-315b98b484b2',
+  scripts: ['https://example.com/evil.js'],
+  css: 'body { display: none }',
+  html: '<script>alert(1)</script>',
+  layout: 'arbitrary-grid',
+  identity: { brandName: '<img src=x onerror=alert(1)>', tagline: 'Safe tagline' },
+  messaging: { approvedCallsToAction: [{ id: 'contact', label: 'Contact', intent: 'contact', href: 'javascript:alert(1)' }] },
+  designSystem: { preset: 'unknown', colors: { palette: 'unknown', raw: '#000' } },
+})
+for (const forbiddenKey of ['route', 'href', 'url', 'formAction', 'navigation', 'albums', 'albumId', 'scripts', 'css', 'html', 'layout']) {
+  assert(!(forbiddenKey in hostileBrandKit), `Brand Kit normalizer must discard forbidden field: ${forbiddenKey}`)
+}
+assert(hostileBrandKit.identity.brandName === '', 'Brand Kit normalizer must discard raw HTML text')
+assert(hostileBrandKit.identity.tagline === 'Safe tagline', 'Brand Kit normalizer should preserve safe plain text')
+assert(hostileBrandKit.messaging.approvedCallsToAction[0].intent === 'contact', 'Brand Kit normalizer should preserve CTA intent')
+assert(!('href' in hostileBrandKit.messaging.approvedCallsToAction[0]), 'Brand Kit CTA must not expose arbitrary URLs')
+assert(hostileBrandKit.designSystem.preset === '', 'Brand Kit normalizer must reject unknown design presets')
+assert(!('raw' in hostileBrandKit.designSystem.colors), 'Brand Kit normalizer must discard raw color values')
+assert(brandKitLoader.includes("fetcher(`/content/participant-brand-kits/${slug}.json`"), 'Brand Kit loader must load only slug-addressed local JSON')
+assert(djrContent.includes('loadParticipantBrandKit'), 'DJR renderer should safely load referenced Brand Kit metadata')
+assert(!djrContent.includes('brandKit.designSystem'), 'DJR renderer must not apply Brand Kit design presets in version 1')
 assert(djrContent.includes('fetchOptionalJson'), 'DJR content renderer should preserve behavior when optional JSON files are missing')
 assert(djrContent.includes('overlayParticipantCopy'), 'DJR content renderer should overlay participant copy through an allowlisted helper')
 assert(djrContent.includes('/content/participant-pages/djr.json'), 'DJR content renderer should load the participant page config')
@@ -408,11 +453,24 @@ assert(!participantPreview.includes('getAlbumById'), 'Participant Pages preview 
 assert(!participantPreview.includes('widget: image'), 'Participant Pages preview must not introduce upload widgets')
 
 const cmsConfig = readText('admin/config.shared.yml')
+const brandKitsCollection = extractCollection(cmsConfig, 'participant-brand-kits')
+assert(brandKitsCollection, 'Decap shared config is missing the participant-brand-kits collection')
+if (brandKitsCollection) {
+  assert(brandKitsCollection.includes('folder: content/participant-brand-kits'), 'Brand Kits collection must expose content/participant-brand-kits')
+  assert(brandKitsCollection.includes('create: false'), 'Brand Kits collection must not let participants create arbitrary kits')
+  for (const expectedField of ['schemaVersion', 'slug', 'status', 'identity', 'strategy', 'voice', 'messaging', 'visualDirection', 'designSystem', 'governance']) {
+    assert(hasFieldName(brandKitsCollection, expectedField), `Brand Kits collection is missing field: ${expectedField}`)
+  }
+  for (const forbiddenField of ['href', 'url', 'route', 'formAction', 'nav', 'navigation', 'albumId', 'albums', 'script', 'scripts', 'css', 'html', 'layout', 'image', 'src']) {
+    assert(!hasFieldName(brandKitsCollection, forbiddenField), `Brand Kits collection must not expose field: ${forbiddenField}`)
+  }
+  assert(!brandKitsCollection.includes('widget: image'), 'Brand Kits collection must not expose image uploads')
+}
 const participantPagesCollection = extractCollection(cmsConfig, 'participant-pages')
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')
 if (participantPagesCollection) {
   assert(participantPagesCollection.includes('file: content/participant-pages/djr.json'), 'Participant Pages collection must expose content/participant-pages/djr.json')
-  for (const expectedField of ['name', 'slug', 'template', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'services', 'items', 'serviceId', 'category', 'icon', 'summary', 'serviceDescription', 'packageDetails', 'displayMode', 'ctaLabel', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageMode', 'selectedPhotoIds', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
+  for (const expectedField of ['name', 'slug', 'template', 'brandKit', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'services', 'items', 'serviceId', 'category', 'icon', 'summary', 'serviceDescription', 'packageDetails', 'displayMode', 'ctaLabel', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageMode', 'selectedPhotoIds', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
     assert(hasFieldName(participantPagesCollection, expectedField), `Participant Pages collection is missing field: ${expectedField}`)
   }
   for (const forbiddenField of ['href', 'formAction', 'photoGalleryAlbumId', 'googlePhotosAlbumUrl', 'album_id', 'nav', 'partner', 'button', 'primaryButton', 'secondaryButton', 'sourceType', 'sectionId', 'html', 'image', 'src']) {

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "slug": "cody",
+  "status": "draft",
+  "identity": {
+    "brandName": "The Accidental Advocate",
+    "participantName": "Cody",
+    "tagline": "A voice that found its way forward.",
+    "shortBio": "Draft: Cody is developing a public voice rooted in lived experience, community, and inclusion.",
+    "longBio": "Draft only. Cody's origin story and public biography require Cody's review and approval before use."
+  },
+  "strategy": {
+    "purpose": "Draft: create space for Cody's own public message and invitations to community conversation.",
+    "primaryAudience": ["Community members", "Advocacy partners", "Event and speaking organizers"],
+    "secondaryAudience": ["Families", "Supporters", "People learning about inclusion"],
+    "keyMessage": "Draft: lived experience belongs in public conversations.",
+    "supportingMessages": ["Use Cody's own words whenever possible.", "Make ideas understandable without flattening them."],
+    "desiredAudienceResponse": "Draft: listen, connect, and invite Cody into an appropriate community conversation."
+  },
+  "voice": {
+    "summary": "Draft: direct, warm, bold, reflective, accessible, and grounded in Cody's agency.",
+    "traits": [
+      { "name": "Direct", "description": "Say what matters in clear language.", "do": "Use concrete words and short sentences.", "dont": "Hide the point behind institutional language." },
+      { "name": "Self-directed", "description": "Cody's perspective and approval lead the story.", "do": "Use Cody's own framing.", "dont": "Speak for Cody or turn him into a symbol." }
+    ],
+    "toneByContext": {
+      "introduction": "Draft: welcoming, confident, and plainspoken.",
+      "story": "Draft: personal and reflective without forcing a neat inspirational arc.",
+      "invitation": "Draft: open and specific about ways to connect.",
+      "sensitiveTopics": "Use Cody-approved language. Avoid pity, diagnosis-first framing, medical claims, and details Cody has not chosen to share."
+    },
+    "wordsToUse": ["voice", "included", "community", "listen", "connect", "lived experience"],
+    "wordsToAvoid": ["suffers from", "inspirational despite", "voiceless", "normal people", "overcomes"],
+    "writingRules": {
+      "readingLevel": "plain",
+      "sentenceStyle": "Short, concrete sentences with one main idea at a time.",
+      "person": "first-person",
+      "accessibilityNotes": ["Define unfamiliar advocacy terms.", "Prefer active voice.", "Avoid idioms when a direct phrase works."]
+    }
+  },
+  "messaging": {
+    "originStory": "Draft placeholder requiring Cody's review: what happened, what changed, and why Cody chooses to speak now.",
+    "publicMessage": "Draft placeholder requiring Cody's own words and approval.",
+    "proofPoints": [],
+    "advocacyTopics": ["Draft: inclusion", "Draft: being heard", "Draft: community participation"],
+    "personalBoundaries": ["Do not publish private history without Cody's approval.", "Do not speak for Cody.", "Do not frame Cody through pity or an inspirational stereotype."],
+    "approvedCallsToAction": [
+      { "id": "connect", "label": "Invite Cody to Connect", "intent": "connect", "description": "Draft CTA intent only. Any destination remains admin-owned." }
+    ],
+    "claimsToAvoid": ["Medical or legal advice", "Diagnostic claims", "Guaranteed outcomes", "Claims Cody has not approved"]
+  },
+  "visualDirection": {
+    "photoStyle": {
+      "summary": "Draft: candid documentary portraits, public voice, speaking, and community moments.",
+      "subjects": ["Cody speaking", "Community participation", "Portraits with direct eye contact", "Everyday moments chosen by Cody"],
+      "composition": ["Human-scale", "Eye-level", "Context-rich"],
+      "lighting": ["Natural and available light", "Clear facial visibility"],
+      "mood": ["Steady", "Human", "Bold", "Open"],
+      "avoid": ["Pity imagery", "Tokenizing group shots", "Generic advocacy stock imagery"]
+    },
+    "colorMood": ["Deep navy", "Warm gold", "Warm white"],
+    "designStyle": ["Bold editorial", "Accessible", "Human", "Message-first"],
+    "accessibilityIntent": "Prioritize plain language, generous type, strong contrast, clear focus, and minimal motion."
+  },
+  "designSystem": {
+    "preset": "advocacy-editorial",
+    "colors": { "palette": "accidental-advocate", "mode": "light", "accent": "gold" },
+    "typography": { "preset": "bold-editorial" },
+    "buttons": { "preset": "solid-square" },
+    "cards": { "preset": "editorial-bordered" },
+    "images": { "preset": "documentary-candid" },
+    "backgrounds": { "preset": "warm-light" },
+    "rhythm": { "preset": "balanced" },
+    "motion": { "preset": "minimal", "reducedMotionRequired": true }
+  },
+  "governance": {
+    "participantEditable": true,
+    "reviewRequired": true,
+    "approvedBy": "",
+    "approvedAt": "",
+    "notes": "Draft model only. This file does not authorize a Cody route, page, navigation item, or template."
+  }
+}

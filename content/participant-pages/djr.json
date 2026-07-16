@@ -3,6 +3,7 @@
   "name": "David J. Richards",
   "slug": "djr",
   "template": "djr-photography",
+  "brandKit": "djr",
   "defaultAlbumId": "fe027096-7084-4f96-974a-315b98b484b2",
   "sections": {
     "hero": {

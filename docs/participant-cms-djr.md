@@ -13,7 +13,11 @@ The DJR page is a static participant microsite under `/djr/`.
 - `content/djr/site.json` remains the admin-owned DJR chrome, nav, footer, contact, and partner content.
 - `content/djr/galleries.json`, `content/djr/contact.json`, and `content/djr/section-gallery-map.json` remain advanced/admin fallback files.
 - `content/participant-pages/djr.json` is the participant-facing page configuration and safe overlay source.
+- `content/participant-brand-kits/djr.json` records reusable DJR identity, voice, messaging, visual direction, and constrained design presets.
+- `js/participant-pages/brandKit.js` safely loads and normalizes Brand Kits through an explicit allowlist.
 - `js/participant-pages/albumImages.js` loads public Supabase album images from albums created in `/albums.html`.
+
+The DJR Participant Page references the DJR Brand Kit with `"brandKit": "djr"`. Version 1 loads that metadata but does not apply visual presets or redesign the page. Existing DJR content and styles remain the public fallback and visible source.
 
 ## CMS workflow
 
