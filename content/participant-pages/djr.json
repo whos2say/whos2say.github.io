@@ -94,24 +94,30 @@
     "title": "Photography With a Point of View",
     "items": [
       {
-        "imageLimit": 9,
-        "selectedPhotoIds": [],
+        "imageLimit": 5,
+        "selectedPhotoIds": [
+          "b92126be-6e10-4fd2-a9c1-e43517710bd6",
+          "8c424838-a262-498a-b28e-30efa56e5308",
+          "a7ff37b3-4695-4adb-b89f-159455158854",
+          "899aafa7-25e3-470a-9270-6c1e1cdcb4b8",
+          "63cf49a6-9cf2-47e9-bdf7-c4eb2dcb2c10"
+        ],
         "enabled": true,
         "ctaLabel": "Book This Session",
         "displayMode": "slideshow",
-        "summary": "Portraits of the process: practice, focus, and the confidence that grows with every shot.",
-        "serviceDescription": "A visual story about the work behind the camera: the practice, patience, equipment, and confidence that shape David's point of view.",
-        "albumId": "",
-        "serviceId": "behind-the-lens",
-        "title": "Behind the Lens",
-        "icon": "Camera",
+        "summary": "I see the candid moments between family and friends, during special occasions.  Capturing the authentic Love when no one's looking.",
+        "serviceDescription": "I will be  a fly on the wall for your ceremony, cocktail hour, or when everyone is on the dancefloor.\nCapturing special glances during toasts, and introductions or simply capturing the moment.",
+        "albumId": "3918b612-b15a-4757-bab4-0051795277d1",
+        "serviceId": "wedding-photography",
+        "title": "Capturing the moments",
+        "icon": "Wedding",
         "packageDetails": [
-          "Process-focused portraits and documentary images",
-          "A gallery built around practice, focus, and growth",
-          "Good fit for behind-the-scenes sessions or creative profiles"
+          "The Love Story - Engagement Beach photos, Rehersal",
+          "A digital gallery of everything, with albums for each step of the journey.",
+          "High Quality prints in various sizes, custom to your desires."
         ],
-        "category": "Camera",
-        "imageMode": "albumOrder"
+        "category": "Wedding Photos",
+        "imageMode": "manualSelection"
       },
       {
         "imageLimit": 9,
@@ -176,7 +182,7 @@
       {
         "imageLimit": 9,
         "selectedPhotoIds": [],
-        "enabled": true,
+        "enabled": false,
         "ctaLabel": "Ask About This",
         "displayMode": "slideshow",
         "summary": "Self-portraits, reflections, and experiments with how a photographer sees himself.",
