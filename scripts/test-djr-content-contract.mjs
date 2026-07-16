@@ -509,6 +509,10 @@ if (brandKitsCollection) {
   assert(!brandKitsCollection.includes('widget: image'), 'Brand Kits collection must not expose image uploads')
   assert(brandKitsCollection.includes('widget: brand-palette-picker'), 'Brand Kits collection must use the visual Brand Palette Picker')
   assert(brandKitsCollection.includes('Skip for now') && brandKitsCollection.includes('Needs staff help') && brandKitsCollection.includes('This feels too deep today') && brandKitsCollection.includes('Come back later'), 'Brand Kits workshop must use participant-friendly opt-out labels')
+  for (const prompt of ['What should people know about this participant?', 'Who is this page for?', 'What should people feel or do after seeing this?', 'Words that sound like this participant', 'Words that do not fit or should not be used', 'What kinds of images feel right?', 'What should the page feel like visually?']) {
+    assert(brandKitsCollection.includes(prompt), `Brand Kits collection is missing participant-friendly prompt: ${prompt}`)
+  }
+  assert(brandKitsCollection.includes('Choose three or four qualities that sound like this participant.'), 'Voice Traits should include plain-language examples and do/don\'t guidance')
 }
 const participantPagesCollection = extractCollection(cmsConfig, 'participant-pages')
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')

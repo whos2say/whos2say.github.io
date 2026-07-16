@@ -582,12 +582,12 @@
           { label: Long Bio, name: longBio, widget: text }
         ]}
       - { label: Audience and Message, name: strategy, widget: object, fields: [
-          { label: Purpose, name: purpose, widget: text },
-          { label: Primary Audiences, name: primaryAudience, widget: list, field: { label: Audience, name: audience, widget: string } },
+          { label: "What should people know about this participant?", name: purpose, widget: text, hint: "In one or two sentences, what is most important for a visitor to understand? For DJR: David is building his point of view as a photographer through practice, attention, and real moments." },
+          { label: "Who is this page for?", name: primaryAudience, widget: list, hint: "Name the people you most want to reach. For DJR: families, athletes and teams, community partners, and creative collaborators.", field: { label: Person or group, name: audience, widget: string } },
           { label: Secondary Audiences, name: secondaryAudience, widget: list, required: false, field: { label: Audience, name: audience, widget: string } },
           { label: Key Message, name: keyMessage, widget: text },
           { label: Supporting Messages, name: supportingMessages, widget: list, field: { label: Message, name: message, widget: text } },
-          { label: Desired Audience Response, name: desiredAudienceResponse, widget: text }
+          { label: "What should people feel or do after seeing this?", name: desiredAudienceResponse, widget: text, hint: "Examples: feel welcomed, understand the participant's point of view, view the work, start a conversation, or make an appropriate invitation." }
         ]}
       - label: Voice and Language
         name: voice
@@ -597,19 +597,20 @@
           - label: Voice Traits
             name: traits
             widget: list
+            hint: "Choose three or four qualities that sound like this participant. Examples: warm, direct, observant, playful, steady, bold. For each trait, describe what to do and what not to do."
             fields:
-              - { label: Trait, name: name, widget: string }
-              - { label: Meaning, name: description, widget: text }
-              - { label: Do, name: do, widget: text }
-              - { label: Avoid, name: dont, widget: text }
+              - { label: "This participant sounds…", name: name, widget: string, hint: "One quality, such as observant, warm, direct, or playful." }
+              - { label: "What does that sound like?", name: description, widget: text, hint: "Describe the quality in everyday language." }
+              - { label: "Do this", name: do, widget: text, hint: "Give a concrete writing example. DJR example: describe a specific face, moment, light, or detail." }
+              - { label: "Do not do this", name: dont, widget: text, hint: "Name language that would feel wrong. DJR example: do not make inflated claims or use a corporate tone." }
           - { label: Tone by Context, name: toneByContext, widget: object, fields: [
               { label: Introduction, name: introduction, widget: text },
               { label: Story, name: story, widget: text },
               { label: Invitation, name: invitation, widget: text },
               { label: Sensitive Topics, name: sensitiveTopics, widget: text }
             ]}
-          - { label: Words to Use, name: wordsToUse, widget: list, field: { label: Word or phrase, name: word, widget: string } }
-          - { label: Words to Avoid, name: wordsToAvoid, widget: list, field: { label: Word or phrase, name: word, widget: string } }
+          - { label: "Words that sound like this participant", name: wordsToUse, widget: list, hint: "Add words or short phrases that feel natural. DJR examples: point of view, moment, attention, practice, connection.", field: { label: Word or phrase, name: word, widget: string } }
+          - { label: "Words that do not fit or should not be used", name: wordsToAvoid, widget: list, hint: "Include language the participant dislikes, language that is inaccurate, and stereotypes or pity language.", field: { label: Word or phrase, name: word, widget: string } }
           - { label: Writing Rules, name: writingRules, widget: object, fields: [
               { label: Reading Level, name: readingLevel, widget: select, options: [plain, general, advanced], default: plain },
               { label: Sentence Style, name: sentenceStyle, widget: string },
@@ -636,8 +637,8 @@
               - { label: Description, name: description, widget: text }
           - { label: Claims to Avoid, name: claimsToAvoid, widget: list, field: { label: Claim, name: claim, widget: text } }
       - { label: Photo and Visual Direction, name: visualDirection, widget: object, fields: [
-          { label: Photo Style, name: photoStyle, widget: object, fields: [
-              { label: Summary, name: summary, widget: text },
+          { label: "What kinds of images feel right?", name: photoStyle, widget: object, hint: "Talk about people, moments, energy, framing, light, and what should be avoided. Images still come from the Media Hub.", fields: [
+              { label: "Describe the overall image feeling", name: summary, widget: text, hint: "DJR example: documentary observation with cinematic energy and honest human moments." },
               { label: Subjects, name: subjects, widget: list, field: { label: Subject, name: subject, widget: string } },
               { label: Composition, name: composition, widget: list, field: { label: Direction, name: direction, widget: string } },
               { label: Lighting, name: lighting, widget: list, field: { label: Direction, name: direction, widget: string } },
@@ -645,7 +646,7 @@
               { label: Avoid, name: avoid, widget: list, field: { label: Avoid, name: avoidItem, widget: string } }
             ]},
           { label: Color Mood, name: colorMood, widget: list, field: { label: Mood, name: mood, widget: string } },
-          { label: Design Style, name: designStyle, widget: list, field: { label: Style, name: style, widget: string } },
+          { label: "What should the page feel like visually?", name: designStyle, widget: list, hint: "Use feeling words rather than design jargon. DJR examples: cinematic, photography-first, confident, spacious, cool, focused.", field: { label: Visual feeling, name: style, widget: string } },
           { label: Accessibility Intent, name: accessibilityIntent, widget: text }
         ]}
       - label: Approved Design Choices
