@@ -27,12 +27,12 @@
       "enabled": true,
       "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
       "allowParticipantAlbum": true,
-      "eyebrow": "The Photographer",
+      "eyebrow": "DJR Photography",
       "albumId": "fe027096-7084-4f96-974a-315b98b484b2",
       "allowParticipantEdit": true,
-      "title": "A camera became David's way of stepping into the world.",
+      "title": "Creativity. Passion. Memories.",
       "quote": "The dream. The hard work. The moment. The capture.",
-      "lead": "DJR Photography is not a polished brand invented in a boardroom. It is a real person learning to look closely, move with purpose, and tell people, places, games, and family stories through the lens.",
+      "lead": "Welcome to DJR Photography by David James Richards — a creative photography brand built to capture sports, portraits, events, nature, community, and unforgettable life moments.\n",
       "imageMode": "manualSelection"
     },
     "featured": {
@@ -40,7 +40,7 @@
       "selectedPhotoIds": [
         "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963"
       ],
-      "enabled": true,
+      "enabled": false,
       "body": "David does not just take pictures from the edge of the action. He studies the field, waits for the face, the posture, the light, and the split second where a person becomes the story.",
       "buttonLabel": "See the Work",
       "allowParticipantAlbum": true,
@@ -53,13 +53,13 @@
     "about": {
       "imageLimit": 1,
       "selectedPhotoIds": [
-        "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963"
+        "5fdb8094-2580-4a54-93d2-01b9f8fbb17f"
       ],
       "enabled": true,
-      "body": "David J. Richards is building his voice as a photographer one frame at a time. His work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss.",
+      "body": "DJR Photography is owned and founded by David James Richards, Owner and Lead Photographer. DJR Pictures is about telling stories through powerful photos, creative ideas, and professional memories.\nThe mission is simple: capture life’s moments, one picture at a time.\n",
       "allowParticipantAlbum": true,
       "eyebrow": "About David",
-      "albumId": "",
+      "albumId": "8d183fdd-8ca4-4c2f-8537-d5a7ce7f5054",
       "allowParticipantEdit": true,
       "title": "Not just a gallery. A point of view.",
       "imageMode": "manualSelection"
