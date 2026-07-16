@@ -17,7 +17,12 @@
     },
     "story": {
       "imageLimit": 4,
-      "selectedPhotoIds": [],
+      "selectedPhotoIds": [
+        "b586e13c-f2aa-4e3e-8756-9d99c6b56bfa",
+        "a753b740-4423-47a6-9be4-4e591265f9ae",
+        "1d1dbbc3-8222-4541-82c2-89f18bbad03f",
+        "e7e16182-0384-4401-b965-d9dffd262b10"
+      ],
       "enabled": true,
       "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
       "allowParticipantAlbum": true,
@@ -88,124 +93,124 @@
     "title": "Photography With a Point of View",
     "items": [
       {
-        "serviceId": "behind-the-lens",
+        "imageLimit": 9,
+        "selectedPhotoIds": [],
         "enabled": true,
-        "category": "Camera",
-        "icon": "Camera",
-        "title": "Behind the Lens",
+        "ctaLabel": "Book This Session",
+        "displayMode": "slideshow",
         "summary": "Portraits of the process: practice, focus, and the confidence that grows with every shot.",
         "serviceDescription": "A visual story about the work behind the camera: the practice, patience, equipment, and confidence that shape David's point of view.",
+        "albumId": "",
+        "serviceId": "behind-the-lens",
+        "title": "Behind the Lens",
+        "icon": "Camera",
         "packageDetails": [
           "Process-focused portraits and documentary images",
           "A gallery built around practice, focus, and growth",
           "Good fit for behind-the-scenes sessions or creative profiles"
         ],
-        "albumId": "",
-        "imageMode": "albumOrder",
-        "selectedPhotoIds": [],
-        "imageLimit": 9,
-        "displayMode": "slideshow",
-        "ctaLabel": "Book This Session"
+        "category": "Camera",
+        "imageMode": "albumOrder"
       },
       {
-        "serviceId": "human-moments",
+        "imageLimit": 9,
+        "selectedPhotoIds": [],
         "enabled": true,
-        "category": "People",
-        "icon": "People",
-        "title": "Human Moments",
+        "ctaLabel": "Book This Session",
+        "displayMode": "slideshow",
         "summary": "Warm, honest images where connection matters more than posing.",
         "serviceDescription": "A people-first offering for family, friends, and everyday moments where the feeling matters more than a perfect pose.",
+        "albumId": "",
+        "serviceId": "human-moments",
+        "title": "Human Moments",
+        "icon": "People",
         "packageDetails": [
           "Natural portraits and connection-driven images",
           "A relaxed gallery focused on honest expression",
           "Good fit for family moments, small gatherings, and personal stories"
         ],
-        "albumId": "",
-        "imageMode": "albumOrder",
-        "selectedPhotoIds": [],
-        "imageLimit": 9,
-        "displayMode": "slideshow",
-        "ctaLabel": "Book This Session"
+        "category": "People",
+        "imageMode": "albumOrder"
       },
       {
-        "serviceId": "creative-details",
+        "imageLimit": 9,
+        "selectedPhotoIds": [],
         "enabled": true,
-        "category": "Art",
-        "icon": "Art",
-        "title": "Creative Details",
+        "ctaLabel": "Ask About This",
+        "displayMode": "slideshow",
         "summary": "Color, texture, reflection, and small visual surprises that make a scene feel personal.",
         "serviceDescription": "A detail-led gallery for color, texture, reflection, objects, and small visual surprises that give a scene personality.",
+        "albumId": "",
+        "serviceId": "creative-details",
+        "title": "Creative Details",
+        "icon": "Art",
         "packageDetails": [
           "Close-up and detail photography",
           "A gallery shaped around color, texture, and atmosphere",
           "Good fit for creative experiments, objects, and visual studies"
         ],
-        "albumId": "",
-        "imageMode": "albumOrder",
-        "selectedPhotoIds": [],
-        "imageLimit": 9,
-        "displayMode": "slideshow",
-        "ctaLabel": "Ask About This"
+        "category": "Art",
+        "imageMode": "albumOrder"
       },
       {
-        "serviceId": "sports-energy",
+        "imageLimit": 9,
+        "selectedPhotoIds": [],
         "enabled": true,
-        "category": "Sports",
-        "icon": "Sports",
-        "title": "Sports Energy",
+        "ctaLabel": "Book Game Coverage",
+        "displayMode": "slideshow",
         "summary": "Sideline focus, game-day atmosphere, and the emotion around the play.",
         "serviceDescription": "A sports-focused offering for sideline energy, game-day atmosphere, and the split second where effort turns into a story.",
+        "albumId": "",
+        "serviceId": "sports-energy",
+        "title": "Sports Energy",
+        "icon": "Sports",
         "packageDetails": [
           "Action, sideline, and atmosphere images",
           "A gallery built around movement, emotion, and timing",
           "Good fit for games, practices, teams, and athlete stories"
         ],
-        "albumId": "",
-        "imageMode": "albumOrder",
-        "selectedPhotoIds": [],
-        "imageLimit": 9,
-        "displayMode": "slideshow",
-        "ctaLabel": "Book Game Coverage"
+        "category": "Sports",
+        "imageMode": "albumOrder"
       },
       {
-        "serviceId": "the-bigger-dream",
+        "imageLimit": 9,
+        "selectedPhotoIds": [],
         "enabled": true,
-        "category": "Film",
-        "icon": "Film",
-        "title": "The Bigger Dream",
+        "ctaLabel": "Start the Story",
+        "displayMode": "slideshow",
         "summary": "Poster-style storytelling and imagined scenes that turn a personal journey into cinema.",
         "serviceDescription": "A cinematic offering for poster-style images, imagined scenes, and visual storytelling that turns a personal journey into something larger.",
+        "albumId": "",
+        "serviceId": "the-bigger-dream",
+        "title": "The Bigger Dream",
+        "icon": "Film",
         "packageDetails": [
           "Concept-driven portraits and story images",
           "A gallery with cinematic mood and poster-style direction",
           "Good fit for creative campaigns, personal brands, and dream projects"
         ],
-        "albumId": "",
-        "imageMode": "albumOrder",
-        "selectedPhotoIds": [],
-        "imageLimit": 9,
-        "displayMode": "slideshow",
-        "ctaLabel": "Start the Story"
+        "category": "Film",
+        "imageMode": "albumOrder"
       },
       {
-        "serviceId": "point-of-view",
+        "imageLimit": 9,
+        "selectedPhotoIds": [],
         "enabled": true,
-        "category": "View",
-        "icon": "View",
-        "title": "Point of View",
+        "ctaLabel": "Ask About This",
+        "displayMode": "slideshow",
         "summary": "Self-portraits, reflections, and experiments with how a photographer sees himself.",
         "serviceDescription": "A reflective offering built around perspective: self-portraits, mirrors, experiments, and the way a photographer learns to see himself.",
+        "albumId": "",
+        "serviceId": "point-of-view",
+        "title": "Point of View",
+        "icon": "View",
         "packageDetails": [
           "Perspective-led portraits and reflection studies",
           "A gallery shaped around identity, viewpoint, and experimentation",
           "Good fit for personal projects, creative sessions, and story studies"
         ],
-        "albumId": "",
-        "imageMode": "albumOrder",
-        "selectedPhotoIds": [],
-        "imageLimit": 9,
-        "displayMode": "slideshow",
-        "ctaLabel": "Ask About This"
+        "category": "View",
+        "imageMode": "albumOrder"
       }
     ]
   }
