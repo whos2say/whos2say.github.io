@@ -19,9 +19,8 @@
       "imageLimit": 4,
       "selectedPhotoIds": [
         "b586e13c-f2aa-4e3e-8756-9d99c6b56bfa",
-        "a753b740-4423-47a6-9be4-4e591265f9ae",
-        "1d1dbbc3-8222-4541-82c2-89f18bbad03f",
-        "e7e16182-0384-4401-b965-d9dffd262b10"
+        "e7e16182-0384-4401-b965-d9dffd262b10",
+        "1d1dbbc3-8222-4541-82c2-89f18bbad03f"
       ],
       "enabled": true,
       "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
@@ -32,7 +31,7 @@
       "title": "A camera became David's way of stepping into the world.",
       "quote": "The dream. The hard work. The moment. The capture.",
       "lead": "DJR Photography is not a polished brand invented in a boardroom. It is a real person learning to look closely, move with purpose, and tell people, places, games, and family stories through the lens.",
-      "imageMode": "albumOrder"
+      "imageMode": "manualSelection"
     },
     "featured": {
       "imageLimit": 1,
@@ -120,7 +119,7 @@
         "displayMode": "slideshow",
         "summary": "Warm, honest images where connection matters more than posing.",
         "serviceDescription": "A people-first offering for family, friends, and everyday moments where the feeling matters more than a perfect pose.",
-        "albumId": "",
+        "albumId": "c30fafb8-c49c-4380-81ce-9837ae433415",
         "serviceId": "human-moments",
         "title": "Human Moments",
         "icon": "People",
@@ -129,7 +128,7 @@
           "A relaxed gallery focused on honest expression",
           "Good fit for family moments, small gatherings, and personal stories"
         ],
-        "category": "People",
+        "category": "Portraits",
         "imageMode": "albumOrder"
       },
       {
