@@ -18,8 +18,16 @@
     return value;
   }
 
+  function safeGetIn(value, path) {
+    try {
+      return value && typeof value.getIn === 'function' ? value.getIn(path) : undefined;
+    } catch (err) {
+      return undefined;
+    }
+  }
+
   function getEntryData(entry) {
-    return toJS(entry && entry.getIn ? entry.getIn(['data']) : {});
+    return toJS(safeGetIn(entry, ['data']));
   }
 
   function getPreviewSlug(data) {
@@ -62,6 +70,7 @@
   }
 
   function ParticipantPagePreview(props) {
+    props = props || {};
     var data = getEntryData(props.entry);
     var slug = getPreviewSlug(data);
     var stored = writeDraft(slug, data);

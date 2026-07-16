@@ -2,14 +2,16 @@
   'use strict';
 
   window.__albumPhotoSelectorScriptLoaded = true;
-  console.log('[Album Photo Selector] script loaded v2');
+  console.log('[Album Photo Selector] script loaded v3');
 
   var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  var STYLE_PATH = '/admin/widgets/album-photo-selector.css?v=album-photo-selector-2';
+  var STYLE_PATH = '/admin/widgets/album-photo-selector.css?v=album-photo-selector-3';
   var attempts = 0;
   var maxAttempts = 80;
   var retryDelay = 50;
+  var createElement = null;
   var serviceModulesPromise = null;
+  var stateByKey = Object.create(null);
 
   function ensureStyle() {
     if (document.querySelector('link[href="' + STYLE_PATH + '"]')) return;
@@ -25,6 +27,22 @@
     return value;
   }
 
+  function safeGetIn(value, path) {
+    try {
+      return value && typeof value.getIn === 'function' ? value.getIn(path) : undefined;
+    } catch (err) {
+      return undefined;
+    }
+  }
+
+  function safeGet(value, key) {
+    try {
+      return value && typeof value.get === 'function' ? value.get(key) : undefined;
+    } catch (err) {
+      return undefined;
+    }
+  }
+
   function normalizeIds(value) {
     var data = toJS(value);
     if (!Array.isArray(data)) return [];
@@ -34,12 +52,48 @@
   }
 
   function getEntryData(entry) {
-    return toJS(entry && entry.getIn ? entry.getIn(['data']) : {}) || {};
+    return toJS(safeGetIn(entry, ['data'])) || {};
   }
 
   function getDefaultAlbumId(entry) {
     var data = getEntryData(entry);
     return typeof data.defaultAlbumId === 'string' ? data.defaultAlbumId : '';
+  }
+
+  function getFieldName(field) {
+    return safeGet(field, 'name') || field && field.name || 'selectedPhotoIds';
+  }
+
+  function getStateKey(props) {
+    if (props && props.forID) return props.forID;
+    var fieldName = getFieldName(props && props.field);
+    var entry = props && props.entry;
+    var slug = getEntryData(entry).slug || 'djr';
+    return slug + ':' + fieldName;
+  }
+
+  function getState(props) {
+    var key = getStateKey(props || {});
+    if (!stateByKey[key]) {
+      stateByKey[key] = {
+        albumId: getDefaultAlbumId(props && props.entry),
+        photos: [],
+        status: 'Paste an Album UUID or use the page default, then load photos.',
+        isLoading: false,
+        modules: null
+      };
+    }
+    return stateByKey[key];
+  }
+
+  function forceRerender(props) {
+    if (props && typeof props.onChange === 'function') {
+      props.onChange(normalizeIds(props.value).slice());
+    }
+  }
+
+  function changeSelection(props, nextIds) {
+    if (props && typeof props.onChange === 'function') props.onChange(nextIds);
   }
 
   function getFileName(filePath) {
@@ -76,95 +130,82 @@
     return serviceModulesPromise;
   }
 
+  async function loadPhotos(props, state) {
+    var normalizedAlbumId = String(state.albumId || '').trim();
+    if (!normalizedAlbumId) {
+      state.status = 'Paste an Album UUID to load selectable photos.';
+      state.photos = [];
+      forceRerender(props);
+      return;
+    }
+    if (!UUID_RE.test(normalizedAlbumId)) {
+      state.status = 'Album UUID must be a Supabase UUID.';
+      state.photos = [];
+      forceRerender(props);
+      return;
+    }
+
+    state.isLoading = true;
+    state.status = 'Loading album photos...';
+    forceRerender(props);
+
+    try {
+      var modules = state.modules || await loadServiceModules();
+      state.modules = modules;
+
+      var albumResult = await modules.getAlbumById(normalizedAlbumId, 'id, name, is_private');
+      var album = albumResult && albumResult.data;
+      if ((albumResult && albumResult.error) || !album) {
+        state.photos = [];
+        state.status = 'Album not found or unavailable.';
+        return;
+      }
+      if (album.is_private) {
+        state.photos = [];
+        state.status = 'Private albums cannot be selected for public Participant Pages.';
+        return;
+      }
+
+      var photosResult = await modules.getOrderedAlbumPhotos(normalizedAlbumId);
+      var data = photosResult && photosResult.data;
+      if ((photosResult && photosResult.error) || !Array.isArray(data) || !data.length) {
+        state.photos = [];
+        state.status = 'No public photos were found in this album.';
+        return;
+      }
+
+      state.photos = data.filter(function (photo) { return photo && photo.file_path; });
+      state.status = 'Loaded ' + data.length + ' photos from ' + (album.name || 'album') + '.';
+    } catch (err) {
+      state.photos = [];
+      state.status = 'Could not load album photos. Manual Photo ID fallback is still available. ' + (err && err.message ? err.message : '');
+    } finally {
+      state.isLoading = false;
+      forceRerender(props);
+    }
+  }
+
   function AlbumPhotoSelectorControl(props) {
-    var React = window.React;
-    var h = React.createElement;
-    var value = normalizeIds(props.value);
-    var albumState = React.useState(getDefaultAlbumId(props.entry));
-    var albumId = albumState[0];
-    var setAlbumId = albumState[1];
-    var photoState = React.useState([]);
-    var photos = photoState[0];
-    var setPhotos = photoState[1];
-    var statusState = React.useState('Paste an Album UUID or use the page default, then load photos.');
-    var status = statusState[0];
-    var setStatus = statusState[1];
-    var loadingState = React.useState(false);
-    var isLoading = loadingState[0];
-    var setIsLoading = loadingState[1];
-    var moduleState = React.useState(null);
-    var serviceModules = moduleState[0];
-    var setServiceModules = moduleState[1];
-
-    function changeSelection(nextIds) {
-      props.onChange(nextIds);
-    }
-
-    async function loadPhotos() {
-      var normalizedAlbumId = String(albumId || '').trim();
-      if (!normalizedAlbumId) {
-        setStatus('Paste an Album UUID to load selectable photos.');
-        setPhotos([]);
-        return;
-      }
-      if (!UUID_RE.test(normalizedAlbumId)) {
-        setStatus('Album UUID must be a Supabase UUID.');
-        setPhotos([]);
-        return;
-      }
-
-      setIsLoading(true);
-      setStatus('Loading album photos...');
-      try {
-        var modules = serviceModules || await loadServiceModules();
-        setServiceModules(modules);
-
-        var albumResult = await modules.getAlbumById(normalizedAlbumId, 'id, name, is_private');
-        var album = albumResult && albumResult.data;
-        if ((albumResult && albumResult.error) || !album) {
-          setPhotos([]);
-          setStatus('Album not found or unavailable.');
-          return;
-        }
-        if (album.is_private) {
-          setPhotos([]);
-          setStatus('Private albums cannot be selected for public Participant Pages.');
-          return;
-        }
-
-        var photosResult = await modules.getOrderedAlbumPhotos(normalizedAlbumId);
-        var data = photosResult && photosResult.data;
-        if ((photosResult && photosResult.error) || !Array.isArray(data) || !data.length) {
-          setPhotos([]);
-          setStatus('No public photos were found in this album.');
-          return;
-        }
-
-        setPhotos(data.filter(function (photo) { return photo && photo.file_path; }));
-        setStatus('Loaded ' + data.length + ' photos from ' + (album.name || 'album') + '.');
-      } catch (err) {
-        setPhotos([]);
-        setStatus('Could not load album photos. Manual Photo ID fallback is still available. ' + (err && err.message ? err.message : ''));
-      } finally {
-        setIsLoading(false);
-      }
-    }
+    var h = createElement || window.h || (window.React && window.React.createElement);
+    var value = normalizeIds(props && props.value);
+    var state = getState(props || {});
+    var photos = Array.isArray(state.photos) ? state.photos : [];
 
     function isSelected(photo) {
-      return value.some(function (selectedId) { return photoMatchesId(photo, selectedId, albumId); });
+      return value.some(function (selectedId) { return photoMatchesId(photo, selectedId, state.albumId); });
     }
 
     function selectedIndex(photo) {
-      return value.findIndex(function (selectedId) { return photoMatchesId(photo, selectedId, albumId); });
+      return value.findIndex(function (selectedId) { return photoMatchesId(photo, selectedId, state.albumId); });
     }
 
     function togglePhoto(photo) {
       var index = selectedIndex(photo);
       if (index >= 0) {
-        changeSelection(value.filter(function (_, itemIndex) { return itemIndex !== index; }));
+        changeSelection(props, value.filter(function (_, itemIndex) { return itemIndex !== index; }));
         return;
       }
-      changeSelection(value.concat(photo.id));
+      changeSelection(props, value.concat(photo.id));
     }
 
     function moveSelected(index, delta) {
@@ -174,17 +215,17 @@
       var item = next[index];
       next[index] = next[nextIndex];
       next[nextIndex] = item;
-      changeSelection(next);
+      changeSelection(props, next);
     }
 
     function removeSelected(index) {
-      changeSelection(value.filter(function (_, itemIndex) { return itemIndex !== index; }));
+      changeSelection(props, value.filter(function (_, itemIndex) { return itemIndex !== index; }));
     }
 
     function renderPhoto(photo) {
       var selected = isSelected(photo);
       var index = selectedIndex(photo);
-      var modules = serviceModules || {};
+      var modules = state.modules || {};
       var isVideo = modules.isVideoPath ? modules.isVideoPath(photo.file_path) : /\.(mp4|mov|webm)$/i.test(photo.file_path || '');
       var src = modules.getPublicUrl ? modules.getPublicUrl(photo.file_path) : '';
       return h('button', {
@@ -202,7 +243,7 @@
     }
 
     function renderSelectedChip(selectedId, index) {
-      var photo = photos.find(function (item) { return photoMatchesId(item, selectedId, albumId); });
+      var photo = photos.find(function (item) { return photoMatchesId(item, selectedId, state.albumId); });
       var label = photo ? photoLabel(photo) : selectedId;
       return h('span', { key: selectedId + '-' + index, className: 'album-photo-selector__chip' }, [
         String(index + 1) + '. ' + label,
@@ -212,9 +253,7 @@
       ]);
     }
 
-    React.useEffect(function () {
-      ensureStyle();
-    }, []);
+    ensureStyle();
 
     return h('div', { className: 'album-photo-selector' }, [
       h('p', { className: 'album-photo-selector__help' }, 'Images come from /albums.html. Add/manage photos there, then select them here. The Photo ID must come from the Album UUID above.'),
@@ -222,19 +261,22 @@
         h('input', {
           className: 'album-photo-selector__input',
           type: 'text',
-          value: albumId,
+          value: state.albumId,
           placeholder: 'Paste Album UUID to load photos',
-          onChange: function (event) { setAlbumId(event.target.value); }
+          onChange: function (event) {
+            state.albumId = event && event.target ? event.target.value : '';
+            forceRerender(props);
+          }
         }),
         h('button', {
           className: 'album-photo-selector__button',
           type: 'button',
-          disabled: isLoading,
-          onClick: loadPhotos
-        }, isLoading ? 'Loading' : 'Load Photos')
+          disabled: state.isLoading,
+          onClick: function () { loadPhotos(props, state); }
+        }, state.isLoading ? 'Loading' : 'Load Photos')
       ]),
-      h('p', { className: 'album-photo-selector__status' }, status),
-      h('p', { className: 'album-photo-selector__meta' }, value.length + ' selected. Drag-free order controls are shown on selected chips.'),
+      h('p', { className: 'album-photo-selector__status' }, state.status),
+      h('p', { className: 'album-photo-selector__meta' }, value.length + ' selected. Use the arrows on selected chips to change order.'),
       value.length ? h('div', { className: 'album-photo-selector__selected' }, value.map(renderSelectedChip)) : null,
       photos.length ? h('div', { className: 'album-photo-selector__grid' }, photos.map(renderPhoto)) : null,
       h('details', { className: 'album-photo-selector__details' }, [
@@ -243,22 +285,29 @@
         h('button', {
           className: 'album-photo-selector__button album-photo-selector__button--secondary',
           type: 'button',
-          onClick: function () { changeSelection([]); }
+          onClick: function () { changeSelection(props, []); }
         }, 'Clear Selection')
       ])
     ]);
   }
 
+  function findCreateElement() {
+    return window.h || (window.React && window.React.createElement);
+  }
+
   function registerAlbumPhotoSelector() {
     if (window.__albumPhotoSelectorRegistered) return;
 
-    if (!window.CMS || !window.React) {
+    createElement = findCreateElement();
+    if (!window.CMS || !createElement) {
       attempts += 1;
       if (attempts >= maxAttempts) {
         window.__albumPhotoSelectorRegistrationFailed = true;
-        console.warn('[Album Photo Selector] registration failed after retries v2', {
+        console.warn('[Album Photo Selector] registration failed after retries v3', {
           hasCMS: Boolean(window.CMS),
+          hasH: Boolean(window.h),
           hasReact: Boolean(window.React),
+          hasReactCreateElement: Boolean(window.React && window.React.createElement),
           hasRegisterWidget: Boolean(window.CMS && window.CMS.registerWidget)
         });
         return;
@@ -271,10 +320,10 @@
       ensureStyle();
       window.CMS.registerWidget('album-photo-selector', AlbumPhotoSelectorControl);
       window.__albumPhotoSelectorRegistered = true;
-      console.log('[Album Photo Selector] registered v2');
+      console.log('[Album Photo Selector] registered v3');
     } catch (err) {
       window.__albumPhotoSelectorRegistrationFailed = true;
-      console.warn('[Album Photo Selector] registration failed v2', err);
+      console.warn('[Album Photo Selector] registration failed v3', err);
     }
   }
 
