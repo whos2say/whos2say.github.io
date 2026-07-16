@@ -207,3 +207,11 @@ The contract checks:
 - DJR service display modes are allowlisted.
 - The advanced DJR collection is hidden/de-emphasized.
 - Decap does not expose `content/djr-albums` as participant media.
+
+# Contact and footer display copy
+
+Participant Pages also exposes safe display-copy fields for the DJR contact page and footer. Participants may edit headings, supporting text, button labels, the displayed location, copyright wording, and partner label. Blank values retain the official defaults.
+
+The contact form endpoint and session choices remain in `content/djr/contact.json`. Navigation, phone, email, social, quick-link, and partner destinations remain in `content/djr/site.json`. Participant Pages does not expose those destinations, HTML, CSS, scripts, or layout.
+
+Service-card thumbnails use the first public image resolved from each service offering's Album UUID and image mode. If the album is missing, private, empty, or unavailable, the existing DJR fallback image remains visible.

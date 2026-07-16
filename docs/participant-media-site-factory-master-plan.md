@@ -641,3 +641,7 @@ Output:
 - Cody template implications
 - Migration plan from DJR-only system to reusable participant system
 ```
+
+# DJR safe display-copy extension
+
+The DJR first implementation now treats service-card media, contact-page copy, and footer display wording as Participant Pages concerns. Media still resolves from public Media Hub albums. Form behavior, routes, navigation, destinations, layout, and executable content remain template/admin concerns, with existing public content as the failure-safe fallback.

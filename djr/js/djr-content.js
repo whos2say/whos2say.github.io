@@ -363,6 +363,21 @@
       var creativeImages = results[4];
       var image;
 
+      var serviceItems = data.services && Array.isArray(data.services.items) ? data.services.items : [];
+      var serviceImages = await Promise.all(serviceItems.map(function (item) {
+        if (!item || item.enabled === false || !item.albumId) return Promise.resolve([]);
+        return helper.loadPublicAlbumImages(item.albumId, {
+          fallbackAlt: (item.title || 'DJR service') + ' photo',
+          imageMode: item.imageMode,
+          selectedPhotoIds: item.selectedPhotoIds,
+          imageLimit: 1
+        });
+      }));
+      serviceItems.forEach(function (item, index) {
+        var serviceImage = firstImage(serviceImages[index]);
+        if (serviceImage) item.image = serviceImage.src;
+      });
+
       image = firstImage(heroImages);
       if (image) {
         data.hero = data.hero || {};
@@ -414,7 +429,16 @@
     return (item && item.href) || '/djr/galleries.html';
   }
 
-  function renderChrome(site) {
+  function participantDisplayConfig(config, key) {
+    var value = config && config[key];
+    return value && value.allowParticipantEdit === true ? value : null;
+  }
+
+  function safeDisplayText(value, fallback) {
+    return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+  }
+
+  function renderChrome(site, config) {
     var brand = site.brand || {};
     document.querySelectorAll('.djr-brand .djr-wordmark').forEach(function (el) {
       el.textContent = brand.wordmark || 'DJR';
@@ -438,12 +462,14 @@
       book.textContent = site.bookButton.label;
     }
 
-    renderFooter(site);
+    renderFooter(site, config);
   }
 
-  function renderFooter(site) {
+  function renderFooter(site, config) {
     var footer = document.querySelector('.djr-footer');
     if (!footer) return;
+    var participantFooter = participantDisplayConfig(config, 'footer');
+    footer.style.display = participantFooter && participantFooter.enabled === false ? 'none' : '';
     var brand = site.brand || {};
     var contact = site.contact || {};
     var partner = site.partner || {};
@@ -454,21 +480,21 @@
       return '<li><a href="' + esc(l.href) + '">' + esc(l.label) + '</a></li>';
     }).join('');
     var partnerHtml = partner.enabled !== false && partner.logo
-      ? '<div class="djr-footer-partner"><span>' + esc(partner.label || '') + '</span><a href="' + esc(partner.href || '#') + '" rel="noopener" target="_blank"><img src="' + esc(partner.logo) + '" alt="' + esc(partner.alt || '') + '"/></a></div>'
+      ? '<div class="djr-footer-partner"><span>' + esc(safeDisplayText(participantFooter && participantFooter.partnerLabel, partner.label || '')) + '</span><a href="' + esc(partner.href || '#') + '" rel="noopener" target="_blank"><img src="' + esc(partner.logo) + '" alt="' + esc(partner.alt || '') + '"/></a></div>'
       : '';
 
     footer.innerHTML =
       '<div class="djr-container"><div class="djr-footer-grid">' +
-      '<div><span class="djr-wordmark">' + esc(brand.wordmark || 'DJR') + '</span><div class="djr-footer-brandsub">' + esc(brand.name || '') + ' ' + esc(brand.tagline || '') + '</div></div>' +
-      '<div><h4>Contact</h4><ul>' +
+      '<div><span class="djr-wordmark">' + esc(brand.wordmark || 'DJR') + '</span><div class="djr-footer-brandsub">' + esc(safeDisplayText(participantFooter && participantFooter.brandLine, (brand.name || '') + ' ' + (brand.tagline || ''))) + '</div></div>' +
+      '<div><h4>' + esc(safeDisplayText(participantFooter && participantFooter.contactLabel, 'Contact')) + '</h4><ul>' +
       (contact.phone ? '<li><a href="tel:' + esc(contact.phoneTel || contact.phone) + '">' + esc(contact.phone) + '</a></li>' : '') +
       (contact.email ? '<li><a href="mailto:' + esc(contact.email) + '">' + esc(contact.email) + '</a></li>' : '') +
-      (contact.location ? '<li>' + esc(contact.location) + '</li>' : '') +
+      (contact.location ? '<li>' + esc(safeDisplayText(participantFooter && participantFooter.locationText, contact.location)) + '</li>' : '') +
       '</ul></div>' +
-      '<div><h4>Follow</h4><div class="djr-social">' + social + '</div></div>' +
-      '<div><h4>Quick Links</h4><ul>' + quickLinks + '</ul></div>' +
+      '<div><h4>' + esc(safeDisplayText(participantFooter && participantFooter.socialTitle, 'Follow')) + '</h4><div class="djr-social">' + social + '</div></div>' +
+      '<div><h4>' + esc(safeDisplayText(participantFooter && participantFooter.quickLinksTitle, 'Quick Links')) + '</h4><ul>' + quickLinks + '</ul></div>' +
       partnerHtml +
-      '</div><div class="djr-footer-bottom">' + esc(site.footerCopyright || '') + '</div></div>';
+      '</div><div class="djr-footer-bottom">' + esc(safeDisplayText(participantFooter && participantFooter.copyrightNote, site.footerCopyright || '')) + '</div></div>';
   }
 
   function renderHome(data) {
@@ -744,8 +770,28 @@
     initServiceSlideshow(root);
   }
 
+  function overlayParticipantContact(base, config) {
+    var participantContact = participantDisplayConfig(config, 'contactPage');
+    if (!participantContact) return base;
+    var data = clone(base);
+    data.enabled = participantContact.enabled !== false;
+    data.hero = data.hero || {};
+    data.sidebar = data.sidebar || {};
+    ['eyebrow', 'title', 'intro'].forEach(function (key) {
+      data.hero[key] = safeDisplayText(participantContact[key], data.hero[key]);
+    });
+    ['availabilityTitle', 'availabilityBody', 'responseTitle', 'responseBody'].forEach(function (key) {
+      data.sidebar[key] = safeDisplayText(participantContact[key], data.sidebar[key]);
+    });
+    data.sessionTypeLabel = safeDisplayText(participantContact.sessionTypeLabel, 'Session Type');
+    data.submitButtonLabel = safeDisplayText(participantContact.submitButtonLabel, 'Send Inquiry');
+    return data;
+  }
+
   function renderContact(data, site) {
     setMeta(data.meta);
+    var main = document.querySelector('main');
+    if (main) main.style.display = data.enabled === false ? 'none' : '';
     var hero = data.hero || {};
     var section = document.querySelector('.djr-page-hero');
     if (section) {
@@ -761,6 +807,10 @@
         return '<option value="' + esc(t) + '">' + esc(t) + '</option>';
       }).join('');
     }
+    var sessionLabel = document.querySelector('label[for="djr-session-type"]');
+    if (sessionLabel) sessionLabel.textContent = data.sessionTypeLabel || 'Session Type';
+    var submitButton = document.querySelector('.djr-form button[type="submit"]');
+    if (submitButton) submitButton.textContent = data.submitButtonLabel || 'Send Inquiry';
     var contact = (site && site.contact) || {};
     var sidebar = data.sidebar || {};
     var aside = document.querySelector('.djr-contact-aside');
@@ -806,13 +856,15 @@
     initNavToggle();
     var page = document.body.getAttribute('data-djr-page');
     if (!page) return Promise.resolve();
-    return fetchJson('/content/djr/site.json').then(function (site) {
-      renderChrome(site);
+    return Promise.all([fetchJson('/content/djr/site.json'), loadParticipantPageConfig()]).then(function (results) {
+      var site = results[0];
+      var participantConfig = results[1];
+      renderChrome(site, participantConfig);
       if (page === 'home') {
         return loadHomePageData().then(function (result) { renderHome(result.data); });
       }
       if (page === 'galleries') return fetchJson('/content/djr/galleries.json').then(renderGalleriesPage);
-      if (page === 'contact') return fetchJson('/content/djr/contact.json').then(function (data) { renderContact(data, site); });
+      if (page === 'contact') return fetchJson('/content/djr/contact.json').then(function (data) { renderContact(overlayParticipantContact(data, participantConfig), site); });
       if (page === 'service') {
         return loadHomePageData().then(function (result) {
           return renderServicePage(result.data, result.config);

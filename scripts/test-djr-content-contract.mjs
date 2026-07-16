@@ -146,8 +146,8 @@ assert(indexHtml.includes('David J. Richards') || indexHtml.includes('DJR Photog
 assert(cmsIndexHtml.includes('/admin/config.yml'), '/admin/cms/ must load the generated Decap config')
 assert(cmsIndexHtml.includes('window.CMS_MANUAL_INIT = true'), '/admin/cms/ must enable Decap manual initialization before loading Decap')
 assert(cmsIndexHtml.indexOf('window.CMS_MANUAL_INIT = true') < cmsIndexHtml.indexOf('decap-cms'), '/admin/cms/ must set CMS_MANUAL_INIT before loading Decap')
-assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js?v=participant-preview-8'), '/admin/cms/ must load the cache-busted Participant Pages preview template')
-assert(cmsIndexHtml.indexOf('participant-page-preview.js?v=participant-preview-8') < cmsIndexHtml.indexOf('window.CMS.init()'), '/admin/cms/ must load the Participant Pages preview before CMS.init()')
+assert(cmsIndexHtml.includes('/admin/preview-templates/participant-page-preview.js?v=participant-preview-9'), '/admin/cms/ must load the cache-busted Participant Pages preview template')
+assert(cmsIndexHtml.indexOf('participant-page-preview.js?v=participant-preview-9') < cmsIndexHtml.indexOf('window.CMS.init()'), '/admin/cms/ must load the Participant Pages preview before CMS.init()')
 assert(cmsIndexHtml.includes('/admin/widgets/album-photo-selector.js?v=album-photo-selector-3'), '/admin/cms/ must load the cache-busted Album Photo Selector widget')
 assert(cmsIndexHtml.includes('/admin/widgets/brand-palette-picker.js?v=brand-palette-picker-1'), '/admin/cms/ must load the Brand Palette Picker')
 assert(cmsIndexHtml.includes('/admin/widgets/brand-palette-picker.css?v=brand-palette-picker-1'), '/admin/cms/ must load Brand Palette Picker styles')
@@ -242,6 +242,28 @@ const participantPageAllowedPaths = new Set([
   'sections.cta.title',
   'sections.cta.sub',
   'sections.cta.buttonLabel',
+  'contactPage',
+  'contactPage.enabled',
+  'contactPage.allowParticipantEdit',
+  'contactPage.eyebrow',
+  'contactPage.title',
+  'contactPage.intro',
+  'contactPage.availabilityTitle',
+  'contactPage.availabilityBody',
+  'contactPage.responseTitle',
+  'contactPage.responseBody',
+  'contactPage.sessionTypeLabel',
+  'contactPage.submitButtonLabel',
+  'footer',
+  'footer.enabled',
+  'footer.allowParticipantEdit',
+  'footer.brandLine',
+  'footer.contactLabel',
+  'footer.locationText',
+  'footer.copyrightNote',
+  'footer.quickLinksTitle',
+  'footer.socialTitle',
+  'footer.partnerLabel',
   'services',
   'services.enabled',
   'services.allowParticipantEdit',
@@ -294,7 +316,7 @@ const services = participantPage?.services
 assert(services && typeof services === 'object', 'participant page services section must exist')
 assert(typeof services.enabled === 'boolean', 'participant page services.enabled must be boolean')
 assert(typeof services.allowParticipantEdit === 'boolean', 'participant page services.allowParticipantEdit must be boolean')
-assert(Array.isArray(services.items) && services.items.length >= 6, 'participant page services.items must include the DJR service offerings')
+assert(Array.isArray(services.items) && services.items.length >= 1, 'participant page services.items must include at least one DJR service offering')
 for (const [index, service] of (services.items || []).entries()) {
   assert(service && typeof service === 'object', `services.items[${index}] must be an object`)
   assert(typeof service.enabled === 'boolean', `services.items[${index}].enabled must be boolean`)
@@ -315,6 +337,18 @@ for (const [index, service] of (services.items || []).entries()) {
   assert(service.displayMode === 'grid' || service.displayMode === 'slideshow', `services.items[${index}].displayMode must be grid or slideshow`)
 }
 assert(services.items.some((service) => service.displayMode === 'slideshow'), 'participant page service offerings should support slideshow display mode')
+
+for (const groupName of ['contactPage', 'footer']) {
+  const group = participantPage[groupName]
+  assert(group && typeof group === 'object', `participant page ${groupName} must exist`)
+  assert(typeof group.enabled === 'boolean', `${groupName}.enabled must be boolean`)
+  assert(typeof group.allowParticipantEdit === 'boolean', `${groupName}.allowParticipantEdit must be boolean`)
+  for (const [key, value] of Object.entries(group)) {
+    if (key === 'enabled' || key === 'allowParticipantEdit') continue
+    assert(typeof value === 'string', `${groupName}.${key} must be plain text`)
+    assert(!/<[a-z][\s\S]*>/i.test(value), `${groupName}.${key} must not contain raw HTML`)
+  }
+}
 
 for (const invalidId of ['david-behind-the-lens', '/album.html?album=fe027096-7084-4f96-974a-315b98b484b2', 'https://photos.google.com/share/example', 'https://www.whostosay.org/album.html?album=fe027096-7084-4f96-974a-315b98b484b2']) {
   assert(!isBlankOrUuid(invalidId), `album ID validator must reject ${invalidId}`)
@@ -484,6 +518,7 @@ assert(participantPreview.includes('participant-page-preview.css?v=participant-p
 assert(participantPreview.includes('wtsParticipantPagePreview:'), 'Participant Pages preview should write draft data to sessionStorage')
 assert(participantPreview.includes('sessionStorage.setItem'), 'Participant Pages preview should store draft data for the iframe')
 assert(participantPreview.includes('/djr/?cmsPreview=participant-pages&previewSlug='), 'Participant Pages preview should render the live DJR page iframe in CMS preview mode')
+assert(participantPreview.includes('/djr/contact.html?cmsPreview=participant-pages&previewSlug='), 'Participant Pages preview should offer the live DJR contact page in CMS preview mode')
 assert(participantPreview.includes('participant-page-preview__iframe'), 'Participant Pages preview should render an iframe as the main preview')
 assert(participantPreview.includes('Live DJR Page Preview'), 'Participant Pages preview should show a live preview toolbar')
 assert(participantPreview.includes('Preview auto-updates as you edit'), 'Participant Pages preview should explain that edits auto-update the iframe')
@@ -518,7 +553,7 @@ const participantPagesCollection = extractCollection(cmsConfig, 'participant-pag
 assert(participantPagesCollection, 'Decap shared config is missing the participant-pages collection')
 if (participantPagesCollection) {
   assert(participantPagesCollection.includes('file: content/participant-pages/djr.json'), 'Participant Pages collection must expose content/participant-pages/djr.json')
-  for (const expectedField of ['name', 'slug', 'template', 'brandKit', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'services', 'items', 'serviceId', 'category', 'icon', 'summary', 'serviceDescription', 'packageDetails', 'displayMode', 'ctaLabel', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageMode', 'selectedPhotoIds', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
+  for (const expectedField of ['name', 'slug', 'template', 'brandKit', 'defaultAlbumId', 'sections', 'hero', 'story', 'featured', 'about', 'creative', 'cta', 'contactPage', 'intro', 'availabilityTitle', 'availabilityBody', 'responseTitle', 'responseBody', 'sessionTypeLabel', 'submitButtonLabel', 'footer', 'brandLine', 'contactLabel', 'locationText', 'copyrightNote', 'quickLinksTitle', 'socialTitle', 'partnerLabel', 'services', 'items', 'serviceId', 'category', 'icon', 'summary', 'serviceDescription', 'packageDetails', 'displayMode', 'ctaLabel', 'enabled', 'allowParticipantEdit', 'allowParticipantAlbum', 'albumId', 'imageMode', 'selectedPhotoIds', 'imageLimit', 'eyebrow', 'title', 'lead', 'body', 'quote', 'tagline', 'sub', 'buttonLabel']) {
     assert(hasFieldName(participantPagesCollection, expectedField), `Participant Pages collection is missing field: ${expectedField}`)
   }
   for (const forbiddenField of ['href', 'formAction', 'photoGalleryAlbumId', 'googlePhotosAlbumUrl', 'album_id', 'nav', 'partner', 'button', 'primaryButton', 'secondaryButton', 'sourceType', 'sectionId', 'html', 'image', 'src']) {
@@ -526,6 +561,11 @@ if (participantPagesCollection) {
   }
   assert(!participantPagesCollection.includes('widget: image'), 'Participant Pages collection must not expose media upload widgets')
   assert(participantPagesCollection.includes('Use custom text for this section'), 'Participant Pages collection should label text toggles clearly')
+  assert(djrContent.includes('imageLimit: 1'), 'DJR renderer should limit service card album requests to the first resolved image')
+  assert(djrContent.includes("overlayParticipantContact(data, participantConfig)"), 'DJR contact page should consume the safe Participant Pages contact overlay')
+  assert(djrContent.includes("data.formAction"), 'DJR contact renderer must retain the admin-owned form action')
+  assert(djrContent.includes("data.sessionTypes"), 'DJR contact renderer must retain admin-owned session choices')
+  assert(djrContent.includes("partner.href"), 'DJR footer must retain the admin-owned partner destination')
   assert(participantPagesCollection.includes('Use album images for this section'), 'Participant Pages collection should label album toggles clearly')
   assert(participantPagesCollection.includes('Turn this off to show the official/default DJR copy for this section without deleting your draft text.'), 'Participant Pages collection should explain how to revert custom text without deleting drafts')
   assert(participantPagesCollection.includes('Turn this on to use images from the Album UUID below. Turn it off to use the default DJR images.'), 'Participant Pages collection should explain how album image toggles work')

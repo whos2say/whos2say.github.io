@@ -813,6 +813,36 @@ collections:
                   { label: Supporting Text, name: sub, widget: text, required: false, hint: "Blank keeps the default DJR copy." },
                   { label: Button Label, name: buttonLabel, widget: string, required: false, hint: "Blank keeps the default button label. Button URLs stay admin-owned." }
                 ]}
+          - label: Contact Page Copy
+            name: contactPage
+            widget: object
+            hint: "Edit display copy only. The form destination, session choices, contact links, and page route remain admin-owned."
+            fields:
+              - { label: Enabled, name: enabled, widget: boolean, required: false, default: true }
+              - { label: Use custom contact copy, name: allowParticipantEdit, widget: boolean, required: false, default: true, hint: "Turn this off to use the official/default contact copy without deleting your draft." }
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Page Title, name: title, widget: string, required: false }
+              - { label: Introduction, name: intro, widget: text, required: false }
+              - { label: Availability Heading, name: availabilityTitle, widget: string, required: false }
+              - { label: Availability Text, name: availabilityBody, widget: text, required: false }
+              - { label: Response Time Heading, name: responseTitle, widget: string, required: false }
+              - { label: Response Time Text, name: responseBody, widget: text, required: false }
+              - { label: Session Type Label, name: sessionTypeLabel, widget: string, required: false, hint: "Session choices remain admin-owned." }
+              - { label: Submit Button Label, name: submitButtonLabel, widget: string, required: false, hint: "The form submission endpoint remains admin-owned." }
+          - label: Footer Display Text
+            name: footer
+            widget: object
+            hint: "Edit visible footer wording only. Navigation, phone, email, social, and partner destinations remain admin-owned."
+            fields:
+              - { label: Enabled, name: enabled, widget: boolean, required: false, default: true }
+              - { label: Use custom footer text, name: allowParticipantEdit, widget: boolean, required: false, default: true }
+              - { label: Brand Line, name: brandLine, widget: string, required: false }
+              - { label: Contact Heading, name: contactLabel, widget: string, required: false }
+              - { label: Location Display Text, name: locationText, widget: string, required: false }
+              - { label: Copyright Note, name: copyrightNote, widget: string, required: false }
+              - { label: Quick Links Heading, name: quickLinksTitle, widget: string, required: false }
+              - { label: Social Heading, name: socialTitle, widget: string, required: false }
+              - { label: Partner Label, name: partnerLabel, widget: string, required: false, hint: "The partner logo and destination remain admin-owned." }
           - label: Service Offerings
             name: services
             widget: object

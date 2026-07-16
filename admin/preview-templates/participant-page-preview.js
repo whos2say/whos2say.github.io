@@ -50,6 +50,10 @@
     return src;
   }
 
+  function contactPreviewSrc(slug) {
+    return '/djr/contact.html?cmsPreview=participant-pages&previewSlug=' + encodeURIComponent(slug) + '&ts=' + Date.now();
+  }
+
   function reloadPreviewFrame(slug) {
     var frame = document.querySelector('.participant-page-preview__iframe');
     var previewSlug = slug || frame && frame.getAttribute('data-preview-slug') || 'djr';
@@ -96,7 +100,13 @@
             href: src,
             target: '_blank',
             rel: 'noopener'
-          }, 'Open Full Preview')
+          }, 'Open Full Preview'),
+          h('a', {
+            className: 'participant-page-preview__open',
+            href: contactPreviewSrc(slug),
+            target: '_blank',
+            rel: 'noopener'
+          }, 'Open Contact Preview')
         ])
       ]),
       h('p', { className: 'participant-page-preview__hint' }, 'Preview auto-updates as you edit. Use Refresh Preview if the iframe looks stale.'),
