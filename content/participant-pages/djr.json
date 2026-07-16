@@ -9,7 +9,7 @@
     "hero": {
       "enabled": true,
       "allowParticipantEdit": true,
-      "tagline": "Eye to eye with the moment.",
+      "tagline": "One picture at a time ",
       "allowParticipantAlbum": false,
       "albumId": "",
       "imageMode": "albumOrder",
@@ -21,13 +21,14 @@
       "selectedPhotoIds": [
         "b586e13c-f2aa-4e3e-8756-9d99c6b56bfa",
         "e7e16182-0384-4401-b965-d9dffd262b10",
-        "1d1dbbc3-8222-4541-82c2-89f18bbad03f"
+        "1d1dbbc3-8222-4541-82c2-89f18bbad03f",
+        "a753b740-4423-47a6-9be4-4e591265f9ae"
       ],
       "enabled": true,
       "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
       "allowParticipantAlbum": true,
       "eyebrow": "The Photographer",
-      "albumId": "",
+      "albumId": "fe027096-7084-4f96-974a-315b98b484b2",
       "allowParticipantEdit": true,
       "title": "A camera became David's way of stepping into the world.",
       "quote": "The dream. The hard work. The moment. The capture.",
@@ -170,26 +171,6 @@
           "Good fit for games, practices, teams, and athlete stories"
         ],
         "category": "Sports",
-        "imageMode": "albumOrder"
-      },
-      {
-        "imageLimit": 9,
-        "selectedPhotoIds": [],
-        "enabled": true,
-        "ctaLabel": "Start the Story",
-        "displayMode": "slideshow",
-        "summary": "Poster-style storytelling and imagined scenes that turn a personal journey into cinema.",
-        "serviceDescription": "A cinematic offering for poster-style images, imagined scenes, and visual storytelling that turns a personal journey into something larger.",
-        "albumId": "",
-        "serviceId": "the-bigger-dream",
-        "title": "The Bigger Dream",
-        "icon": "Film",
-        "packageDetails": [
-          "Concept-driven portraits and story images",
-          "A gallery with cinematic mood and poster-style direction",
-          "Good fit for creative campaigns, personal brands, and dream projects"
-        ],
-        "category": "Film",
         "imageMode": "albumOrder"
       },
       {
