@@ -25,7 +25,7 @@
         "a753b740-4423-47a6-9be4-4e591265f9ae"
       ],
       "enabled": true,
-      "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
+      "body": "",
       "allowParticipantAlbum": true,
       "eyebrow": "DJR Photography",
       "albumId": "fe027096-7084-4f96-974a-315b98b484b2",
@@ -90,7 +90,7 @@
   "services": {
     "enabled": true,
     "allowParticipantEdit": true,
-    "eyebrow": "What David Sees",
+    "eyebrow": "Photography Services",
     "title": "Photography With a Point of View",
     "items": [
       {
@@ -124,7 +124,7 @@
         "selectedPhotoIds": [],
         "enabled": true,
         "ctaLabel": "Book This Session",
-        "displayMode": "slideshow",
+        "displayMode": "grid",
         "summary": "Warm, honest images where connection matters more than posing.",
         "serviceDescription": "A people-first offering for family, friends, and everyday moments where the feeling matters more than a perfect pose.",
         "albumId": "c30fafb8-c49c-4380-81ce-9837ae433415",
@@ -140,8 +140,10 @@
         "imageMode": "albumOrder"
       },
       {
-        "imageLimit": 9,
-        "selectedPhotoIds": [],
+        "imageLimit": 6,
+        "selectedPhotoIds": [
+          "80f3e5f5-d550-4d66-9f1e-7ec74594f6fc"
+        ],
         "enabled": true,
         "ctaLabel": "Ask About This",
         "displayMode": "slideshow",
@@ -157,7 +159,7 @@
           "Good fit for creative experiments, objects, and visual studies"
         ],
         "category": "Nature & Landscape",
-        "imageMode": "albumOrder"
+        "imageMode": "manualSelection"
       },
       {
         "imageLimit": 9,
