@@ -25,14 +25,14 @@
         "a753b740-4423-47a6-9be4-4e591265f9ae"
       ],
       "enabled": true,
-      "body": "The images here show the full arc: practice in the studio, cold nights on the track, a long lens aimed at the next play, a family moment, a reflection in sunglasses, and the dream of seeing his own story treated like cinema.",
+      "body": "",
       "allowParticipantAlbum": true,
-      "eyebrow": "The Photographer",
+      "eyebrow": "DJR Photography",
       "albumId": "fe027096-7084-4f96-974a-315b98b484b2",
       "allowParticipantEdit": true,
-      "title": "A camera became David's way of stepping into the world.",
+      "title": "Creativity. Passion. Memories.",
       "quote": "The dream. The hard work. The moment. The capture.",
-      "lead": "DJR Photography is not a polished brand invented in a boardroom. It is a real person learning to look closely, move with purpose, and tell people, places, games, and family stories through the lens.",
+      "lead": "Welcome to DJR Photography by David James Richards — a creative photography brand built to capture sports, portraits, events, nature, community, and unforgettable life moments.\n",
       "imageMode": "manualSelection"
     },
     "featured": {
@@ -40,7 +40,7 @@
       "selectedPhotoIds": [
         "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963"
       ],
-      "enabled": true,
+      "enabled": false,
       "body": "David does not just take pictures from the edge of the action. He studies the field, waits for the face, the posture, the light, and the split second where a person becomes the story.",
       "buttonLabel": "See the Work",
       "allowParticipantAlbum": true,
@@ -53,13 +53,13 @@
     "about": {
       "imageLimit": 1,
       "selectedPhotoIds": [
-        "49d8c743-75e3-4371-9547-5a645327e81f/1774717850456_dsc_6963"
+        "5fdb8094-2580-4a54-93d2-01b9f8fbb17f"
       ],
       "enabled": true,
-      "body": "David J. Richards is building his voice as a photographer one frame at a time. His work moves between sports, family, studio practice, creative experiments, and everyday details. The common thread is attention: looking long enough to notice the thing other people might miss.",
+      "body": "DJR Photography is owned and founded by David James Richards, Owner and Lead Photographer. DJR Pictures is about telling stories through powerful photos, creative ideas, and professional memories.\nThe mission is simple: capture life’s moments, one picture at a time.\n",
       "allowParticipantAlbum": true,
       "eyebrow": "About David",
-      "albumId": "",
+      "albumId": "8d183fdd-8ca4-4c2f-8537-d5a7ce7f5054",
       "allowParticipantEdit": true,
       "title": "Not just a gallery. A point of view.",
       "imageMode": "manualSelection"
@@ -71,12 +71,12 @@
         "e82e5c4f-8b44-4833-aeeb-3d63bd7956e2"
       ],
       "enabled": true,
-      "body": "The AI poster and press-pass portrait are not presented as documentary photography. They are part of the dream language around David's work: what it feels like when persistence, imagination, and a camera start opening doors.",
+      "body": "Creativity means taking a normal moment and turning it into something special. DJR Photography uses light, color, emotion, action, and style to make every photo stand out.",
       "allowParticipantAlbum": true,
-      "eyebrow": "Eye to Eye",
+      "eyebrow": "Creativity at DJR Photography",
       "albumId": "890289d8-897a-4c0d-b753-49da84c93f84",
       "allowParticipantEdit": true,
-      "title": "Based on a true story of perseverance and a camera.",
+      "title": "Creativity That Makes Moments Standout",
       "imageMode": "manualSelection"
     },
     "cta": {
@@ -90,7 +90,7 @@
   "services": {
     "enabled": true,
     "allowParticipantEdit": true,
-    "eyebrow": "What David Sees",
+    "eyebrow": "Photography Services",
     "title": "Photography With a Point of View",
     "items": [
       {
@@ -108,15 +108,15 @@
         "summary": "I see the candid moments between family and friends, during special occasions.  Capturing the authentic Love when no one's looking.",
         "serviceDescription": "I will be  a fly on the wall for your ceremony, cocktail hour, or when everyone is on the dancefloor.\nCapturing special glances during toasts, and introductions or simply capturing the moment.",
         "albumId": "3918b612-b15a-4757-bab4-0051795277d1",
-        "serviceId": "wedding-photography",
+        "serviceId": "event-photography",
         "title": "Capturing the moments",
-        "icon": "Wedding",
+        "icon": "Events",
         "packageDetails": [
           "The Love Story - Engagement Beach photos, Rehersal",
           "A digital gallery of everything, with albums for each step of the journey.",
           "High Quality prints in various sizes, custom to your desires."
         ],
-        "category": "Wedding Photos",
+        "category": "Events & Celebrations",
         "imageMode": "manualSelection"
       },
       {
@@ -124,7 +124,7 @@
         "selectedPhotoIds": [],
         "enabled": true,
         "ctaLabel": "Book This Session",
-        "displayMode": "slideshow",
+        "displayMode": "grid",
         "summary": "Warm, honest images where connection matters more than posing.",
         "serviceDescription": "A people-first offering for family, friends, and everyday moments where the feeling matters more than a perfect pose.",
         "albumId": "c30fafb8-c49c-4380-81ce-9837ae433415",
@@ -140,24 +140,26 @@
         "imageMode": "albumOrder"
       },
       {
-        "imageLimit": 9,
-        "selectedPhotoIds": [],
+        "imageLimit": 6,
+        "selectedPhotoIds": [
+          "80f3e5f5-d550-4d66-9f1e-7ec74594f6fc"
+        ],
         "enabled": true,
         "ctaLabel": "Ask About This",
         "displayMode": "slideshow",
         "summary": "Color, texture, reflection, and small visual surprises that make a scene feel personal.",
         "serviceDescription": "A detail-led gallery for color, texture, reflection, objects, and small visual surprises that give a scene personality.",
-        "albumId": "",
-        "serviceId": "creative-details",
+        "albumId": "f4c8061b-fff1-43c8-8504-9c649ca05af0",
+        "serviceId": "nature-landscape",
         "title": "Creative Details",
-        "icon": "Art",
+        "icon": "Nature",
         "packageDetails": [
           "Close-up and detail photography",
           "A gallery shaped around color, texture, and atmosphere",
           "Good fit for creative experiments, objects, and visual studies"
         ],
-        "category": "Art",
-        "imageMode": "albumOrder"
+        "category": "Nature & Landscape",
+        "imageMode": "manualSelection"
       },
       {
         "imageLimit": 9,
