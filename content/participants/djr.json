@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "participantId": "participant-djr",
+  "slug": "djr",
+  "displayName": "David J. Richards",
+  "status": "active",
+  "resources": {
+    "pageSlug": "djr",
+    "brandKitSlug": "djr",
+    "albumIds": [
+      "fe027096-7084-4f96-974a-315b98b484b2",
+      "49d8c743-75e3-4371-9547-5a645327e81f",
+      "8d183fdd-8ca4-4c2f-8537-d5a7ce7f5054",
+      "890289d8-897a-4c0d-b753-49da84c93f84",
+      "3918b612-b15a-4757-bab4-0051795277d1",
+      "c30fafb8-c49c-4380-81ce-9837ae433415",
+      "f4c8061b-fff1-43c8-8504-9c649ca05af0"
+    ]
+  },
+  "access": {
+    "ownerUserIds": [],
+    "staffAdminUserIds": [],
+    "contributorUserIds": []
+  },
+  "reviewRequirements": {
+    "pageCopy": "staff-review",
+    "brandKit": "staff-review",
+    "mediaSelection": "staff-review",
+    "serviceClaims": "superadmin-review",
+    "publish": "superadmin"
+  }
+}

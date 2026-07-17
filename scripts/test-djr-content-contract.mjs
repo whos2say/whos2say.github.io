@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { BRAND_KIT_SCHEMA_VERSION, DESIGN_SYSTEM_REGISTRY, PARTICIPANT_COMFORT_LEVELS, WORKSHOP_AREAS, WORKSHOP_STATUSES, normalizeBrandKit } from '../js/participant-pages/brandKit.js'
+import { PARTICIPANT_REGISTRY_SCHEMA_VERSION, normalizeParticipantRegistry } from '../js/participant-pages/participantRegistry.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
@@ -409,11 +410,17 @@ const hostileBrandKit = normalizeBrandKit({
   css: 'body { display: none }',
   html: '<script>alert(1)</script>',
   layout: 'arbitrary-grid',
+  participantId: 'participant-djr',
+  ownership: { ownerUserIds: ['self-assigned'] },
+  access: { role: 'superadmin' },
+  userRoles: ['superadmin'],
+  contactProfile: { email: 'private@example.com' },
+  socialProfiles: [{ platform: 'example', url: 'https://example.com' }],
   identity: { brandName: '<img src=x onerror=alert(1)>', tagline: 'Safe tagline' },
   messaging: { approvedCallsToAction: [{ id: 'contact', label: 'Contact', intent: 'contact', href: 'javascript:alert(1)' }] },
   designSystem: { preset: 'unknown', colors: { palette: 'unknown', raw: '#000' } },
 })
-for (const forbiddenKey of ['route', 'href', 'url', 'formAction', 'navigation', 'albums', 'albumId', 'scripts', 'css', 'html', 'layout']) {
+for (const forbiddenKey of ['route', 'href', 'url', 'formAction', 'navigation', 'albums', 'albumId', 'scripts', 'css', 'html', 'layout', 'participantId', 'ownership', 'access', 'userRoles', 'contactProfile', 'socialProfiles']) {
   assert(!(forbiddenKey in hostileBrandKit), `Brand Kit normalizer must discard forbidden field: ${forbiddenKey}`)
 }
 assert(hostileBrandKit.identity.brandName === '', 'Brand Kit normalizer must discard raw HTML text')
@@ -584,6 +591,96 @@ assert(djrCollection.includes('Section Gallery Mapper - Legacy/Admin'), 'Legacy 
 const djrCollectionMatch = extractCollection(cmsConfig, 'djr-gallery-albums')
 assert(!djrCollectionMatch, 'Decap shared config must not expose the old JSON DJR album media collection')
 assert(!cmsConfig.includes('folder: content/djr-albums'), 'Decap shared config must not expose content/djr-albums as participant media')
+
+const participantRegistryLoader = readText('js/participant-pages/participantRegistry.js')
+const ownershipDocs = readText('docs/participant-ownership-schema.md')
+const participantRegistries = ['djr', 'cody'].map((registrySlug) => ({
+  registrySlug,
+  registry: readJson(`content/participants/${registrySlug}.json`),
+}))
+const participantIds = new Set()
+
+function collectAlbumIds(value, found = new Set()) {
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectAlbumIds(item, found))
+  } else if (value && typeof value === 'object') {
+    for (const [key, item] of Object.entries(value)) {
+      if ((key === 'albumId' || key === 'defaultAlbumId') && typeof item === 'string' && item) found.add(item)
+      else collectAlbumIds(item, found)
+    }
+  }
+  return found
+}
+
+for (const { registrySlug, registry } of participantRegistries) {
+  assert(registry && typeof registry === 'object', `${registrySlug} participant registry must exist`)
+  if (!registry) continue
+  assert(registry.schemaVersion === PARTICIPANT_REGISTRY_SCHEMA_VERSION, `${registrySlug} participant registry must use schema version ${PARTICIPANT_REGISTRY_SCHEMA_VERSION}`)
+  assert(registry.slug === registrySlug, `${registrySlug} participant registry slug must match its filename`)
+  assert(typeof registry.participantId === 'string' && /^participant-[a-z0-9-]+$/.test(registry.participantId), `${registrySlug} participantId must use the stable participant-* format`)
+  assert(!participantIds.has(registry.participantId), `participantId must be unique: ${registry.participantId}`)
+  participantIds.add(registry.participantId)
+  assert(registry.resources && typeof registry.resources === 'object', `${registrySlug} registry must define resources`)
+  assert(registry.access && typeof registry.access === 'object', `${registrySlug} registry must define future access assignments`)
+  assert(registry.reviewRequirements && typeof registry.reviewRequirements === 'object', `${registrySlug} registry must define review requirements`)
+  const normalized = normalizeParticipantRegistry(registry)
+  assert(JSON.stringify(normalized) === JSON.stringify(registry), `${registrySlug} registry must contain only normalized allowlisted fields and values`)
+
+  const brandKitSlug = registry.resources.brandKitSlug
+  const brandKit = brandKitSlug ? readJson(`content/participant-brand-kits/${brandKitSlug}.json`) : null
+  assert(!brandKitSlug || (brandKit && brandKit.slug === brandKitSlug), `${registrySlug} registry Brand Kit reference must resolve`)
+
+  const pageSlug = registry.resources.pageSlug
+  const page = pageSlug ? readJson(`content/participant-pages/${pageSlug}.json`) : null
+  assert(!pageSlug || (page && page.slug === pageSlug), `${registrySlug} registry page reference must resolve`)
+  assert(!page || page.brandKit === brandKitSlug, `${registrySlug} page and registry must reference the same Brand Kit`)
+  const assignedAlbums = new Set(registry.resources.albumIds || [])
+  for (const albumId of collectAlbumIds(page)) {
+    assert(assignedAlbums.has(albumId), `${registrySlug} page album ${albumId} must be assigned in the participant registry`)
+  }
+}
+
+const codyRegistry = participantRegistries.find((item) => item.registrySlug === 'cody')?.registry
+assert(codyRegistry?.status === 'draft', 'Cody participant registry must remain draft')
+assert(codyRegistry?.resources?.pageSlug === '', 'Cody participant registry must not authorize a public page')
+assert(!fs.existsSync(path.join(root, 'content/participant-pages/cody.json')), 'Cody participant page must not exist')
+assert(!djrContent.includes('/content/participants/'), 'Public DJR rendering must not consume the ownership registry yet')
+assert(!extractCollection(cmsConfig, 'participants'), 'Decap must not expose the ownership registry in this implementation')
+
+const hostileRegistry = normalizeParticipantRegistry({
+  schemaVersion: 1,
+  participantId: 'participant-hostile',
+  slug: 'hostile',
+  displayName: '<img src=x onerror=alert(1)>',
+  route: '/hostile',
+  template: 'unsafe',
+  href: 'javascript:alert(1)',
+  url: 'https://example.com',
+  formAction: 'https://example.com/collect',
+  navigation: [{ href: '/hostile' }],
+  contactProfile: { email: 'private@example.com' },
+  socialProfiles: [{ platform: 'example', url: 'https://example.com' }],
+  scripts: ['evil.js'],
+  css: 'body{}',
+  html: '<p>unsafe</p>',
+  layout: 'unsafe',
+  resources: { pageSlug: 'hostile', brandKitSlug: 'hostile', albumIds: ['not-a-uuid'] },
+  access: { ownerUserIds: ['not-a-supabase-user-id'], role: 'superadmin' },
+})
+for (const forbiddenKey of ['route', 'template', 'href', 'url', 'formAction', 'navigation', 'contactProfile', 'socialProfiles', 'scripts', 'css', 'html', 'layout']) {
+  assert(!(forbiddenKey in hostileRegistry), `Participant registry normalizer must discard forbidden field: ${forbiddenKey}`)
+}
+assert(hostileRegistry.displayName === '', 'Participant registry normalizer must discard raw HTML display names')
+assert(hostileRegistry.resources.albumIds.length === 0, 'Participant registry normalizer must discard invalid album IDs')
+assert(hostileRegistry.access.ownerUserIds.length === 0, 'Participant registry normalizer must accept only Supabase UUID user IDs')
+assert(!('role' in hostileRegistry.access), 'Participant registry access must not accept self-assigned roles')
+assert(participantRegistryLoader.includes("fetcher(`/content/participants/${slugValue}.json`"), 'Participant registry loader must load only slug-addressed local JSON')
+assert(!participantRegistryLoader.includes('participantRegistry') || !djrContent.includes('loadParticipantRegistry'), 'Participant registry must not be connected to public DJR rendering')
+assert(ownershipDocs.includes('Google OAuth') && ownershipDocs.includes('Supabase Auth'), 'Ownership docs must recommend Google OAuth through Supabase Auth for the next Studio phase')
+for (const authorizationTable of ['participants', 'user_roles', 'participant_user_access', 'participant_album_access', 'review_requests', 'publish_events', 'audit_events']) {
+  assert(ownershipDocs.includes('`' + authorizationTable + '`'), `Ownership docs must name authorization record: ${authorizationTable}`)
+}
+assert(ownershipDocs.includes('is not the authorization system'), 'Ownership docs must distinguish Google OAuth authentication from authorization')
 
 if (errors.length) {
   console.error('DJR content contract failed:')

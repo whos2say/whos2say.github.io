@@ -1,0 +1,55 @@
+# Participant Ownership Registry Schema
+
+## Purpose
+
+The ownership registry records which page, Brand Kit, and Media Hub albums belong to a participant and which authenticated users may eventually be assigned to that participant. Version 1 is governance metadata only. It does not authenticate users, enforce authorization, expose participant contact or social fields, or change public rendering.
+
+Registry files live at `content/participants/{slug}.json`. Participant Pages remain in `content/participant-pages`, Brand Kits remain in `content/participant-brand-kits`, and Supabase Media Hub albums remain the source of truth for images.
+
+## Version 1 fields
+
+- `schemaVersion`: Must be `1`.
+- `participantId`: Stable, immutable identifier using the `participant-{slug}` format. Public slugs may change later; this identifier should not.
+- `slug`: Registry filename slug.
+- `displayName`: Plain-text administrative label.
+- `status`: `draft`, `active`, `inactive`, or `archived`.
+- `resources.pageSlug`: Existing Participant Page slug, or blank when no page is authorized. Cody remains blank and draft.
+- `resources.brandKitSlug`: Existing Brand Kit slug.
+- `resources.albumIds`: Supabase album UUIDs assigned to the participant. Albums and photos continue to be managed in the Media Hub.
+- `access`: Future authenticated user assignments. These arrays stay empty until Studio identity records exist and are not authorization in the static repository.
+- `reviewRequirements`: Review policy for page copy, Brand Kit work, media selections, service claims, and publishing.
+
+The safe normalizer accepts only these fields. It discards routes, navigation, templates, forms, URLs, HTML, CSS, scripts, layout instructions, contact data, social profiles, and other public behavior controls.
+
+## Reference rules
+
+1. `slug` must match the registry filename.
+2. A nonblank `pageSlug` must resolve to `content/participant-pages/{pageSlug}.json` and that page must reference the same Brand Kit.
+3. A nonblank `brandKitSlug` must resolve to `content/participant-brand-kits/{brandKitSlug}.json`.
+4. Every nonblank album UUID used by a participant page must appear in that participant's assigned `albumIds`.
+5. Draft registry data does not authorize a public route. Cody has no page reference and must not gain a route, navigation item, page, or template from this file.
+
+## Authentication versus authorization
+
+The next Studio phase should support Google OAuth through Supabase Auth. Google OAuth proves an external identity and helps users sign in; it is not the authorization system.
+
+Authorization must come from Who's to Say data and Supabase row-level security using:
+
+- `participants`
+- `user_roles`
+- `participant_user_access`
+- `participant_album_access`
+- `review_requests`
+- `publish_events`
+- `audit_events`
+
+Studio must map a verified Supabase Auth user to those records before permitting access. A Google account, email domain, OAuth claim, hidden CMS field, or registry JSON entry must never independently grant participant access or publishing authority.
+
+## Not included in version 1
+
+- Google OAuth or any other login implementation.
+- Participant-facing CMS access.
+- Contact or social profile fields.
+- Public renderer integration.
+- Cody routes, navigation, pages, or templates.
+- Album creation or image storage outside the Media Hub.

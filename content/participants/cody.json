@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "participantId": "participant-cody",
+  "slug": "cody",
+  "displayName": "Cody — The Accidental Advocate",
+  "status": "draft",
+  "resources": {
+    "pageSlug": "",
+    "brandKitSlug": "cody",
+    "albumIds": []
+  },
+  "access": {
+    "ownerUserIds": [],
+    "staffAdminUserIds": [],
+    "contributorUserIds": []
+  },
+  "reviewRequirements": {
+    "pageCopy": "staff-review",
+    "brandKit": "staff-review",
+    "mediaSelection": "staff-review",
+    "serviceClaims": "superadmin-review",
+    "publish": "superadmin"
+  }
+}
