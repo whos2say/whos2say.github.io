@@ -6,6 +6,8 @@ The ownership registry records which page, Brand Kit, and Media Hub albums belon
 
 Registry files live at `content/participants/{slug}.json`. Participant Pages remain in `content/participant-pages`, Brand Kits remain in `content/participant-brand-kits`, and Supabase Media Hub albums remain the source of truth for images.
 
+Version 1 includes an active DJR registry and a draft Cody registry. DJR connects to its existing Participant Page, Brand Kit, and assigned albums. Cody connects only to its draft Brand Kit and has a blank page reference, no assigned albums, and no public route or template.
+
 ## Version 1 fields
 
 - `schemaVersion`: Must be `1`.
@@ -53,3 +55,9 @@ Studio must map a verified Supabase Auth user to those records before permitting
 - Public renderer integration.
 - Cody routes, navigation, pages, or templates.
 - Album creation or image storage outside the Media Hub.
+
+## Current operating model
+
+Decap is operated by trusted staff as a temporary editing and review surface. Git history, previews, structured fields, and contract tests help governance, but Decap collection configuration does not enforce per-participant authorization. Registry `access` arrays remain empty until authenticated Studio user IDs and enforceable policies exist.
+
+No public renderer loads the Participant Registry in version 1. Adding or editing a registry record cannot create a route, publish a page, change navigation, expose contact/social data, or apply a Brand Kit preset.

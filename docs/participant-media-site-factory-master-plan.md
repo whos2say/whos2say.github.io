@@ -1,6 +1,6 @@
 # Who's to Say Participant Media Site Factory — Master Plan
 
-_Last updated: 2026-07-14_
+_Last updated: 2026-07-16_
 
 ## Purpose
 
@@ -39,6 +39,17 @@ Create/manage album → copy/select media → open Participant Pages → edit sa
 ---
 
 ## Current Architecture
+
+The stable architecture has four separate content responsibilities:
+
+```text
+Media Hub              -> Supabase albums, photos, ordering, visibility, and storage
+Participant Pages      -> safe page copy, sections, services, and album/photo selections
+Participant Brand Kits -> identity, audience, voice, message, and approved design workshop choices
+Participant Registry   -> ownership relationships, assigned resources, and review governance metadata
+```
+
+Templates remain responsible for public routes, structure, layout, navigation, forms, safe link destinations, and rendering. These layers reference one another by allowlisted slugs and UUIDs; none may absorb another layer's authority.
 
 ### 1. Media Hub
 
@@ -318,11 +329,15 @@ Completed:
 - Service pages can use slideshow/grid display modes.
 - Visual photo selector has been implemented for selectedPhotoIds.
 - Media Hub exposes Album UUID and Photo ID copy controls, with recent UX adjustment to avoid cluttering the grid.
+- DJR service offering pages support slideshow as the default public experience and grid as an approved alternative.
+- The Participant Brand Kit workshop, Brand Board preview, and named palette picker are implemented.
+- DJR has an active Participant Registry entry connecting its page, Brand Kit, and assigned album UUIDs.
+- Cody has draft Brand Kit and Participant Registry entries only. Those records do not create public behavior.
 
-Areas still needing QA / polish:
+Ongoing QA / polish:
 
 - Confirm the visual photo selector is reliable in Decap after hard refresh.
-- Confirm service pages use slideshow as the main public "see the work" experience.
+- Continue desktop/mobile QA for service slideshows.
 - Confirm photo detail view exposes Photo ID without cluttering the gallery grid.
 - Confirm selected photos update `/djr/` and `/djr/service.html` previews as expected.
 - Confirm no raw UUIDs show on public-facing service pages except in admin/media-hub contexts.
@@ -337,6 +352,8 @@ Continue using the current static site + Decap + Supabase + Vercel setup while v
 
 Short-term goal is not to build a perfect CMS. It is to prove the participant media-site workflow.
 
+Decap is a staff-operated stopgap. Its structured fields, previews, Git history, tests, and review process are useful, but collection visibility and hidden fields are not participant-scoped authorization. Direct participant login and contact/social editing must wait for protected Studio access.
+
 ### Do not rebuild in Drupal yet
 
 Drupal may become useful later if the Foundation needs:
@@ -349,7 +366,7 @@ Drupal may become useful later if the Foundation needs:
 
 But a Drupal rebuild now would slow validation.
 
-### Consider a future Studio app
+### Future Studio authentication and authorization
 
 A future Who's to Say Studio could be a dedicated app, potentially Next.js + Supabase, for:
 
@@ -361,13 +378,15 @@ A future Who's to Say Studio could be a dedicated app, potentially Next.js + Sup
 - Preview/approval
 - Publishing
 
+Studio should use Supabase Auth and support Google OAuth as an identity provider. Google OAuth authenticates a user; it does not authorize access. Authorization must come from Who's to Say participant-scoped records and Supabase row-level security, including `participants`, `user_roles`, `participant_user_access`, `participant_album_access`, `review_requests`, `publish_events`, and `audit_events`.
+
 For now, continue abstracting toward that future while shipping useful improvements in the current repo.
 
 ---
 
-## Next Phase: Brand Voice / Design System
+## Completed Milestone: Brand Voice / Design System
 
-The next major phase should introduce participant brand-first thinking.
+The Brand Kit version 1 milestone introduces participant brand-first thinking.
 
 This is not just visual styling. It should teach participants:
 
@@ -535,22 +554,22 @@ It should not feel like a photography portfolio.
 
 ### Short-term build
 
-1. Add/clean Brand Kit schema.
-2. Add Brand Voice fields to Participant Pages or new Brand Kits collection.
-3. Build Cody planning document and template schema.
-4. Implement Cody as the second template.
+1. Keep Decap staff-operated while validating the existing DJR workflow.
+2. Maintain the Participant Registry as governance metadata and keep album assignments current.
+3. Define a separate Participant Profile schema for future contact/social data, without exposing or rendering it yet.
+4. Design Studio authentication, participant-scoped authorization, and RLS policies before participant login is enabled.
 
 ### Medium-term build
 
-1. Create reusable participant template registry.
-2. Add Create Participant Page workflow.
-3. Add AI-assisted copy drafting.
-4. Add album sections/chapters in Media Hub.
-5. Add “Use this album/photo on participant page” actions.
+1. Implement protected Studio authentication with Supabase Auth and Google OAuth support.
+2. Implement `user_roles`, participant access, album access, review, publish, and audit records with RLS.
+3. Add draft/review/publish workflows before participant contact/social editing.
+4. Add Create Participant Page and AI-assisted copy drafting workflows.
+5. Add album sections/chapters and participant-page assignment actions in the Media Hub.
 
 ### Long-term build
 
-1. Who's to Say Studio app.
+1. Mature the Who's to Say Studio app.
 2. Multi-participant dashboard.
 3. Role-based permissions.
 4. Approval workflow.
@@ -622,26 +641,10 @@ https://www.whostosay.org/djr/service.html?service=sports-energy
 
 ## Next Recommended Task
 
-Start the Brand Voice / Design System planning layer.
+Plan the protected Studio authentication and authorization foundation. Define Supabase Auth with Google OAuth as a supported identity provider, then design participant-scoped access and RLS policies before implementing login or exposing contact/social editing.
 
-First task should be plan-only unless the structure is already agreed:
+Do not build Cody's public page or template as part of auth work. Cody remains a draft Brand Kit and Participant Registry record until separately approved.
 
-```text
-Plan the Brand Kit and Design System model for Participant Pages.
-
-Goal:
-Create a reusable brand-first layer that can support DJR, Cody — The Accidental Advocate, and future participants.
-
-Output:
-- Brand Kit schema
-- Design token schema
-- Participant template relationship
-- CMS fields
-- Renderer behavior
-- Cody template implications
-- Migration plan from DJR-only system to reusable participant system
-```
-
-# DJR safe display-copy extension
+## DJR safe display-copy extension
 
 The DJR first implementation now treats service-card media, contact-page copy, and footer display wording as Participant Pages concerns. Media still resolves from public Media Hub albums. Form behavior, routes, navigation, destinations, layout, and executable content remain template/admin concerns, with existing public content as the failure-safe fallback.

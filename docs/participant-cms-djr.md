@@ -14,7 +14,9 @@ The DJR page is a static participant microsite under `/djr/`.
 - `content/djr/galleries.json`, `content/djr/contact.json`, and `content/djr/section-gallery-map.json` remain advanced/admin fallback files.
 - `content/participant-pages/djr.json` is the participant-facing page configuration and safe overlay source.
 - `content/participant-brand-kits/djr.json` records reusable DJR identity, voice, messaging, visual direction, and constrained design presets.
+- `content/participants/djr.json` records the DJR ownership relationship, page and Brand Kit references, assigned album UUIDs, and review governance metadata.
 - `js/participant-pages/brandKit.js` safely loads and normalizes Brand Kits through an explicit allowlist.
+- `js/participant-pages/participantRegistry.js` safely normalizes registry metadata but is intentionally not connected to public rendering.
 - `js/participant-pages/albumImages.js` loads public Supabase album images from albums created in `/albums.html`.
 
 The DJR Participant Page references the DJR Brand Kit with `"brandKit": "djr"`. Version 1 loads that metadata but does not apply visual presets or redesign the page. Existing DJR content and styles remain the public fallback and visible source.
@@ -52,7 +54,7 @@ The preview auto-updates as editors change fields before publishing. `Refresh Pr
 
 To revert text for a section without deleting draft text, turn off `Use custom text for this section`. To revert images for a section without deleting the album UUID, turn off `Use album images for this section`.
 
-The old `DJR Photography` collection is hidden and labeled as an advanced/admin legacy fallback. It is not the normal participant editing workflow.
+The old `DJR Photography` collection is hidden and labeled as an advanced/admin legacy fallback. It is not the normal participant editing workflow. Decap remains a staff-operated stopgap; it does not enforce participant-by-participant ownership or roles.
 
 ## Service offerings
 
@@ -110,7 +112,7 @@ For each section, album overlays apply only when `allowParticipantAlbum` is true
 - `manualSelection` uses `selectedPhotoIds` in the listed order, then fills any remaining slots from album order.
 - `singlePhoto` uses the first `selectedPhotoIds` value and treats `imageLimit` as 1.
 
-Photo IDs are resolved inside the selected Album UUID. The Album UUID and Photo UUID must match: if a selected photo is not in the resolved album, it is skipped. Unknown, blocked, missing, or non-image photo IDs are skipped. If manual selection is empty, the renderer falls back to album order. The current Decap editor uses native text/list fields for photo IDs; a visual album photo picker is the recommended next UX improvement.
+Photo IDs are resolved inside the selected Album UUID. The Album UUID and Photo UUID must match: if a selected photo is not in the resolved album, it is skipped. Unknown, blocked, missing, or non-image photo IDs are skipped. If manual selection is empty, the renderer falls back to album order.
 
 New selections should use Photo UUIDs copied from the opened photo detail view in `/albums.html`. The renderer also preserves older album-scoped selected photo IDs already saved in CMS content so existing draft selections are not discarded during Participant Pages updates.
 
@@ -208,10 +210,25 @@ The contract checks:
 - The advanced DJR collection is hidden/de-emphasized.
 - Decap does not expose `content/djr-albums` as participant media.
 
-# Contact and footer display copy
+## Contact and footer display copy
 
 Participant Pages also exposes safe display-copy fields for the DJR contact page and footer. Participants may edit headings, supporting text, button labels, the displayed location, copyright wording, and partner label. Blank values retain the official defaults.
 
 The contact form endpoint and session choices remain in `content/djr/contact.json`. Navigation, phone, email, social, quick-link, and partner destinations remain in `content/djr/site.json`. Participant Pages does not expose those destinations, HTML, CSS, scripts, or layout.
 
 Service-card thumbnails use the first public image resolved from each service offering's Album UUID and image mode. If the album is missing, private, empty, or unavailable, the existing DJR fallback image remains visible.
+
+## Authentication and intentionally deferred work
+
+There is no direct participant login or participant-scoped authorization in the current CMS. Staff operate Decap and use its preview, Git, validation, and review workflow as a stopgap. The Participant Registry documents ownership and review relationships but does not enforce them.
+
+A future Studio should use Supabase Auth with Google OAuth as a supported identity provider. Authorization must still come from Who's to Say participant-scoped access records and Supabase RLS; a Google identity, email address, hidden field, or registry JSON file must not grant access by itself.
+
+The following are intentionally not implemented:
+
+- Direct participant login.
+- Participant editing of actual contact details or social profiles. Safe contact-page and footer display wording is not a contact-profile authorization system.
+- Real participant-scoped RLS permissions.
+- Public application of Brand Kit design presets.
+- A Cody public page, route, navigation item, or template.
+- A Drupal or Next.js rebuild.

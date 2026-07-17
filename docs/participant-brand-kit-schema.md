@@ -6,6 +6,7 @@ Participant Brand Kits define reusable identity, audience, message, voice, visua
 
 - `content/participant-brand-kits/{slug}.json` owns durable brand guidance and constrained design choices.
 - `content/participant-pages/{slug}.json` owns template selection, section copy, visibility, and Media Hub album/photo references.
+- `content/participants/{slug}.json` owns participant/resource relationships, assigned album UUIDs, and review governance metadata. It does not make authorization enforceable in the static repo.
 - Templates own routes, structure, layout, HTML, CSS, scripts, forms, navigation, link destinations, and preset implementation.
 - `/albums.html` and Supabase remain the source of truth for images.
 
@@ -109,5 +110,7 @@ The palette picker offers approved curated choices: DJR Cinematic Blue, Warm Doc
 The Decap preview is a visual Brand Board showing identity, palette, type, button, card, photo direction, voice, vocabulary, CTA intent, and workshop progress. It is not a preview of a public participant page and cannot create a route.
 
 `status` is metadata, not a route generator. Cody remains draft-only until Cody's language and a separate `accidental-advocate` template are approved.
+
+Brand Kits do not contain ownership, roles, contact profiles, social accounts, or authentication data. The DJR and draft Cody registry records reference their Brand Kits separately. Direct participant editing requires a future authenticated Studio with participant-scoped authorization; Decap remains staff-operated.
 
 Consumers must check `schemaVersion`. Invalid versions normalize to a safe empty result and leave template fallbacks unchanged. Breaking changes require a new version and migration plan.
