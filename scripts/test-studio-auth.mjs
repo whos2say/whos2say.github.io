@@ -10,6 +10,7 @@ import {
   resolveOAuthCallback,
 } from '../studio/js/studio-auth-core.js'
 import {
+  createDashboardRenderGuard,
   loadMyParticipantsWith,
   registryPreviewAllowed,
 } from '../studio/js/participant-dashboard-core.js'
@@ -78,6 +79,14 @@ let registryReads = 0
 async function registryLoader(slug) {
   registryReads += 1
   return slug === 'djr' ? djrRegistry : codyRegistry
+}
+
+function deferred() {
+  let resolve
+  const promise = new Promise((complete) => {
+    resolve = complete
+  })
+  return { promise, resolve }
 }
 
 // Signed out.
@@ -200,6 +209,40 @@ async function registryLoader(slug) {
   assert.equal(result.participants[0].pageSlug, 'djr')
   assert.equal(result.participants[0].brandKitSlug, 'djr')
   assert.equal(result.participants[0].assignedAlbumCount, 2)
+}
+
+// Three overlapping dashboard requests only allow the latest request to commit one DJR card.
+{
+  const guard = createDashboardRenderGuard()
+  const requests = [deferred(), deferred(), deferred()]
+  const renderedCards = []
+  const render = async (request) => {
+    const version = guard.begin()
+    const result = await request.promise
+    if (!guard.isCurrent(version)) return
+    const participantIds = new Set()
+    const cards = []
+    for (const participant of result.participants) {
+      if (!participant.participantId || participantIds.has(participant.participantId)) continue
+      participantIds.add(participant.participantId)
+      cards.push(participant.participantId)
+    }
+    if (!guard.isCurrent(version)) return
+    renderedCards.splice(0, renderedCards.length, ...cards)
+  }
+  const renders = requests.map(render)
+  const duplicateDjrResult = {
+    participants: [
+      { participantId: 'participant-djr' },
+      { participantId: 'participant-djr' },
+    ],
+  }
+  requests[2].resolve(duplicateDjrResult)
+  await renders[2]
+  requests[1].resolve(duplicateDjrResult)
+  requests[0].resolve(duplicateDjrResult)
+  await Promise.all(renders)
+  assert.deepEqual(renderedCards, ['participant-djr'])
 }
 
 // Production RLS/table failure never falls back to registry authorization.

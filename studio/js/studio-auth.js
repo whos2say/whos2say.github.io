@@ -1,6 +1,6 @@
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabase } from '../../js/supabase.js'
 import { loadMyParticipants } from './participant-dashboard.js'
-import { registryPreviewAllowed } from './participant-dashboard-core.js'
+import { createDashboardRenderGuard, registryPreviewAllowed } from './participant-dashboard-core.js'
 import {
   GOOGLE_IDENTITY_SCOPES,
   STUDIO_CALLBACK_PATH,
@@ -35,6 +35,7 @@ const projectRef = projectHost.split('.')[0]
 let dashboardUserId = ''
 let inviteClaimUserId = ''
 let currentUser = null
+const dashboardRenderGuard = createDashboardRenderGuard()
 
 const diagnostics = {
   origin: window.location.origin,
@@ -161,6 +162,7 @@ function renderEmptyState(source) {
 }
 
 async function renderDashboard(user) {
+  const renderVersion = dashboardRenderGuard.begin()
   if (!dashboard || !participantCards || !participantsEmpty || !participantsLoading) return
   if (!user) {
     dashboard.hidden = true
@@ -180,11 +182,12 @@ async function renderDashboard(user) {
   if (inviteClaimUserId !== user.id) {
     inviteClaimUserId = user.id
     const claim = await claimMyParticipantInvites(supabase)
+    if (!dashboardRenderGuard.isCurrent(renderVersion)) return
     if (claim.error) diagnostics.error = `${claim.error.code}: ${claim.error.diagnosticMessage || claim.error.message}`
   }
 
   const result = await loadMyParticipants(user)
-  if (dashboardUserId !== requestedUserId) return
+  if (!dashboardRenderGuard.isCurrent(renderVersion) || dashboardUserId !== requestedUserId) return
   participantsLoading.hidden = true
   diagnostics.assignmentStatus = result.queryStatus
   diagnostics.accessSource = result.source
@@ -203,8 +206,17 @@ async function renderDashboard(user) {
     }
   }
 
-  result.participants.forEach((participant) => participantCards.append(renderParticipantCard(participant)))
-  if (!result.participants.length) renderEmptyState(result.source)
+  const cards = document.createDocumentFragment()
+  const renderedParticipantIds = new Set()
+  for (const participant of result.participants) {
+    const participantId = String(participant?.participantId || '')
+    if (!participantId || renderedParticipantIds.has(participantId)) continue
+    renderedParticipantIds.add(participantId)
+    cards.append(renderParticipantCard(participant))
+  }
+  if (!dashboardRenderGuard.isCurrent(renderVersion)) return
+  participantCards.replaceChildren(cards)
+  if (!renderedParticipantIds.size) renderEmptyState(result.source)
   renderDiagnostics()
 }
 

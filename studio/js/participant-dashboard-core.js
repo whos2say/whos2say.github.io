@@ -1,6 +1,19 @@
 const REGISTRY_PREVIEW_SLUGS = Object.freeze(['djr', 'cody'])
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
+export function createDashboardRenderGuard() {
+  let version = 0
+  return {
+    begin() {
+      version += 1
+      return version
+    },
+    isCurrent(requestVersion) {
+      return requestVersion === version
+    },
+  }
+}
+
 function safeDiagnostic(error) {
   const clean = (value) => String(value || '')
     .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[redacted-token]')
