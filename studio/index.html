@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Who's to Say Studio</title>
+  <meta name="description" content="A protected workspace for future participant media and page editing." />
+  <link rel="stylesheet" href="/studio/assets/studio.css" />
+</head>
+<body>
+  <main class="studio-shell">
+    <header class="studio-header">
+      <a class="studio-brand" href="/" aria-label="Who's to Say home">Who's to Say</a>
+      <span class="studio-badge">Foundation preview</span>
+    </header>
+
+    <section class="studio-hero" aria-labelledby="studio-title">
+      <p class="studio-eyebrow">Participant workspace foundation</p>
+      <h1 id="studio-title">Who's to Say Studio</h1>
+      <p class="studio-lead">A future protected workspace for participant pages, Brand Kits, and Media Hub selections.</p>
+    </section>
+
+    <section class="studio-panel" aria-labelledby="auth-title">
+      <div>
+        <p class="studio-eyebrow">Identity</p>
+        <h2 id="auth-title">Sign in</h2>
+        <p>Google sign-in identifies you. Who's to Say access policies—not your Google account—will determine which participants and tools you can use.</p>
+      </div>
+
+      <div id="studio-auth-loading" class="studio-status" role="status">Checking sign-in status…</div>
+
+      <div id="studio-signed-out" class="studio-auth-actions" hidden>
+        <button id="studio-google-sign-in" class="studio-button" type="button">Sign in with Google</button>
+        <p class="studio-help">Identity scopes only: openid, email, and profile. No Google Photos or Drive access is requested.</p>
+      </div>
+
+      <div id="studio-signed-in" class="studio-auth-actions" hidden>
+        <p class="studio-user">Signed in as <strong id="studio-user-email"></strong></p>
+        <button id="studio-sign-out" class="studio-button studio-button--secondary" type="button">Sign out</button>
+      </div>
+
+      <p id="studio-auth-message" class="studio-message" role="alert" hidden></p>
+    </section>
+
+    <section class="studio-panel studio-panel--locked" aria-labelledby="participants-title">
+      <p class="studio-eyebrow">Authorization</p>
+      <h2 id="participants-title">My Participants</h2>
+      <p>Participant editing is not enabled yet. This area will open only after participant-scoped access records and row-level security policies are reviewed and deployed.</p>
+      <p class="studio-lock-note">Decap remains the staff-operated page editor during this phase.</p>
+    </section>
+  </main>
+
+  <script type="module" src="/studio/js/studio-auth.js"></script>
+</body>
+</html>

@@ -682,6 +682,49 @@ for (const authorizationTable of ['participants', 'user_roles', 'participant_use
 }
 assert(ownershipDocs.includes('is not the authorization system'), 'Ownership docs must distinguish Google OAuth authentication from authorization')
 
+const studioAuthPlan = readText('docs/studio-auth-plan.md')
+const studioAuthSchema = readText('supabase/studio-auth-schema.sql')
+const studioIndex = readText('studio/index.html')
+const studioCallback = readText('studio/auth/callback/index.html')
+const studioAuth = readText('studio/js/studio-auth.js')
+const studioAuthCallback = readText('studio/js/auth-callback.js')
+const studioStyles = readText('studio/assets/studio.css')
+const studioFoundationFiles = [studioAuthPlan, studioAuthSchema, studioIndex, studioCallback, studioAuth, studioAuthCallback, studioStyles]
+
+assert(studioAuthPlan.includes('Supabase Auth') && studioAuthPlan.includes('Google OAuth'), 'Studio auth plan must document Supabase Auth with Google OAuth')
+assert(studioAuthPlan.includes('openid email profile'), 'Studio auth plan must limit Google identity scopes to openid, email, and profile')
+assert(studioAuthPlan.includes('Optional magic-link fallback'), 'Studio auth plan must document the optional magic-link fallback')
+assert(studioAuthPlan.includes('/studio/auth/callback/'), 'Studio auth plan must document the callback route')
+assert(studioAuthPlan.includes('Google Photos') && studioAuthPlan.includes('does not request'), 'Studio auth plan must explicitly defer Google Photos scopes')
+assert(studioAuthPlan.includes('contact or social') || studioAuthPlan.includes('contact/social'), 'Studio auth plan must defer contact/social editing')
+
+for (const tableName of ['profiles', 'participants', 'user_roles', 'participant_user_access', 'participant_album_access', 'audit_events']) {
+  assert(studioAuthSchema.includes(`public.${tableName}`), `Studio SQL draft must include public.${tableName}`)
+  assert(studioAuthSchema.includes(`alter table public.${tableName} enable row level security`), `Studio SQL draft must enable RLS on public.${tableName}`)
+}
+assert(studioAuthSchema.includes('is_studio_superadmin') && studioAuthSchema.includes('has_participant_access'), 'Studio SQL draft must centralize participant-scoped authorization checks')
+assert(studioAuthSchema.includes('No client insert policy is granted'), 'Studio SQL draft must keep audit event writes server-controlled')
+assert(!/alter table public\.(albums|photos)\b/i.test(studioAuthSchema), 'Studio SQL draft must not alter existing album/photo tables')
+assert(!/google[_ ]?(email|domain).*grant/i.test(studioAuthSchema), 'Studio SQL draft must not authorize from Google identity attributes')
+
+assert(studioIndex.includes("Who's to Say Studio"), 'Studio shell must identify Who\'s to Say Studio')
+assert(studioIndex.includes('Sign in with Google'), 'Studio shell must offer Google sign-in')
+assert(studioIndex.includes('My Participants'), 'Studio shell must include the locked My Participants placeholder')
+assert(studioIndex.includes('Participant editing is not enabled yet'), 'Studio shell must clearly keep participant editing disabled')
+assert(!/<input\b/i.test(studioIndex), 'Studio shell must not expose participant, contact, or social editing fields')
+assert(studioCallback.includes('/studio/js/auth-callback.js'), 'Studio callback route must load the callback handler')
+assert(studioAuth.includes("provider: 'google'"), 'Studio auth must use the Supabase Google provider')
+assert(studioAuth.includes("scopes: 'openid email profile'"), 'Studio auth must request identity scopes only')
+assert(studioAuth.includes("import { supabase } from '../../js/supabase.js'"), 'Studio auth must reuse the existing public Supabase client without duplicating credentials')
+assert(!studioAuth.includes(".from('participants')") && !studioAuth.includes('.from("participants")'), 'Studio shell must not query participant authorization data before policies are deployed')
+assert(!/photoslibrary|drive\.google|googleapis\.com\/auth/i.test(studioAuthPlan + studioAuth), 'Studio foundation must not request Google Photos or Drive scopes')
+
+for (const [index, fileText] of studioFoundationFiles.entries()) {
+  assert(!/sb_secret_[A-Za-z0-9_-]+/.test(fileText), `Studio foundation file ${index + 1} must not contain a Supabase secret key`)
+  assert(!/\b(?:service_role|service-role)\b\s*[:=]\s*['"][^'"]+/i.test(fileText), `Studio foundation file ${index + 1} must not contain a service-role credential`)
+  assert(!/GOCSPX-[A-Za-z0-9_-]+/.test(fileText), `Studio foundation file ${index + 1} must not contain a Google client secret`)
+}
+
 if (errors.length) {
   console.error('DJR content contract failed:')
   errors.forEach((error) => console.error(`- ${error}`))

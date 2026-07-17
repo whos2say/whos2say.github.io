@@ -47,9 +47,11 @@ Authorization must come from Who's to Say data and Supabase row-level security u
 
 Studio must map a verified Supabase Auth user to those records before permitting access. A Google account, email domain, OAuth claim, hidden CMS field, or registry JSON entry must never independently grant participant access or publishing authority.
 
+See `docs/studio-auth-plan.md` for provider and redirect configuration and `supabase/studio-auth-schema.sql` for the conservative additive schema/RLS draft.
+
 ## Not included in version 1
 
-- Google OAuth or any other login implementation.
+- Authentication or authorization enforcement inside registry JSON. The separate Studio shell can establish a Supabase Auth identity, but registry files do not grant access.
 - Participant-facing CMS access.
 - Contact or social profile fields.
 - Public renderer integration.

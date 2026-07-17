@@ -641,7 +641,9 @@ https://www.whostosay.org/djr/service.html?service=sports-energy
 
 ## Next Recommended Task
 
-Plan the protected Studio authentication and authorization foundation. Define Supabase Auth with Google OAuth as a supported identity provider, then design participant-scoped access and RLS policies before implementing login or exposing contact/social editing.
+Review the protected Studio authorization foundation in a non-production Supabase project. Configure Google OAuth redirects, apply and test the additive schema/RLS draft with anonymous and assigned test users, and keep participant editing locked until those policies pass.
+
+The foundation artifacts are documented in `docs/studio-auth-plan.md`; the additive database draft lives in `supabase/studio-auth-schema.sql`, and `/studio/` is an authentication-only shell with participant editing locked.
 
 Do not build Cody's public page or template as part of auth work. Cody remains a draft Brand Kit and Participant Registry record until separately approved.
 

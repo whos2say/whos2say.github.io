@@ -1,0 +1,108 @@
+:root {
+  color-scheme: dark;
+  --studio-bg: #080b12;
+  --studio-panel: #111827;
+  --studio-border: #2a3548;
+  --studio-text: #f4f7fb;
+  --studio-muted: #aab5c6;
+  --studio-accent: #62a9ff;
+  --studio-accent-text: #061321;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #14213a 0, var(--studio-bg) 42rem);
+  color: var(--studio-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.studio-shell {
+  width: min(56rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0 4rem;
+}
+
+.studio-shell--callback { padding-top: 12vh; }
+
+.studio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.studio-brand,
+.studio-text-link { color: var(--studio-text); }
+
+.studio-brand { font-weight: 750; text-decoration: none; }
+
+.studio-badge {
+  border: 1px solid var(--studio-border);
+  border-radius: 999px;
+  color: var(--studio-muted);
+  font-size: .78rem;
+  padding: .35rem .65rem;
+}
+
+.studio-hero { padding: 5rem 0 2rem; }
+
+.studio-eyebrow {
+  color: var(--studio-accent);
+  font-size: .76rem;
+  font-weight: 750;
+  letter-spacing: .12em;
+  margin: 0 0 .6rem;
+  text-transform: uppercase;
+}
+
+h1, h2 { line-height: 1.08; margin: 0 0 .8rem; }
+h1 { font-size: clamp(2.4rem, 7vw, 4.8rem); }
+h2 { font-size: 1.6rem; }
+p { line-height: 1.65; }
+
+.studio-lead {
+  color: var(--studio-muted);
+  font-size: 1.15rem;
+  max-width: 42rem;
+}
+
+.studio-panel {
+  background: color-mix(in srgb, var(--studio-panel) 94%, transparent);
+  border: 1px solid var(--studio-border);
+  border-radius: 1rem;
+  margin-top: 1rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.studio-panel p { color: var(--studio-muted); }
+.studio-panel--locked { border-style: dashed; }
+.studio-auth-actions { margin-top: 1.5rem; }
+
+.studio-button {
+  background: var(--studio-accent);
+  border: 0;
+  border-radius: .65rem;
+  color: var(--studio-accent-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  padding: .8rem 1rem;
+}
+
+.studio-button--secondary {
+  background: transparent;
+  border: 1px solid var(--studio-border);
+  color: var(--studio-text);
+}
+
+.studio-button:disabled { cursor: wait; opacity: .65; }
+.studio-help, .studio-lock-note, .studio-status { font-size: .9rem; }
+.studio-user strong { color: var(--studio-text); overflow-wrap: anywhere; }
+.studio-message { color: #ffb4b4 !important; }
+
+@media (max-width: 36rem) {
+  .studio-hero { padding-top: 3.5rem; }
+}
