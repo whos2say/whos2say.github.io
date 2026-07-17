@@ -1,31 +1,20 @@
 import { supabase } from '../../../js/supabase.js'
+import { STUDIO_PATH, resolveOAuthCallback } from './studio-auth-core.js'
 
 const message = document.getElementById('studio-callback-message')
-let redirected = false
+let callbackComplete = false
 
 function finish(session) {
-  if (!session || redirected) return false
-  redirected = true
-  window.location.replace('/studio/')
+  if (!session || callbackComplete) return false
+  callbackComplete = true
+  window.history.replaceState({}, document.title, window.location.pathname)
+  window.location.replace(STUDIO_PATH)
   return true
 }
 
 async function completeSignIn() {
-  const params = new URLSearchParams(window.location.search)
-  const oauthError = params.get('error_description') || params.get('error')
-  if (oauthError) {
-    if (message) message.textContent = `Sign in was not completed: ${oauthError}`
-    return
-  }
-
-  const { data, error } = await supabase.auth.getSession()
-  if (error) {
-    if (message) message.textContent = error.message || 'The sign-in session could not be confirmed.'
-    return
-  }
-  if (!finish(data?.session) && message) {
-    message.textContent = 'No active session was found. Return to Studio and try again.'
-  }
+  const result = await resolveOAuthCallback(supabase, window.location.search)
+  if (!finish(result.session) && message) message.textContent = result.error?.message || 'Studio could not establish a session.'
 }
 
 supabase.auth.onAuthStateChange((_event, session) => {

@@ -1,5 +1,15 @@
-import { supabase } from '../../js/supabase.js'
+import { SUPABASE_ANON_KEY, SUPABASE_URL, supabase } from '../../js/supabase.js'
 import { loadMyParticipants } from './participant-dashboard.js'
+import { registryPreviewAllowed } from './participant-dashboard-core.js'
+import {
+  GOOGLE_IDENTITY_SCOPES,
+  STUDIO_CALLBACK_PATH,
+  SUPABASE_GOOGLE_CALLBACK,
+  beginGoogleSignIn,
+  claimMyParticipantInvites,
+  endStudioSession,
+  sanitizeDiagnosticText,
+} from './studio-auth-core.js'
 
 const loading = document.getElementById('studio-auth-loading')
 const signedOut = document.getElementById('studio-signed-out')
@@ -13,12 +23,74 @@ const accessSource = document.getElementById('studio-access-source')
 const participantsLoading = document.getElementById('studio-participants-loading')
 const participantCards = document.getElementById('studio-participant-cards')
 const participantsEmpty = document.getElementById('studio-participants-empty')
+const participantsEmptyTitle = document.getElementById('studio-participants-empty-title')
+const participantsEmptyBody = document.getElementById('studio-participants-empty-body')
+const debugPanel = document.getElementById('studio-debug')
+const debugCopyStatus = document.getElementById('studio-debug-copy-status')
+const debugEnabled = new URLSearchParams(window.location.search).get('debug') === '1'
+const expectedAppCallback = new URL(STUDIO_CALLBACK_PATH, window.location.origin).href
+const registryPreviewEnabled = registryPreviewAllowed(window.location)
+const projectHost = new URL(SUPABASE_URL).host
+const projectRef = projectHost.split('.')[0]
 let dashboardUserId = ''
+let inviteClaimUserId = ''
+let currentUser = null
+
+const diagnostics = {
+  origin: window.location.origin,
+  appCallback: expectedAppCallback,
+  providerCallback: SUPABASE_GOOGLE_CALLBACK,
+  userId: '',
+  userEmail: '',
+  assignmentStatus: 'Not run',
+  accessSource: 'None',
+  error: 'None',
+  registryPreview: registryPreviewEnabled ? 'Yes' : 'No',
+}
 
 function showMessage(value) {
   if (!message) return
   message.textContent = value || ''
   message.hidden = !value
+}
+
+function setDebugValue(id, value) {
+  const element = document.getElementById(id)
+  if (element) element.textContent = value
+}
+
+function renderDiagnostics() {
+  if (!debugEnabled || !debugPanel) return
+  debugPanel.hidden = false
+  setDebugValue('studio-debug-origin', diagnostics.origin)
+  setDebugValue('studio-debug-app-callback', diagnostics.appCallback)
+  setDebugValue('studio-debug-provider-callback', diagnostics.providerCallback)
+  setDebugValue('studio-debug-project', `${projectRef} (${projectHost})`)
+  setDebugValue('studio-debug-callback-path', expectedAppCallback.endsWith(STUDIO_CALLBACK_PATH) ? 'Correct' : 'Mismatch')
+  setDebugValue('studio-debug-session', currentUser ? 'Yes' : 'No')
+  setDebugValue('studio-debug-user-id', diagnostics.userId || 'Not signed in')
+  setDebugValue('studio-debug-user-email', diagnostics.userEmail || 'Not signed in')
+  setDebugValue('studio-debug-assignment', diagnostics.assignmentStatus)
+  setDebugValue('studio-debug-source', diagnostics.accessSource)
+  setDebugValue('studio-debug-error', diagnostics.error)
+  setDebugValue('studio-debug-registry-preview', diagnostics.registryPreview)
+}
+
+async function checkPublicAuthReadiness() {
+  if (!debugEnabled) return
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+      headers: { apikey: SUPABASE_ANON_KEY },
+      cache: 'no-store',
+    })
+    setDebugValue('studio-debug-reachable', response.ok ? 'Yes' : `No (HTTP ${response.status})`)
+    if (response.ok) {
+      const settings = await response.json()
+      setDebugValue('studio-debug-provider', settings?.external?.google ? 'Enabled' : 'Disabled — configure externally')
+    }
+  } catch (error) {
+    setDebugValue('studio-debug-reachable', 'No')
+  }
 }
 
 function safeSlug(value) {
@@ -76,6 +148,18 @@ function renderParticipantCard(participant) {
   return card
 }
 
+function renderEmptyState(source) {
+  if (!participantsEmpty || !participantsEmptyTitle || !participantsEmptyBody) return
+  participantsEmpty.hidden = false
+  if (source === 'unavailable') {
+    participantsEmptyTitle.textContent = 'Participant access could not be verified.'
+    participantsEmptyBody.textContent = 'The Studio access system is unavailable. No participant access has been granted from fallback data.'
+  } else {
+    participantsEmptyTitle.textContent = 'No participant access is assigned'
+    participantsEmptyBody.textContent = 'Your identity is confirmed, but no active participant assignment is visible.'
+  }
+}
+
 async function renderDashboard(user) {
   if (!dashboard || !participantCards || !participantsEmpty || !participantsLoading) return
   if (!user) {
@@ -84,6 +168,7 @@ async function renderDashboard(user) {
     participantCards.replaceChildren()
     return
   }
+
   dashboard.hidden = false
   if (accessSource) accessSource.hidden = true
   participantsLoading.hidden = false
@@ -91,67 +176,118 @@ async function renderDashboard(user) {
   participantCards.replaceChildren()
   const requestedUserId = user.id
   dashboardUserId = requestedUserId
+
+  if (inviteClaimUserId !== user.id) {
+    inviteClaimUserId = user.id
+    const claim = await claimMyParticipantInvites(supabase)
+    if (claim.error) diagnostics.error = `${claim.error.code}: ${claim.error.diagnosticMessage || claim.error.message}`
+  }
+
   const result = await loadMyParticipants(user)
   if (dashboardUserId !== requestedUserId) return
   participantsLoading.hidden = true
+  diagnostics.assignmentStatus = result.queryStatus
+  diagnostics.accessSource = result.source
+  diagnostics.registryPreview = result.registryPreviewEnabled ? 'Yes' : 'No'
+  if (result.error) diagnostics.error = `${result.error.code}: ${result.error.message}`
+  setDebugValue('studio-debug-sql', result.source === 'supabase' ? 'Assignment tables reachable; RLS-filtered query completed' : 'Unavailable or not verified')
+
   if (accessSource) {
     accessSource.hidden = false
-    accessSource.textContent = result.source === 'supabase'
-      ? 'Access source: Supabase participant assignments protected by RLS.'
-      : 'Registry preview — real access enforcement requires Supabase RLS.'
+    if (result.source === 'supabase') {
+      accessSource.textContent = 'Access source: Supabase participant assignments protected by RLS.'
+    } else if (result.source === 'registry-preview') {
+      accessSource.textContent = 'Development registry preview — not enforced authorization.'
+    } else {
+      accessSource.textContent = 'Participant access could not be verified.'
+    }
   }
+
   result.participants.forEach((participant) => participantCards.append(renderParticipantCard(participant)))
-  participantsEmpty.hidden = result.participants.length > 0
+  if (!result.participants.length) renderEmptyState(result.source)
+  renderDiagnostics()
 }
 
 function renderSession(session) {
   const user = session?.user || null
+  currentUser = user
   if (loading) loading.hidden = true
   if (signedOut) signedOut.hidden = Boolean(user)
   if (signedIn) signedIn.hidden = !user
   if (email) email.textContent = user?.email || 'authenticated user'
-  renderDashboard(user).catch(() => {
+  diagnostics.userId = user?.id || ''
+  diagnostics.userEmail = user?.email || ''
+  if (!user) {
+    diagnostics.assignmentStatus = 'Not run'
+    diagnostics.accessSource = 'None'
+    diagnostics.error = 'None'
+    diagnostics.registryPreview = registryPreviewEnabled ? 'Yes' : 'No'
+  }
+  renderDiagnostics()
+  renderDashboard(user).catch((error) => {
     if (participantsLoading) participantsLoading.hidden = true
-    if (participantsEmpty) participantsEmpty.hidden = false
-    showMessage('Participant assignments could not be loaded.')
+    renderEmptyState('unavailable')
+    diagnostics.assignmentStatus = 'error'
+    diagnostics.accessSource = 'unavailable'
+    diagnostics.error = `dashboard_error: ${sanitizeDiagnosticText(error?.message || 'Unknown error')}`
+    showMessage('Participant access could not be verified.')
+    renderDiagnostics()
   })
 }
 
 async function signInWithGoogle() {
   showMessage('')
   if (googleButton) googleButton.disabled = true
-  try {
-    const redirectTo = new URL('/studio/auth/callback/', window.location.origin).href
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo,
-        scopes: 'openid email profile',
-      },
-    })
-    if (error) throw error
-  } catch (error) {
-    showMessage(error?.message || 'Google sign-in could not be started.')
+  const result = await beginGoogleSignIn(supabase, window.location.origin)
+  if (result.error) {
+    showMessage(result.error.message)
+    diagnostics.error = `${result.error.code}: ${result.error.diagnosticMessage}`
     if (googleButton) googleButton.disabled = false
+    renderDiagnostics()
   }
 }
 
 async function signOut() {
   showMessage('')
   if (signOutButton) signOutButton.disabled = true
-  const { error } = await supabase.auth.signOut()
+  const result = await endStudioSession(supabase)
   if (signOutButton) signOutButton.disabled = false
-  if (error) showMessage(error.message || 'Sign out failed.')
+  if (result.error) showMessage(result.error.message)
+}
+
+async function copyDiagnostic(key) {
+  const values = {
+    'user-id': diagnostics.userId,
+    'user-email': diagnostics.userEmail,
+    'provider-callback': diagnostics.providerCallback,
+    'app-callback': diagnostics.appCallback,
+  }
+  const value = values[key] || ''
+  if (!value) {
+    if (debugCopyStatus) debugCopyStatus.textContent = 'That value is not available yet.'
+    return
+  }
+  await navigator.clipboard.writeText(value)
+  if (debugCopyStatus) debugCopyStatus.textContent = 'Copied.'
 }
 
 async function initialize() {
+  if (googleButton) googleButton.title = `Google identity scopes: ${GOOGLE_IDENTITY_SCOPES}`
   const { data, error } = await supabase.auth.getSession()
-  if (error) showMessage(error.message || 'Sign-in status is unavailable.')
+  if (error) showMessage('Sign-in status is unavailable.')
   renderSession(data?.session || null)
+  await checkPublicAuthReadiness()
 }
 
 if (googleButton) googleButton.addEventListener('click', signInWithGoogle)
 if (signOutButton) signOutButton.addEventListener('click', signOut)
+document.querySelectorAll('[data-copy-diagnostic]').forEach((button) => {
+  button.addEventListener('click', () => {
+    copyDiagnostic(button.getAttribute('data-copy-diagnostic')).catch(() => {
+      if (debugCopyStatus) debugCopyStatus.textContent = 'Copy failed. Select the value manually.'
+    })
+  })
+})
 
 supabase.auth.onAuthStateChange((_event, session) => {
   renderSession(session)
@@ -159,5 +295,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
 
 initialize().catch((error) => {
   renderSession(null)
-  showMessage(error?.message || 'Sign-in status is unavailable.')
+  diagnostics.error = `initialization_error: ${sanitizeDiagnosticText(error?.message || 'Unknown error')}`
+  showMessage('Sign-in status is unavailable.')
+  renderDiagnostics()
 })

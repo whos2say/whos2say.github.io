@@ -50,14 +50,45 @@
       <div id="studio-participants-loading" class="studio-status">Loading participant assignments…</div>
       <div id="studio-participant-cards" class="studio-card-grid" aria-live="polite"></div>
       <div id="studio-participants-empty" class="studio-empty" hidden>
-        <h3>No participant access is available</h3>
-        <p>Your identity is confirmed, but no active participant assignment is visible from the current access source.</p>
+        <h3 id="studio-participants-empty-title">No participant access is assigned</h3>
+        <p id="studio-participants-empty-body">Your identity is confirmed, but no active participant assignment is visible.</p>
       </div>
       <div class="studio-locked-copy">
         <p>Editing is coming after participant-scoped permissions and review workflow are enabled.</p>
         <p>Contact/social editing is intentionally disabled in this phase.</p>
         <p class="studio-lock-note">Decap remains the staff-operated page editor during this phase.</p>
       </div>
+    </section>
+
+    <section id="studio-debug" class="studio-panel studio-debug" aria-labelledby="studio-debug-title" hidden>
+      <p class="studio-eyebrow">Safe diagnostics</p>
+      <h2 id="studio-debug-title">Auth readiness</h2>
+      <p>This view never displays access tokens, refresh tokens, provider tokens, JWTs, private metadata, or keys.</p>
+      <dl class="studio-debug-list">
+        <div><dt>Studio static files</dt><dd id="studio-debug-static">Loaded</dd></div>
+        <div><dt>Current origin</dt><dd id="studio-debug-origin"></dd></div>
+        <div><dt>Expected app callback</dt><dd id="studio-debug-app-callback"></dd></div>
+        <div><dt>Expected Supabase Google callback</dt><dd id="studio-debug-provider-callback"></dd></div>
+        <div><dt>Supabase project</dt><dd id="studio-debug-project"></dd></div>
+        <div><dt>Supabase reachable</dt><dd id="studio-debug-reachable">Checking…</dd></div>
+        <div><dt>Callback path</dt><dd id="studio-debug-callback-path"></dd></div>
+        <div><dt>Google provider</dt><dd id="studio-debug-provider">Must be configured externally</dd></div>
+        <div><dt>SQL/RLS</dt><dd id="studio-debug-sql">Must be applied externally</dd></div>
+        <div><dt>Session present</dt><dd id="studio-debug-session">No</dd></div>
+        <div><dt>User UUID</dt><dd id="studio-debug-user-id">Not signed in</dd></div>
+        <div><dt>User email</dt><dd id="studio-debug-user-email">Not signed in</dd></div>
+        <div><dt>Assignment query</dt><dd id="studio-debug-assignment">Not run</dd></div>
+        <div><dt>Access source</dt><dd id="studio-debug-source">None</dd></div>
+        <div><dt>Sanitized error</dt><dd id="studio-debug-error">None</dd></div>
+        <div><dt>Registry preview enabled</dt><dd id="studio-debug-registry-preview">No</dd></div>
+      </dl>
+      <div class="studio-debug-actions" aria-label="Copy diagnostic values">
+        <button class="studio-button studio-button--secondary" type="button" data-copy-diagnostic="user-id">Copy user UUID</button>
+        <button class="studio-button studio-button--secondary" type="button" data-copy-diagnostic="user-email">Copy user email</button>
+        <button class="studio-button studio-button--secondary" type="button" data-copy-diagnostic="provider-callback">Copy Supabase callback</button>
+        <button class="studio-button studio-button--secondary" type="button" data-copy-diagnostic="app-callback">Copy Studio callback</button>
+      </div>
+      <p id="studio-debug-copy-status" class="studio-help" role="status"></p>
     </section>
   </main>
 

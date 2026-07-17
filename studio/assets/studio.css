@@ -155,6 +155,20 @@ p { line-height: 1.65; }
 .studio-empty h3 { margin: 0; }
 .studio-locked-copy { margin-top: 1.25rem; }
 
+.studio-debug-list { margin: 1.25rem 0; }
+.studio-debug-list div {
+  border-top: 1px solid var(--studio-border);
+  display: grid;
+  gap: .35rem 1rem;
+  grid-template-columns: minmax(10rem, .8fr) minmax(0, 1.6fr);
+  padding: .65rem 0;
+}
+.studio-debug-list dt { color: var(--studio-muted); }
+.studio-debug-list dd { margin: 0; overflow-wrap: anywhere; }
+.studio-debug-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+.studio-debug-actions .studio-button { font-size: .82rem; padding: .6rem .75rem; }
+
 @media (max-width: 36rem) {
   .studio-hero { padding-top: 3.5rem; }
+  .studio-debug-list div { grid-template-columns: 1fr; }
 }

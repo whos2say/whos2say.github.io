@@ -641,7 +641,7 @@ https://www.whostosay.org/djr/service.html?service=sports-energy
 
 ## Next Recommended Task
 
-Review the protected Studio authorization foundation in a non-production Supabase project. Configure Google OAuth redirects, apply and test the additive schema/RLS draft with anonymous and assigned test users, and keep participant editing locked until those policies pass.
+Complete the external Studio acceptance gate: configure Google OAuth redirects, apply and test the additive schema/RLS and invitation flow, bootstrap a placeholder-safe DJR invite with the participant's email only in Supabase, and verify assigned/unassigned real-account behavior. Keep participant editing locked.
 
 The foundation artifacts are documented in `docs/studio-auth-plan.md`; the additive database draft lives in `supabase/studio-auth-schema.sql`, and `/studio/` provides authentication plus a read-only My Participants assignment dashboard with editing locked.
 

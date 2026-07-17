@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:decap-config": "node scripts/generate-decap-config.mjs"
+    "build:decap-config": "node scripts/generate-decap-config.mjs",
+    "test:studio-auth": "node scripts/test-studio-auth.mjs"
   }
 }
