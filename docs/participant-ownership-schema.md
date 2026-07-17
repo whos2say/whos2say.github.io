@@ -62,4 +62,4 @@ See `docs/studio-auth-plan.md` for provider and redirect configuration and `supa
 
 Decap is operated by trusted staff as a temporary editing and review surface. Git history, previews, structured fields, and contract tests help governance, but Decap collection configuration does not enforce per-participant authorization. Registry `access` arrays remain empty until authenticated Studio user IDs and enforceable policies exist.
 
-No public renderer loads the Participant Registry in version 1. Adding or editing a registry record cannot create a route, publish a page, change navigation, expose contact/social data, or apply a Brand Kit preset.
+No public renderer loads the Participant Registry in version 1. The authenticated Studio dashboard may read it only to enrich authorized read-only cards or provide a clearly labeled registry preview filtered by the current Supabase user UUID. Adding or editing a registry record cannot create a route, publish a page, change navigation, expose contact/social data, or apply a Brand Kit preset.

@@ -643,7 +643,7 @@ https://www.whostosay.org/djr/service.html?service=sports-energy
 
 Review the protected Studio authorization foundation in a non-production Supabase project. Configure Google OAuth redirects, apply and test the additive schema/RLS draft with anonymous and assigned test users, and keep participant editing locked until those policies pass.
 
-The foundation artifacts are documented in `docs/studio-auth-plan.md`; the additive database draft lives in `supabase/studio-auth-schema.sql`, and `/studio/` is an authentication-only shell with participant editing locked.
+The foundation artifacts are documented in `docs/studio-auth-plan.md`; the additive database draft lives in `supabase/studio-auth-schema.sql`, and `/studio/` provides authentication plus a read-only My Participants assignment dashboard with editing locked.
 
 Do not build Cody's public page or template as part of auth work. Cody remains a draft Brand Kit and Participant Registry record until separately approved.
 

@@ -43,11 +43,21 @@
       <p id="studio-auth-message" class="studio-message" role="alert" hidden></p>
     </section>
 
-    <section class="studio-panel studio-panel--locked" aria-labelledby="participants-title">
+    <section id="studio-dashboard" class="studio-panel" aria-labelledby="participants-title" hidden>
       <p class="studio-eyebrow">Authorization</p>
       <h2 id="participants-title">My Participants</h2>
-      <p>Participant editing is not enabled yet. This area will open only after participant-scoped access records and row-level security policies are reviewed and deployed.</p>
-      <p class="studio-lock-note">Decap remains the staff-operated page editor during this phase.</p>
+      <p id="studio-access-source" class="studio-source-note" role="status" hidden></p>
+      <div id="studio-participants-loading" class="studio-status">Loading participant assignments…</div>
+      <div id="studio-participant-cards" class="studio-card-grid" aria-live="polite"></div>
+      <div id="studio-participants-empty" class="studio-empty" hidden>
+        <h3>No participant access is available</h3>
+        <p>Your identity is confirmed, but no active participant assignment is visible from the current access source.</p>
+      </div>
+      <div class="studio-locked-copy">
+        <p>Editing is coming after participant-scoped permissions and review workflow are enabled.</p>
+        <p>Contact/social editing is intentionally disabled in this phase.</p>
+        <p class="studio-lock-note">Decap remains the staff-operated page editor during this phase.</p>
+      </div>
     </section>
   </main>
 

@@ -6,7 +6,7 @@ Studio will use Supabase Auth and support Google OAuth as its primary planned id
 
 Google OAuth is not the authorization system. A verified Google identity, email address, email domain, or OAuth claim must never independently grant access to a participant, album, draft, review, or publishing action.
 
-The initial static `/studio/` shell supports authentication state only. Participant editing remains in the staff-operated Decap workflow until the app tables and row-level security policies are reviewed, deployed, and tested.
+The static `/studio/` shell supports authentication plus a read-only view of participant assignments. Participant editing remains in the staff-operated Decap workflow until the app tables, row-level security policies, and review workflow are reviewed, deployed, and tested.
 
 ## Identity providers
 
@@ -72,16 +72,25 @@ http://localhost:4173/studio/auth/callback/
 
 Also set the production Site URL to the approved canonical origin. Add only controlled staging preview origins; avoid unrestricted wildcard redirect patterns. The static callback route completes the browser session and returns the user to `/studio/`.
 
-## Current shell behavior
+## Current read-only dashboard behavior
 
 `/studio/` can:
 
 - Start Google sign-in through the existing Supabase client.
 - Display the authenticated user's email.
 - Sign out.
-- Explain that “My Participants” remains locked until authorization policies are deployed.
+- Query `participant_user_access` for the authenticated user and rely on RLS to limit visible `participants` rows.
+- Count RLS-visible `participant_album_access` assignments.
+- Enrich authorized cards with safe page and Brand Kit references from the static Participant Registry.
+- Show public-page and local JSON view links without edit actions.
 
-It cannot edit Participant Pages, Brand Kits, registries, albums, contact details, or social profiles. It does not query participant access tables yet and does not pretend that successful Google sign-in grants participant access.
+If the Supabase access tables are unavailable, Studio falls back to the static registry for development/demo visibility. That fallback still requires the signed-in Supabase user UUID to appear in a registry access array and is labeled **Registry preview — real access enforcement requires Supabase RLS**. Current registry access arrays are empty, so fallback does not grant demo access by default.
+
+The dashboard cannot edit Participant Pages, Brand Kits, registries, albums, contact details, or social profiles. It does not pretend that successful Google sign-in grants participant access. Empty and error states remain locked, and Decap remains the staff-operated editor.
+
+## Next phase
+
+The next planned phase is participant profile drafts behind reviewed RLS and a review workflow. Draft schema and permissions must be approved before any contact/social fields are introduced. Contact/social editing remains intentionally disabled in the current phase.
 
 ## Explicitly deferred
 

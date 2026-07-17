@@ -78,7 +78,6 @@ p { line-height: 1.65; }
 }
 
 .studio-panel p { color: var(--studio-muted); }
-.studio-panel--locked { border-style: dashed; }
 .studio-auth-actions { margin-top: 1.5rem; }
 
 .studio-button {
@@ -102,6 +101,59 @@ p { line-height: 1.65; }
 .studio-help, .studio-lock-note, .studio-status { font-size: .9rem; }
 .studio-user strong { color: var(--studio-text); overflow-wrap: anywhere; }
 .studio-message { color: #ffb4b4 !important; }
+
+.studio-source-note {
+  background: #172235;
+  border: 1px solid var(--studio-border);
+  border-radius: .65rem;
+  font-size: .88rem;
+  padding: .7rem .85rem;
+}
+
+.studio-card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  margin-top: 1rem;
+}
+
+.studio-participant-card {
+  background: #0c1320;
+  border: 1px solid var(--studio-border);
+  border-radius: .8rem;
+  padding: 1.1rem;
+}
+
+.studio-participant-card h3 { margin: 0 0 .55rem; }
+
+.studio-status-chip {
+  border: 1px solid var(--studio-border);
+  border-radius: 999px;
+  color: var(--studio-accent);
+  display: inline-block;
+  font-size: .74rem;
+  padding: .2rem .5rem;
+  text-transform: capitalize;
+}
+
+.studio-participant-card dl { margin: 1rem 0; }
+.studio-participant-card dl div { margin-top: .65rem; }
+.studio-participant-card dt { color: var(--studio-muted); font-size: .76rem; }
+.studio-participant-card dd { margin: .15rem 0 0; overflow-wrap: anywhere; }
+
+.studio-card-links { display: flex; flex-wrap: wrap; gap: .5rem .85rem; }
+.studio-card-link { color: var(--studio-accent); font-size: .88rem; }
+
+.studio-empty,
+.studio-locked-copy {
+  border: 1px dashed var(--studio-border);
+  border-radius: .8rem;
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.studio-empty h3 { margin: 0; }
+.studio-locked-copy { margin-top: 1.25rem; }
 
 @media (max-width: 36rem) {
   .studio-hero { padding-top: 3.5rem; }
