@@ -177,6 +177,10 @@ grant execute on function public.has_participant_access(uuid) to authenticated;
 -- Claiming takes no identity arguments. The function derives both user ID and
 -- verified email from auth.users for auth.uid(), locks matching invite rows,
 -- and copies only admin-approved role/capability values.
+-- Drop first so rerunning this migration can upgrade databases that already
+-- have the older zero-argument RETURNS TABLE shape.
+drop function if exists public.claim_my_participant_access_invites();
+
 create or replace function public.claim_my_participant_access_invites()
 returns table (
   participant_id uuid,

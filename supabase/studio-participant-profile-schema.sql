@@ -360,12 +360,17 @@ declare
   target_revision public.participant_profile_revisions%rowtype;
   target_participant_id uuid;
 begin
-  select revisions, profiles.participant_id
-    into target_revision, target_participant_id
+  select revisions.*
+    into target_revision
   from public.participant_profile_revisions revisions
-  join public.participant_profiles profiles on profiles.id = revisions.profile_id
   where revisions.id = target_revision_id
   for update of revisions;
+  if target_revision.id is not null then
+    select profiles.participant_id
+      into target_participant_id
+    from public.participant_profiles profiles
+    where profiles.id = target_revision.profile_id;
+  end if;
   if target_revision.id is null
     or target_revision.created_by <> auth.uid()
     or target_revision.revision_status <> 'draft'

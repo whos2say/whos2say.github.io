@@ -722,9 +722,12 @@ for (const tableName of ['participant_profiles', 'participant_profile_revisions'
 }
 assert(studioAuthSchema.includes('is_studio_superadmin') && studioAuthSchema.includes('has_participant_access'), 'Studio SQL draft must centralize participant-scoped authorization checks')
 assert(studioAuthSchema.includes('claim_my_participant_access_invites()'), 'Studio SQL must provide the no-argument participant invitation claim RPC')
+assert(studioAuthSchema.includes('drop function if exists public.claim_my_participant_access_invites()'), 'Studio auth migration must drop/recreate the claim RPC before changing its return shape')
 assert(studioProfileSchema.includes('drop function if exists public.claim_my_participant_access_invites()'), 'Studio Profile SQL must safely refresh the invite claim RPC for can_edit_profile')
 assert(studioProfileSchema.includes('participant_user_access_participant_id_user_id_access_role_key'), 'Invitation claim RPC must use the named participant access conflict constraint')
 assert(studioProfileSchema.includes('participant_profile_revisions_no_self_review_check') && studioProfileSchema.includes('review_requests_no_self_review_check'), 'Studio Profile SQL must prevent participant self-review in revision and review request records')
+assert(!/select\s+revisions\s*,\s*profiles\.participant_id\s+into\s+target_revision\s*,\s*target_participant_id/i.test(studioProfileSchema), 'Studio Profile SQL must not use a composite row variable in a multi-target INTO list')
+assert(studioProfileSchema.includes('select revisions.*') && studioProfileSchema.includes('select profiles.participant_id'), 'Studio Profile submit RPC must load revision row and participant ID in separate statements')
 assert(studioAuthSchema.includes('from auth.users') && studioAuthSchema.includes('email_confirmed_at is not null'), 'Invitation claim RPC must derive a verified email from auth identity')
 assert(studioAuthSchema.includes('grant execute on function public.claim_my_participant_access_invites() to authenticated'), 'Invitation claim RPC must grant execute only to authenticated users')
 assert(studioAuthSchema.includes('No client insert policy is granted'), 'Studio SQL draft must keep audit event writes server-controlled')
