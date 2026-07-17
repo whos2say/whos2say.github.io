@@ -49,6 +49,12 @@ Studio must map a verified Supabase Auth user to those records before permitting
 
 See `docs/studio-auth-plan.md` for provider and redirect configuration and `supabase/studio-auth-schema.sql` for the conservative additive schema/RLS draft.
 
+## Participant Profile drafts
+
+Participant contact/social editing now belongs to the separate private Participant Profile draft model, not the Registry, Participant Page, or Brand Kit. See `docs/participant-profile-schema.md`.
+
+Registry JSON still does not store contact information, social links, route behavior, navigation, layout, raw HTML, raw CSS, or arbitrary URLs. Studio authorization for Profile drafts comes from `participant_user_access` plus RLS capabilities such as `can_edit_profile` and `can_submit_review`.
+
 ## Not included in version 1
 
 - Authentication or authorization enforcement inside registry JSON. The separate Studio shell can establish a Supabase Auth identity, but registry files do not grant access.

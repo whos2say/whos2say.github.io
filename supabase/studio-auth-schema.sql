@@ -49,6 +49,7 @@ create table if not exists public.participant_user_access (
   can_edit_brand_kit boolean not null default false,
   can_select_media boolean not null default false,
   can_edit_services boolean not null default false,
+  can_edit_profile boolean not null default false,
   can_submit_review boolean not null default false,
   starts_at timestamptz not null default now(),
   expires_at timestamptz,
@@ -87,6 +88,7 @@ create table if not exists public.participant_access_invites (
   can_edit_brand_kit boolean not null default false,
   can_select_media boolean not null default false,
   can_edit_services boolean not null default false,
+  can_edit_profile boolean not null default false,
   can_submit_review boolean not null default false,
   starts_at timestamptz not null default now(),
   expires_at timestamptz,
@@ -185,6 +187,7 @@ returns table (
   can_edit_brand_kit boolean,
   can_select_media boolean,
   can_edit_services boolean,
+  can_edit_profile boolean,
   can_submit_review boolean
 )
 language plpgsql
@@ -228,6 +231,7 @@ begin
       can_edit_brand_kit,
       can_select_media,
       can_edit_services,
+      can_edit_profile,
       can_submit_review,
       starts_at,
       expires_at,
@@ -241,17 +245,19 @@ begin
       invite_record.can_edit_brand_kit,
       invite_record.can_select_media,
       invite_record.can_edit_services,
+      invite_record.can_edit_profile,
       invite_record.can_submit_review,
       invite_record.starts_at,
       invite_record.expires_at,
       null,
       invite_record.created_by
     )
-    on conflict (participant_id, user_id, access_role) do update
+    on conflict on constraint participant_user_access_participant_id_user_id_access_role_key do update
       set can_edit_page = excluded.can_edit_page,
           can_edit_brand_kit = excluded.can_edit_brand_kit,
           can_select_media = excluded.can_select_media,
           can_edit_services = excluded.can_edit_services,
+          can_edit_profile = excluded.can_edit_profile,
           can_submit_review = excluded.can_submit_review,
           starts_at = excluded.starts_at,
           expires_at = excluded.expires_at,
@@ -273,6 +279,7 @@ begin
         invite_record.can_edit_brand_kit,
         invite_record.can_select_media,
         invite_record.can_edit_services,
+        invite_record.can_edit_profile,
         invite_record.can_submit_review
       from public.participants participants
       where participants.id = invite_record.participant_id;

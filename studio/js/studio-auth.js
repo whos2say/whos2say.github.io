@@ -144,6 +144,13 @@ function renderParticipantCard(participant) {
     )
   }
   if (brandKitSlug) links.append(safeLink('View Brand Kit JSON', `/content/participant-brand-kits/${brandKitSlug}.json`))
+  if (participant.canEditProfile && participant.participantId) {
+    const profilePath = `/studio/participants/profile/?participantId=${encodeURIComponent(participant.participantId)}`
+    links.append(
+      safeLink('Open Profile', profilePath),
+      safeLink('Edit Profile Draft', profilePath),
+    )
+  }
   card.append(heading, status, details)
   if (links.childElementCount) card.append(links)
   return card

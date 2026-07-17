@@ -50,6 +50,7 @@ insert into public.participant_access_invites (
   can_edit_brand_kit,
   can_select_media,
   can_edit_services,
+  can_edit_profile,
   can_submit_review,
   revoked_at
 )
@@ -58,10 +59,11 @@ select
   participants.id,
   'participant_owner',
   false,
-  false,
   true,
   false,
-  false,
+  true,
+  true,
+  true,
   null
 from public.participants participants
 where participants.registry_id = 'participant-djr'
@@ -70,6 +72,7 @@ on conflict (email_normalized, participant_id, access_role) do update
       can_edit_brand_kit = excluded.can_edit_brand_kit,
       can_select_media = excluded.can_select_media,
       can_edit_services = excluded.can_edit_services,
+      can_edit_profile = excluded.can_edit_profile,
       can_submit_review = excluded.can_submit_review,
       revoked_at = null;
 

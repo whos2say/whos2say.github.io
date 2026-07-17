@@ -91,9 +91,27 @@ Static registry preview is available only on localhost or with the explicit `reg
 
 The dashboard cannot edit Participant Pages, Brand Kits, registries, albums, contact details, or social profiles. It does not pretend that successful Google sign-in grants participant access. Empty and error states remain locked, and Decap remains the staff-operated editor.
 
-## Next phase
+## Participant Profile draft phase
 
-The next planned phase is participant profile drafts behind reviewed RLS and a review workflow. Draft schema and permissions must be approved before any contact/social fields are introduced. Contact/social editing remains intentionally disabled in the current phase.
+Phase 3 adds private Participant Profile drafts behind participant-scoped RLS. See `docs/participant-profile-schema.md` and `supabase/studio-participant-profile-schema.sql`.
+
+The Profile editor can save a structured draft, preview only visibility-approved fields, and submit the draft for staff review. It does not publish contact/social data to public pages, does not create approval controls for participants, and does not move Participant Page or Brand Kit editing out of Decap.
+
+Manual SQL order:
+
+```text
+supabase/studio-auth-schema.sql
+supabase/studio-participant-profile-schema.sql
+supabase/studio-auth-djr-bootstrap.example.sql
+supabase/studio-participant-profile-djr-bootstrap.example.sql
+```
+
+Run both rollback-only smoke tests before accepting the phase:
+
+```text
+supabase/studio-auth-rls-smoke-test.sql
+supabase/studio-participant-profile-rls-smoke-test.sql
+```
 
 ## Deterministic PKCE callback
 
@@ -200,7 +218,7 @@ Human OAuth acceptance still requires configured dashboards and real accounts:
 ## Explicitly deferred
 
 - Direct participant editing.
-- Participant contact or social profile fields.
+- Public participant contact or social profile rendering.
 - Moving Participant Pages out of Decap.
 - Public Brand Kit design preset application.
 - Cody route, navigation, page, or template.

@@ -694,23 +694,37 @@ const studioParticipantDashboardCore = readText('studio/js/participant-dashboard
 const studioStyles = readText('studio/assets/studio.css')
 const studioBootstrap = readText('supabase/studio-auth-djr-bootstrap.example.sql')
 const studioRlsSmokeTest = readText('supabase/studio-auth-rls-smoke-test.sql')
+const studioProfileDocs = readText('docs/participant-profile-schema.md')
+const studioProfileSchema = readText('supabase/studio-participant-profile-schema.sql')
+const studioProfileBootstrap = readText('supabase/studio-participant-profile-djr-bootstrap.example.sql')
+const studioProfileSmokeTest = readText('supabase/studio-participant-profile-rls-smoke-test.sql')
+const studioProfileRoute = readText('studio/participants/profile/index.html')
+const studioProfileCore = readText('studio/js/participant-profile-core.js')
+const studioProfileEditor = readText('studio/js/participant-profile-editor.js')
 const supabaseBrowserClient = readText('js/supabase.js')
 const packageJson = readJson('package.json')
-const studioFoundationFiles = [studioAuthPlan, studioAuthSchema, studioIndex, studioCallback, studioAuth, studioAuthCallback, studioAuthCore, studioParticipantDashboard, studioParticipantDashboardCore, studioStyles, studioBootstrap, studioRlsSmokeTest]
+const studioFoundationFiles = [studioAuthPlan, studioAuthSchema, studioIndex, studioCallback, studioAuth, studioAuthCallback, studioAuthCore, studioParticipantDashboard, studioParticipantDashboardCore, studioStyles, studioBootstrap, studioRlsSmokeTest, studioProfileDocs, studioProfileSchema, studioProfileBootstrap, studioProfileSmokeTest, studioProfileRoute, studioProfileCore, studioProfileEditor]
 
 assert(studioAuthPlan.includes('Supabase Auth') && studioAuthPlan.includes('Google OAuth'), 'Studio auth plan must document Supabase Auth with Google OAuth')
 assert(studioAuthPlan.includes('openid email profile'), 'Studio auth plan must limit Google identity scopes to openid, email, and profile')
 assert(studioAuthPlan.includes('Optional magic-link fallback'), 'Studio auth plan must document the optional magic-link fallback')
 assert(studioAuthPlan.includes('/studio/auth/callback/'), 'Studio auth plan must document the callback route')
 assert(studioAuthPlan.includes('Google Photos') && studioAuthPlan.includes('does not request'), 'Studio auth plan must explicitly defer Google Photos scopes')
-assert(studioAuthPlan.includes('contact or social') || studioAuthPlan.includes('contact/social'), 'Studio auth plan must defer contact/social editing')
+assert(studioAuthPlan.includes('Participant Profile draft phase'), 'Studio auth plan must document the Participant Profile draft phase')
 
 for (const tableName of ['profiles', 'participants', 'user_roles', 'participant_user_access', 'participant_album_access', 'participant_access_invites', 'audit_events']) {
   assert(studioAuthSchema.includes(`public.${tableName}`), `Studio SQL draft must include public.${tableName}`)
   assert(studioAuthSchema.includes(`alter table public.${tableName} enable row level security`), `Studio SQL draft must enable RLS on public.${tableName}`)
 }
+for (const tableName of ['participant_profiles', 'participant_profile_revisions', 'review_requests']) {
+  assert(studioProfileSchema.includes(`public.${tableName}`), `Studio Profile SQL draft must include public.${tableName}`)
+  assert(studioProfileSchema.includes(`alter table public.${tableName} enable row level security`), `Studio Profile SQL draft must enable RLS on public.${tableName}`)
+}
 assert(studioAuthSchema.includes('is_studio_superadmin') && studioAuthSchema.includes('has_participant_access'), 'Studio SQL draft must centralize participant-scoped authorization checks')
 assert(studioAuthSchema.includes('claim_my_participant_access_invites()'), 'Studio SQL must provide the no-argument participant invitation claim RPC')
+assert(studioProfileSchema.includes('drop function if exists public.claim_my_participant_access_invites()'), 'Studio Profile SQL must safely refresh the invite claim RPC for can_edit_profile')
+assert(studioProfileSchema.includes('participant_user_access_participant_id_user_id_access_role_key'), 'Invitation claim RPC must use the named participant access conflict constraint')
+assert(studioProfileSchema.includes('participant_profile_revisions_no_self_review_check') && studioProfileSchema.includes('review_requests_no_self_review_check'), 'Studio Profile SQL must prevent participant self-review in revision and review request records')
 assert(studioAuthSchema.includes('from auth.users') && studioAuthSchema.includes('email_confirmed_at is not null'), 'Invitation claim RPC must derive a verified email from auth identity')
 assert(studioAuthSchema.includes('grant execute on function public.claim_my_participant_access_invites() to authenticated'), 'Invitation claim RPC must grant execute only to authenticated users')
 assert(studioAuthSchema.includes('No client insert policy is granted'), 'Studio SQL draft must keep audit event writes server-controlled')
@@ -740,6 +754,7 @@ assert(studioAuthCallback.includes('window.history.replaceState') && studioAuthC
 assert(studioAuthCore.includes("STUDIO_PATH = '/studio/'") && !studioAuthCallback.includes('next'), 'Studio callback must redirect only to the fixed internal Studio path')
 assert(studioParticipantDashboardCore.includes(".from('participant_user_access')"), 'Studio dashboard must use participant-scoped access rows as its primary authorization source')
 assert(studioParticipantDashboardCore.includes(".eq('user_id', user.id)"), 'Studio dashboard must explicitly scope participant access rows to the authenticated user')
+assert(studioParticipantDashboardCore.includes('can_edit_profile'), 'Studio dashboard must read the participant-scoped profile editing capability')
 assert(studioParticipantDashboardCore.includes(".from('participant_album_access')"), 'Studio dashboard must count participant-scoped album assignments')
 assert(studioParticipantDashboard.includes('loadParticipantRegistry'), 'Studio dashboard must use the safe registry loader for card references and fallback')
 assert(studioAuth.includes('Development registry preview — not enforced authorization.'), 'Studio dashboard must label registry preview as unenforced development data')
@@ -749,6 +764,7 @@ assert(studioParticipantDashboardCore.includes('ownerUserIds?.includes(userId)')
 assert(!/user\.email|email.*(?:access|role)/i.test(studioParticipantDashboardCore), 'Studio dashboard must not authorize from Google email identity')
 assert(!/contactProfile|socialProfiles|contenteditable|<form/i.test(studioIndex + studioAuth + studioParticipantDashboard + studioParticipantDashboardCore), 'Studio dashboard must not expose contact/social or general editing controls')
 assert(!studioParticipantDashboardCore.includes("'/cody/'") && !studioIndex.includes('/cody/'), 'Studio dashboard must not create or link a Cody public route')
+assert(studioAuth.includes('/studio/participants/profile/?participantId='), 'Studio dashboard must link authorized users to the private Participant Profile editor')
 assert(!/photoslibrary|drive\.google|googleapis\.com\/auth/i.test(studioAuthPlan + studioAuth), 'Studio foundation must not request Google Photos or Drive scopes')
 assert(studioBootstrap.includes('REPLACE_WITH_PARTICIPANT_EMAIL'), 'DJR bootstrap must use a placeholder participant email')
 assert(studioBootstrap.includes("'participant-djr'") && studioBootstrap.includes("'djr'"), 'DJR bootstrap must upsert the DJR participant')
@@ -758,9 +774,23 @@ assert(studioRlsSmokeTest.includes('rollback;'), 'Studio RLS smoke test must rol
 for (const expectedRlsCase of ['anonymous must not have Studio table read privileges', 'assigned owner must not read Cody', 'revoked access must block participant reads', 'expired access must block participant reads', 'invite cannot be claimed by a different email', 'invite reuse must not create extra or escalated access rows']) {
   assert(studioRlsSmokeTest.includes(expectedRlsCase), `Studio RLS smoke test is missing case: ${expectedRlsCase}`)
 }
+assert(studioProfileDocs.includes('supabase/studio-participant-profile-schema.sql'), 'Participant Profile docs must document the profile migration')
+assert(studioProfileDocs.includes('profile drafts are not public') || studioProfileDocs.includes('does not publish Profile data'), 'Participant Profile docs must state profile drafts are not public')
+assert(studioProfileRoute.includes('Save Draft') && studioProfileRoute.includes('Preview Draft') && studioProfileRoute.includes('Submit for Review'), 'Participant Profile editor must expose draft, preview, and submit actions')
+assert(!studioProfileRoute.includes('Approve'), 'Participant Profile editor must not expose participant approval controls')
+assert(studioProfileCore.includes('HANDLE_RULES') && studioProfileCore.includes('UNSAFE_TEXT_RE'), 'Participant Profile core must validate social handles and unsafe text')
+assert(!/https?:\/\/|www\./i.test(studioProfileBootstrap.replace(/https?:\/\/|www\./gi, '')), 'Participant Profile bootstrap must not seed arbitrary URLs')
+assert(studioProfileBootstrap.includes('REPLACE_WITH_PUBLIC_EMAIL') && studioProfileBootstrap.includes('REPLACE_WITH_PUBLIC_PHONE'), 'Participant Profile bootstrap must keep contact values placeholder-only')
+assert(studioProfileSmokeTest.includes('rollback;'), 'Participant Profile RLS smoke test must roll back fixtures')
+for (const expectedProfileCase of ['assigned owner should see only DJR', 'owner should create a private draft', 'raw HTML profile payload should be rejected', 'submit for review should create one review request', 'submitted revisions must not be silently overwritten by participant', 'contributor must not create profile draft', 'unassigned user must not read private profiles', 'unassigned user must not create Cody profile']) {
+  assert(studioProfileSmokeTest.includes(expectedProfileCase), `Participant Profile RLS smoke test is missing case: ${expectedProfileCase}`)
+}
 assert(packageJson?.scripts?.['test:studio-auth'] === 'node scripts/test-studio-auth.mjs', 'package.json must expose npm run test:studio-auth')
+assert(packageJson?.scripts?.['test:studio-http'] === 'node scripts/test-studio-http.mjs', 'package.json must expose npm run test:studio-http')
+assert(packageJson?.scripts?.['test:studio-profile'] === 'node scripts/test-studio-profile.mjs', 'package.json must expose npm run test:studio-profile')
 assert(studioAuth.indexOf('claimMyParticipantInvites(supabase)') < studioAuth.indexOf('loadMyParticipants(user)'), 'Studio must claim admin-created invites before loading My Participants')
 assert(!/\.access_token|\.refresh_token|\.provider_token|\.provider_refresh_token/.test(studioAuth + studioAuthCallback + studioAuthCore), 'Studio UI code must never render or read OAuth/session token values')
+assert(!/participant_profiles|participant_profile_revisions/.test(djrContent), 'Public DJR rendering must not consume Participant Profile records yet')
 
 for (const [index, fileText] of studioFoundationFiles.entries()) {
   assert(!/sb_secret_[A-Za-z0-9_-]+/.test(fileText), `Studio foundation file ${index + 1} must not contain a Supabase secret key`)

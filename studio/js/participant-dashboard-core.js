@@ -50,7 +50,7 @@ async function loadSupabaseAssignments(client, registryLoader, user) {
   const now = new Date().toISOString()
   const { data: rows, error } = await client
     .from('participant_user_access')
-    .select('access_role, participant:participants!inner(id, registry_id, slug, display_name, status)')
+    .select('access_role, can_edit_profile, can_submit_review, participant:participants!inner(id, registry_id, slug, display_name, status)')
     .eq('user_id', user.id)
     .is('revoked_at', null)
     .lte('starts_at', now)
@@ -86,6 +86,10 @@ async function loadSupabaseAssignments(client, registryLoader, user) {
       brandKitSlug: registry?.resources?.brandKitSlug || '',
       status: participant.status || registry?.status || 'draft',
       assignedAlbumCount: albumCounts.get(participant.id) || 0,
+      accessRole: row.access_role || '',
+      canEditProfile: row.access_role === 'participant_owner'
+        || (row.access_role === 'participant_admin' && row.can_edit_profile === true),
+      canSubmitReview: row.can_submit_review === true,
     }
   }))
 }

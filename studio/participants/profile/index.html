@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Participant Profile | Who's to Say Studio</title>
+  <link rel="stylesheet" href="/studio/assets/studio.css" />
+</head>
+<body>
+  <main class="studio-shell">
+    <header class="studio-header">
+      <a class="studio-brand" href="/studio/">Who's to Say Studio</a>
+      <span class="studio-badge">Private draft</span>
+    </header>
+
+    <section class="studio-hero studio-hero--compact">
+      <p class="studio-eyebrow">Participant Profile</p>
+      <h1 id="profile-title">Profile draft</h1>
+      <p class="studio-lead">Your changes are private until reviewed and published.</p>
+    </section>
+
+    <div id="profile-loading" class="studio-panel studio-status" role="status">Checking participant access…</div>
+    <section id="profile-locked" class="studio-panel" hidden>
+      <h2>Profile unavailable</h2>
+      <p id="profile-locked-message">Participant Profile access could not be verified.</p>
+      <a class="studio-text-link" href="/studio/">Return to My Participants</a>
+    </section>
+
+    <div id="profile-workspace" hidden>
+      <section class="studio-panel studio-profile-summary">
+        <div>
+          <p class="studio-eyebrow">Access</p>
+          <h2 id="profile-participant-name">Participant</h2>
+        </div>
+        <dl class="studio-inline-details">
+          <div><dt>Role</dt><dd id="profile-role"></dd></div>
+          <div><dt>Profile status</dt><dd id="profile-status"></dd></div>
+          <div><dt>Capabilities</dt><dd id="profile-capabilities"></dd></div>
+        </dl>
+      </section>
+
+      <form id="profile-form" novalidate>
+        <section class="studio-panel">
+          <p class="studio-eyebrow">1. Public Identity</p>
+          <div class="studio-form-grid">
+            <label>Display name<input name="displayName" maxlength="100" required /></label>
+            <label>Professional name<input name="professionalName" maxlength="100" /></label>
+            <label>Pronouns (optional)<input name="pronouns" maxlength="50" /></label>
+            <label>Location display<input name="locationText" maxlength="120" /></label>
+          </div>
+        </section>
+
+        <section class="studio-panel">
+          <p class="studio-eyebrow">2. Contact Preferences</p>
+          <label class="studio-check"><input name="contactEnabled" type="checkbox" /> Enable the contact profile</label>
+          <div class="studio-form-grid">
+            <label>Public email<input name="publicEmail" type="email" maxlength="254" autocomplete="email" /></label>
+            <label>Public phone display<input name="publicPhoneDisplay" maxlength="30" inputmode="tel" /></label>
+            <label>Preferred contact method
+              <select name="preferredContactMethod">
+                <option value="contact-form">Contact form</option><option value="email">Email</option>
+                <option value="phone">Phone</option><option value="social">Social</option>
+              </select>
+            </label>
+            <label>Availability<textarea name="availabilityText" maxlength="240"></textarea></label>
+            <label>Typical response time<textarea name="responseTimeText" maxlength="160"></textarea></label>
+          </div>
+          <p class="studio-help">Email and phone remain hidden unless their visibility controls are also enabled.</p>
+        </section>
+
+        <section class="studio-panel">
+          <p class="studio-eyebrow">3. Social Profiles</p>
+          <p class="studio-help">Choose an approved platform and enter only the handle—not a full URL.</p>
+          <div id="profile-social-list"></div>
+          <button id="profile-add-social" class="studio-button studio-button--secondary" type="button">Add social profile</button>
+        </section>
+
+        <section class="studio-panel">
+          <p class="studio-eyebrow">4. Visibility</p>
+          <div class="studio-check-grid">
+            <label class="studio-check"><input name="showLocation" type="checkbox" /> Show location</label>
+            <label class="studio-check"><input name="showEmail" type="checkbox" /> Show public email</label>
+            <label class="studio-check"><input name="showPhone" type="checkbox" /> Show public phone</label>
+            <label class="studio-check"><input name="showSocialProfiles" type="checkbox" /> Show social profiles</label>
+          </div>
+        </section>
+
+        <section class="studio-panel">
+          <p class="studio-eyebrow">5. Consent and Review</p>
+          <p>Participant approval is recorded by authorized staff during review. You cannot approve your own revision.</p>
+          <p id="profile-review-state" class="studio-source-note"></p>
+        </section>
+
+        <section class="studio-panel studio-editor-actions">
+          <button id="profile-save" class="studio-button" type="submit">Save Draft</button>
+          <button id="profile-preview-button" class="studio-button studio-button--secondary" type="button">Preview Draft</button>
+          <button id="profile-submit-review" class="studio-button studio-button--secondary" type="button">Submit for Review</button>
+          <button id="profile-discard" class="studio-button studio-button--secondary" type="button">Discard Unsaved Changes</button>
+          <p id="profile-message" class="studio-message" role="status"></p>
+        </section>
+      </form>
+
+      <section id="profile-preview" class="studio-panel" hidden>
+        <p class="studio-eyebrow">Private preview</p>
+        <h2>Contact card</h2>
+        <div id="profile-preview-card" class="studio-profile-preview-card"></div>
+        <h3>Footer-style contact summary</h3>
+        <div id="profile-preview-footer" class="studio-profile-preview-footer"></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/studio/js/participant-profile-editor.js"></script>
+</body>
+</html>

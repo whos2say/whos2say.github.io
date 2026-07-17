@@ -192,6 +192,8 @@ function deferred() {
         display_name: 'DJR Photography',
         status: 'active',
       },
+      can_edit_profile: true,
+      can_submit_review: true,
     }],
     albumRows: [
       { participant_id: 'participant-row-djr' },
@@ -209,6 +211,8 @@ function deferred() {
   assert.equal(result.participants[0].pageSlug, 'djr')
   assert.equal(result.participants[0].brandKitSlug, 'djr')
   assert.equal(result.participants[0].assignedAlbumCount, 2)
+  assert.equal(result.participants[0].canEditProfile, true)
+  assert.equal(result.participants[0].canSubmitReview, true)
 }
 
 // Three overlapping dashboard requests only allow the latest request to commit one DJR card.

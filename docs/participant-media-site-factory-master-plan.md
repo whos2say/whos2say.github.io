@@ -47,6 +47,7 @@ Media Hub              -> Supabase albums, photos, ordering, visibility, and sto
 Participant Pages      -> safe page copy, sections, services, and album/photo selections
 Participant Brand Kits -> identity, audience, voice, message, and approved design workshop choices
 Participant Registry   -> ownership relationships, assigned resources, and review governance metadata
+Participant Profiles   -> private public-identity/contact/social drafts behind Studio RLS
 ```
 
 Templates remain responsible for public routes, structure, layout, navigation, forms, safe link destinations, and rendering. These layers reference one another by allowlisted slugs and UUIDs; none may absorb another layer's authority.
@@ -352,7 +353,9 @@ Continue using the current static site + Decap + Supabase + Vercel setup while v
 
 Short-term goal is not to build a perfect CMS. It is to prove the participant media-site workflow.
 
-Decap is a staff-operated stopgap. Its structured fields, previews, Git history, tests, and review process are useful, but collection visibility and hidden fields are not participant-scoped authorization. Direct participant login and contact/social editing must wait for protected Studio access.
+Decap is a staff-operated stopgap. Its structured fields, previews, Git history, tests, and review process are useful, but collection visibility and hidden fields are not participant-scoped authorization.
+
+Studio now has the first private Participant Profile draft workflow. It is still not public rendering and does not replace Decap for Participant Pages or Brand Kits. Contact/social data remains private in Supabase until staff review, publish policy, and public rendering are approved.
 
 ### Do not rebuild in Drupal yet
 
@@ -368,9 +371,9 @@ But a Drupal rebuild now would slow validation.
 
 ### Future Studio authentication and authorization
 
-A future Who's to Say Studio could be a dedicated app, potentially Next.js + Supabase, for:
+Who's to Say Studio is starting as a static Supabase-backed shell and may become a dedicated app, potentially Next.js + Supabase, for:
 
-- Participant profiles
+- Participant profile drafts and review
 - Media Hub
 - Template creation
 - Brand kits
@@ -380,7 +383,7 @@ A future Who's to Say Studio could be a dedicated app, potentially Next.js + Sup
 
 Studio should use Supabase Auth and support Google OAuth as an identity provider. Google OAuth authenticates a user; it does not authorize access. Authorization must come from Who's to Say participant-scoped records and Supabase row-level security, including `participants`, `user_roles`, `participant_user_access`, `participant_album_access`, `review_requests`, `publish_events`, and `audit_events`.
 
-For now, continue abstracting toward that future while shipping useful improvements in the current repo.
+Current Studio artifacts include `/studio/`, the read-only My Participants dashboard, `supabase/studio-auth-schema.sql`, and the private Profile draft workflow in `supabase/studio-participant-profile-schema.sql`. Public `/djr/` does not consume Profile data.
 
 ---
 
@@ -556,14 +559,14 @@ It should not feel like a photography portfolio.
 
 1. Keep Decap staff-operated while validating the existing DJR workflow.
 2. Maintain the Participant Registry as governance metadata and keep album assignments current.
-3. Define a separate Participant Profile schema for future contact/social data, without exposing or rendering it yet.
-4. Design Studio authentication, participant-scoped authorization, and RLS policies before participant login is enabled.
+3. Maintain the separate Participant Profile schema for private contact/social drafts, without exposing or rendering it publicly yet.
+4. Keep hardening Studio authentication, participant-scoped authorization, and RLS before broad participant login is enabled.
 
 ### Medium-term build
 
-1. Implement protected Studio authentication with Supabase Auth and Google OAuth support.
-2. Implement `user_roles`, participant access, album access, review, publish, and audit records with RLS.
-3. Add draft/review/publish workflows before participant contact/social editing.
+1. Complete protected Studio authentication acceptance with Supabase Auth and Google OAuth support.
+2. Expand `user_roles`, participant access, album access, review, publish, and audit records with RLS.
+3. Add staff approval and publish workflows before public participant contact/social rendering.
 4. Add Create Participant Page and AI-assisted copy drafting workflows.
 5. Add album sections/chapters and participant-page assignment actions in the Media Hub.
 
@@ -641,9 +644,9 @@ https://www.whostosay.org/djr/service.html?service=sports-energy
 
 ## Next Recommended Task
 
-Complete the external Studio acceptance gate: configure Google OAuth redirects, apply and test the additive schema/RLS and invitation flow, bootstrap a placeholder-safe DJR invite with the participant's email only in Supabase, and verify assigned/unassigned real-account behavior. Keep participant editing locked.
+Complete the external Studio/Profile acceptance gate: configure Google OAuth redirects, apply and test the additive auth and Participant Profile schema/RLS, bootstrap a placeholder-safe DJR invite with the participant's email only in Supabase, and verify assigned/unassigned real-account behavior.
 
-The foundation artifacts are documented in `docs/studio-auth-plan.md`; the additive database draft lives in `supabase/studio-auth-schema.sql`, and `/studio/` provides authentication plus a read-only My Participants assignment dashboard with editing locked.
+The foundation artifacts are documented in `docs/studio-auth-plan.md` and `docs/participant-profile-schema.md`. The additive database drafts live in `supabase/studio-auth-schema.sql` and `supabase/studio-participant-profile-schema.sql`; `/studio/` provides authentication, My Participants, and a private DJR Profile draft editor when RLS grants access.
 
 Do not build Cody's public page or template as part of auth work. Cody remains a draft Brand Kit and Participant Registry record until separately approved.
 
