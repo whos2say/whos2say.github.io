@@ -68,3 +68,6 @@ The profile editor at `/studio/participants/profile/?participantId=participant-d
 - Staff approval UI
 - Participant Page or Brand Kit editing in Studio
 - Cody route, navigation, page, or template
+# Phase 4 review and publication
+
+Staff review, approved-revision immutability, and the visibility-filtered anonymous projection are specified in [participant-profile-review-and-publishing.md](participant-profile-review-and-publishing.md). Apply `studio-participant-profile-review-schema.sql` after this Phase 3 schema.

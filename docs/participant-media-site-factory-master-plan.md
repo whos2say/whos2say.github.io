@@ -653,3 +653,6 @@ Do not build Cody's public page or template as part of auth work. Cody remains a
 ## DJR safe display-copy extension
 
 The DJR first implementation now treats service-card media, contact-page copy, and footer display wording as Participant Pages concerns. Media still resolves from public Media Hub albums. Form behavior, routes, navigation, destinations, layout, and executable content remain template/admin concerns, with existing public content as the failure-safe fallback.
+# Participant Profile Phase 4
+
+DJR now has an optional, fail-open public projection for its approved Participant Profile. It does not create participant routes or artifacts, and Decap remains responsible for general page content.

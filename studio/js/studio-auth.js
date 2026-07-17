@@ -179,6 +179,12 @@ async function renderDashboard(user) {
   }
 
   dashboard.hidden = false
+  const staffReviews = document.getElementById('studio-staff-reviews')
+  if (staffReviews) {
+    const { data: reviewer, error: reviewerError } = await supabase.rpc('is_studio_staff_reviewer')
+    if (!dashboardRenderGuard.isCurrent(renderVersion)) return
+    staffReviews.hidden = Boolean(reviewerError) || reviewer !== true
+  }
   if (accessSource) accessSource.hidden = true
   participantsLoading.hidden = false
   participantsEmpty.hidden = true

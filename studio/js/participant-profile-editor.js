@@ -92,6 +92,7 @@ function readForm() {
       showPhone: field('showPhone').checked,
       showSocialProfiles: field('showSocialProfiles').checked,
     },
+    consent: { participantApproved: field('participantApproved').checked },
   }
 }
 
@@ -111,6 +112,7 @@ function writeForm(profile) {
   field('showEmail').checked = value.visibility.showEmail
   field('showPhone').checked = value.visibility.showPhone
   field('showSocialProfiles').checked = value.visibility.showSocialProfiles
+  field('participantApproved').checked = value.consent.participantApproved
   socialList.replaceChildren()
   value.socialProfiles.forEach(addSocialRow)
 }
@@ -132,10 +134,19 @@ function setEditorState() {
   document.getElementById('profile-preview-button').disabled = false
   document.getElementById('profile-discard').disabled = !editable
   document.getElementById('profile-submit-review').disabled = !(editable && access.canSubmitReview)
+  const createButton = document.getElementById('profile-create-revised')
+  createButton.hidden = !['changes-requested', 'approved'].includes(currentRevision?.revision_status)
+  createButton.disabled = !access?.canEditProfile
   document.getElementById('profile-status').textContent = statusLabel(currentRevision?.revision_status)
-  document.getElementById('profile-review-state').textContent = isDraft
+  const status = currentRevision?.revision_status
+  document.getElementById('profile-review-state').textContent = status === 'draft'
     ? 'This private draft has not been submitted.'
-    : `This revision is ${statusLabel(currentRevision?.revision_status).toLowerCase()} and cannot be silently overwritten.`
+    : status === 'submitted' ? `Awaiting review${currentRevision.submitted_at ? ` since ${new Date(currentRevision.submitted_at).toLocaleString()}` : ''}.`
+      : status === 'approved' ? `Published${currentRevision.reviewed_at ? ` ${new Date(currentRevision.reviewed_at).toLocaleString()}` : ''}. Create a new draft to propose changes.`
+        : 'Changes were requested. Create a revised draft; this revision remains historical.'
+  const notes = document.getElementById('profile-review-notes')
+  notes.hidden = !currentRevision?.review_notes
+  notes.textContent = currentRevision?.review_notes ? `Reviewer notes: ${currentRevision.review_notes}` : ''
 }
 
 function renderPreview() {
@@ -226,8 +237,9 @@ async function initialize() {
     return
   }
   access = result.access
+  access.participantId = result.participant.id
   let revision = result.revision
-  if (!revision || revision.revision_status === 'changes-requested' || revision.revision_status === 'approved') {
+  if (!revision) {
     const created = await createParticipantProfileDraft(result.participant.id)
     if (created.error || !created.revision) {
       loading.hidden = true
@@ -259,6 +271,15 @@ document.getElementById('profile-submit-review').addEventListener('click', () =>
 document.getElementById('profile-discard').addEventListener('click', () => {
   writeForm(savedDraft)
   setMessage('Unsaved changes discarded.')
+})
+document.getElementById('profile-create-revised').addEventListener('click', async () => {
+  const created = await createParticipantProfileDraft(access.participantId)
+  if (created.error || !created.revision) { setMessage(created.error?.message || 'Draft could not be created.', true); return }
+  currentRevision = created.revision
+  savedDraft = profileRevisionToDraft(currentRevision)
+  writeForm(savedDraft)
+  setEditorState()
+  setMessage('Revised draft created from the reviewed revision.')
 })
 
 initialize().catch(() => {

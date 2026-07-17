@@ -4,7 +4,7 @@ import http from 'node:http'
 import path from 'node:path'
 
 const root = path.join(import.meta.dirname, '..')
-const routes = ['/studio/', '/studio/participants/profile/']
+const routes = ['/studio/', '/studio/reviews/', '/studio/reviews/profile/', '/studio/participants/profile/', '/djr/']
 
 const server = http.createServer((request, response) => {
   const url = new URL(request.url, 'http://127.0.0.1')

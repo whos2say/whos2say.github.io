@@ -6,6 +6,8 @@
     "build:decap-config": "node scripts/generate-decap-config.mjs",
     "test:studio-auth": "node scripts/test-studio-auth.mjs",
     "test:studio-http": "node scripts/test-studio-http.mjs",
-    "test:studio-profile": "node scripts/test-studio-profile.mjs"
+    "test:studio-profile": "node scripts/test-studio-profile.mjs",
+    "test:studio-review": "node scripts/test-studio-review.mjs",
+    "test:public-profile": "node scripts/test-public-profile.mjs"
   }
 }

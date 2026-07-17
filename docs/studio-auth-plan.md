@@ -224,3 +224,6 @@ Human OAuth acceptance still requires configured dashboards and real accounts:
 - Cody route, navigation, page, or template.
 - Google Photos or Drive integration.
 - Review/publish UI and production publishing authority.
+# Phase 4 authorization note
+
+Global `staff` and `superadmin` rows authorize Participant Profile review through database functions. Google identity or email never implies staff access; self-approval is rejected inside the approval RPC.

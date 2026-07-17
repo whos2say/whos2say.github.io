@@ -45,6 +45,7 @@ export function normalizeParticipantProfile(value = {}) {
   const contact = value.contactProfile || value.contact_profile || {}
   const visibility = value.visibility || {}
   const social = value.socialProfiles || value.social_profiles || []
+  const consent = value.consent || {}
   return {
     publicIdentity: {
       displayName: text(identity.displayName, 100),
@@ -73,7 +74,12 @@ export function normalizeParticipantProfile(value = {}) {
       showPhone: boolean(visibility.showPhone),
       showSocialProfiles: boolean(visibility.showSocialProfiles),
     },
-    consent: { ...empty.consent },
+    consent: {
+      participantApproved: boolean(consent.participantApproved),
+      approvedAt: null,
+      approvedByUserId: null,
+      reviewRequired: true,
+    },
   }
 }
 
@@ -196,7 +202,7 @@ export async function loadParticipantProfileWith(client, participantRegistryId, 
     if (profile) {
       const { data: revisions, error: revisionError } = await client
         .from('participant_profile_revisions')
-        .select('id, profile_id, revision_number, revision_status, public_identity, contact_profile, social_profiles, visibility, consent, created_by, created_at, updated_at, submitted_at')
+        .select('id, profile_id, revision_number, revision_status, public_identity, contact_profile, social_profiles, visibility, consent, created_by, created_at, updated_at, submitted_at, reviewed_at, review_notes')
         .eq('profile_id', profile.id)
         .order('revision_number', { ascending: false })
         .limit(1)

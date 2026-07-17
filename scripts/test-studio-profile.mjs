@@ -209,18 +209,18 @@ const revision = {
   assert.equal(submitted.revision.revision_status, 'submitted')
 }
 
-// Static contracts: no public profile rendering, no Cody public artifacts, no approve UI, and no secrets.
+// Static contracts: staff approval is isolated from the owner editor, no Cody artifacts, and no secrets.
 {
   const profileEditor = read('studio/js/participant-profile-editor.js')
   const profileSql = read('supabase/studio-participant-profile-schema.sql')
-  assert.equal(/approve-profile|profile-approve|Approve Profile/.test(profileEditor), false)
+  assert.equal(/approve_participant_profile_revision|Approve and Publish/.test(profileEditor), false)
   assert.match(profileSql, /profile_revisions_staff_manage/)
   assert.match(profileSql, /participant_profile_revisions_no_self_review_check/)
   assert.match(profileSql, /review_requests_no_self_review_check/)
   assert.match(profileSql, /participant_user_access_participant_id_user_id_access_role_key/)
   assert.equal(fs.existsSync(path.join(root, 'cody')), false)
   assert.equal(fs.existsSync(path.join(root, 'studio/participants/cody')), false)
-  assert.equal(/participant_profiles|participant_profile_revisions/.test(read('djr/js/djr-content.js')), false)
+  assert.equal(/participant_profiles|participant_profile_revisions/.test(read('djr/js/public-participant-profile.js')), false)
   for (const relativePath of [
     'studio/js/participant-profile-core.js',
     'studio/js/participant-profile-editor.js',

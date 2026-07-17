@@ -88,8 +88,10 @@
 
         <section class="studio-panel">
           <p class="studio-eyebrow">5. Consent and Review</p>
-          <p>Participant approval is recorded by authorized staff during review. You cannot approve your own revision.</p>
+          <p>Confirm participant consent before submission. Staff approval and publication remain separate, and you cannot approve your own revision.</p>
+          <label class="studio-check"><input name="participantApproved" type="checkbox" /> I confirm the participant has approved these public-facing profile details.</label>
           <p id="profile-review-state" class="studio-source-note"></p>
+          <p id="profile-review-notes" class="studio-source-note" hidden></p>
         </section>
 
         <section class="studio-panel studio-editor-actions">
@@ -97,6 +99,7 @@
           <button id="profile-preview-button" class="studio-button studio-button--secondary" type="button">Preview Draft</button>
           <button id="profile-submit-review" class="studio-button studio-button--secondary" type="button">Submit for Review</button>
           <button id="profile-discard" class="studio-button studio-button--secondary" type="button">Discard Unsaved Changes</button>
+          <button id="profile-create-revised" class="studio-button studio-button--secondary" type="button" hidden>Create Revised Draft</button>
           <p id="profile-message" class="studio-message" role="status"></p>
         </section>
       </form>

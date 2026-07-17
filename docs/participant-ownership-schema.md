@@ -71,3 +71,6 @@ Decap is operated by trusted staff as a temporary editing and review surface. Gi
 No public renderer loads the Participant Registry in version 1. The authenticated Studio dashboard may read it only to enrich authorized read-only cards or provide a clearly labeled registry preview filtered by the current Supabase user UUID. Adding or editing a registry record cannot create a route, publish a page, change navigation, expose contact/social data, or apply a Brand Kit preset.
 
 Production registry fallback is disabled. Registry preview is limited to localhost or explicit `registryPreview=1` diagnostics and is never enforced authorization. Production participant access comes from RLS-filtered `participant_user_access`; admin-created `participant_access_invites` may create those rows only through the no-argument, verified-email claim RPC.
+# Participant Profile review boundary
+
+Participant ownership permits draft editing and submission only. Publishing is staff-only, enforced by `user_roles` and security-definer review RPCs; owners cannot self-approve.
