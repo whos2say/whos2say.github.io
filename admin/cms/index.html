@@ -22,6 +22,17 @@
     />
   </head>
   <body>
+    <aside id="cms-preview-notice" hidden style="padding:.75rem 1rem;background:#fff3cd;color:#4b3a00;font:600 14px/1.45 system-ui,sans-serif;text-align:center">
+      Preview deployment: review the CMS shell and configuration here. GitHub OAuth save/publish testing is supported at
+      <a href="https://staging.whostosay.org/admin/" style="color:inherit;font-weight:800">staging.whostosay.org/admin/</a>.
+    </aside>
+    <script>
+      (function () {
+        var host = window.location.hostname;
+        var supported = host === 'www.whostosay.org' || host === 'whostosay.org' || host === 'staging.whostosay.org';
+        if (!supported) document.getElementById('cms-preview-notice').hidden = false;
+      })();
+    </script>
     <script>
       window.CMS_MANUAL_INIT = true;
     </script>

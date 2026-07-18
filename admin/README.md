@@ -1,12 +1,12 @@
 # Admin
 
-- **Admin dashboard:** https://www.whostosay.org/admin/ → project links + maintenance toggle (login required)
-- **Content CMS (Decap):** https://www.whostosay.org/admin/cms/ → commits to `main`
-- **Staging CMS:** https://staging.whostosay.org/admin/cms/ → commits to `staging`
+- **Content CMS entry:** https://www.whostosay.org/admin/ → redirects to the Decap shell
+- **Content CMS shell:** https://www.whostosay.org/admin/cms/ → commits to `main`
+- **Staging CMS:** https://staging.whostosay.org/admin/ → redirects to the staging Decap shell, which commits to `staging`
 
 The CMS loads its config from `/admin/config.yml` via a `cms-config-url` link in `cms/index.html`.
-The maintenance toggle reads/writes the `maintenance_enabled` row in Supabase `site_settings`
-(public read, admin-only write); the homepage and `/maintenance.html` honor it via `/js/maintenance.js`.
+
+Feature-branch Vercel previews may load `/admin/` and the CMS shell for layout/config review, but GitHub OAuth is not treated as supported on arbitrary preview domains. Test authentication, save, review, and publish through `https://staging.whostosay.org/admin/`. Participant dashboards, private albums, and protected participant data retain their separate Supabase authorization flows.
 
 ## Config files
 

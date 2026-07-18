@@ -224,30 +224,6 @@
         "order": 40,
         "note": "DDD/Goods & Services-sensitive section."
       }
-    ],
-    "story-brendan": [
-      {
-        "label": "Story",
-        "href": "#story",
-        "enabled": true,
-        "environment": "all",
-        "order": 10
-      },
-      {
-        "label": "Give",
-        "href": "#give",
-        "enabled": true,
-        "environment": "all",
-        "order": 15
-      },
-      {
-        "label": "Creative Workshops",
-        "href": "/creative-workshops.html",
-        "enabled": true,
-        "environment": "staging",
-        "order": 20,
-        "note": "Staging-only draft page link."
-      }
     ]
   }
 }

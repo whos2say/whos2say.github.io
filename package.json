@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "build:decap-config": "node scripts/generate-decap-config.mjs",
+    "test:stories": "node scripts/validate-stories.mjs",
+    "test": "npm run test:stories && npm run test:studio-auth && npm run test:studio-profile && npm run test:studio-review && npm run test:public-profile",
     "test:studio-auth": "node scripts/test-studio-auth.mjs",
     "test:studio-http": "node scripts/test-studio-http.mjs",
     "test:studio-profile": "node scripts/test-studio-profile.mjs",
