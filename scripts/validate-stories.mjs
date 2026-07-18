@@ -8,6 +8,9 @@ const contentDir = path.join(root, 'content', 'stories')
 const allowedTypes = new Set(['participant-story', 'case-study'])
 const allowedStatuses = new Set(['draft', 'published'])
 const allowedSections = new Set(['rich-text', 'image-text', 'quote', 'cards', 'steps', 'gallery', 'feature-image', 'callout', 'final-cta'])
+const allowedSpacing = new Set(['none', 'tight', 'compact', 'standard', 'spacious'])
+const allowedWidths = new Set(['narrow', 'standard', 'wide', 'full'])
+const allowedImageFits = new Set(['cover', 'contain', 'natural'])
 const errors = []
 const assert = (condition, message) => { if (!condition) errors.push(message) }
 const read = file => fs.readFileSync(file, 'utf8')
@@ -20,6 +23,8 @@ const records = fs.readdirSync(contentDir).filter(name => name.endsWith('.json')
   }
 }).filter(Boolean)
 const manifest = JSON.parse(read(path.join(root, 'content', 'stories-manifest.json')))
+const adminEntry = read(path.join(root, 'admin', 'index.html'))
+const cmsShell = read(path.join(root, 'admin', 'cms', 'index.html'))
 const manifestPaths = new Set(manifest.stories)
 const volumes = new Map()
 const slugs = new Set()
@@ -44,6 +49,20 @@ function validateLocalLink(href, label, shell) {
     return
   }
   assert(existsFromUrl(href) || href === '/stories/' || href === '/djr/', `${label}: missing local target ${href}`)
+}
+
+function validateLayout(value, label) {
+  if (value.spacing != null) {
+    assert(value.spacing && typeof value.spacing === 'object' && !Array.isArray(value.spacing), `${label}.spacing must be an object`)
+    for (const edge of ['top', 'bottom']) {
+      assert(value.spacing && allowedSpacing.has(value.spacing[edge]), `${label}.spacing.${edge} must be none, tight, compact, standard, or spacious`)
+    }
+  }
+  if (value.width != null) assert(allowedWidths.has(value.width), `${label}.width must be narrow, standard, wide, or full`)
+}
+
+function validateImageFit(value, label) {
+  if (value != null) assert(allowedImageFits.has(value), `${label} must be cover, contain, or natural`)
 }
 
 for (const { name, data } of records) {
@@ -82,8 +101,10 @@ for (const { name, data } of records) {
   for (const key of ['title', 'summary', 'label', 'image', 'imageAlt']) requiredString(data.listing?.[key], `${prefix}.listing.${key}`)
   assert(Number.isFinite(data.listing?.order), `${prefix}: listing.order must be numeric`)
   assert(existsFromUrl(data.listing?.image || ''), `${prefix}: missing listing image ${data.listing?.image}`)
+  validateImageFit(data.listing?.imageFit, `${prefix}.listing.imageFit`)
   for (const key of ['eyebrow', 'title', 'lead', 'image', 'imageAlt']) requiredString(data.hero?.[key], `${prefix}.hero.${key}`)
   assert(existsFromUrl(data.hero?.image || ''), `${prefix}: missing hero image ${data.hero?.image}`)
+  validateImageFit(data.hero?.imageFit, `${prefix}.hero.imageFit`)
   validateAction(data.hero?.primaryAction, `${prefix}.hero.primaryAction`)
   validateAction(data.hero?.secondaryAction, `${prefix}.hero.secondaryAction`, true)
 
@@ -92,6 +113,7 @@ for (const { name, data } of records) {
   for (const [index, section] of (data.sections || []).entries()) {
     const label = `${prefix}.sections[${index}]`
     assert(allowedSections.has(section.type), `${label}: invalid section type ${section.type}`)
+    validateLayout(section, label)
     assert(!JSON.stringify(section).match(/<[a-z][\s\S]*>/i), `${label}: HTML is not allowed`)
     if (['rich-text', 'image-text'].includes(section.type)) {
       assert(Array.isArray(section.paragraphs) && section.paragraphs.length > 0, `${label}: paragraphs required`)
@@ -99,16 +121,18 @@ for (const { name, data } of records) {
     if (section.type === 'image-text') {
       requiredString(section.imageAlt, `${label}.imageAlt`)
       assert(existsFromUrl(section.image || ''), `${label}: missing image ${section.image}`)
-      assert(!section.imageFit || ['cover', 'contain'].includes(section.imageFit), `${label}: imageFit must be cover or contain`)
+      validateImageFit(section.imageFit, `${label}.imageFit`)
     }
     if (section.type === 'feature-image') {
       requiredString(section.heading, `${label}.heading`)
       requiredString(section.imageAlt, `${label}.imageAlt`)
       assert(existsFromUrl(section.image || ''), `${label}: missing image ${section.image}`)
+      validateImageFit(section.imageFit, `${label}.imageFit`)
     }
     if (section.type === 'gallery') for (const [itemIndex, item] of (section.items || []).entries()) {
       requiredString(item.imageAlt, `${label}.items[${itemIndex}].imageAlt`)
       assert(existsFromUrl(item.image || ''), `${label}: missing image ${item.image}`)
+      validateImageFit(item.imageFit, `${label}.items[${itemIndex}].imageFit`)
     }
     for (const actionKey of ['action', 'primaryAction', 'secondaryAction']) {
       validateAction(section[actionKey], `${label}.${actionKey}`, true)
@@ -128,6 +152,9 @@ for (const item of manifest.stories) {
   assert(existsFromUrl(item), `stories manifest references missing content ${item}`)
 }
 assert(manifest.stories.length === records.length, 'stories manifest membership does not match story records')
+assert(adminEntry.includes('/admin/cms/'), 'admin entry must route to the Decap CMS shell')
+assert(!adminEntry.includes('login.html') && !adminEntry.includes('supabase'), 'admin entry must not use participant authentication')
+assert(cmsShell.includes('staging.whostosay.org/admin/'), 'CMS shell must document the supported staging OAuth workflow')
 
 if (errors.length) {
   console.error(`Story validation failed (${errors.length}):\n- ${errors.join('\n- ')}`)

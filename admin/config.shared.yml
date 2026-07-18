@@ -1155,6 +1155,7 @@
           { label: Label, name: label, widget: string },
           { label: Image, name: image, widget: image },
           { label: Image Alt Text, name: imageAlt, widget: string },
+          { label: Image Fit, name: imageFit, widget: select, options: [cover, contain, natural], default: cover, required: false },
           { label: Sort Order, name: order, widget: number, value_type: int }
         ]}
       - { label: Hero, name: hero, widget: object, fields: [
@@ -1163,6 +1164,7 @@
           { label: Lead, name: lead, widget: text },
           { label: Image, name: image, widget: image },
           { label: Image Alt Text, name: imageAlt, widget: string },
+          { label: Image Fit, name: imageFit, widget: select, options: [cover, contain, natural], default: cover, required: false },
           { label: Primary Action, name: primaryAction, widget: object, fields: [
               { label: Label, name: label, widget: string },
               { label: URL or Anchor, name: href, widget: string }
@@ -1181,6 +1183,11 @@
             name: rich-text
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: narrow, required: false }
               - { label: Anchor ID, name: id, widget: string, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: string }
@@ -1189,6 +1196,11 @@
             name: image-text
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: standard, required: false }
               - { label: Anchor ID, name: id, widget: string, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: string }
@@ -1197,11 +1209,16 @@
               - { label: Image Alt Text, name: imageAlt, widget: string }
               - { label: Caption, name: caption, widget: string, required: false }
               - { label: Placement, name: placement, widget: select, options: [left, right], default: left }
-              - { label: Image Fit, name: imageFit, widget: select, options: [cover, contain], default: cover, required: false }
+              - { label: Image Fit, name: imageFit, widget: select, options: [cover, contain, natural], default: cover, required: false }
           - label: Quote
             name: quote
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: narrow, required: false }
               - { label: Quote, name: quote, widget: text }
               - { label: Attribution, name: attribution, widget: string }
               - { label: Role, name: role, widget: string, required: false }
@@ -1209,6 +1226,11 @@
             name: cards
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: standard, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: string }
               - { label: Lead, name: lead, widget: text, required: false }
@@ -1220,6 +1242,11 @@
             name: steps
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: standard, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: string }
               - { label: Lead, name: lead, widget: text, required: false }
@@ -1231,27 +1258,44 @@
             name: gallery
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: wide, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: string }
               - { label: Lead, name: lead, widget: text, required: false }
               - { label: Images, name: items, widget: list, fields: [
                   { label: Image, name: image, widget: image },
                   { label: Image Alt Text, name: imageAlt, widget: string },
-                  { label: Caption, name: caption, widget: string, required: false }
+                  { label: Caption, name: caption, widget: string, required: false },
+                  { label: Image Fit, name: imageFit, widget: select, options: [cover, contain, natural], default: cover, required: false }
                 ]}
           - label: Feature Image
             name: feature-image
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: full, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: text }
               - { label: Image, name: image, widget: image }
               - { label: Image Alt Text, name: imageAlt, widget: string }
+              - { label: Image Fit, name: imageFit, widget: select, options: [cover, contain, natural], default: cover, required: false }
               - { label: Image Position, name: position, widget: string, required: false, default: center, hint: "CSS object-position, for example center or center 30%." }
           - label: Callout
             name: callout
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: narrow, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: string }
               - { label: Body, name: body, widget: text }
@@ -1263,6 +1307,11 @@
             name: final-cta
             widget: object
             fields:
+              - { label: Spacing, name: spacing, widget: object, required: false, fields: [
+                  { label: Top, name: top, widget: select, options: [none, tight, compact, standard, spacious], default: compact },
+                  { label: Bottom, name: bottom, widget: select, options: [none, tight, compact, standard, spacious], default: compact }
+                ]}
+              - { label: Content Width, name: width, widget: select, options: [narrow, standard, wide, full], default: narrow, required: false }
               - { label: Eyebrow, name: eyebrow, widget: string, required: false }
               - { label: Heading, name: heading, widget: string }
               - { label: Body, name: body, widget: text }

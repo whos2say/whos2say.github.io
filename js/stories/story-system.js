@@ -2,6 +2,8 @@
   'use strict';
 
   var MANIFEST_URL = '/content/stories-manifest.json';
+  var SPACING_VALUES = ['none', 'tight', 'compact', 'standard', 'spacious'];
+  var WIDTH_VALUES = ['narrow', 'standard', 'wide', 'full'];
   var SECTION_TYPES = {
     'rich-text': renderText,
     'image-text': renderImageText,
@@ -44,13 +46,28 @@
     return (items || []).map(function (text) { return '<p>' + esc(text) + '</p>'; }).join('');
   }
 
+  function layout(section, defaultWidth) {
+    var spacing = section.spacing || {};
+    var top = SPACING_VALUES.indexOf(spacing.top) >= 0 ? spacing.top : 'compact';
+    var bottom = SPACING_VALUES.indexOf(spacing.bottom) >= 0 ? spacing.bottom : 'compact';
+    var width = WIDTH_VALUES.indexOf(section.width) >= 0 ? section.width : (defaultWidth || 'standard');
+    return {
+      section: ' story-space-top--' + top + ' story-space-bottom--' + bottom,
+      width: ' story-width--' + width
+    };
+  }
+
   function renderText(section) {
-    return '<section class="story-section" id="' + esc(section.id || '') + '"><div class="story-wrap story-prose">' +
+    var classes = layout(section, 'narrow');
+    return '<section class="story-section' + classes.section + '" id="' + esc(section.id || '') +
+      '"><div class="story-wrap story-prose' + classes.width + '">' +
       heading(section) + paragraphs(section.paragraphs) + '</div></section>';
   }
 
   function renderImageText(section) {
-    return '<section class="story-section story-section--soft" id="' + esc(section.id || '') + '"><div class="story-wrap story-split story-split--' +
+    var classes = layout(section);
+    return '<section class="story-section story-section--soft' + classes.section + '" id="' +
+      esc(section.id || '') + '"><div class="story-wrap story-split' + classes.width + ' story-split--' +
       esc(section.placement || 'left') + '"><figure><img src="' + esc(section.image) + '" alt="' +
       esc(section.imageAlt) + '" class="story-image--' + esc(section.imageFit || 'cover') +
       '" loading="lazy" decoding="async"><figcaption>' + esc(section.caption || '') +
@@ -59,51 +76,66 @@
   }
 
   function renderQuote(section) {
-    return '<section class="story-section"><div class="story-wrap"><figure class="story-quote"><blockquote>' +
+    var classes = layout(section, 'narrow');
+    return '<section class="story-section' + classes.section + '"><div class="story-wrap' + classes.width +
+      '"><figure class="story-quote"><blockquote>' +
       esc(section.quote) + '</blockquote><figcaption><strong>' + esc(section.attribution) + '</strong>' +
       (section.role ? ' · ' + esc(section.role) : '') + '</figcaption></figure></div></section>';
   }
 
   function renderCards(section) {
+    var classes = layout(section);
     var cards = (section.items || []).map(function (item) {
       return '<article class="story-card"><h3>' + esc(item.title) + '</h3><p>' + esc(item.body) + '</p></article>';
     }).join('');
-    return '<section class="story-section"><div class="story-wrap">' + heading(section) +
+    return '<section class="story-section' + classes.section + '"><div class="story-wrap' + classes.width + '">' + heading(section) +
       '<div class="story-grid">' + cards + '</div></div></section>';
   }
 
   function renderSteps(section) {
+    var classes = layout(section);
     var steps = (section.items || []).map(function (item, index) {
       return '<li><span>' + String(index + 1).padStart(2, '0') + '</span><div><h3>' +
         esc(item.title) + '</h3><p>' + esc(item.body) + '</p></div></li>';
     }).join('');
-    return '<section class="story-section story-section--dark"><div class="story-wrap">' + heading(section) +
+    return '<section class="story-section story-section--dark' + classes.section +
+      '"><div class="story-wrap' + classes.width + '">' + heading(section) +
       '<ol class="story-steps">' + steps + '</ol></div></section>';
   }
 
   function renderGallery(section) {
+    var classes = layout(section, 'wide');
     var images = (section.items || []).map(function (item) {
       return '<figure><img src="' + esc(item.image) + '" alt="' + esc(item.imageAlt) +
+        '" class="story-image--' + esc(item.imageFit || 'cover') +
         '" loading="lazy" decoding="async"><figcaption>' + esc(item.caption || '') + '</figcaption></figure>';
     }).join('');
-    return '<section class="story-section"><div class="story-wrap">' + heading(section) +
+    return '<section class="story-section' + classes.section + '"><div class="story-wrap' + classes.width + '">' + heading(section) +
       '<div class="story-gallery">' + images + '</div></div></section>';
   }
 
   function renderFeatureImage(section) {
-    return '<section class="story-feature"><img src="' + esc(section.image) + '" alt="' +
+    var classes = layout(section, 'full');
+    var fit = section.imageFit || 'cover';
+    return '<section class="story-feature story-feature--' + esc(fit) + classes.section +
+      '"><img src="' + esc(section.image) + '" alt="' +
       esc(section.imageAlt) + '" loading="lazy" decoding="async" style="object-position:' +
-      esc(section.position || 'center') + '"><div class="story-feature__overlay"><div class="story-wrap">' +
+      esc(section.position || 'center') + '" class="story-image--' + esc(fit) +
+      '"><div class="story-feature__overlay"><div class="story-wrap' + classes.width + '">' +
       heading(section) + '</div></div></section>';
   }
 
   function renderCallout(section) {
-    return '<section class="story-section"><div class="story-wrap story-callout">' + heading(section) +
+    var classes = layout(section, 'narrow');
+    return '<section class="story-section' + classes.section + '"><div class="story-wrap story-callout' +
+      classes.width + '">' + heading(section) +
       '<p>' + esc(section.body) + '</p>' + actionLink(section.action) + '</div></section>';
   }
 
   function renderFinalCta(section) {
-    return '<section class="story-final"><div class="story-wrap">' + heading(section) +
+    var classes = layout(section, 'narrow');
+    return '<section class="story-final' + classes.section + '"><div class="story-wrap' +
+      classes.width + '">' + heading(section) +
       '<p>' + esc(section.body) + '</p><div class="story-actions">' + actionLink(section.primaryAction) +
       actionLink(section.secondaryAction, true) + '</div></div></section>';
   }
@@ -138,7 +170,8 @@
       '</h1><p class="story-hero__lead">' + esc(data.hero.lead) + '</p><div class="story-actions">' +
       actionLink(data.hero.primaryAction) + actionLink(data.hero.secondaryAction, true) +
       '</div></div><figure><img src="' + esc(data.hero.image) +
-      '" alt="' + esc(data.hero.imageAlt) + '">' +
+      '" alt="' + esc(data.hero.imageAlt) + '" class="story-image--' +
+      esc(data.hero.imageFit || 'cover') + '">' +
       (data.hero.badge ? '<figcaption class="story-hero__badge">' + esc(data.hero.badge) + '</figcaption>' : '') +
       '</figure></div></header>' +
       data.sections.map(function (section) { return SECTION_TYPES[section.type](section); }).join('') +
@@ -152,6 +185,7 @@
     root.innerHTML = published.map(function (story) {
       return '<article class="story-index-card"><a href="/stories/' + esc(story.slug) +
         '.html"><img src="' + esc(story.listing.image) + '" alt="' + esc(story.listing.imageAlt) +
+        '" class="story-image--' + esc(story.listing.imageFit || 'cover') +
         '" loading="lazy"><div><p class="story-eyebrow">' + esc(story.listing.label) +
         '</p><h2>' + esc(story.listing.title) + '</h2><p>' + esc(story.listing.summary) +
         '</p><span>Read ' + (story.type === 'case-study' ? 'the case study' : 'the story') +

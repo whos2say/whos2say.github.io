@@ -113,6 +113,19 @@ Allowed reusable section types:
 - `callout`: heading/body plus an optional validated link.
 - `final-cta`: heading/body plus one or two validated actions.
 
+Every reusable section accepts controlled layout settings:
+
+```json
+{
+  "spacing": { "top": "compact", "bottom": "tight" },
+  "width": "standard"
+}
+```
+
+Spacing values are `none`, `tight`, `compact`, `standard`, and `spacious`; top and bottom are independent. Content widths are `narrow`, `standard`, `wide`, and `full`. Missing spacing values intentionally render as `compact` for backward compatibility. Normal story sections should stay compact; reserve larger spacing for deliberate editorial pauses. The hero keeps its larger fixed presentation and is not affected by section defaults.
+
+Image presentation is also controlled: `cover`, `contain`, or `natural`. Use `cover` for photography, `contain` when the complete artwork must remain visible inside the component, and `natural` when the original intrinsic ratio should determine height.
+
 No arbitrary HTML, inline scripts, style attributes, or page-specific renderer functions are allowed in content. Emphasis is represented by plain text and component styling.
 
 ## Migration plan
@@ -179,6 +192,8 @@ Intentional differences from the handoff:
 2. Use a lowercase hyphenated slug. Add the matching thin shell at `stories/<slug>.html` by copying an existing shell and changing only `data-story-slug`.
 3. Start with `status: draft`. Complete SEO, listing, hero, and reusable sections. Put new assets in `assets/images/stories/<slug>/`.
 4. Save the Decap draft and use its editorial preview deployment. Draft records render a clear preview notice and never appear on the public Stories index.
+
+The CMS shell can be reviewed at `/admin/` on a feature preview without participant authentication. GitHub OAuth is not supported as a general feature-preview capability; test CMS login, save, review, and publish at `https://staging.whostosay.org/admin/`.
 
 ### Approve and publish
 

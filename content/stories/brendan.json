@@ -19,6 +19,7 @@
     "label": "Participant Story · Vol. 02",
     "image": "/assets/images/stories/brendan/brendan-hero.png",
     "imageAlt": "Brendan at the radio mixing board under a DJ Brendan neon sign",
+    "imageFit": "cover",
     "order": 20
   },
   "hero": {
@@ -27,11 +28,14 @@
     "lead": "Brendan Bukowski found his loudest voice in music. In the Remix Studio he navigates his own playlists, practices transitions, and goes on air as DJ Brendan.",
     "image": "/assets/images/stories/brendan/brendan-hero.png",
     "imageAlt": "Brendan at the radio mixing board, headphones around his neck, under a DJ Brendan neon sign and an ON AIR light",
+    "imageFit": "cover",
     "primaryAction": { "label": "Read the story", "href": "#story" }
   },
   "sections": [
     {
       "type": "rich-text",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "narrow",
       "id": "story",
       "eyebrow": "The piece",
       "heading": "He built his own Top 5 musicals, Broadway Mix.",
@@ -42,6 +46,8 @@
     },
     {
       "type": "image-text",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "standard",
       "eyebrow": "The work",
       "heading": "From fan to DJ: mastering the mix.",
       "paragraphs": [
@@ -51,10 +57,13 @@
       "image": "/assets/images/stories/brendan/brendan-karaoke.png",
       "imageAlt": "Brendan singing into a microphone with on-screen lyrics",
       "caption": "Singing along · Remix Studio",
+      "imageFit": "cover",
       "placement": "left"
     },
     {
       "type": "image-text",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "standard",
       "eyebrow": "Behind the scenes",
       "heading": "Powered by the Remix Studio.",
       "paragraphs": [
@@ -64,10 +73,13 @@
       "image": "/assets/images/stories/brendan/brendan-remix-studio.png",
       "imageAlt": "Brendan on the DJ Brendan Radio set wearing headphones with a microphone in front of him",
       "caption": "DJ Brendan Radio · on set",
+      "imageFit": "cover",
       "placement": "right"
     },
     {
       "type": "cards",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "wide",
       "eyebrow": "The pathway",
       "heading": "A pathway built around his strengths.",
       "lead": "For Brendan, music creates opportunities to express, create, and broadcast.",
@@ -79,14 +91,18 @@
     },
     {
       "type": "gallery",
+      "spacing": { "top": "tight", "bottom": "compact" },
+      "width": "wide",
       "eyebrow": "On air",
       "heading": "His name in lights, his playlist on the system, his voice on the mic.",
       "items": [
-        { "image": "/assets/images/stories/brendan/brendan-stage.png", "imageAlt": "DJ Brendan on a concert stage with a DJ BRENDAN video wall", "caption": "DJ Brendan · on stage" }
+        { "image": "/assets/images/stories/brendan/brendan-stage.png", "imageAlt": "DJ Brendan on a concert stage with a DJ BRENDAN video wall", "caption": "DJ Brendan · on stage", "imageFit": "cover" }
       ]
     },
     {
       "type": "final-cta",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "narrow",
       "eyebrow": "Who's to say?",
       "heading": "Help make room for the next creative voice.",
       "body": "Support studio time, accessible tools, and mentorship for more young adults.",

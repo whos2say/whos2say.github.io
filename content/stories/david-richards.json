@@ -19,6 +19,7 @@
     "label": "Participant Story · Vol. 01",
     "image": "/assets/images/stories/david-richards/david-sideline.jpg",
     "imageAlt": "David on the sideline at a night football game holding his Nikon camera",
+    "imageFit": "cover",
     "order": 10
   },
   "hero": {
@@ -27,6 +28,7 @@
     "lead": "He's not someone who takes pictures sometimes. He's a professional photographer. He has clients in mind. He has a slogan. He designed his own logo. We sat down and listened, and work together as peers.",
     "image": "/assets/images/stories/david-richards/david-sideline.jpg",
     "imageAlt": "David on the sideline at a night football game, hooded in a blue jacket, holding his Nikon camera",
+    "imageFit": "cover",
     "badge": "Dream big. — David, on his slogan",
     "primaryAction": { "label": "Fund his next chapter", "href": "#give" },
     "secondaryAction": { "label": "Read the story", "href": "#story" }
@@ -34,6 +36,8 @@
   "sections": [
     {
       "type": "image-text",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "standard",
       "id": "story",
       "eyebrow": "The piece",
       "heading": "He designed it himself. That matters.",
@@ -49,6 +53,8 @@
     },
     {
       "type": "image-text",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "standard",
       "eyebrow": "The work",
       "heading": "His camera sees things differently.",
       "paragraphs": [
@@ -64,12 +70,16 @@
     },
     {
       "type": "quote",
+      "spacing": { "top": "tight", "bottom": "tight" },
+      "width": "narrow",
       "quote": "Dream big.",
       "attribution": "David's slogan for DJR Photography",
       "role": "He came up with it. We wrote it down."
     },
     {
       "type": "cards",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "wide",
       "eyebrow": "The pathway",
       "heading": "What we're building together.",
       "lead": "At Who's to Say, we don't hand people a script. We hand them a camera, a design tool, and a platform, and let them tell us what they see. This is the path we're building for David, and for every young adult who walks in next.",
@@ -90,14 +100,19 @@
     },
     {
       "type": "feature-image",
+      "spacing": { "top": "tight", "bottom": "tight" },
+      "width": "full",
       "eyebrow": "In the field",
       "heading": "At the end of a session he looked up and said he was excited to learn something new. That sentence is why Who's to Say exists.",
       "image": "/assets/images/stories/david-richards/david-portrait.jpeg",
       "imageAlt": "David at the track with a friend, behind a Nikon camera, laughing on a sunny afternoon",
       "position": "center"
+      ,"imageFit": "cover"
     },
     {
       "type": "callout",
+      "spacing": { "top": "compact", "bottom": "tight" },
+      "width": "narrow",
       "eyebrow": "David's portfolio",
       "heading": "See the brand and body of work David is building.",
       "body": "DJR Photography remains David's participant-owned portfolio, separate from this Foundation story.",
@@ -105,6 +120,8 @@
     },
     {
       "type": "rich-text",
+      "spacing": { "top": "tight", "bottom": "compact" },
+      "width": "narrow",
       "id": "give",
       "eyebrow": "Here's where you come in",
       "heading": "David's dream doesn't need you to fix anything.",
@@ -114,6 +131,8 @@
     },
     {
       "type": "final-cta",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "narrow",
       "eyebrow": "Who's to say?",
       "heading": "Who's to say he can't? He already is.",
       "body": "Your gift to Who's to Say Foundation funds the studio, the mentor, and the table where dreams like David's get built. Not as a program. As a pathway.",

@@ -18,6 +18,7 @@
     "label": "Media Team Case Study",
     "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png",
     "imageAlt": "A finished Challenger Baseball hero trading card",
+    "imageFit": "contain",
     "order": 30
   },
   "hero": {
@@ -26,11 +27,14 @@
     "lead": "Young adult creators used photography, design, and storytelling to turn adaptive baseball players into trading-card heroes and give their families a keepsake.",
     "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png",
     "imageAlt": "A cinematic hero trading card created for a Challenger Baseball player",
+    "imageFit": "contain",
     "primaryAction": { "label": "Read the case study", "href": "#overview" }
   },
   "sections": [
     {
       "type": "image-text",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "standard",
       "id": "overview",
       "eyebrow": "The overview",
       "heading": "A team's first season, remembered forever.",
@@ -41,10 +45,13 @@
       "image": "/assets/images/stories/baseball-cards/cc-team-photo.png",
       "imageAlt": "The Point Pleasant Panthers Challenger Baseball team gathered on the field",
       "caption": "Point Pleasant Panthers Challenger Baseball · Inaugural season, 2026",
+      "imageFit": "cover",
       "placement": "right"
     },
     {
       "type": "rich-text",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "narrow",
       "eyebrow": "The opportunity",
       "heading": "Every athlete deserves to be celebrated.",
       "paragraphs": [
@@ -54,6 +61,8 @@
     },
     {
       "type": "cards",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "wide",
       "eyebrow": "The Media Team role",
       "heading": "Not just participants. Creators.",
       "lead": "Young adults with disabilities stepped into real creative roles across production.",
@@ -67,6 +76,8 @@
     },
     {
       "type": "steps",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "standard",
       "eyebrow": "The creative process",
       "heading": "A repeatable media-production workflow.",
       "lead": "The cards were the deliverable; practical creative experience was the purpose.",
@@ -81,21 +92,27 @@
     },
     {
       "type": "gallery",
+      "spacing": { "top": "tight", "bottom": "compact" },
+      "width": "wide",
       "eyebrow": "The finished keepsakes",
       "heading": "More than a card. A memory you can hold.",
       "items": [
-        { "image": "/assets/images/stories/baseball-cards/cc-card-ozzie.png", "imageAlt": "Finished Challenger Baseball trading card in a classic layout", "caption": "The personalized card" },
-        { "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png", "imageAlt": "Finished Challenger Baseball hero card in a cinematic layout", "caption": "The hero card" }
+        { "image": "/assets/images/stories/baseball-cards/cc-card-ozzie.png", "imageAlt": "Finished Challenger Baseball trading card in a classic layout", "caption": "The personalized card", "imageFit": "contain" },
+        { "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png", "imageAlt": "Finished Challenger Baseball hero card in a cinematic layout", "caption": "The hero card", "imageFit": "contain" }
       ]
     },
     {
       "type": "quote",
+      "spacing": { "top": "tight", "bottom": "tight" },
+      "width": "narrow",
       "quote": "It meant the world to our players to receive their very own personalized baseball card. It was a meaningful and fun gesture to conclude our inaugural season of Challenger Baseball.",
       "attribution": "Mona Smith",
       "role": "Parent of player Ozzie Smith"
     },
     {
       "type": "cards",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "wide",
       "eyebrow": "Community impact",
       "heading": "One project. Three kinds of belonging.",
       "items": [
@@ -106,6 +123,8 @@
     },
     {
       "type": "final-cta",
+      "spacing": { "top": "compact", "bottom": "compact" },
+      "width": "narrow",
       "eyebrow": "What support makes possible",
       "heading": "Help bring the Media Team experience to more communities.",
       "body": "Support makes room for accessible creative tools, inclusive teams, and real production roles.",

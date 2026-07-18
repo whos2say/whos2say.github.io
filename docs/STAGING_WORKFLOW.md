@@ -124,7 +124,7 @@ GitHub allows **one callback URL per OAuth App**. Production and staging need **
 
 ### Feature-branch previews
 
-Do **not** use `/admin/` on random `*.vercel.app` preview URLs — OAuth callbacks will not match. Use:
+The `/admin/` shell may be opened on a feature preview for layout and generated-config review, but do **not** use it for GitHub login, save, or publish on random `*.vercel.app` URLs — OAuth callbacks will not match. Use:
 
 - https://staging.whostosay.org/admin/ for content work
 - https://www.whostosay.org/admin/ for production hotfixes (rare)
