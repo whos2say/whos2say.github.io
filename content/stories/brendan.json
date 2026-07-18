@@ -1,119 +1,97 @@
 {
+  "schemaVersion": 1,
   "slug": "brendan",
-  "_comment": "Participant story: DJ Brendan. Layout stays in stories/brendan.html; this file holds editable copy only.",
-  "meta": {
+  "type": "participant-story",
+  "status": "published",
+  "volume": 2,
+  "publishedAt": "2026-05-28",
+  "featured": true,
+  "theme": { "accent": "#d946ef" },
+  "seo": {
     "title": "Meet DJ Brendan — Who's to Say Foundation",
-    "description": "Brendan Bukowski found his loudest voice in music. Meet DJ Brendan and the Remix Studio at Who's to Say Foundation — and help fund the next set."
+    "description": "Brendan Bukowski found his loudest voice in music. Meet DJ Brendan and the Remix Studio at Who's to Say Foundation.",
+    "canonical": "https://www.whostosay.org/stories/brendan.html",
+    "image": "/assets/images/stories/brendan/brendan-hero.png"
+  },
+  "listing": {
+    "title": "Meet DJ Brendan",
+    "summary": "Brendan builds confidence and connection through playlists, transitions, and his own voice on the mic.",
+    "label": "Participant Story · Vol. 02",
+    "image": "/assets/images/stories/brendan/brendan-hero.png",
+    "imageAlt": "Brendan at the radio mixing board under a DJ Brendan neon sign",
+    "order": 20
   },
   "hero": {
-    "eyebrow": "A Who's to Say ? story · Vol. 02",
-    "titleHtml": "Meet <em>DJ Brendan</em>.<br />\n        Where Broadway beats meet <span class=\"accent\">unbound potential.</span>",
-    "lead": "Brendan Bukowski found his loudest voice in music. In our Remix Studio he navigates his own playlists, practices his transitions, and goes on air as DJ Brendan — every beat a step toward more confidence and connection.",
-    "stickerQuote": "Music connects us all.",
-    "stickerAttribution": "— DJ Brendan Radio",
-    "portraitAlt": "Brendan at the radio mixing board, headphones around his neck, under a DJ Brendan neon sign and an ON AIR light",
-    "portraitTag": "DJ Brendan · on air",
-    "ctas": [
-      { "label": "Fund his next set", "href": "#give", "style": "on-blue" },
-      { "label": "Read the story →", "href": "#story", "style": "ghost-on-blue" }
-    ]
+    "eyebrow": "A Who's to Say story · Vol. 02",
+    "title": "Meet DJ Brendan. Where Broadway beats meet unbound potential.",
+    "lead": "Brendan Bukowski found his loudest voice in music. In the Remix Studio he navigates his own playlists, practices transitions, and goes on air as DJ Brendan.",
+    "image": "/assets/images/stories/brendan/brendan-hero.png",
+    "imageAlt": "Brendan at the radio mixing board, headphones around his neck, under a DJ Brendan neon sign and an ON AIR light",
+    "primaryAction": { "label": "Read the story", "href": "#story" }
   },
-  "meet": {
-    "eyebrow": "The piece",
-    "title": "He built his own Top 5 musicals, Broadway Mix.",
-    "paragraphs": [
-      "Brendan has a keen ear for classic rock and a heart full of Broadway show tunes. So he made a playlist that's entirely his — \"DJ Brendan's Broadway Mix\" — and he navigates it with real independence, cueing the next number and practicing the introductions between every song.",
-      "For Brendan, music isn't just entertainment. It's a way to engage confidently in a dialogue about something he is passionate about."
-    ],
-    "optionalClass": true
-  },
-  "editorial1": {
-    "eyebrow": "The work",
-    "titleHtml": "From fan to DJ: <em>mastering the mix.</em>",
-    "imageAlt": "Brendan singing into a microphone along with a music video and on-screen lyrics",
-    "imageCaption": "Singing along · Remix Studio",
-    "paragraphs": [
-      "Step into Brendan's world and you'll find him creating his playlist with real independence — navigating Spotify, setting up collaborative shares, and practicing smooth transitions between his favorite Broadway anthems. He's not just listening. He's hosting and sharing, because he believes music is for everyone.",
-      "With personalized headphone coaching, he's honing the craft of a radio show host one song intro at a time.",
-      "And the music is doing something bigger: his communication is flourishing — from simple responses to joyful, sustained, lyrical participation."
-    ],
-    "emphasisIndex": 2
-  },
-  "editorial2": {
-    "eyebrow": "Behind the scenes",
-    "titleHtml": "Powered by the <em>Remix Studio.</em>",
-    "imageAlt": "Brendan on the DJ Brendan Radio set wearing headphones and gold-frame sunglasses, microphone in front of him",
-    "imageCaption": "DJ Brendan Radio · on set",
-    "paragraphs": [
-      "Brendan's growth is amplified by a professional, accessible space built for exactly this. The Remix Studio gives him real gear — a Blue Yeti microphone, a Rode Wireless GO II system, and intuitive audio software — plus a safe place to explore, experiment, and be heard.",
-      "It isn't just about recording. It's about building real-world digital media skills, at his pace, around his passion."
-    ]
-  },
-  "pathway": {
-    "eyebrow": "The pathway",
-    "titleHtml": "Unique pathways, <em>not</em> generic training.",
-    "lead": "Who's to Say builds possibility paths around an individual's strengths — never a one-size-fits-all job program. For Brendan, that path sings. Here's the Digital Content Creator pathway we're building with him, and for every young adult who walks in next.",
-    "cards": [
-      { "num": "01 / Express", "title": "Music as a voice.", "body": "Broadway, classic rock, and a microphone. We follow what lights him up and let communication grow through the songs he loves.", "tag": "Entertainment pathway", "colorVar": "--pathway-entertainment" },
-      { "num": "02 / Create", "title": "Real skills, real gear.", "body": "Spotify navigation, playlist shares, mic technique, and clean transitions — on professional tools, with personalized coaching.", "tag": "Maker pathway", "colorVar": "--pathway-maker" },
-      { "num": "03 / Broadcast", "title": "On air, and independent.", "body": "DJ Brendan Radio — a show he hosts and publishes himself. The foundation's vision of independent content creation, made real.", "tag": "Community pathway", "colorVar": "--pathway-community" }
-    ]
-  },
-  "photoband": {
-    "eyebrow": "On air",
-    "titleHtml": "His name in lights, his playlist on the system, his voice on the mic.<br/>That's what \"unbound potential\" looks like.",
-    "imageAlt": "DJ Brendan on a concert stage with a giant DJ BRENDAN video wall, mixer, and purple-and-blue lights"
-  },
-  "donation": {
-    "eyebrow": "Here's where you come in",
-    "titleHtml": "Brendan's show doesn't need you to <em>fix</em> anything.",
-    "lead": "It needs resources. Studio time. Gear that works. A coach across the table who says — yes, cue it up, let's hear it. Your gift makes that table available to more young adults like Brendan.",
-    "tiers": [
-      {
-        "name": "The Microphone",
-        "amount": 50,
-        "featured": false,
-        "blurb": "Buys one young adult their first real tool — and the belief that comes with it.",
-        "items": ["A mic, a brush, or a season's pass", "One creative session, fully funded"],
-        "ctaLabel": "Give $50",
-        "ctaHref": "https://givebutter.com/whostosayfoundation"
-      },
-      {
-        "name": "The Mentor Chair",
-        "amount": 250,
-        "featured": true,
-        "pin": "Most chosen",
-        "blurb": "Funds an entire month of one-on-one creative coaching for one young adult.",
-        "items": ["4 mentor sessions in studio", "Equipment time + project review", "A real brief, a real deliverable"],
-        "ctaLabel": "Give $250 →",
-        "ctaHref": "https://givebutter.com/whostosayfoundation"
-      },
-      {
-        "name": "The Studio",
-        "amount": 1000,
-        "featured": false,
-        "blurb": "Underwrites studio access, pro equipment, and real business development — for a full quarter.",
-        "items": ["3 months of studio access", "Gear, software, mentor hours", "Launch plan for one creator's brand"],
-        "ctaLabel": "Give $1,000",
-        "ctaHref": "https://givebutter.com/whostosayfoundation"
-      }
-    ],
-    "customGiveLabel": "Or pick your own"
-  },
-  "finalCta": {
-    "eyebrow": "Who's to say ?",
-    "titleHtml": "Who's to say <em>he can't?</em>",
-    "answer": "He already is.",
-    "lead": "Your gift to Who's to Say Foundation funds the studio, the mentor, and the table where dreams like Brendan's get built. Not as a program. As a pathway.",
-    "primaryLabel": "Donate now →",
-    "primaryHref": "https://givebutter.com/whostosayfoundation",
-    "secondaryLabel": "Share Brendan's story",
-    "secondaryHref": "#story"
-  },
-  "footer": {
-    "brandBlurb": "We empower young adults with intellectual and developmental disabilities to turn their dreams into real, visible work — whatever shape those dreams take.",
-    "featuringTitle": "DJ Brendan Radio",
-    "featuringSubtitle": "Brendan Bukowski · Remix Studio",
-    "tagline": "Who's to say what's possible?"
-  }
+  "sections": [
+    {
+      "type": "rich-text",
+      "id": "story",
+      "eyebrow": "The piece",
+      "heading": "He built his own Top 5 musicals, Broadway Mix.",
+      "paragraphs": [
+        "Brendan has a keen ear for classic rock and a heart full of Broadway show tunes. He made a playlist that is entirely his and navigates it with real independence, cueing the next number and practicing introductions between songs.",
+        "For Brendan, music is a way to engage confidently in a dialogue about something he is passionate about."
+      ]
+    },
+    {
+      "type": "image-text",
+      "eyebrow": "The work",
+      "heading": "From fan to DJ: mastering the mix.",
+      "paragraphs": [
+        "Brendan creates his playlist, navigates Spotify, sets up collaborative shares, and practices transitions between Broadway anthems.",
+        "With personalized coaching, he is practicing the craft of a radio host one song introduction at a time."
+      ],
+      "image": "/assets/images/stories/brendan/brendan-karaoke.png",
+      "imageAlt": "Brendan singing into a microphone with on-screen lyrics",
+      "caption": "Singing along · Remix Studio",
+      "placement": "left"
+    },
+    {
+      "type": "image-text",
+      "eyebrow": "Behind the scenes",
+      "heading": "Powered by the Remix Studio.",
+      "paragraphs": [
+        "The Remix Studio gives Brendan real gear and a place to explore, experiment, and be heard.",
+        "The work is about building digital media skills at his pace and around his passion."
+      ],
+      "image": "/assets/images/stories/brendan/brendan-remix-studio.png",
+      "imageAlt": "Brendan on the DJ Brendan Radio set wearing headphones with a microphone in front of him",
+      "caption": "DJ Brendan Radio · on set",
+      "placement": "right"
+    },
+    {
+      "type": "cards",
+      "eyebrow": "The pathway",
+      "heading": "A pathway built around his strengths.",
+      "lead": "For Brendan, music creates opportunities to express, create, and broadcast.",
+      "items": [
+        { "title": "Express", "body": "Music becomes a setting for communication through songs he loves." },
+        { "title": "Create", "body": "Playlist navigation, microphone technique, and transitions turn interest into practice." },
+        { "title": "Broadcast", "body": "DJ Brendan Radio gives him a real format for sharing his work." }
+      ]
+    },
+    {
+      "type": "gallery",
+      "eyebrow": "On air",
+      "heading": "His name in lights, his playlist on the system, his voice on the mic.",
+      "items": [
+        { "image": "/assets/images/stories/brendan/brendan-stage.png", "imageAlt": "DJ Brendan on a concert stage with a DJ BRENDAN video wall", "caption": "DJ Brendan · on stage" }
+      ]
+    },
+    {
+      "type": "final-cta",
+      "eyebrow": "Who's to say?",
+      "heading": "Help make room for the next creative voice.",
+      "body": "Support studio time, accessible tools, and mentorship for more young adults.",
+      "primaryAction": { "label": "Donate", "href": "https://givebutter.com/whostosayfoundation" },
+      "secondaryAction": { "label": "See more stories", "href": "/stories/" }
+    }
+  ]
 }

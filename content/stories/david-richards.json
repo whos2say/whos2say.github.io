@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "slug": "david-richards",
+  "type": "participant-story",
+  "status": "published",
+  "volume": 1,
+  "publishedAt": "2026-07-18",
+  "featured": true,
+  "theme": { "accent": "#2563eb" },
+  "seo": {
+    "title": "David Richards: A Photographer's Point of View — Who's to Say Foundation",
+    "description": "Meet David J. Richards, a Who's to Say Foundation participant building his voice as a photographer one frame at a time.",
+    "canonical": "https://www.whostosay.org/stories/david-richards.html",
+    "image": "/assets/images/djr/david-sideline.png"
+  },
+  "listing": {
+    "title": "David Richards: Behind the Lens",
+    "summary": "A camera became David's way of stepping into the world and building a point of view of his own.",
+    "label": "Participant Story · Vol. 01",
+    "image": "/assets/images/djr/david-sideline.png",
+    "imageAlt": "David J. Richards holding a camera on the football sideline",
+    "order": 10
+  },
+  "hero": {
+    "eyebrow": "A Who's to Say story · Vol. 01",
+    "title": "David Richards: eye to eye with the moment.",
+    "lead": "David J. Richards is building his voice as a photographer one frame at a time, moving between sports, family, studio practice, and everyday details.",
+    "image": "/assets/images/djr/david-sideline.png",
+    "imageAlt": "David J. Richards holding a camera on the football sideline",
+    "primaryAction": { "label": "Read David's story", "href": "#story" }
+  },
+  "sections": [
+    {
+      "type": "rich-text",
+      "id": "story",
+      "eyebrow": "The photographer",
+      "heading": "A camera became David's way of stepping into the world.",
+      "paragraphs": [
+        "DJR Photography is a real person learning to look closely, move with purpose, and tell stories about people, places, games, and family through the lens.",
+        "The common thread in David's work is attention: looking long enough to notice the thing other people might miss."
+      ]
+    },
+    {
+      "type": "image-text",
+      "eyebrow": "The practice",
+      "heading": "Learning the frame.",
+      "paragraphs": [
+        "David's work moves from studio practice to cold nights on the track and the sideline, where he studies the field and waits for a face, a posture, the light, and the split second where a person becomes the story."
+      ],
+      "image": "/assets/images/djr/david-camera-close.png",
+      "imageAlt": "David composing a photograph with a Nikon camera",
+      "caption": "Behind the lens",
+      "placement": "left"
+    },
+    {
+      "type": "gallery",
+      "eyebrow": "Point of view",
+      "heading": "Practice, focus, and the confidence that grows with every shot.",
+      "items": [
+        { "image": "/assets/images/djr/field-photographers.png", "imageAlt": "David and another photographer working on a sports field", "caption": "On the field" },
+        { "image": "/assets/images/djr/camera-mirror.png", "imageAlt": "David photographing himself in a mirror", "caption": "Finding the angle" },
+        { "image": "/assets/images/djr/sunglasses-reflection.png", "imageAlt": "A camera reflected in blue sunglasses", "caption": "Seeing differently" }
+      ]
+    },
+    {
+      "type": "quote",
+      "quote": "The dream. The hard work. The moment. The capture.",
+      "attribution": "DJR Photography"
+    },
+    {
+      "type": "callout",
+      "eyebrow": "David's portfolio",
+      "heading": "Keep exploring DJR Photography.",
+      "body": "David's participant portfolio remains its own site, with galleries and the work he continues to build.",
+      "action": { "label": "Visit DJR Photography", "href": "/djr/" }
+    },
+    {
+      "type": "final-cta",
+      "eyebrow": "Who's to say?",
+      "heading": "Help more participants build visible work.",
+      "body": "Support accessible tools, creative practice, and participant-owned pathways.",
+      "primaryAction": { "label": "Donate", "href": "https://givebutter.com/whostosayfoundation" },
+      "secondaryAction": { "label": "See more stories", "href": "/stories/" }
+    }
+  ]
+}

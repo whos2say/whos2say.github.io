@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "slug": "baseball-cards",
+  "type": "case-study",
+  "status": "published",
+  "publishedAt": "2026-06-12",
+  "featured": true,
+  "theme": { "accent": "#0a8b7e" },
+  "seo": {
+    "title": "Turning Players Into Heroes — A Who's to Say Media Team Case Study",
+    "description": "How young adult creators on the Who's to Say Media Team used photography, design, and storytelling to turn Point Pleasant Panthers Challenger Baseball players into trading-card heroes — and gave their families a keepsake to treasure.",
+    "canonical": "https://www.whostosay.org/stories/baseball-cards.html",
+    "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png"
+  },
+  "listing": {
+    "title": "Turning Players Into Heroes",
+    "summary": "Young adult creators photographed, designed, and produced personalized cards for an adaptive baseball team's inaugural season.",
+    "label": "Media Team Case Study",
+    "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png",
+    "imageAlt": "A finished Challenger Baseball hero trading card",
+    "order": 30
+  },
+  "hero": {
+    "eyebrow": "A Who's to Say Media Team case study",
+    "title": "Turning players into heroes.",
+    "lead": "Young adult creators used photography, design, and storytelling to turn adaptive baseball players into trading-card heroes and give their families a keepsake.",
+    "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png",
+    "imageAlt": "A cinematic hero trading card created for a Challenger Baseball player",
+    "primaryAction": { "label": "Read the case study", "href": "#overview" }
+  },
+  "sections": [
+    {
+      "type": "image-text",
+      "id": "overview",
+      "eyebrow": "The overview",
+      "heading": "A team's first season, remembered forever.",
+      "paragraphs": [
+        "The Point Pleasant Panthers Challenger Baseball program played its first season, and the Who's to Say Media Team came to document practices and Opening Day.",
+        "The team then turned photographs and player details into personalized trading-card-style keepsakes."
+      ],
+      "image": "/assets/images/stories/baseball-cards/cc-team-photo.png",
+      "imageAlt": "The Point Pleasant Panthers Challenger Baseball team gathered on the field",
+      "caption": "Point Pleasant Panthers Challenger Baseball · Inaugural season, 2026",
+      "placement": "right"
+    },
+    {
+      "type": "rich-text",
+      "eyebrow": "The opportunity",
+      "heading": "Every athlete deserves to be celebrated.",
+      "paragraphs": [
+        "Families often have season photos but rarely a polished, personalized keepsake that captures a player's personality.",
+        "The project asked what could happen if the players became the heroes and young creators with disabilities made it happen."
+      ]
+    },
+    {
+      "type": "cards",
+      "eyebrow": "The Media Team role",
+      "heading": "Not just participants. Creators.",
+      "lead": "Young adults with disabilities stepped into real creative roles across production.",
+      "items": [
+        { "title": "Photographer", "body": "Captured player portraits and candid team moments." },
+        { "title": "Designer", "body": "Worked with templates, layouts, and design layers." },
+        { "title": "Editor", "body": "Selected and refined images and backgrounds." },
+        { "title": "Creative director", "body": "Reviewed choices so each card felt personal." },
+        { "title": "Production assistant", "body": "Organized files and tracked versions." }
+      ]
+    },
+    {
+      "type": "steps",
+      "eyebrow": "The creative process",
+      "heading": "A repeatable media-production workflow.",
+      "lead": "The cards were the deliverable; practical creative experience was the purpose.",
+      "items": [
+        { "title": "Capture", "body": "Photograph each player and team moments." },
+        { "title": "Listen", "body": "Gather the details each player wants represented." },
+        { "title": "Organize", "body": "Prepare the material one player at a time." },
+        { "title": "Design", "body": "Build each card with images, layers, and layouts." },
+        { "title": "Refine", "body": "Review and revise each keepsake." },
+        { "title": "Deliver", "body": "Produce a finished card for the player and family." }
+      ]
+    },
+    {
+      "type": "gallery",
+      "eyebrow": "The finished keepsakes",
+      "heading": "More than a card. A memory you can hold.",
+      "items": [
+        { "image": "/assets/images/stories/baseball-cards/cc-card-ozzie.png", "imageAlt": "Finished Challenger Baseball trading card in a classic layout", "caption": "The personalized card" },
+        { "image": "/assets/images/stories/baseball-cards/cc-card-ozman.png", "imageAlt": "Finished Challenger Baseball hero card in a cinematic layout", "caption": "The hero card" }
+      ]
+    },
+    {
+      "type": "quote",
+      "quote": "It meant the world to our players to receive their very own personalized baseball card. It was a meaningful and fun gesture to conclude our inaugural season of Challenger Baseball.",
+      "attribution": "Mona Smith",
+      "role": "Parent of player Ozzie Smith"
+    },
+    {
+      "type": "cards",
+      "eyebrow": "Community impact",
+      "heading": "One project. Three kinds of belonging.",
+      "items": [
+        { "title": "The players", "body": "Each athlete received a personalized keepsake." },
+        { "title": "The families", "body": "Families received a polished tribute to display and keep." },
+        { "title": "The Media Team", "body": "Creators gained production experience while serving their community." }
+      ]
+    },
+    {
+      "type": "final-cta",
+      "eyebrow": "What support makes possible",
+      "heading": "Help bring the Media Team experience to more communities.",
+      "body": "Support makes room for accessible creative tools, inclusive teams, and real production roles.",
+      "primaryAction": { "label": "Donate", "href": "https://givebutter.com/whostosayfoundation" },
+      "secondaryAction": { "label": "See more stories", "href": "/stories/" }
+    }
+  ]
+}

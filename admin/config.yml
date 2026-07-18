@@ -1143,31 +1143,147 @@ collections:
     format: json
     create: true
     slug: "{{slug}}"
+    identifier_field: slug
+    summary: "{{listing.title}} · {{type}} · {{status}}"
+    media_folder: "../../assets/images/stories/{{slug}}"
+    public_folder: "/assets/images/stories/{{slug}}"
     fields:
-      - { label: Story Slug, name: slug, widget: string, default: "brendan" }
-      - { label: SEO, name: meta, widget: object, fields: [
+      - { label: Schema Version, name: schemaVersion, widget: hidden, default: 1, value_type: int }
+      - { label: Story Slug, name: slug, widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Use lowercase letters, numbers, and hyphens only."] }
+      - label: Story Type
+        name: type
+        widget: select
+        options:
+          - { label: Participant Story, value: participant-story }
+          - { label: Media Team Case Study, value: case-study }
+      - label: Publication Status
+        name: status
+        widget: select
+        options: [draft, published]
+        default: draft
+        hint: "Draft stories can be previewed at their route but are excluded from the public Stories index."
+      - { label: Participant Volume, name: volume, widget: number, value_type: int, required: false, hint: "Required and unique for participant stories; leave empty for case studies." }
+      - { label: Published Date, name: publishedAt, widget: datetime, format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false }
+      - { label: Featured, name: featured, widget: boolean, default: false, required: false }
+      - { label: Theme, name: theme, widget: object, fields: [
+          { label: Accent Hex Color, name: accent, widget: string, pattern: ['^#[0-9a-fA-F]{6}$', "Use a six-digit hex color."] }
+        ]}
+      - { label: SEO, name: seo, widget: object, fields: [
           { label: Title, name: title, widget: string },
-          { label: Description, name: description, widget: text }
+          { label: Description, name: description, widget: text },
+          { label: Canonical URL, name: canonical, widget: string },
+          { label: Social Image, name: image, widget: image }
+        ]}
+      - { label: Stories Index Card, name: listing, widget: object, fields: [
+          { label: Title, name: title, widget: string },
+          { label: Summary, name: summary, widget: text },
+          { label: Label, name: label, widget: string },
+          { label: Image, name: image, widget: image },
+          { label: Image Alt Text, name: imageAlt, widget: string },
+          { label: Sort Order, name: order, widget: number, value_type: int }
         ]}
       - { label: Hero, name: hero, widget: object, fields: [
           { label: Eyebrow, name: eyebrow, widget: string },
-          { label: Title (HTML), name: titleHtml, widget: text },
+          { label: Title, name: title, widget: string },
           { label: Lead, name: lead, widget: text },
-          { label: Sticker Quote, name: stickerQuote, widget: string }
-        ]}
-      - { label: Donation Section, name: donation, widget: object, fields: [
-          { label: Title (HTML), name: titleHtml, widget: text },
-          { label: Lead, name: lead, widget: text },
-          { label: Tiers, name: tiers, widget: list, fields: [
-              { label: Name, name: name, widget: string },
-              { label: Amount, name: amount, widget: number },
-              { label: Blurb, name: blurb, widget: text }
+          { label: Image, name: image, widget: image },
+          { label: Image Alt Text, name: imageAlt, widget: string },
+          { label: Primary Action, name: primaryAction, widget: object, fields: [
+              { label: Label, name: label, widget: string },
+              { label: URL or Anchor, name: href, widget: string }
             ]}
         ]}
-      - { label: Final CTA, name: finalCta, widget: object, fields: [
-          { label: Title (HTML), name: titleHtml, widget: text },
-          { label: Lead, name: lead, widget: text }
-        ]}
+      - label: Reusable Sections
+        name: sections
+        widget: list
+        types:
+          - label: Rich Text
+            name: rich-text
+            widget: object
+            fields:
+              - { label: Anchor ID, name: id, widget: string, required: false }
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: string }
+              - { label: Paragraphs, name: paragraphs, widget: list, field: { label: Paragraph, name: paragraph, widget: text } }
+          - label: Image + Text
+            name: image-text
+            widget: object
+            fields:
+              - { label: Anchor ID, name: id, widget: string, required: false }
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: string }
+              - { label: Paragraphs, name: paragraphs, widget: list, field: { label: Paragraph, name: paragraph, widget: text } }
+              - { label: Image, name: image, widget: image }
+              - { label: Image Alt Text, name: imageAlt, widget: string }
+              - { label: Caption, name: caption, widget: string, required: false }
+              - { label: Placement, name: placement, widget: select, options: [left, right], default: left }
+          - label: Quote
+            name: quote
+            widget: object
+            fields:
+              - { label: Quote, name: quote, widget: text }
+              - { label: Attribution, name: attribution, widget: string }
+              - { label: Role, name: role, widget: string, required: false }
+          - label: Cards
+            name: cards
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: string }
+              - { label: Lead, name: lead, widget: text, required: false }
+              - { label: Cards, name: items, widget: list, fields: [
+                  { label: Title, name: title, widget: string },
+                  { label: Body, name: body, widget: text }
+                ]}
+          - label: Ordered Steps
+            name: steps
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: string }
+              - { label: Lead, name: lead, widget: text, required: false }
+              - { label: Steps, name: items, widget: list, fields: [
+                  { label: Title, name: title, widget: string },
+                  { label: Body, name: body, widget: text }
+                ]}
+          - label: Gallery
+            name: gallery
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: string }
+              - { label: Lead, name: lead, widget: text, required: false }
+              - { label: Images, name: items, widget: list, fields: [
+                  { label: Image, name: image, widget: image },
+                  { label: Image Alt Text, name: imageAlt, widget: string },
+                  { label: Caption, name: caption, widget: string, required: false }
+                ]}
+          - label: Callout
+            name: callout
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: string }
+              - { label: Body, name: body, widget: text }
+              - { label: Action, name: action, widget: object, required: false, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+          - label: Final CTA
+            name: final-cta
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: string }
+              - { label: Body, name: body, widget: text }
+              - { label: Primary Action, name: primaryAction, widget: object, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
+              - { label: Secondary Action, name: secondaryAction, widget: object, required: false, fields: [
+                  { label: Label, name: label, widget: string },
+                  { label: URL, name: href, widget: string }
+                ]}
 
   - name: classes
     label: Public Classes (Schedule)
