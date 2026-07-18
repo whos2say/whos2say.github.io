@@ -72,7 +72,9 @@ input[type=file]{font-size:12px;width:100%}
     <div class="section">
       <h3>Gallery</h3>
       <div class="gallery" id="gallery"></div>
+      <div class="hint" id="galleryCount">Loading photos…</div>
       <div class="hint">Click a photo to jump to its movement.</div>
+      <div class="hint" id="gallerySource">Gallery source: photos load from the album manifest at <code>/art-experiment/photos/manifest.json</code>. To add or remove photos, update <code>photos/</code> and rebuild the manifest (see README) — the gallery reads only from the album. If the manifest can't be reached, the page falls back to a single built-in photo.</div>
     </div>
 
     <div class="section">
@@ -146,13 +148,21 @@ function makeVignette(){let g=createGraphics(CW,CH);g.clear();let x=g.drawingCon
   gr.addColorStop(0,'rgba(3,4,12,0)');gr.addColorStop(.7,'rgba(3,4,12,.25)');gr.addColorStop(1,'rgba(2,3,9,.8)');x.fillStyle=gr;x.fillRect(0,0,CW,CH);return g;}
 
 // ── Load image sources: manifest first, fallback otherwise ───────────────
+// ASSET_BASE is ABSOLUTE on purpose: the page is reachable at both
+// /art-experiment and /art-experiment/ (and via Vercel preview URLs), and a
+// relative './photos/…' resolves to /photos/… when the trailing slash is
+// missing — which 404s and silently drops the whole album. Absolute paths
+// load the album no matter how the page was routed.
+const ASSET_BASE='/art-experiment/';
+let sourceMode='fallback';   // 'album' once the manifest loads
 async function loadSources(){
   let sources=[];
   try{
-    const r=await fetch('./photos/manifest.json',{cache:'no-store'});
+    const r=await fetch(ASSET_BASE+'photos/manifest.json',{cache:'no-store'});
     if(r.ok){const m=await r.json(); if(m.photos&&m.photos.length){
       sources=m.photos.map(p=>{ let file=p.file||('photos/'+(p.filename||'')); 
-        return {url:'./'+file, name:(p.filename||p.file||file).split('/').pop(), entry:p}; });
+        return {url:ASSET_BASE+file, name:(p.filename||p.file||file).split('/').pop(), entry:p}; });
+      sourceMode='album';
     }}
   }catch(e){}
   if(!sources.length) sources=[{url:FALLBACK_IMAGE, name:'Source photo (built-in)', entry:null}];
@@ -162,7 +172,14 @@ async function loadSources(){
                       ()=>{ slots[i]=null; commit(slots); });
   });
 }
-function commit(slots){ studies=slots.filter(v=>v); buildGallery(); if(studies.length && studyStart===0){ curIdx=0; studyStart=millis(); updateHUD(); } else { updateHUD(); } }
+function commit(slots){ studies=slots.filter(v=>v); buildGallery(); updateGalleryCount(slots); if(studies.length && studyStart===0){ curIdx=0; studyStart=millis(); updateHUD(); } else { updateHUD(); } }
+function updateGalleryCount(slots){ let el=document.getElementById('galleryCount'); if(!el) return;
+  if(sourceMode!=='album'){ el.textContent='Built-in fallback photo — album manifest not found.'; return; }
+  let done=slots.filter(v=>v!==undefined).length, ok=slots.filter(v=>v).length;
+  el.textContent= done<slots.length
+    ? (ok+' of '+slots.length+' photos loaded from the album…')
+    : (ok+' of '+slots.length+' photos loaded from the album.');
+}
 
 // ── Per-photo ANALYSIS: this is where the image becomes a score ───────────
 function buildStudy(img, src){
