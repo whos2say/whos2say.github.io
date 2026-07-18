@@ -70,7 +70,7 @@
     {
       "label": "Stories",
       "href": "/stories/",
-      "enabled": false,
+      "enabled": true,
       "environment": "all",
       "order": 25,
       "external": false,
