@@ -1,10 +1,8 @@
 {
   "_comment": "DJR participant page settings. Participant Pages is the main CMS workflow. Text fields are seeded from the live DJR page so editors can revise before publishing. Create/manage albums in /albums.html, then paste Supabase album UUIDs here.",
+  "defaultAlbumId": "fe027096-7084-4f96-974a-315b98b484b2",
   "name": "David J. Richards",
   "slug": "djr",
-  "template": "djr-photography",
-  "brandKit": "djr",
-  "defaultAlbumId": "fe027096-7084-4f96-974a-315b98b484b2",
   "sections": {
     "hero": {
       "enabled": true,
@@ -87,29 +85,31 @@
       "buttonLabel": "Contact DJR"
     }
   },
+  "brandKit": "djr",
   "contactPage": {
     "enabled": true,
-    "allowParticipantEdit": true,
-    "eyebrow": "Get in Touch",
-    "title": "Book a Session",
-    "intro": "Tell me a little about what you have in mind and I'll get back to you within 1-2 business days.",
-    "availabilityTitle": "Availability",
-    "availabilityBody": "Booking sessions throughout Maine and New England. Travel available on request.",
-    "responseTitle": "Response Time",
     "responseBody": "I typically reply within 1-2 business days. For time-sensitive requests, please call.",
     "sessionTypeLabel": "Session Type",
-    "submitButtonLabel": "Send Inquiry"
+    "eyebrow": "Get in Touch",
+    "submitButtonLabel": "Send Inquiry",
+    "intro": "Tell me a little about what you have in mind and I'll get back to you within 1-2 business days.",
+    "allowParticipantEdit": true,
+    "responseTitle": "Response Time",
+    "title": "Book a Session",
+    "availabilityBody": "Booking sessions throughout Maine and New England. Travel available on request.",
+    "availabilityTitle": "Availability"
   },
+  "template": "djr-photography",
   "footer": {
     "enabled": true,
-    "allowParticipantEdit": true,
-    "brandLine": "David J. Richards Photography",
-    "contactLabel": "Contact",
-    "locationText": "Maine, USA",
-    "copyrightNote": "© 2026 DJR Photography. All Rights Reserved.",
-    "quickLinksTitle": "Quick Links",
+    "locationText": "Brick, NJ",
     "socialTitle": "Follow",
-    "partnerLabel": "In partnership with"
+    "partnerLabel": "In partnership with",
+    "quickLinksTitle": "Quick Links",
+    "allowParticipantEdit": true,
+    "contactLabel": "Contact",
+    "copyrightNote": "© 2026 DJR Photography. All Rights Reserved.",
+    "brandLine": "David J. Richards Photography"
   },
   "services": {
     "enabled": true,
@@ -166,13 +166,17 @@
       {
         "imageLimit": 6,
         "selectedPhotoIds": [
-          "80f3e5f5-d550-4d66-9f1e-7ec74594f6fc"
+          "80f3e5f5-d550-4d66-9f1e-7ec74594f6fc",
+          "f9d67c8d-85c8-43f4-aefb-ad62a8f0e58b",
+          "7fdbcefe-10a1-4d44-aa56-803254cf8929",
+          "2c1d5a99-61f9-448a-b209-6043aca1c1d4",
+          "69b9f3cc-d209-40f6-be31-099b296eb41b"
         ],
         "enabled": true,
         "ctaLabel": "Ask About This",
         "displayMode": "slideshow",
         "summary": "Color, texture, reflection, and small visual surprises that make a scene feel personal.",
-        "serviceDescription": "A detail-led gallery for color, texture, reflection, objects, and small visual surprises that give a scene personality.",
+        "serviceDescription": "If you are interested in a custom print of any of my nature or landscape photos just let me know and we can decide the best format, sizing, medium, etc.",
         "albumId": "f4c8061b-fff1-43c8-8504-9c649ca05af0",
         "serviceId": "nature-landscape",
         "title": "Creative Details",
