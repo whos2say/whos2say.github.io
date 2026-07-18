@@ -1166,7 +1166,12 @@
           { label: Primary Action, name: primaryAction, widget: object, fields: [
               { label: Label, name: label, widget: string },
               { label: URL or Anchor, name: href, widget: string }
-            ]}
+            ]},
+          { label: Secondary Action, name: secondaryAction, widget: object, required: false, fields: [
+              { label: Label, name: label, widget: string },
+              { label: URL or Anchor, name: href, widget: string }
+            ]},
+          { label: Hero Badge, name: badge, widget: string, required: false }
         ]}
       - label: Reusable Sections
         name: sections
@@ -1192,6 +1197,7 @@
               - { label: Image Alt Text, name: imageAlt, widget: string }
               - { label: Caption, name: caption, widget: string, required: false }
               - { label: Placement, name: placement, widget: select, options: [left, right], default: left }
+              - { label: Image Fit, name: imageFit, widget: select, options: [cover, contain], default: cover, required: false }
           - label: Quote
             name: quote
             widget: object
@@ -1233,6 +1239,15 @@
                   { label: Image Alt Text, name: imageAlt, widget: string },
                   { label: Caption, name: caption, widget: string, required: false }
                 ]}
+          - label: Feature Image
+            name: feature-image
+            widget: object
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false }
+              - { label: Heading, name: heading, widget: text }
+              - { label: Image, name: image, widget: image }
+              - { label: Image Alt Text, name: imageAlt, widget: string }
+              - { label: Image Position, name: position, widget: string, required: false, default: center, hint: "CSS object-position, for example center or center 30%." }
           - label: Callout
             name: callout
             widget: object

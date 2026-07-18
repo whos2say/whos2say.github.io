@@ -9,6 +9,7 @@
     cards: renderCards,
     steps: renderSteps,
     gallery: renderGallery,
+    'feature-image': renderFeatureImage,
     callout: renderCallout,
     'final-cta': renderFinalCta
   };
@@ -51,7 +52,8 @@
   function renderImageText(section) {
     return '<section class="story-section story-section--soft" id="' + esc(section.id || '') + '"><div class="story-wrap story-split story-split--' +
       esc(section.placement || 'left') + '"><figure><img src="' + esc(section.image) + '" alt="' +
-      esc(section.imageAlt) + '" loading="lazy" decoding="async"><figcaption>' + esc(section.caption || '') +
+      esc(section.imageAlt) + '" class="story-image--' + esc(section.imageFit || 'cover') +
+      '" loading="lazy" decoding="async"><figcaption>' + esc(section.caption || '') +
       '</figcaption></figure><div class="story-prose">' + heading(section) + paragraphs(section.paragraphs) +
       '</div></div></section>';
   }
@@ -86,6 +88,13 @@
     }).join('');
     return '<section class="story-section"><div class="story-wrap">' + heading(section) +
       '<div class="story-gallery">' + images + '</div></div></section>';
+  }
+
+  function renderFeatureImage(section) {
+    return '<section class="story-feature"><img src="' + esc(section.image) + '" alt="' +
+      esc(section.imageAlt) + '" loading="lazy" decoding="async" style="object-position:' +
+      esc(section.position || 'center') + '"><div class="story-feature__overlay"><div class="story-wrap">' +
+      heading(section) + '</div></div></section>';
   }
 
   function renderCallout(section) {
@@ -127,8 +136,11 @@
       '<article><header class="story-hero"><div class="story-wrap story-hero__grid"><div>' +
       '<p class="story-eyebrow">' + esc(data.hero.eyebrow) + '</p><h1>' + esc(data.hero.title) +
       '</h1><p class="story-hero__lead">' + esc(data.hero.lead) + '</p><div class="story-actions">' +
-      actionLink(data.hero.primaryAction) + '</div></div><figure><img src="' + esc(data.hero.image) +
-      '" alt="' + esc(data.hero.imageAlt) + '"></figure></div></header>' +
+      actionLink(data.hero.primaryAction) + actionLink(data.hero.secondaryAction, true) +
+      '</div></div><figure><img src="' + esc(data.hero.image) +
+      '" alt="' + esc(data.hero.imageAlt) + '">' +
+      (data.hero.badge ? '<figcaption class="story-hero__badge">' + esc(data.hero.badge) + '</figcaption>' : '') +
+      '</figure></div></header>' +
       data.sections.map(function (section) { return SECTION_TYPES[section.type](section); }).join('') +
       '</article>';
   }

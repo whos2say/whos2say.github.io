@@ -7,7 +7,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const contentDir = path.join(root, 'content', 'stories')
 const allowedTypes = new Set(['participant-story', 'case-study'])
 const allowedStatuses = new Set(['draft', 'published'])
-const allowedSections = new Set(['rich-text', 'image-text', 'quote', 'cards', 'steps', 'gallery', 'callout', 'final-cta'])
+const allowedSections = new Set(['rich-text', 'image-text', 'quote', 'cards', 'steps', 'gallery', 'feature-image', 'callout', 'final-cta'])
 const errors = []
 const assert = (condition, message) => { if (!condition) errors.push(message) }
 const read = file => fs.readFileSync(file, 'utf8')
@@ -85,6 +85,7 @@ for (const { name, data } of records) {
   for (const key of ['eyebrow', 'title', 'lead', 'image', 'imageAlt']) requiredString(data.hero?.[key], `${prefix}.hero.${key}`)
   assert(existsFromUrl(data.hero?.image || ''), `${prefix}: missing hero image ${data.hero?.image}`)
   validateAction(data.hero?.primaryAction, `${prefix}.hero.primaryAction`)
+  validateAction(data.hero?.secondaryAction, `${prefix}.hero.secondaryAction`, true)
 
   assert(Array.isArray(data.sections) && data.sections.length > 0, `${prefix}: sections must not be empty`)
   const ids = new Set((data.sections || []).map(section => section.id).filter(Boolean))
@@ -96,6 +97,12 @@ for (const { name, data } of records) {
       assert(Array.isArray(section.paragraphs) && section.paragraphs.length > 0, `${label}: paragraphs required`)
     }
     if (section.type === 'image-text') {
+      requiredString(section.imageAlt, `${label}.imageAlt`)
+      assert(existsFromUrl(section.image || ''), `${label}: missing image ${section.image}`)
+      assert(!section.imageFit || ['cover', 'contain'].includes(section.imageFit), `${label}: imageFit must be cover or contain`)
+    }
+    if (section.type === 'feature-image') {
+      requiredString(section.heading, `${label}.heading`)
       requiredString(section.imageAlt, `${label}.imageAlt`)
       assert(existsFromUrl(section.image || ''), `${label}: missing image ${section.image}`)
     }
@@ -110,6 +117,9 @@ for (const { name, data } of records) {
   }
   if (data.hero?.primaryAction?.href?.startsWith('#')) {
     assert(ids.has(data.hero.primaryAction.href.slice(1)), `${prefix}: hero action anchor is not provided by a section`)
+  }
+  if (data.hero?.secondaryAction?.href?.startsWith('#')) {
+    assert(ids.has(data.hero.secondaryAction.href.slice(1)), `${prefix}: secondary hero action anchor is not provided by a section`)
   }
   assert(manifestPaths.has(`/content/stories/${name}`), `${prefix}: missing from stories manifest`)
 }

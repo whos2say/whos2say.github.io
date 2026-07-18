@@ -109,6 +109,7 @@ Allowed reusable section types:
 - `cards`: heading/lead plus reusable title/body cards.
 - `steps`: heading/lead plus ordered title/body steps.
 - `gallery`: heading/lead plus image/alt/caption items.
+- `feature-image`: a reusable full-width photograph with an accessible text overlay.
 - `callout`: heading/body plus an optional validated link.
 - `final-cta`: heading/body plus one or two validated actions.
 
@@ -125,7 +126,7 @@ No arbitrary HTML, inline scripts, style attributes, or page-specific renderer f
 
 ## Migration risks
 
-- The David design ZIP is unavailable; visual fidelity to that handoff cannot be verified. No new biographical or outcome claims will be inferred.
+- David's original ZIP is the authoritative source for his participant-story narrative and visual identity. Its publication assets are copied into the story-owned directory; its authoring/runtime scaffolding is excluded.
 - Existing Brendan donation-tier claims are not independently supported in repository content. The migration keeps supported story facts but avoids carrying specific funding-equivalency claims into the new generic record.
 - Baseball Cards has substantial bespoke art direction. Moving to shared components may change presentation while retaining its URL, SEO metadata, images, quote attribution, and editorial meaning.
 - Decap editorial workflow controls Git publication state, while the record's `status` controls public rendering/listing. Editors must set both deliberately.
@@ -150,7 +151,25 @@ No arbitrary HTML, inline scripts, style attributes, or page-specific renderer f
 - `js/stories/story-system.js` (new)
 - `scripts/validate-stories.mjs` (new)
 
-No `/djr/` file is expected to change. Existing story images are reused in place; no copied David assets are required because the story may reference the already-published `/assets/images/djr/` files during this migration.
+No `/djr/` file changes. David's five source-used identity assets are copied into `assets/images/stories/david-richards/`; the story no longer depends on `/assets/images/djr/` for its core identity.
+
+## David source-handoff comparison
+
+The original story is organized as: hero; self-designed DJR business card; photography practice and 740-photo archive; “Dream big” pull quote; three-part business pathway; full-width in-field learning moment; support appeal; and closing Foundation CTA.
+
+The initial reusable migration contained a general “behind the lens” introduction, one practice image, a three-image `/djr/` gallery, a slogan quote, a portfolio callout, and a general support CTA. It omitted the self-designed brand narrative, exact archive/practice copy, original pathway language, in-field learning moment, handoff imagery, hero badge, and “Fund his next chapter” CTA.
+
+The source-backed migration restores those elements with shared `image-text`, `quote`, `cards`, `callout`, `rich-text`, and `final-cta` components. It adds one genuinely reusable `feature-image` section and optional reusable hero badge/secondary action fields. Core identity assets now live in `assets/images/stories/david-richards/`.
+
+Intentional differences from the handoff:
+
+- The Foundation's shared site header/footer and reusable typography/spacing remain, rather than publishing a second one-off page shell.
+- Text emphasis is expressed by component hierarchy rather than unrestricted inline HTML.
+- The DJR logo is presented as an accessible contained image instead of a decorative stacked business-card animation.
+- The full-width field photograph retains its overlay treatment without handoff-only parallax/authoring controls.
+- The handoff's donation-tier equivalencies, placeholder `#` links, and nonfunctional custom amount form are not published. The verified Foundation Givebutter destination is used instead.
+- The unused AI/Pixar image, React, ReactDOM, Babel, tweak panels, JSX design canvas, screen labels, and authoring scaffolding are excluded.
+- `/djr/` remains separate and is linked from both the story body and final CTA.
 
 ## Editorial guide
 
